@@ -1,0 +1,319 @@
+using System;
+using System.Collections.Specialized;
+using System.IO;
+using System.Transactions;
+using Bus2.Serialization;
+using Lokad;
+using Microsoft.WindowsAzure;
+using Microsoft.WindowsAzure.StorageClient;
+
+namespace Bus2.Queue
+{
+	public sealed class AzureMessageQueue : IReadMessageQueue, IWriteMessageQueue
+	{
+		readonly CloudQueue _queue;
+		readonly CloudQueue _posionQueue;
+		readonly CloudQueue _discardQueue;
+
+		readonly CloudStorageAccount _account;
+		readonly int _retryCount;
+		readonly IMessageSerializer _messageSerializer;
+		readonly ILog _log;
+		readonly CloudBlobContainer _cloudBlob;
+
+
+		readonly AzureQueueReference _queueReference;
+
+		public Uri Uri
+		{
+			get { return _queueReference.Uri; }
+		}
+
+		public TimeSpan? QueueVisibility { get; set; }
+
+
+		public AzureMessageQueue(
+			CloudStorageAccount account,
+			string queueName,
+			int retryCount,
+			ILogProvider provider,
+			IMessageSerializer messageSerializer)
+		{
+			var blobClient = account.CreateCloudBlobClient();
+			blobClient.RetryPolicy = RetryPolicies.NoRetry();
+
+			_cloudBlob = blobClient.GetContainerReference(queueName);
+
+			var queueClient = account.CreateCloudQueueClient();
+			queueClient.RetryPolicy = RetryPolicies.NoRetry();
+			_queue = queueClient.GetQueueReference(queueName);
+
+			_queueReference = new AzureQueueReference(account.QueueEndpoint, _queue.Name);
+			_posionQueue = queueClient.GetQueueReference(_queueReference.SubQueue(SubQueueType.Poison).QueueName);
+			_discardQueue = queueClient.GetQueueReference(_queueReference.SubQueue(SubQueueType.Discard).QueueName);
+
+			_log = provider.Get("Queue["+queueName+"]");
+
+
+			_account = account;
+
+			_messageSerializer = messageSerializer;
+			_retryCount = retryCount;
+		}
+
+		public void Init()
+		{
+			if (_queue.CreateIfNotExist())
+				_log.DebugFormat("Auto-created queue {0}", _queue.Uri);
+
+			if (_posionQueue.CreateIfNotExist())
+				_log.DebugFormat("Auto-created poison queue {0}", _posionQueue.Uri);
+
+			if (_discardQueue.CreateIfNotExist())
+				_log.DebugFormat("Auto-created discard queue {0}", _discardQueue.Uri);
+
+			if (_cloudBlob.CreateIfNotExist())
+				_log.DebugFormat("Auto-created blob storage {0}", _cloudBlob.Uri);
+		}
+
+		public void Purge()
+		{
+			_queue.Clear();
+			_posionQueue.Clear();
+		}
+
+		public GetMessageResult GetMessage()
+		{
+			var message = QueueVisibility.HasValue
+				? _queue.GetMessage(QueueVisibility.Value)
+				: _queue.GetMessage();
+
+			if (null == message)
+			{
+				return GetMessageResult.Wait;
+			}
+
+			if (message.DequeueCount > _retryCount)
+			{
+				// we consider this to be poison
+				_log.DebugFormat("Moving message {0} to poison queue {1}", message.Id, _posionQueue.Name);
+				TransactionalMoveMessage(message, _posionQueue);
+				return GetMessageResult.Retry;
+			}
+
+			IncomingMessageEnvelope envelope;
+
+			try
+			{
+				using (var stream = new MemoryStream(message.AsBytes))
+				{
+					var data = (MessageMessage) _messageSerializer.Deserialize(stream, typeof (MessageMessage));
+					envelope = new IncomingMessageEnvelope(data, message);
+				}
+			}
+			catch (Exception ex)
+			{
+				_log.ErrorFormat(ex, "Failed to deserialize message {0}. Moving to poison", message.Id);
+				TransactionalMoveMessage(message, _posionQueue);
+				return GetMessageResult.Retry;
+			}
+
+			if (envelope.ContainsMessageObject)
+			{
+				var m = new IncomingMessage(envelope.MessageObject, envelope);
+
+
+				return GetMessageResult.Success(m);
+			}
+
+			_log.DebugFormat("Message {0} references data {1}; downloading it.", message.Id, envelope.DataReference);
+
+			Type messageType;
+
+			try
+			{
+				messageType = Type.GetType(envelope.TypeReference, true);
+			}
+			catch (Exception ex)
+			{
+				_log.ErrorFormat(ex, "Failed to discover message {0} type", message.Id);
+				MoveIncomingToPoison(message);
+				return GetMessageResult.Retry;
+			}
+
+			var blobReference = _cloudBlob.GetBlobReference(envelope.DataReference);
+			var bytes = blobReference.DownloadByteArray();
+
+			try
+			{
+				using (var stream = new MemoryStream(bytes))
+				{
+					var data = (MessageMessage) _messageSerializer.Deserialize(stream, messageType);
+					var m = new IncomingMessage(data, envelope);
+					return GetMessageResult.Success(m);
+				}
+			}
+			catch (Exception ex)
+			{
+				_log.ErrorFormat(ex, "Failed to deserialize message {0}. Moving to poison", message.Id);
+				MoveIncomingToPoison(message);
+				return GetMessageResult.Retry;
+			}
+		}
+
+		void TransactionalMoveMessage(CloudQueueMessage message, CloudQueue target)
+		{
+			if (Transaction.Current == null)
+			{
+				target.AddMessage(message);
+				_queue.DeleteMessage(message);
+			}
+			else
+			{
+				Transaction.Current.EnlistVolatile(
+					new TransactionCommitDeletesMessage(_queue, message.Id, message.PopReceipt),
+					EnlistmentOptions.None);
+				Transaction.Current.EnlistVolatile(
+					new TransactionCommitAddsMessage(target, message),
+					EnlistmentOptions.None);
+			}
+		}
+
+		public void AckMessage(IncomingMessage message)
+		{
+			var id = message.TransportMessageId;
+			var receipt = message.Headers["azure-receipt"];
+
+			// we're fine for deletion
+			_log.DebugFormat("Ack {1} {0}", message.TransportMessageId, message.Message);
+			TransactionalDeleteMessage(id, receipt);
+		}
+
+		public void DiscardMessage(IncomingMessage message)
+		{
+			var receipt = message.Headers["azure-receipt"];
+			if (string.IsNullOrEmpty(receipt))
+			{
+				throw new InvalidOperationException("Can't discard non-azure message");
+			}
+			// new discarded message
+			// could be optimized by copying blob reference
+			var packed = PackToNewMessage(nv => { }, message.Message);
+
+
+			if (Transaction.Current == null)
+			{
+				_discardQueue.AddMessage(packed);
+				_queue.DeleteMessage(packed);
+			}
+			else
+			{
+				Transaction.Current.EnlistVolatile(
+					new TransactionCommitDeletesMessage(_queue, message.TransportMessageId, receipt),
+					EnlistmentOptions.None);
+				Transaction.Current.EnlistVolatile(
+					new TransactionCommitAddsMessage(_discardQueue, packed),
+					EnlistmentOptions.None);
+			}
+		}
+
+		void MoveIncomingToPoison(CloudQueueMessage message)
+		{
+			// new poison details
+			TransactionalMoveMessage(message, _posionQueue);
+		}
+
+		void TransactionalDeleteMessage(string id, string receipt)
+		{
+			if (Transaction.Current == null)
+			{
+				_queue.DeleteMessage(id, receipt);
+			}
+			else
+			{
+				Transaction.Current.EnlistVolatile(new TransactionCommitDeletesMessage(_queue, id, receipt), EnlistmentOptions.None);
+			}
+		}
+
+		public const string DateFormatInBlobName = "yyyy-MM-dd-HH-mm-ss-ffff";
+
+		CloudQueueMessage PackToNewMessage(Action<NameValueCollection> modify, object message)
+		{
+			// optimistic serialization for now
+			var messageId = Guid.NewGuid();
+			var referenceId = SystemUtil.UtcNow.ToString(DateFormatInBlobName) + messageId;
+
+			var headers = new NameValueCollection();
+
+			OutgoingMessageEnvelope
+				.Build(e =>
+					{
+						e.Topic = message.GetType().FullName;
+						e.Sender = _queue.Uri.ToString();
+						e.Id = messageId;
+					})
+				.CopyHeaders(headers);
+			modify(headers);
+
+			var data = new MessageMessage(headers, message);
+			using (var stream = new MemoryStream())
+			{
+				_messageSerializer.Serialize(data, stream);
+				if (stream.Length <= 7.Kb())
+				{
+					return new CloudQueueMessage(stream.ToArray());
+				}
+			}
+			// overflow
+			using (var stream = new MemoryStream())
+			{
+				_messageSerializer.Serialize(message, stream);
+				_cloudBlob.GetBlobReference(referenceId).UploadByteArray(stream.ToArray());
+			}
+
+			headers["content-blob-ref"] = referenceId;
+			headers["content-blob-type"] = message.GetType().FullName;
+			var data2 = new MessageMessage(headers, null);
+			using (var stream = new MemoryStream())
+			{
+				_messageSerializer.Serialize(data2, stream);
+				return new CloudQueueMessage(stream.ToArray());
+			}
+		}
+
+		void TransactionalSendMessage(CloudQueue queue, CloudQueueMessage cloudQueueMessage)
+		{
+			if (Transaction.Current == null)
+			{
+				queue.AddMessage(cloudQueueMessage);
+			}
+			else
+			{
+				Transaction.Current.EnlistVolatile(
+					new TransactionCommitAddsMessage(queue, cloudQueueMessage),
+					EnlistmentOptions.None);
+			}
+		}
+
+		public void SendMessages(object[] messages, Action<NameValueCollection> headers)
+		{
+
+			if (messages.Length == 0)
+				return;
+			foreach (var message in messages)
+			{
+				var packed = PackToNewMessage(headers, message);
+				TransactionalSendMessage(_queue, packed);
+			}
+		}
+
+		public void RouteMessages(IncomingMessage[] messages, Action<NameValueCollection> headers)
+		{
+			foreach (var message in messages)
+			{
+				var packed = PackToNewMessage(headers, message.Message);
+				TransactionalSendMessage(_queue, packed);
+			}
+		}
+	}
+}

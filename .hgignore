@@ -1,0 +1,23 @@
+# Mercurial .hgignore file template by Abdullin.com
+# For syntax see: http://linux.die.net/man/5/hgignore
+# Source: http://bitbucket.org/abdullin/snippets/
+
+# Visual Studio 
+glob:*.user
+glob:*.suo
+glob:*.cache
+glob:_ReSharper.*/
+relre:/obj/
+relre:/bin/
+
+# Subversion
+glob:.svn/
+glob:_svn/
+
+# Build structure
+relre:^Build/
+
+# Misc
+glob:Thumbs.db
+glob:*.bak
+glob:*.log
