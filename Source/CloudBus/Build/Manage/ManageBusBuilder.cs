@@ -23,7 +23,7 @@ namespace CloudBus.Build.Manage
 
 		public ManageBusBuilder()
 		{
-			UseDevStoreAccount();
+			CloudStorageAccountIsDev();
 			_actions += builder =>
 				{
 					builder.RegisterInstance(TraceLog.Provider).SingleInstance();
@@ -33,9 +33,16 @@ namespace CloudBus.Build.Manage
 				};
 		}
 
-		public ManageBusBuilder UseDevStoreAccount()
+		public ManageBusBuilder CloudStorageAccountIsDev()
 		{
 			_actions += b => b.RegisterInstance(CloudStorageAccount.DevelopmentStorageAccount);
+			return this;
+		}
+
+		public ManageBusBuilder CloudStorageAccountIsFromString(string value)
+		{
+			var account = CloudStorageAccount.Parse(value);
+			_actions += b => b.RegisterInstance(account);
 			return this;
 		}
 
