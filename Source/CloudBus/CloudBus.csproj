@@ -8,8 +8,8 @@
     <ProjectGuid>{FD6C8202-F530-4C09-8889-28DC383965AA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Bus2</RootNamespace>
-    <AssemblyName>Bus2</AssemblyName>
+    <RootNamespace>CloudBus</RootNamespace>
+    <AssemblyName>Lokad.CloudBus</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -33,11 +33,11 @@
   <ItemGroup>
     <Reference Include="Autofac, Version=2.1.12.802, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Library\Autofac.dll</HintPath>
+      <HintPath>..\..\Library\Autofac.dll</HintPath>
     </Reference>
     <Reference Include="Lokad.Shared, Version=1.5.173.0, Culture=neutral, PublicKeyToken=43f0664b2b4db1fc, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Library\Lokad.Shared.dll</HintPath>
+      <HintPath>..\..\Library\Lokad.Shared.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.WindowsAzure.ServiceRuntime, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.WindowsAzure.StorageClient, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
@@ -54,17 +54,21 @@
     <Compile Include="Build\Client\IClientBus.cs" />
     <Compile Include="Build\CloudSettingsProvider.cs" />
     <Compile Include="Build\Cloud\CloudBusBuilder.cs" />
-    <Compile Include="Build\IProvideBusSettings.cs" />
+    <Compile Include="Build\NullBusProfiler.cs" />
+    <Compile Include="Build\SimpleMessageProfiler.cs" />
+    <Compile Include="Design\IProvideBusSettings.cs" />
     <Compile Include="Build\Manage\ManageBusBuilder.cs" />
     <Compile Include="Consume\Build\HandleEventsModule.cs" />
     <Compile Include="Design\IBusProfiler.cs" />
+    <Compile Include="Design\IMessageProfiler.cs" />
+    <Compile Include="Domain\DomainAwareMessageProfiler.cs" />
     <Compile Include="Scheduled\ScheduledConfig.cs" />
+    <Compile Include="Scheduled\ScheduledInfo.cs" />
+    <Compile Include="Scheduled\ScheduledModule.cs" />
     <Compile Include="Scheduled\ScheduledState.cs" />
     <Compile Include="Scheduled\ScheduledProcess.cs" />
-    <Compile Include="Profiling\NullBusProfiler.cs" />
-    <Compile Include="Profiling\ProfilerUtil.cs" />
     <Compile Include="Serialization\DataContractMessageSerializer.cs" />
-    <Compile Include="Serialization\DataContractUril.cs" />
+    <Compile Include="Serialization\DataContractUtil.cs" />
     <Compile Include="Consume\DispatchesToManyConsumers.cs" />
     <Compile Include="Design\IBusMessage.cs" />
     <Compile Include="Domain\ConsumerInfo.cs" />
@@ -94,6 +98,7 @@
     <Compile Include="Serialization\BinaryMessageSerializer.cs" />
     <Compile Include="Queue\AzureQueueFactory.cs" />
     <Compile Include="Queue\AzureQueueReference.cs" />
+    <Compile Include="Transport\AzureQueuePolicy.cs" />
     <Compile Include="Transport\AzureQueueTransportConfig.cs" />
     <Compile Include="Design\IMessageTransport.cs" />
     <Compile Include="Queue\IReadMessageQueue.cs" />

@@ -1,53 +1,61 @@
+#region (c) 2010 Lokad Open Source - New BSD License 
+
+// Copyright (c) Lokad 2010, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
 using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Transactions;
-using Bus2.Queue;
+using CloudBus.Queue;
 using Lokad;
 using Lokad.Quality;
 
-namespace Bus2.Transport
+namespace CloudBus.Transport
 {
 	[UsedImplicitly]
 	public sealed class AzureQueueTransport : IMessageTransport
 	{
 		readonly IQueueManager _factory;
-		readonly int _threadCount;
-		readonly Thread[] _threads;
-		readonly ILog _log;
 		readonly IsolationLevel _isolationLevel;
+		readonly ILog _log;
+		readonly IMessageProfiler _messageProfiler;
 		readonly IBusProfiler _profiler;
+		readonly string[] _queueNames;
+		readonly IReadMessageQueue[] _queues;
+		readonly int _threadCount;
+		readonly Func<uint, TimeSpan> _threadSleepInterval;
+		readonly Thread[] _threads;
 
 		bool _haveStarted;
 		volatile bool _shouldContinue;
 
-		public event Action Started = () => { };
-		public event Func<IncomingMessage, bool> MessageRecieved = m => false;
-
-		readonly string[] _queueNames;
-		readonly IReadMessageQueue[] _queues;
-		readonly TimeSpan _threadSleepInterval;
-
 		public AzureQueueTransport(
 			AzureQueueTransportConfig config,
 			ILogProvider logProvider,
-			IQueueManager factory, 
-			IBusProfiler profiler)
+			IQueueManager factory,
+			IBusProfiler profiler,
+			IMessageProfiler messageProfiler)
 		{
 			_factory = factory;
+			_messageProfiler = messageProfiler;
 			_profiler = profiler;
-			// TODO add queue selection policy
-
 			_queueNames = config.QueueNames;
 			_isolationLevel = config.IsolationLevel;
-			_log = logProvider.CreateLog<AzureQueueTransport>();
+			_log = logProvider.Get(typeof (AzureQueueTransport).Name + "." + config.LogName);
 			_threadCount = config.ThreadCount;
 			_threadSleepInterval = config.SleepWhenNoMessages;
 
 			_threads = new Thread[config.ThreadCount];
 			_queues = new IReadMessageQueue[_queueNames.Length];
 		}
+
+		public event Action Started = () => { };
+		public event Func<IncomingMessage, bool> MessageRecieved = m => false;
+		public event Action<IncomingMessage, Exception> MessageHandlerFailed = (message, exception) => { };
 
 		public void Dispose()
 		{
@@ -89,7 +97,7 @@ namespace Bus2.Transport
 			{
 				_threads[i] = new Thread(ReceiveMessage)
 					{
-						Name = "Lokad Service Bus Worker Thread #" + i,
+						Name = "Thread #" + i,
 						IsBackground = true
 					};
 				_threads[i].Start();
@@ -99,8 +107,6 @@ namespace Bus2.Transport
 			Started();
 		}
 
-		
-
 
 		Result<IncomingMessage, Exception> Process(IReadMessageQueue queue, IncomingMessage message)
 		{
@@ -108,12 +114,15 @@ namespace Bus2.Transport
 
 			try
 			{
-
 				consumed = ProcessSingleMessage(message, MessageRecieved);
 			}
 			catch (Exception ex)
 			{
-				_log.Error(ex, "Failed to consume");
+				var info = _messageProfiler.GetReadableMessageInfo(message.Message, message.TransportMessageId);
+				var text = string.Format("Failed to consume '{0}' from '{1}'. TransportId: {2}", info, queue.Uri,
+					message.TransportMessageId);
+
+				_log.Error(ex, text);
 				return ex;
 			}
 
@@ -121,7 +130,6 @@ namespace Bus2.Transport
 			{
 				try
 				{
-					_log.DebugFormat("Discarding message {0} (no consumers)", message.TransportMessageId);
 					Discard(queue, message);
 				}
 				catch (Exception ex)
@@ -138,7 +146,7 @@ namespace Bus2.Transport
 			if (messageRecieved == null)
 				return false;
 
-			using (_profiler.TrackContext(message.Message))
+			using (_profiler.TrackMessage(message.Message, message.TransportMessageId))
 			{
 				foreach (Func<IncomingMessage, bool> func in messageRecieved.GetInvocationList())
 				{
@@ -160,8 +168,9 @@ namespace Bus2.Transport
 		}
 
 
-		void ProcessingProblem(Exception ex, IncomingMessage message)
+		void MessageHandlingProblem(IncomingMessage message, Exception ex)
 		{
+			MessageHandlerFailed(message, ex);
 			// do nothing. Message will show up in the queue with the increased enqueue count.
 		}
 
@@ -173,7 +182,8 @@ namespace Bus2.Transport
 
 		public void ReceiveMessage()
 		{
-			var thisThreadSleeps = _threadSleepInterval + Rand.Next(200).Milliseconds();
+			//var thisThreadSleeps = _threadSleepInterval + Rand.Next(200).Milliseconds();
+			uint idleFor = 0;
 			while (_shouldContinue)
 			{
 				bool threadsWorked = false;
@@ -188,10 +198,32 @@ namespace Bus2.Transport
 						threadsWorked = true;
 					}
 				}
-				if ((false == threadsWorked) && (false == _shouldContinue))
+
+				if (threadsWorked)
 				{
-					SystemUtil.Sleep(thisThreadSleeps);
+					idleFor = 0;
 				}
+				else
+				{
+					idleFor += 1;
+					SleepFor(_threadSleepInterval(idleFor));
+				}
+			}
+		}
+
+		void SleepFor(TimeSpan span)
+		{
+			var secondsToSleep = span;
+			var precision = 0.1.Seconds();
+
+			while ((_shouldContinue) && (secondsToSleep >= precision))
+			{
+				SystemUtil.Sleep(precision);
+				secondsToSleep -= precision;
+			}
+			if ((_shouldContinue) && (secondsToSleep > TimeSpan.Zero))
+			{
+				SystemUtil.Sleep(secondsToSleep);
 			}
 		}
 
@@ -208,7 +240,7 @@ namespace Bus2.Transport
 					{
 						case GetMessageResultState.Success:
 							Process(queue, result.Message)
-								.Handle(ex => ProcessingProblem(ex, result.Message))
+								.Handle(ex => MessageHandlingProblem(result.Message, ex))
 								.Apply(m => FinalizeSuccess(queue, m, tx));
 							return QueueProcessingResult.MoreWork;
 
@@ -228,19 +260,12 @@ namespace Bus2.Transport
 					}
 				}
 			}
-			catch(TransactionAbortedException ex)
+			catch (TransactionAbortedException ex)
 			{
-
 				_log.Error(ex, "Aborting transaction");
 				// do nothing);
 				return QueueProcessingResult.MoreWork;
 			}
-		}
-
-		enum QueueProcessingResult
-		{
-			MoreWork,
-			Sleep
 		}
 
 		TransactionOptions GetTransactionOptions()
@@ -255,6 +280,12 @@ namespace Bus2.Transport
 		public override string ToString()
 		{
 			return string.Format("Queue x {1} ({0})", _queueNames.Join(", "), ThreadCount);
+		}
+
+		enum QueueProcessingResult
+		{
+			MoreWork,
+			Sleep
 		}
 	}
 }

@@ -1,21 +1,25 @@
+#region (c) 2010 Lokad Open Source - New BSD License 
+
+// Copyright (c) Lokad 2010, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
 using System;
 using Autofac;
 using Autofac.Core;
-using Bus2.Domain.Build;
-using Bus2.Profiling;
-using Bus2.Queue;
-using Bus2.Serialization;
-using Bus2.Transport;
+using CloudBus.Domain.Build;
+using CloudBus.Queue;
+using CloudBus.Transport;
 using Lokad.Diagnostics;
 using Microsoft.WindowsAzure;
 
-namespace Bus2.Build.Manage
+namespace CloudBus.Build.Manage
 {
 	public sealed class ManageBusBuilder
 	{
 		Action<ContainerBuilder> _actions = builder => { };
 
-		
 
 		public ManageBusBuilder()
 		{
@@ -60,7 +64,5 @@ namespace Bus2.Build.Manage
 			_actions(builder);
 			_actions = containerBuilder => { };
 		}
-
-		
 	}
 }

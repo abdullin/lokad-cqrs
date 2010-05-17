@@ -1,13 +1,19 @@
+#region (c) 2010 Lokad Open Source - New BSD License 
+
+// Copyright (c) Lokad 2010, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
-using Lokad;
 
-namespace Bus2.Domain
+namespace CloudBus.Domain
 {
-	public sealed class MessageDirectoryBuilder 
+	public sealed class MessageDirectoryBuilder
 	{
 		readonly List<DomainMessageConsumerMapping> _mappings = new List<DomainMessageConsumerMapping>();
 
@@ -24,18 +30,6 @@ namespace Bus2.Domain
 			}
 		}
 
-		sealed class DomainMessageConsumerMapping
-		{
-			public readonly Type Message;
-			public readonly Type Consumer;
-
-			public DomainMessageConsumerMapping(Type message, Type consumer)
-			{
-				Message = message;
-				Consumer = consumer;
-			}
-		}
-		
 
 		public IMessageDirectory BuildDirectory(MethodInfo consumer)
 		{
@@ -49,16 +43,15 @@ namespace Bus2.Domain
 				.SelectMany(t => t.Message.GetInterfaces());
 
 
-
 			var messages = _mappings
 				.ToLookup(x => x.Message)
 				.ToArray(x =>
 					{
-						var isDomainMessage = x.Exists(t => t.Consumer != typeof(BusSystem));
-						var isSystemMessage = x.Exists(t => t.Consumer == typeof(BusSystem));
+						var isDomainMessage = x.Exists(t => t.Consumer != typeof (BusSystem));
+						var isSystemMessage = x.Exists(t => t.Consumer == typeof (BusSystem));
 						var domainConsumers = x
-							.Where(t => t.Consumer != typeof(BusSystem))
-							.Where(t => t.Consumer != typeof(BusNull))
+							.Where(t => t.Consumer != typeof (BusSystem))
+							.Where(t => t.Consumer != typeof (BusNull))
 							.ToArray(t => t.Consumer);
 
 						return new MessageInfo(x.Key, domainConsumers, isDomainMessage, isSystemMessage);
@@ -82,7 +75,7 @@ namespace Bus2.Domain
 			{
 				message
 					.DerivedConsumers = EnumImplementorTree(message)
-					.Aggregate(new Type[0], (t, x) => t.Append(x.DirectConsumers));
+						.Aggregate(new Type[0], (t, x) => t.Append(x.DirectConsumers));
 
 				message.AllConsumers = message
 					.DirectConsumers
@@ -107,10 +100,8 @@ namespace Bus2.Domain
 			}
 		}
 
-		static class BusSystem { }
-		static class BusNull {}
-
-		public void LoadDomainMessagesAndConsumers(IEnumerable<Assembly> assemblies, Type consumingTypeDefition, Func<Type,bool> messageSelector)
+		public void LoadDomainMessagesAndConsumers(IEnumerable<Assembly> assemblies, Type consumingTypeDefition,
+			Func<Type, bool> messageSelector)
 		{
 			var types = assemblies
 				.SelectMany(a => a.GetExportedTypes())
@@ -128,11 +119,11 @@ namespace Bus2.Domain
 			// add unmapped messages
 			var listed = mappings.ToSet(m => m.Message);
 
-			
+
 			var unmapped = types
 				.Where(messageSelector)
 				.Where(m => false == listed.Contains(m))
-				.Select(c => new DomainMessageConsumerMapping(c, typeof(BusNull)));
+				.Select(c => new DomainMessageConsumerMapping(c, typeof (BusNull)));
 
 			_mappings.AddRange(unmapped);
 		}
@@ -144,9 +135,29 @@ namespace Bus2.Domain
 				.GetTypes()
 				.Where(t => t.IsPublic)
 				.Where(t => t.IsDefined(typeof (DataContractAttribute), false))
-				.Select(c => new DomainMessageConsumerMapping(c, typeof(BusSystem)));
+				.Select(c => new DomainMessageConsumerMapping(c, typeof (BusSystem)));
 
 			_mappings.AddRange(mappings);
+		}
+
+		static class BusNull
+		{
+		}
+
+		static class BusSystem
+		{
+		}
+
+		sealed class DomainMessageConsumerMapping
+		{
+			public readonly Type Consumer;
+			public readonly Type Message;
+
+			public DomainMessageConsumerMapping(Type message, Type consumer)
+			{
+				Message = message;
+				Consumer = consumer;
+			}
 		}
 	}
 }

@@ -1,15 +1,21 @@
+#region (c) 2010 Lokad Open Source - New BSD License 
+
+// Copyright (c) Lokad 2010, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
 using System;
 using Autofac;
 using Autofac.Core;
-using Bus2.Domain.Build;
-using Bus2.Profiling;
-using Bus2.Queue;
-using Bus2.Serialization;
-using Bus2.Transport;
+using CloudBus.Domain.Build;
+using CloudBus.Queue;
+using CloudBus.Serialization;
+using CloudBus.Transport;
 using Lokad.Diagnostics;
 using Microsoft.WindowsAzure;
 
-namespace Bus2.Build.Client
+namespace CloudBus.Build.Client
 {
 	public sealed class ClientBusBuilder
 	{
@@ -17,7 +23,7 @@ namespace Bus2.Build.Client
 
 		public ClientBusBuilder()
 		{
-			UseDevStoreAccount();
+			CloudStorageAccountIsDev();
 
 			_builder.RegisterType<CloudSettingsProvider>().As<IProvideBusSettings>().SingleInstance();
 			_builder.RegisterInstance(TraceLog.Provider);
@@ -28,9 +34,21 @@ namespace Bus2.Build.Client
 			_builder.RegisterType<ClientBus>().SingleInstance();
 		}
 
-		public ClientBusBuilder UseDevStoreAccount()
+		public ClientBusBuilder CloudStorageAccountIsDev()
 		{
 			_builder.RegisterInstance(CloudStorageAccount.DevelopmentStorageAccount);
+			return this;
+		}
+
+		public ClientBusBuilder CloudStorageAccountIsFromConfig(string name)
+		{
+			_builder.Register(c =>
+				{
+					var value = c.Resolve<IProvideBusSettings>()
+						.GetString(name)
+						.ExposeException("Failed to load account from '{0}'", name);
+					return CloudStorageAccount.Parse(value);
+				}).SingleInstance();
 			return this;
 		}
 
@@ -53,8 +71,13 @@ namespace Bus2.Build.Client
 		{
 			var container = _builder.Build();
 			return container.Resolve<ClientBus>(
-				TypedParameter.From(container),
 				TypedParameter.From(defaultQueue));
+		}
+
+		public ClientBusBuilder RegisterModule(IModule module)
+		{
+			_builder.RegisterModule(module);
+			return this;
 		}
 	}
 }

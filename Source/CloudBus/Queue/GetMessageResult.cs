@@ -1,13 +1,29 @@
+#region (c) 2010 Lokad Open Source - New BSD License 
+
+// Copyright (c) Lokad 2010, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
 using System;
 using Lokad;
 
-namespace Bus2.Queue
+namespace CloudBus.Queue
 {
 	public sealed class GetMessageResult
 	{
-		readonly IncomingMessage _message;
+		public static readonly GetMessageResult Wait = new GetMessageResult(null, GetMessageResultState.Wait, null);
+		public static readonly GetMessageResult Retry = new GetMessageResult(null, GetMessageResultState.Retry, null);
 		public readonly GetMessageResultState State;
 		readonly Exception _exception;
+		readonly IncomingMessage _message;
+
+		GetMessageResult(IncomingMessage message, GetMessageResultState state, Exception exception)
+		{
+			_message = message;
+			State = state;
+			_exception = exception;
+		}
 
 		public Exception Exception
 		{
@@ -27,20 +43,10 @@ namespace Bus2.Queue
 			}
 		}
 
-		GetMessageResult(IncomingMessage message, GetMessageResultState state, Exception exception)
-		{
-			_message = message;
-			State = state;
-			_exception = exception;
-		}
-
 		public static GetMessageResult Success(IncomingMessage message)
 		{
 			return new GetMessageResult(message, GetMessageResultState.Success, null);
 		}
-
-		public static readonly GetMessageResult Wait = new GetMessageResult(null, GetMessageResultState.Wait, null);
-		public static readonly GetMessageResult Retry = new GetMessageResult(null, GetMessageResultState.Retry, null);
 
 		public static GetMessageResult Error(Exception ex)
 		{

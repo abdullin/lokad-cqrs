@@ -1,33 +1,43 @@
+#region (c) 2010 Lokad Open Source - New BSD License 
+
+// Copyright (c) Lokad 2010, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Transactions;
 using Autofac;
-using Bus2.Domain;
-using Bus2.Transport;
+using CloudBus.Domain;
+using CloudBus.Transport;
 using Lokad;
 
-namespace Bus2.Consume.Build
+namespace CloudBus.Consume.Build
 {
 	public sealed class HandleCommandsModule : Module
 	{
-		public int NumberOfThreads { get; set; }
-		HashSet<string> _queueNames = new HashSet<string>();
-		public IsolationLevel IsolationLevel { get; set; }
-		public TimeSpan SleepWhenNoMessages { get; set; }
-
 		Func<Type, bool> _commandFilter;
+		HashSet<string> _queueNames = new HashSet<string>();
 
 		public HandleCommandsModule()
 		{
 			IsolationLevel = IsolationLevel.RepeatableRead;
 			NumberOfThreads = 1;
-			SleepWhenNoMessages = 1.Seconds();
-			
+			SleepWhenNoMessages = AzureQueuePolicy.BuildDecayPolicy(1.Seconds());
+
+			LogName = "Commands";
 			ListenTo("azure-command");
 			ConsumeMessages(t => true);
 		}
 
+		public int NumberOfThreads { get; set; }
+
+		public IsolationLevel IsolationLevel { get; set; }
+		public Func<uint, TimeSpan> SleepWhenNoMessages { get; set; }
+
+		public string LogName { get; set; }
 
 		public void ConsumeMessages(Func<Type, bool> messageFilter)
 		{
@@ -40,6 +50,7 @@ namespace Bus2.Consume.Build
 
 			var queueNames = _queueNames.ToArray();
 			var transportConfig = new AzureQueueTransportConfig(
+				LogName,
 				NumberOfThreads,
 				IsolationLevel,
 				queueNames,

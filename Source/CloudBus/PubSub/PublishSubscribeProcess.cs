@@ -1,16 +1,23 @@
-using Bus2.Queue;
+#region (c) 2010 Lokad Open Source - New BSD License 
+
+// Copyright (c) Lokad 2010, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
+using CloudBus.Queue;
 using Lokad;
 using Lokad.Quality;
 
-namespace Bus2.PubSub
+namespace CloudBus.PubSub
 {
 	[UsedImplicitly]
 	public sealed class PublishSubscribeProcess : IBusProcess
 	{
-		readonly IMessageTransport _transport;
-		readonly IPublishSubscribeManager _store;
-		readonly IRouteMessages _router;
 		readonly ILog _log;
+		readonly IRouteMessages _router;
+		readonly IPublishSubscribeManager _store;
+		readonly IMessageTransport _transport;
 
 		public PublishSubscribeProcess(IMessageTransport transport, IPublishSubscribeManager manager, IRouteMessages router,
 			ILogProvider provider)

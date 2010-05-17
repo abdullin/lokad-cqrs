@@ -1,18 +1,25 @@
+#region (c) 2010 Lokad Open Source - New BSD License 
+
+// Copyright (c) Lokad 2010, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
 using System.Collections.Generic;
 using Autofac;
 using Lokad;
 
-namespace Bus2.Build.Cloud
+namespace CloudBus.Build.Cloud
 {
 	public sealed class DefaultCloudBusHost : ICloudBusHost
 	{
 		readonly IContainer _container;
-		readonly IEnumerable<IBusProcess> _serverThreads;
 		readonly ILog _log;
+		readonly IEnumerable<IBusProcess> _serverThreads;
 
 		public DefaultCloudBusHost(
-			IContainer container, 
-			ILogProvider provider, 
+			IContainer container,
+			ILogProvider provider,
 			IEnumerable<IBusProcess> serverThreads)
 		{
 			_container = container;

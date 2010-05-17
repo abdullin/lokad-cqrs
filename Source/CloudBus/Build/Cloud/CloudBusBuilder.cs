@@ -1,18 +1,24 @@
+#region (c) 2010 Lokad Open Source - New BSD License 
+
+// Copyright (c) Lokad 2010, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
 using System;
 using Autofac;
 using Autofac.Core;
-using Bus2.Consume.Build;
-using Bus2.Domain.Build;
-using Bus2.Profiling;
-using Bus2.PubSub.Build;
-using Bus2.Queue;
-using Bus2.Scheduled;
-using Bus2.Serialization;
-using Bus2.Transport;
+using CloudBus.Consume.Build;
+using CloudBus.Domain.Build;
+using CloudBus.PubSub.Build;
+using CloudBus.Queue;
+using CloudBus.Scheduled;
+using CloudBus.Serialization;
+using CloudBus.Transport;
 using Lokad.Diagnostics;
 using Microsoft.WindowsAzure;
 
-namespace Bus2.Build.Cloud
+namespace CloudBus.Build.Cloud
 {
 	public class CloudBusBuilder
 	{
@@ -20,10 +26,11 @@ namespace Bus2.Build.Cloud
 
 		public CloudBusBuilder()
 		{
-			UseDevStoreAccount();
-			
+			CloudStorageAccountIsDev();
+
 			_builder.RegisterInstance(TraceLog.Provider);
 			_builder.RegisterInstance(NullBusProfiler.Instance);
+			_builder.RegisterInstance(SimpleMessageProfiler.Instance);
 
 			_builder.RegisterType<AzureQueueFactory>().As<IRouteMessages, IQueueManager>().SingleInstance();
 			_builder.RegisterType<DefaultCloudBusHost>().As<ICloudBusHost>().SingleInstance();
@@ -32,9 +39,21 @@ namespace Bus2.Build.Cloud
 			_builder.RegisterType<CloudSettingsProvider>().As<IProvideBusSettings>().SingleInstance();
 		}
 
-		public CloudBusBuilder UseDevStoreAccount()
+		public CloudBusBuilder CloudStorageAccountIsDev()
 		{
 			_builder.RegisterInstance(CloudStorageAccount.DevelopmentStorageAccount);
+			return this;
+		}
+
+		public CloudBusBuilder CloudStorageAccountIsFromConfig(string name)
+		{
+			_builder.Register(c =>
+				{
+					var value = c.Resolve<IProvideBusSettings>()
+						.GetString(name)
+						.ExposeException("Failed to load account from '{0}'", name);
+					return CloudStorageAccount.Parse(value);
+				}).SingleInstance();
 			return this;
 		}
 
@@ -89,6 +108,5 @@ namespace Bus2.Build.Cloud
 			_builder.RegisterModule(module);
 			return this;
 		}
-		
 	}
 }

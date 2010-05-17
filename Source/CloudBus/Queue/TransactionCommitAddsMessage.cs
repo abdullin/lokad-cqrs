@@ -1,12 +1,19 @@
+#region (c) 2010 Lokad Open Source - New BSD License 
+
+// Copyright (c) Lokad 2010, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
 using System.Transactions;
 using Microsoft.WindowsAzure.StorageClient;
 
-namespace Bus2.Queue
+namespace CloudBus.Queue
 {
 	public class TransactionCommitAddsMessage : IEnlistmentNotification
 	{
-		readonly CloudQueue _queue;
 		readonly CloudQueueMessage _message;
+		readonly CloudQueue _queue;
 
 		public TransactionCommitAddsMessage(CloudQueue queue, CloudQueueMessage message)
 		{

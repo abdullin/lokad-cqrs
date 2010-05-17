@@ -1,22 +1,29 @@
+#region (c) 2010 Lokad Open Source - New BSD License 
+
+// Copyright (c) Lokad 2010, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Autofac;
-using Bus2.Serialization;
+using CloudBus.Serialization;
 using Module = Autofac.Module;
 
-namespace Bus2.Domain.Build
+namespace CloudBus.Domain.Build
 {
 	public class DomainBuildModule : Module
 	{
 		readonly HashSet<Assembly> _assemblies = new HashSet<Assembly>();
-		Action<ContainerBuilder> _registerSerializer;
 		readonly MessageDirectoryBuilder _directoryBuilder = new MessageDirectoryBuilder();
 
 		MethodInfo _consumingMethod;
 		Func<Type, bool> _messageSelector;
+		Action<ContainerBuilder> _registerSerializer;
 
 		public DomainBuildModule()
 		{
@@ -124,6 +131,10 @@ namespace Bus2.Domain.Build
 				builder.RegisterType(consumer.ConsumerType);
 			}
 			builder.RegisterInstance(directory);
+			builder
+				.RegisterType<DomainAwareMessageProfiler>()
+				.As<IMessageProfiler>()
+				.SingleInstance();
 
 			_registerSerializer(builder);
 		}

@@ -1,35 +1,36 @@
+#region (c) 2010 Lokad Open Source - New BSD License 
+
+// Copyright (c) Lokad 2010, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
 using System;
 using System.Collections.Specialized;
 using System.IO;
 using System.Transactions;
-using Bus2.Serialization;
+using CloudBus.Serialization;
 using Lokad;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
 
-namespace Bus2.Queue
+namespace CloudBus.Queue
 {
 	public sealed class AzureMessageQueue : IReadMessageQueue, IWriteMessageQueue
 	{
-		readonly CloudQueue _queue;
-		readonly CloudQueue _posionQueue;
-		readonly CloudQueue _discardQueue;
-
+		public const string DateFormatInBlobName = "yyyy-MM-dd-HH-mm-ss-ffff";
 		readonly CloudStorageAccount _account;
-		readonly int _retryCount;
-		readonly IMessageSerializer _messageSerializer;
-		readonly ILog _log;
 		readonly CloudBlobContainer _cloudBlob;
+		readonly IMessageProfiler _debugger;
+		readonly CloudQueue _discardQueue;
+		readonly ILog _log;
+		readonly IMessageSerializer _messageSerializer;
+		readonly CloudQueue _posionQueue;
+		readonly CloudQueue _queue;
 
 
 		readonly AzureQueueReference _queueReference;
-
-		public Uri Uri
-		{
-			get { return _queueReference.Uri; }
-		}
-
-		public TimeSpan? QueueVisibility { get; set; }
+		readonly int _retryCount;
 
 
 		public AzureMessageQueue(
@@ -37,7 +38,7 @@ namespace Bus2.Queue
 			string queueName,
 			int retryCount,
 			ILogProvider provider,
-			IMessageSerializer messageSerializer)
+			IMessageSerializer messageSerializer, IMessageProfiler debugger)
 		{
 			var blobClient = account.CreateCloudBlobClient();
 			blobClient.RetryPolicy = RetryPolicies.NoRetry();
@@ -52,13 +53,21 @@ namespace Bus2.Queue
 			_posionQueue = queueClient.GetQueueReference(_queueReference.SubQueue(SubQueueType.Poison).QueueName);
 			_discardQueue = queueClient.GetQueueReference(_queueReference.SubQueue(SubQueueType.Discard).QueueName);
 
-			_log = provider.Get("Queue["+queueName+"]");
+			_log = provider.Get("Queue[" + queueName + "]");
 
 
 			_account = account;
+			_debugger = debugger;
 
 			_messageSerializer = messageSerializer;
 			_retryCount = retryCount;
+		}
+
+		public TimeSpan? QueueVisibility { get; set; }
+
+		public Uri Uri
+		{
+			get { return _queueReference.Uri; }
 		}
 
 		public void Init()
@@ -76,17 +85,19 @@ namespace Bus2.Queue
 				_log.DebugFormat("Auto-created blob storage {0}", _cloudBlob.Uri);
 		}
 
-		public void Purge()
-		{
-			_queue.Clear();
-			_posionQueue.Clear();
-		}
-
 		public GetMessageResult GetMessage()
 		{
-			var message = QueueVisibility.HasValue
-				? _queue.GetMessage(QueueVisibility.Value)
-				: _queue.GetMessage();
+			CloudQueueMessage message;
+			try
+			{
+				message = QueueVisibility.HasValue
+					? _queue.GetMessage(QueueVisibility.Value)
+					: _queue.GetMessage();
+			}
+			catch (Exception ex)
+			{
+				return GetMessageResult.Error(ex);
+			}
 
 			if (null == message)
 			{
@@ -96,7 +107,7 @@ namespace Bus2.Queue
 			if (message.DequeueCount > _retryCount)
 			{
 				// we consider this to be poison
-				_log.DebugFormat("Moving message {0} to poison queue {1}", message.Id, _posionQueue.Name);
+				_log.ErrorFormat("Moving message {0} to poison queue {1}", message.Id, _posionQueue.Name);
 				TransactionalMoveMessage(message, _posionQueue);
 				return GetMessageResult.Retry;
 			}
@@ -132,11 +143,13 @@ namespace Bus2.Queue
 
 			try
 			{
-				messageType = Type.GetType(envelope.TypeReference, true);
+				messageType = _messageSerializer.GetTypeByContractName(envelope.TypeReference);
 			}
 			catch (Exception ex)
 			{
-				_log.ErrorFormat(ex, "Failed to discover message {0} type", message.Id);
+				_log.ErrorFormat(ex, "Failed to discover type '{0}' of message {1}",
+					envelope.TypeReference,
+					message.Id);
 				MoveIncomingToPoison(message);
 				return GetMessageResult.Retry;
 			}
@@ -148,7 +161,7 @@ namespace Bus2.Queue
 			{
 				using (var stream = new MemoryStream(bytes))
 				{
-					var data = (MessageMessage) _messageSerializer.Deserialize(stream, messageType);
+					var data = _messageSerializer.Deserialize(stream, messageType);
 					var m = new IncomingMessage(data, envelope);
 					return GetMessageResult.Success(m);
 				}
@@ -161,31 +174,15 @@ namespace Bus2.Queue
 			}
 		}
 
-		void TransactionalMoveMessage(CloudQueueMessage message, CloudQueue target)
-		{
-			if (Transaction.Current == null)
-			{
-				target.AddMessage(message);
-				_queue.DeleteMessage(message);
-			}
-			else
-			{
-				Transaction.Current.EnlistVolatile(
-					new TransactionCommitDeletesMessage(_queue, message.Id, message.PopReceipt),
-					EnlistmentOptions.None);
-				Transaction.Current.EnlistVolatile(
-					new TransactionCommitAddsMessage(target, message),
-					EnlistmentOptions.None);
-			}
-		}
-
 		public void AckMessage(IncomingMessage message)
 		{
 			var id = message.TransportMessageId;
 			var receipt = message.Headers["azure-receipt"];
 
-			// we're fine for deletion
-			_log.DebugFormat("Ack {1} {0}", message.TransportMessageId, message.Message);
+			if (_log.IsDebugEnabled())
+			{
+				_log.Debug(_debugger.GetReadableMessageInfo(message.Message, message.TransportMessageId));
+			}
 			TransactionalDeleteMessage(id, receipt);
 		}
 
@@ -217,6 +214,50 @@ namespace Bus2.Queue
 			}
 		}
 
+		public void SendMessages(object[] messages, Action<NameValueCollection> headers)
+		{
+			if (messages.Length == 0)
+				return;
+			foreach (var message in messages)
+			{
+				var packed = PackToNewMessage(headers, message);
+				TransactionalSendMessage(_queue, packed);
+			}
+		}
+
+		public void RouteMessages(IncomingMessage[] messages, Action<NameValueCollection> headers)
+		{
+			foreach (var message in messages)
+			{
+				var packed = PackToNewMessage(headers, message.Message);
+				TransactionalSendMessage(_queue, packed);
+			}
+		}
+
+		public void Purge()
+		{
+			_queue.Clear();
+			_posionQueue.Clear();
+		}
+
+		void TransactionalMoveMessage(CloudQueueMessage message, CloudQueue target)
+		{
+			if (Transaction.Current == null)
+			{
+				target.AddMessage(message);
+				_queue.DeleteMessage(message);
+			}
+			else
+			{
+				Transaction.Current.EnlistVolatile(
+					new TransactionCommitDeletesMessage(_queue, message.Id, message.PopReceipt),
+					EnlistmentOptions.None);
+				Transaction.Current.EnlistVolatile(
+					new TransactionCommitAddsMessage(target, message),
+					EnlistmentOptions.None);
+			}
+		}
+
 		void MoveIncomingToPoison(CloudQueueMessage message)
 		{
 			// new poison details
@@ -234,8 +275,6 @@ namespace Bus2.Queue
 				Transaction.Current.EnlistVolatile(new TransactionCommitDeletesMessage(_queue, id, receipt), EnlistmentOptions.None);
 			}
 		}
-
-		public const string DateFormatInBlobName = "yyyy-MM-dd-HH-mm-ss-ffff";
 
 		CloudQueueMessage PackToNewMessage(Action<NameValueCollection> modify, object message)
 		{
@@ -272,7 +311,10 @@ namespace Bus2.Queue
 			}
 
 			headers["content-blob-ref"] = referenceId;
-			headers["content-blob-type"] = message.GetType().FullName;
+
+			headers["content-blob-type"] = _messageSerializer.GetContractNameByType(message.GetType());
+
+
 			var data2 = new MessageMessage(headers, null);
 			using (var stream = new MemoryStream())
 			{
@@ -280,6 +322,7 @@ namespace Bus2.Queue
 				return new CloudQueueMessage(stream.ToArray());
 			}
 		}
+
 
 		void TransactionalSendMessage(CloudQueue queue, CloudQueueMessage cloudQueueMessage)
 		{
@@ -292,27 +335,6 @@ namespace Bus2.Queue
 				Transaction.Current.EnlistVolatile(
 					new TransactionCommitAddsMessage(queue, cloudQueueMessage),
 					EnlistmentOptions.None);
-			}
-		}
-
-		public void SendMessages(object[] messages, Action<NameValueCollection> headers)
-		{
-
-			if (messages.Length == 0)
-				return;
-			foreach (var message in messages)
-			{
-				var packed = PackToNewMessage(headers, message);
-				TransactionalSendMessage(_queue, packed);
-			}
-		}
-
-		public void RouteMessages(IncomingMessage[] messages, Action<NameValueCollection> headers)
-		{
-			foreach (var message in messages)
-			{
-				var packed = PackToNewMessage(headers, message.Message);
-				TransactionalSendMessage(_queue, packed);
 			}
 		}
 	}

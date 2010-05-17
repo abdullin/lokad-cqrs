@@ -1,24 +1,40 @@
+#region (c) 2010 Lokad Open Source - New BSD License 
+
+// Copyright (c) Lokad 2010, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
 using System.Collections.Generic;
-using Bus2.Serialization;
+using System.Linq;
+using CloudBus.Serialization;
 using Lokad;
+using Lokad.Quality;
 using Microsoft.WindowsAzure;
 
-namespace Bus2.Queue
+namespace CloudBus.Queue
 {
+	[UsedImplicitly]
 	public sealed class AzureQueueFactory : IQueueManager, IRouteMessages
 	{
-		CloudStorageAccount _account;
-		IMessageSerializer _serializer;
-		ILogProvider _logProvider;
-		int _retryCount = 3;
+		const int RetryCount = 4;
+		readonly CloudStorageAccount _account;
+		readonly ILogProvider _logProvider;
+		readonly IMessageProfiler _profiler;
 
 		readonly IDictionary<string, AzureMessageQueue> _queues = new Dictionary<string, AzureMessageQueue>();
+		readonly IMessageSerializer _serializer;
 
-		public AzureQueueFactory(CloudStorageAccount account, IMessageSerializer serializer, ILogProvider logProvider)
+		public AzureQueueFactory(
+			CloudStorageAccount account,
+			IMessageSerializer serializer,
+			ILogProvider logProvider,
+			IMessageProfiler profiler)
 		{
 			_account = account;
 			_serializer = serializer;
 			_logProvider = logProvider;
+			_profiler = profiler;
 		}
 
 		public IReadMessageQueue GetReadQueue(string queueName)
@@ -36,19 +52,6 @@ namespace Bus2.Queue
 				return GetOrCreateQueue(queueName);
 			}
 		}
-
-		AzureMessageQueue GetOrCreateQueue(string queueName)
-		{
-			AzureMessageQueue value;
-			if (!_queues.TryGetValue(queueName, out value))
-			{
-				value = new AzureMessageQueue(_account, queueName, _retryCount, _logProvider, _serializer);
-				value.Init();
-				_queues.Add(queueName, value);
-			}
-			return value;
-		}
-
 
 		public void RouteMessages(IncomingMessage[] messages, params string[] references)
 		{
@@ -70,6 +73,26 @@ namespace Bus2.Queue
 			{
 				queue.RouteMessages(messages, nv => { });
 			}
+		}
+
+		public string[] GetQueueNames()
+		{
+			lock (_queues)
+			{
+				return _queues.ToArray(c => c.Key);
+			}
+		}
+
+		AzureMessageQueue GetOrCreateQueue(string queueName)
+		{
+			AzureMessageQueue value;
+			if (!_queues.TryGetValue(queueName, out value))
+			{
+				value = new AzureMessageQueue(_account, queueName, RetryCount, _logProvider, _serializer, _profiler);
+				value.Init();
+				_queues.Add(queueName, value);
+			}
+			return value;
 		}
 	}
 }

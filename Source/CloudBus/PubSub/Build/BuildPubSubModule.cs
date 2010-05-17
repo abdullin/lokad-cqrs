@@ -1,31 +1,32 @@
+#region (c) 2010 Lokad Open Source - New BSD License 
+
+// Copyright (c) Lokad 2010, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Transactions;
 using Autofac;
-using Bus2.Transport;
+using CloudBus.Transport;
 using Lokad;
 
-namespace Bus2.PubSub.Build
+namespace CloudBus.PubSub.Build
 {
 	public sealed class BuildPubSubModule : Module
 	{
-		public int NumberOfThreads { get; set; }
-		public IsolationLevel IsolationLevel { get; set; }
 		HashSet<string> _queueNames;
-
-		public TimeSpan SleepWhenNoMessages { get; set; }
-
 		Action<ContainerBuilder> _registerManager;
-
-		
 
 		public BuildPubSubModule()
 		{
 			NumberOfThreads = 1;
 			IsolationLevel = IsolationLevel.ReadCommitted;
-			SleepWhenNoMessages = 1.Seconds();
+			SleepWhenNoMessages = AzureQueuePolicy.BuildDecayPolicy(1.Seconds());
 
+			LogName = "PubSub";
 			_queueNames = new HashSet<string>
 				{
 					"exchange-publish"
@@ -34,6 +35,13 @@ namespace Bus2.PubSub.Build
 			ManagerIs<InMemoryPublishSubscribeManager>();
 		}
 
+		public int NumberOfThreads { get; set; }
+		public IsolationLevel IsolationLevel { get; set; }
+
+		public Func<uint, TimeSpan> SleepWhenNoMessages { get; set; }
+
+		public string LogName { get; set; }
+
 		public BuildPubSubModule ManagerIs<TManager>()
 			where TManager : IPublishSubscribeManager
 		{
@@ -41,7 +49,7 @@ namespace Bus2.PubSub.Build
 				.RegisterType<TManager>()
 				.As<IPublishSubscribeManager>()
 				.SingleInstance();
-			
+
 			return this;
 		}
 
@@ -76,6 +84,7 @@ namespace Bus2.PubSub.Build
 
 			var queueNames = _queueNames.ToArray();
 			var transportConfig = new AzureQueueTransportConfig(
+				LogName,
 				NumberOfThreads,
 				IsolationLevel,
 				queueNames, SleepWhenNoMessages);
@@ -92,7 +101,7 @@ namespace Bus2.PubSub.Build
 			builder.RegisterType<PublishSubscribeProcess>();
 
 			_registerManager(builder);
-			
+
 			builder.Register(BuildComponent);
 		}
 	}

@@ -1,15 +1,22 @@
-using Bus2.Queue;
+#region (c) 2010 Lokad Open Source - New BSD License 
+
+// Copyright (c) Lokad 2010, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
+using CloudBus.Queue;
 using Lokad;
 using Lokad.Quality;
 
-namespace Bus2.Consume
+namespace CloudBus.Consume
 {
 	[UsedImplicitly]
 	public sealed class ConsumingProcess : IBusProcess
 	{
-		readonly IMessageTransport _transport;
-		readonly ILog _log;
 		readonly IMessageDispatcher _dispatcher;
+		readonly ILog _log;
+		readonly IMessageTransport _transport;
 
 		public ConsumingProcess(IMessageTransport transport, ILogProvider provider, IMessageDispatcher dispatcher)
 		{

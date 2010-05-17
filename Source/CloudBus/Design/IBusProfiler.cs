@@ -1,9 +1,17 @@
-﻿using System;
+﻿#region (c) 2010 Lokad Open Source - New BSD License 
 
-namespace Bus2
+// Copyright (c) Lokad 2010, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
+using System;
+
+namespace CloudBus
 {
 	public interface IBusProfiler
 	{
-		IDisposable TrackContext(object context);
+		IDisposable TrackMessage(object instance, string messageId);
+		IDisposable TrackContext(string context);
 	}
 }

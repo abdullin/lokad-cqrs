@@ -1,13 +1,20 @@
+#region (c) 2010 Lokad Open Source - New BSD License 
+
+// Copyright (c) Lokad 2010, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
 using System;
 using System.Linq;
 
-namespace Bus2.Queue
+namespace CloudBus.Queue
 {
 	public sealed class AzureQueueReference
 	{
-		public readonly Uri Uri;
-		public readonly string QueueName;
 		public readonly Uri Endpoint;
+		public readonly string QueueName;
+		public readonly Uri Uri;
 
 
 		public AzureQueueReference(Uri endpoint, string queueName)

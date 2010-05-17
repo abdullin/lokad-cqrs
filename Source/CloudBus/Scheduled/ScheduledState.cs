@@ -1,23 +1,36 @@
-﻿using System;
+﻿#region (c) 2010 Lokad Open Source - New BSD License 
+
+// Copyright (c) Lokad 2010, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
+using System;
 using Lokad;
 
-namespace Bus2.Scheduled
+namespace CloudBus.Scheduled
 {
 	public sealed class ScheduledState
 	{
-		
+		public readonly Func<TimeSpan> Delegate;
+		public readonly string Name;
 
-		public TimeSpan Happen()
+		public ScheduledState(string name, Func<TimeSpan> @delegate)
 		{
-			return Delegate();
+			NextRun = SystemUtil.UtcNow;
+			LastException = Maybe<Exception>.Empty;
+			Name = name;
+			Delegate = @delegate;
 		}
 
 		public DateTime NextRun { get; private set; }
 		public int ExceptionCount { get; private set; }
 		public Maybe<Exception> LastException { get; private set; }
 
-		public readonly string Name;
-		public readonly Func<TimeSpan> Delegate;
+		public TimeSpan Happen()
+		{
+			return Delegate();
+		}
 
 		public void Completed()
 		{
@@ -33,29 +46,6 @@ namespace Bus2.Scheduled
 		public void ScheduleIn(TimeSpan span)
 		{
 			NextRun = SystemUtil.UtcNow + span;
-		}
-
-		public ScheduledState(string name, Func<TimeSpan> @delegate)
-		{
-			
-			NextRun = SystemUtil.UtcNow;
-			LastException = Maybe<Exception>.Empty;
-			Name = name;
-			Delegate = @delegate;
-		}
-	}
-
-	
-
-	public sealed class ScheduledInfo
-	{
-		public readonly string Name;
-		public readonly Func<TimeSpan> Delegate;
-
-		public ScheduledInfo(string name, Func<TimeSpan> @delegate)
-		{
-			Name = name;
-			Delegate = @delegate;
 		}
 	}
 }

@@ -1,10 +1,17 @@
+#region (c) 2010 Lokad Open Source - New BSD License 
+
+// Copyright (c) Lokad 2010, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
 using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Lokad.Reflection;
 
-namespace Bus2.Domain
+namespace CloudBus.Domain
 {
 	static class MessageReflectionUtil
 	{
@@ -38,7 +45,6 @@ namespace Bus2.Domain
 			}
 		}
 
-		
 
 		public static MethodInfo ExpressConsumer<THandler>(Expression<Action<THandler>> expression)
 		{
@@ -50,7 +56,7 @@ namespace Bus2.Domain
 			var methodInfo = Express<THandler>.Method(expression);
 
 			var parameters = methodInfo.GetParameters();
-			if ((parameters.Length != 1))//|| (parameters[0].ParameterType != typeof (string))
+			if ((parameters.Length != 1)) //|| (parameters[0].ParameterType != typeof (string))
 				throw new InvalidOperationException("Expression should consume object like: 'i => i.Consume(null)'");
 
 			var method = generic
