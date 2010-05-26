@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Autofac;
 using CloudBus.Domain;
 using Lokad;
@@ -26,9 +27,23 @@ namespace CloudBus.Consume
 			_messageDirectory = messageDirectory;
 		}
 
+		static void ThrowIfCommandHasMultipleConsumers(IEnumerable<MessageInfo> commands)
+		{
+			var multipleConsumers = commands
+				.Where(c => c.DirectConsumers.Length > 1)
+				.ToArray(c => c.MessageType.FullName);
+
+			if (multipleConsumers.Any())
+			{
+				throw new InvalidOperationException(
+					"These messages have multiple consumers. Did you intend to declare them as events? " +
+						multipleConsumers.Join(Environment.NewLine));
+			}
+		}
 
 		public void Init()
 		{
+			ThrowIfCommandHasMultipleConsumers(_messageDirectory.Messages);
 			foreach (var messageInfo in _messageDirectory.Messages)
 			{
 				Enforce.That(messageInfo.DirectConsumers.Length == 1);

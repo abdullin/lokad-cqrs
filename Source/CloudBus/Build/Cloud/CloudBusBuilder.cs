@@ -64,19 +64,13 @@ namespace CloudBus.Build.Cloud
 			return this;
 		}
 
-		public CloudBusBuilder HandleCommands(Action<HandleCommandsModule> config)
+		public CloudBusBuilder HandleMessages(Action<HandleMessagesModule> config)
 		{
 			ConfigureWith(config);
 			return this;
 		}
 
 		public CloudBusBuilder RunTasks(Action<ScheduledModule> config)
-		{
-			ConfigureWith(config);
-			return this;
-		}
-
-		public CloudBusBuilder HandleEvents(Action<HandleEventsModule> config)
 		{
 			ConfigureWith(config);
 			return this;

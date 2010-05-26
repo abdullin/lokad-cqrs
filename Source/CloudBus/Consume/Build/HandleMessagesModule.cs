@@ -16,20 +16,49 @@ using Lokad;
 
 namespace CloudBus.Consume.Build
 {
-	public sealed class HandleCommandsModule : Module
+	
+
+	public sealed class HandleMessagesModule : Module
 	{
-		readonly HashSet<Func<DomainMessageMapping,bool>> _filters = new HashSet<Func<DomainMessageMapping, bool>>();
-		
+		readonly HashSet<Func<DomainMessageMapping, bool>> _filters = new HashSet<Func<DomainMessageMapping, bool>>();
 		HashSet<string> _queueNames = new HashSet<string>();
 
-		public HandleCommandsModule()
+		Func<ILifetimeScope, IMessageDirectory, IMessageDispatcher> _dispatcher;
+
+		public HandleMessagesModule()
 		{
 			IsolationLevel = IsolationLevel.RepeatableRead;
 			NumberOfThreads = 1;
 			SleepWhenNoMessages = AzureQueuePolicy.BuildDecayPolicy(1.Seconds());
 
-			LogName = "Commands";
-			ListenTo("azure-command");
+			LogName = "Messages";
+			ListenTo("azure-messages");
+
+			WithSingleConsumer();
+		}
+
+		public HandleMessagesModule WithSingleConsumer()
+		{
+			_dispatcher = (context, directory) =>
+				{
+					var d = new DispatchesToSingleConsumer(context, directory);
+					d.Init();
+					return d;
+				};
+
+			return this;
+		}
+
+		public HandleMessagesModule WithMultipleConsumers()
+		{
+			_dispatcher = (scope, directory) =>
+				{
+					var d = new DispatchesToManyConsumers(scope, directory);
+					d.Init();
+					return d;
+				};
+
+			return this;
 		}
 
 		public int NumberOfThreads { get; set; }
@@ -38,16 +67,23 @@ namespace CloudBus.Consume.Build
 		public Func<uint, TimeSpan> SleepWhenNoMessages { get; set; }
 
 		public string LogName { get; set; }
+		public bool DebugPrintsMessageTree { get; set; }
 
-		public HandleCommandsModule Where(Func<DomainMessageMapping,bool > filter)
+		public HandleMessagesModule Where(Func<DomainMessageMapping, bool> filter)
 		{
 			_filters.Add(filter);
 			return this;
 		}
 
+		public HandleMessagesModule ListenTo(params string[] queueNames)
+		{
+			_queueNames = queueNames.ToSet();
+			return this;
+		}
+
 		IBusProcess ConfigureComponent(IComponentContext context)
 		{
-			var log = context.Resolve<ILogProvider>().CreateLog<HandleCommandsModule>();
+			var log = context.Resolve<ILogProvider>().CreateLog<HandleMessagesModule>();
 
 			var queueNames = _queueNames.ToArray();
 			var transportConfig = new AzureQueueTransportConfig(
@@ -62,43 +98,30 @@ namespace CloudBus.Consume.Build
 			var scan = context.Resolve<IMessageScan>();
 			var directory = scan.BuildDirectory(_filters);
 
-			log.DebugFormat("Discovered {0} commands", directory.Messages.Length);
-			ThrowIfCommandHasMultipleConsumers(directory.Messages);
+			log.DebugFormat("Discovered {0} messages", directory.Messages.Length);
 
-			var dispatcher = new DispatchesToSingleConsumer(context.Resolve<ILifetimeScope>(), directory);
-			dispatcher.Init();
+			if (DebugPrintsMessageTree)
+			{
+				foreach (var messageInfo in directory.Messages)
+				{
+					log.DebugFormat("{0} : {1}", messageInfo.MessageType.Name, messageInfo.Implements.Select(m => m.MessageType.Name).Join(", "));
+					log.DebugFormat("Consumed by {0}", messageInfo.AllConsumers.Select(c => c.Name).Join(", "));
+				}
+			}
 
+			var dispatcher = _dispatcher(context.Resolve<ILifetimeScope>(), directory);
 			var consumer = context.Resolve<ConsumingProcess>(
 				TypedParameter.From(transport),
-				TypedParameter.From<IMessageDispatcher>(dispatcher));
+				TypedParameter.From(dispatcher));
 
 			log.DebugFormat("Use {0} threads to listen to {1}", NumberOfThreads, queueNames.Join("; "));
 			return consumer;
-		}
-
-		static void ThrowIfCommandHasMultipleConsumers(IEnumerable<MessageInfo> commands)
-		{
-			var multipleConsumers = commands
-				.Where(c => c.DirectConsumers.Length > 1)
-				.ToArray(c => c.MessageType.FullName);
-
-			if (multipleConsumers.Any())
-			{
-				throw new InvalidOperationException(
-					"These messages have multiple consumers. Did you intend to declare them as events? " +
-						multipleConsumers.Join(Environment.NewLine));
-			}
 		}
 
 		protected override void Load(ContainerBuilder builder)
 		{
 			builder.RegisterType<ConsumingProcess>();
 			builder.Register(ConfigureComponent);
-		}
-
-		public void ListenTo(params string[] queueNames)
-		{
-			_queueNames = queueNames.ToSet();
 		}
 	}
 }

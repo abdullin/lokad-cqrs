@@ -60,7 +60,7 @@
     <Compile Include="Build\SimpleMessageProfiler.cs" />
     <Compile Include="Design\IProvideBusSettings.cs" />
     <Compile Include="Build\Manage\ManageBusBuilder.cs" />
-    <Compile Include="Consume\Build\HandleEventsModule.cs" />
+    <Compile Include="Consume\Build\HandleMessagesModule.cs" />
     <Compile Include="Design\IBusProfiler.cs" />
     <Compile Include="Design\IMessageProfiler.cs" />
     <Compile Include="Domain\DomainAwareMessageProfiler.cs" />
@@ -80,7 +80,6 @@
     <Compile Include="Build\Cloud\DefaultCloudBusHost.cs" />
     <Compile Include="Domain\MessageDirectory.cs" />
     <Compile Include="Domain\Build\DomainBuildModule.cs" />
-    <Compile Include="Consume\Build\HandleCommandsModule.cs" />
     <Compile Include="Build\Cloud\ICloudBusHost.cs" />
     <Compile Include="Design\IConsumeMessage.cs" />
     <Compile Include="Domain\IMessageDirectory.cs" />

@@ -14,14 +14,10 @@ namespace CloudBus.Domain
 		public readonly Type Consumer;
 		public readonly Type Message;
 
-		public readonly bool ConsumerCouldBeRegisteredInContainer;
-
 		public DomainMessageMapping(Type message, Type consumer)
 		{
 			Message = message;
 			Consumer = consumer;
-
-			ConsumerCouldBeRegisteredInContainer = !consumer.IsAbstract;
 		}
 
 		public abstract class BusNull
@@ -30,6 +26,11 @@ namespace CloudBus.Domain
 
 		public abstract class BusSystem
 		{
+		}
+
+		public override string ToString()
+		{
+			return string.Format("{0} -> {1}", Message.Name, Consumer.FullName);
 		}
 	}
 }
