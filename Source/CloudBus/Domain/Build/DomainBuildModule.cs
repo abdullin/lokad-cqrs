@@ -81,6 +81,7 @@ namespace CloudBus.Domain.Build
 
 		protected override void Load(ContainerBuilder builder)
 		{
+			_builder.IncludeSystemMessages = true;
 			var mappings = _builder.Build();
 
 			var directoryBuilder = new MessageDirectoryBuilder(mappings, _builder.ConsumingMethod.Name);

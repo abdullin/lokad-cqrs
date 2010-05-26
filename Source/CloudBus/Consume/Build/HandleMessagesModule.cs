@@ -41,7 +41,7 @@ namespace CloudBus.Consume.Build
 		{
 			_dispatcher = (context, directory) =>
 				{
-					var d = new DispatchesToSingleConsumer(context, directory);
+					var d = new DispatchesSingleMessage(context, directory);
 					d.Init();
 					return d;
 				};
@@ -53,7 +53,7 @@ namespace CloudBus.Consume.Build
 		{
 			_dispatcher = (scope, directory) =>
 				{
-					var d = new DispatchesToManyConsumers(scope, directory);
+					var d = new DispatchesMultipleMessagesToSharedScope(scope, directory);
 					d.Init();
 					return d;
 				};
@@ -74,6 +74,11 @@ namespace CloudBus.Consume.Build
 		{
 			_filter.Where(filter);
 			return this;
+		}
+
+		public HandleMessagesModule WhereMessagesInherit<TInterface>()
+		{
+			return WhereMessages(mm => typeof (TInterface).IsAssignableFrom(mm.Message));
 		}
 
 		public HandleMessagesModule ListenTo(params string[] queueNames)

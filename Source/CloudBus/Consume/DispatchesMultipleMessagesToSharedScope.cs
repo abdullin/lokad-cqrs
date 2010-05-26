@@ -12,25 +12,25 @@ using CloudBus.Domain;
 
 namespace CloudBus.Consume
 {
-	public sealed class DispatchesToManyConsumers : IMessageDispatcher
+	public sealed class DispatchesMultipleMessagesToSharedScope : IMessageDispatcher
 	{
 		readonly ILifetimeScope _container;
-		readonly IDictionary<Type, Type[]> _dictionary = new Dictionary<Type, Type[]>();
-		readonly IMessageDirectory _messageDirectory;
+		readonly IMessageDirectory _directory;
+		readonly IDictionary<Type, Type[]> _dispatcher = new Dictionary<Type, Type[]>();
 
-		public DispatchesToManyConsumers(ILifetimeScope container, IMessageDirectory messageDirectory)
+		public DispatchesMultipleMessagesToSharedScope(ILifetimeScope container, IMessageDirectory directory)
 		{
 			_container = container;
-			_messageDirectory = messageDirectory;
+			_directory = directory;
 		}
 
 		public void Init()
 		{
-			foreach (var message in _messageDirectory.Messages)
+			foreach (var message in _directory.Messages)
 			{
 				if (message.AllConsumers.Length > 0)
 				{
-					_dictionary.Add(message.MessageType, message.AllConsumers);
+					_dispatcher.Add(message.MessageType, message.AllConsumers);
 				}
 			}
 		}
@@ -40,14 +40,14 @@ namespace CloudBus.Consume
 			// we get failure if one of the subscribers fails
 			Type[] consumerTypes;
 			var type = message.GetType();
-			if (_dictionary.TryGetValue(type, out consumerTypes))
+			if (_dispatcher.TryGetValue(type, out consumerTypes))
 			{
 				using (var scope = _container.BeginLifetimeScope())
 				{
 					foreach (var consumerType in consumerTypes)
 					{
 						var consumer = scope.Resolve(consumerType);
-						_messageDirectory.InvokeConsume(consumer, message);
+						_directory.InvokeConsume(consumer, message);
 					}
 				}
 

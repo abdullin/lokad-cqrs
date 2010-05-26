@@ -75,7 +75,7 @@
     <Compile Include="Scheduled\ScheduledProcess.cs" />
     <Compile Include="Serialization\DataContractMessageSerializer.cs" />
     <Compile Include="Serialization\DataContractUtil.cs" />
-    <Compile Include="Consume\DispatchesToManyConsumers.cs" />
+    <Compile Include="Consume\DispatchesMultipleMessagesToSharedScope.cs" />
     <Compile Include="Design\IBusMessage.cs" />
     <Compile Include="Domain\ConsumerInfo.cs" />
     <Compile Include="Build\Cloud\DefaultCloudBusHost.cs" />
@@ -94,7 +94,7 @@
     <Compile Include="Queue\IWriteMessageQueue.cs" />
     <Compile Include="Queue\OutgoingMessageEnvelope.cs" />
     <Compile Include="Consume\ConsumingProcess.cs" />
-    <Compile Include="Consume\DispatchesToSingleConsumer.cs" />
+    <Compile Include="Consume\DispatchesSingleMessage.cs" />
     <Compile Include="Consume\IMessageDispatcher.cs" />
     <Compile Include="PubSub\IPublishSubscribeManager.cs" />
     <Compile Include="PubSub\InMemoryPublishSubscribeManager.cs" />

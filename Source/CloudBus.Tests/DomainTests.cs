@@ -87,7 +87,7 @@ namespace CloudBus.Tests
 		public void FixtureSetUp()
 		{
 			var scanner = new AssemblyScanner();
-
+			scanner.IncludeSystemMessages = true;
 			Mappings = scanner
 				.ConsumerMethodSample<IConsumeMessage<IMessage>>(m => m.Consume(null))
 				.WhereConsumers(t => typeof(IConsumeMessage).IsAssignableFrom(t))
@@ -96,8 +96,12 @@ namespace CloudBus.Tests
 				.Build()
 				.ToArray();
 
-			Builder = new MessageDirectoryBuilder(Mappings, scanner.ConsumingMethod.Name);
 
+			Builder = new MessageDirectoryBuilder(Mappings, scanner.ConsumingMethod.Name)
+				{
+					
+				};
+			
 			Directory = Builder.BuildDirectory(m => true);
 		}
 

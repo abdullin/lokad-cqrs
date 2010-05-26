@@ -9,7 +9,6 @@ namespace CloudBus.Consume
 {
 	public interface IMessageDispatcher
 	{
-		void Init();
 		bool DispatchMessage(string topic, object message);
 	}
 }
