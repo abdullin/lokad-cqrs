@@ -38,7 +38,7 @@ namespace CloudBus.Domain
 			var delegates = new Dictionary<Type, GetInfoDelegate>();
 			foreach (var message in directory.Messages)
 			{
-				if (message.IsInterface)
+				if (message.MessageType.IsInterface)
 					continue;
 
 				var type = message.MessageType;

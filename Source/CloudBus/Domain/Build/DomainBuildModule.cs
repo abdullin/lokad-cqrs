@@ -6,39 +6,48 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using Autofac;
 using CloudBus.Serialization;
-using Module = Autofac.Module;
 
 namespace CloudBus.Domain.Build
 {
 	public class DomainBuildModule : Module
 	{
-		readonly HashSet<Assembly> _assemblies = new HashSet<Assembly>();
-		readonly AssemblyMessageScan _messageScanner = new AssemblyMessageScan();
-
-		MethodInfo _consumingMethod;
-		Func<Type, bool> _messageSelector;
+		readonly AssemblyScanner _builder = new AssemblyScanner();
 		Action<ContainerBuilder> _registerSerializer;
 
 		public DomainBuildModule()
 		{
-			_messageScanner.LoadSystemMessages();
-			
+			//_messageScanner.LoadSystemMessages();
+
 			UseDataContractSerializer();
-			ConsumeMethodSample<IConsumeMessage<string>>(i => i.Consume(""));
+
+			ConsumerMethodSample<IConsumeMessage<string>>(i => i.Consume(""));
+		}
+
+		public DomainBuildModule ConsumerMethodSample<THandler>(Expression<Action<THandler>> expression)
+		{
+			_builder.ConsumerMethodSample(expression);
+			return this;
 		}
 
 		public DomainBuildModule MessagesInherit<TInterface>()
 		{
-			_messageSelector = type =>
+			_builder.WhereMessages(type =>
 				typeof (TInterface).IsAssignableFrom(type)
-					&& type.IsAbstract == false;
-			InAssemblyOf<TInterface>();
+					&& type.IsAbstract == false);
+			_builder.WithAssemblyOf<TInterface>();
+
+			return this;
+		}
+
+		public DomainBuildModule ConsumersInherit<TInterface>()
+		{
+			_builder.WhereConsumers(type =>
+				typeof (TInterface).IsAssignableFrom(type)
+					&& type.IsAbstract == false);
+			_builder.WithAssemblyOf<TInterface>();
 			return this;
 		}
 
@@ -66,69 +75,18 @@ namespace CloudBus.Domain.Build
 
 		public DomainBuildModule InAssemblyOf<T>()
 		{
-			_assemblies.Add(typeof (T).Assembly);
+			_builder.WithAssemblyOf<T>();
 			return this;
 		}
-
-		public DomainBuildModule ConsumeMethodSample<THandler>(Expression<Action<THandler>> expression)
-		{
-			_consumingMethod = MessageReflectionUtil.ExpressConsumer(expression);
-			InAssemblyOf<THandler>();
-			return this;
-		}
-
-		static bool IsUserAssembly(Assembly a)
-		{
-			if (string.IsNullOrEmpty(a.FullName))
-				return false;
-			if (a.FullName.StartsWith("System."))
-				return false;
-			return true;
-		}
-
-		public DomainBuildModule ConsumerInterfaceHas<TAttribute>()
-			where TAttribute : Attribute
-		{
-			var methods = AppDomain
-				.CurrentDomain
-				.GetAssemblies()
-				.Where(IsUserAssembly)
-				.SelectMany(e => e.GetTypes().Where(t => t.IsPublic))
-				.Where(t => t.IsInterface)
-				.Where(t => t.IsGenericTypeDefinition)
-				.SelectMany(t => t.GetMethods())
-				.Where(t => t.ContainsGenericParameters)
-				.Where(t => t.IsDefined(typeof (TAttribute), false))
-				.ToArray();
-
-			if (methods.Length == 0)
-				throw new InvalidOperationException("Was not able to find any generic methods marked with the attribute");
-			if (methods.Length > 1)
-				throw new InvalidOperationException("Only one method has to be marked with the attribute");
-
-			InAssemblyOf<TAttribute>();
-
-			_consumingMethod = methods.First();
-
-			return this;
-		}
-
 
 		protected override void Load(ContainerBuilder builder)
 		{
-			if (!_assemblies.Any())
-			{
-				throw new InvalidOperationException("Domain assemblies should be referenced. See InAssemblyOf");
-			}
-			_messageScanner.LoadDomainMessagesAndConsumers(
-				_assemblies,
-				_consumingMethod.DeclaringType,
-				_messageSelector);
+			var mappings = _builder.Build();
 
-			_messageScanner.ConsumingMethod = _consumingMethod;
-			var directory = _messageScanner.BuildDirectory();
+			var directoryBuilder = new MessageDirectoryBuilder(mappings, _builder.ConsumingMethod.Name);
 
-			
+			var directory = directoryBuilder.BuildDirectory(m => true);
+
 
 			foreach (var consumer in directory.Consumers)
 			{
@@ -138,7 +96,7 @@ namespace CloudBus.Domain.Build
 				}
 			}
 
-			builder.RegisterInstance(_messageScanner).As<IMessageScan>();
+			builder.RegisterInstance(directoryBuilder).As<IMessageDirectoryBuilder>();
 			builder.RegisterInstance(directory);
 
 			builder

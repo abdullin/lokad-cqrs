@@ -63,10 +63,11 @@
     <Compile Include="Consume\Build\HandleMessagesModule.cs" />
     <Compile Include="Design\IBusProfiler.cs" />
     <Compile Include="Design\IMessageProfiler.cs" />
+    <Compile Include="Domain\AssemblyScanner.cs" />
     <Compile Include="Domain\DomainAwareMessageProfiler.cs" />
-    <Compile Include="Domain\DomainMessageMapping.cs" />
-    <Compile Include="Domain\IMessageScan.cs" />
-    <Compile Include="Domain\AssemblyMessageScan.cs" />
+    <Compile Include="Domain\Filter.cs" />
+    <Compile Include="Domain\IMessageDirectoryBuilder.cs" />
+    <Compile Include="Domain\MessageMapping.cs" />
     <Compile Include="Scheduled\ScheduledConfig.cs" />
     <Compile Include="Scheduled\ScheduledInfo.cs" />
     <Compile Include="Scheduled\ScheduledModule.cs" />

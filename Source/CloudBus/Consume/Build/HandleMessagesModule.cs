@@ -20,7 +20,7 @@ namespace CloudBus.Consume.Build
 
 	public sealed class HandleMessagesModule : Module
 	{
-		readonly HashSet<Func<DomainMessageMapping, bool>> _filters = new HashSet<Func<DomainMessageMapping, bool>>();
+		readonly Filter<MessageMapping> _filter = new Filter<MessageMapping>();
 		HashSet<string> _queueNames = new HashSet<string>();
 
 		Func<ILifetimeScope, IMessageDirectory, IMessageDispatcher> _dispatcher;
@@ -68,10 +68,11 @@ namespace CloudBus.Consume.Build
 
 		public string LogName { get; set; }
 		public bool DebugPrintsMessageTree { get; set; }
+		public bool DebugPrintsConsumerTree { get; set; }
 
-		public HandleMessagesModule Where(Func<DomainMessageMapping, bool> filter)
+		public HandleMessagesModule WhereMessages(Func<MessageMapping, bool> filter)
 		{
-			_filters.Add(filter);
+			_filter.Where(filter);
 			return this;
 		}
 
@@ -95,19 +96,13 @@ namespace CloudBus.Consume.Build
 
 			var transport = context.Resolve<IMessageTransport>(TypedParameter.From(transportConfig));
 
-			var scan = context.Resolve<IMessageScan>();
-			var directory = scan.BuildDirectory(_filters);
+			var builder = context.Resolve<IMessageDirectoryBuilder>();
+			var filter = _filter.BuildFilter();
+			var directory = builder.BuildDirectory(filter);
 
 			log.DebugFormat("Discovered {0} messages", directory.Messages.Length);
 
-			if (DebugPrintsMessageTree)
-			{
-				foreach (var messageInfo in directory.Messages)
-				{
-					log.DebugFormat("{0} : {1}", messageInfo.MessageType.Name, messageInfo.Implements.Select(m => m.MessageType.Name).Join(", "));
-					log.DebugFormat("Consumed by {0}", messageInfo.AllConsumers.Select(c => c.Name).Join(", "));
-				}
-			}
+			DebugPrintIfNeeded(log, directory);
 
 			var dispatcher = _dispatcher(context.Resolve<ILifetimeScope>(), directory);
 			var consumer = context.Resolve<ConsumingProcess>(
@@ -116,6 +111,24 @@ namespace CloudBus.Consume.Build
 
 			log.DebugFormat("Use {0} threads to listen to {1}", NumberOfThreads, queueNames.Join("; "));
 			return consumer;
+		}
+
+		void DebugPrintIfNeeded(ILog log, IMessageDirectory directory)
+		{
+			if (DebugPrintsMessageTree)
+			{
+				foreach (var info in directory.Messages)
+				{
+					log.DebugFormat("{0} : {1}", info.MessageType.Name, info.AllConsumers.Select(c => c.FullName).Join("; "));
+				}
+			}
+			if (DebugPrintsConsumerTree)
+			{
+				foreach (var info in directory.Consumers)
+				{
+					log.DebugFormat("{0} : {1}", info.ConsumerType.FullName, info.MessageTypes.Select(c => c.Name).Join("; "));
+				}
+			}
 		}
 
 		protected override void Load(ContainerBuilder builder)

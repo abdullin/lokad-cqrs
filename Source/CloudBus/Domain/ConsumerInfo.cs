@@ -6,9 +6,11 @@
 #endregion
 
 using System;
+using System.Diagnostics;
 
 namespace CloudBus.Domain
 {
+	[DebuggerDisplay("{ConsumerType.Name}")]
 	public sealed class ConsumerInfo
 	{
 		public readonly Type ConsumerType;

@@ -12,86 +12,62 @@ using System.Reflection;
 
 namespace CloudBus.Domain
 {
-	public sealed class MessageDirectoryBuilder
+	public sealed class MessageDirectoryBuilder : IMessageDirectoryBuilder
 	{
-		readonly HashSet<Func<DomainMessageMapping, bool>> _filters = new HashSet<Func<DomainMessageMapping, bool>>();
 
-		public void AddConstraint(Func<DomainMessageMapping, bool> constraint)
+
+		IEnumerable<MessageMapping> _mappings;
+		string _methodName;
+
+		public MessageDirectoryBuilder(IEnumerable<MessageMapping> mappings, string methodName)
 		{
-			_filters.Add(constraint);
+			_mappings = mappings;
+			_methodName = methodName;
 		}
 
-		public IMessageDirectory BuildDirectory(IEnumerable<DomainMessageMapping> domainMessageMappings, string methodName)
+		public IMessageDirectory BuildDirectory(Func<MessageMapping, bool> filter)
 		{
-			var mappings = _filters
-				.Aggregate(domainMessageMappings, (current, func) => current.Where(func))
-				.ToArray();
+			var mappings = _mappings.Where(filter);
 
 			var consumers = mappings
 				.GroupBy(x => x.Consumer)
-				.Select(x => new ConsumerInfo(x.Key, x.ToArray(e => e.Message)))
-				.ToArray();
+				.Select(x =>
+					{
+						var directs = x.Where(m => m.Direct).Select(m => m.Message).Distinct();
+						var assignables = x
+							.Select(m => m.Message)
+							.Where(t => directs.Any(d => d.IsAssignableFrom(t)))
+							.Distinct();
 
-			mappings
-				.Where(m => false == m.Message.IsAbstract)
-				.SelectMany(t => t.Message.GetInterfaces());
+						return new ConsumerInfo(x.Key, assignables.ToArray());
+					})
+				.ToArray();
 
 
 			var messages = mappings
 				.ToLookup(x => x.Message)
 				.ToArray(x =>
-					{
-						var isDomainMessage = x.Exists(t => t.Consumer != typeof (DomainMessageMapping.BusSystem));
-						var isSystemMessage = x.Exists(t => t.Consumer == typeof (DomainMessageMapping.BusSystem));
-						var domainConsumers = x
-							.Where(t => t.Consumer != typeof (DomainMessageMapping.BusSystem))
-							.Where(t => t.Consumer != typeof (DomainMessageMapping.BusNull))
-							.ToArray(t => t.Consumer);
-
-						return new MessageInfo(x.Key, domainConsumers, isDomainMessage, isSystemMessage);
-					});
-
-			foreach (var message in messages)
-			{
-				var concreteTyp = message.MessageType;
-				var implements = messages
-					.Where(m => m.MessageType != concreteTyp)
-					.Where(m => m.MessageType.IsAssignableFrom(concreteTyp))
-					.ToArray();
-				message.Implements = implements;
-				message.DirectConsumers
-					.Append(implements.SelectMany(i => i.DirectConsumers))
-					.Distinct()
-					.ToArray();
-			}
-
-			foreach (var message in messages)
-			{
-				message
-					.DerivedConsumers = EnumImplementorTree(message)
-						.Aggregate(new Type[0], (t, x) => t.Append(x.DirectConsumers));
-
-				message.AllConsumers = message
-					.DirectConsumers
-					.Append(message.DerivedConsumers)
-					.Distinct()
-					.ToArray();
-			}
-
-			return new MessageDirectory(methodName, consumers, messages);
-		}
-
-		static IEnumerable<MessageInfo> EnumImplementorTree(MessageInfo info)
-		{
-			foreach (var messageInfo in info.Implements)
-			{
-				yield return messageInfo;
-
-				foreach (var impl in EnumImplementorTree(messageInfo))
 				{
-					yield return impl;
-				}
-			}
+					
+					var domainConsumers = x
+						.Where(t => t.Consumer != typeof(MessageMapping.BusSystem))
+						.Where(t => t.Consumer != typeof(MessageMapping.BusNull))
+						.ToArray();
+
+					var info = new MessageInfo()
+						{
+							MessageType = x.Key,
+							IsDomainMessage = x.Exists(t => t.Consumer != typeof (MessageMapping.BusSystem)),
+							IsSystemMessage = x.Exists(t => t.Consumer == typeof (MessageMapping.BusSystem)),
+							AllConsumers = domainConsumers.Select(m => m.Consumer).Distinct().ToArray(),
+							DerivedConsumers = domainConsumers.Where(m => !m.Direct).Select(m => m.Consumer).Distinct().ToArray(),
+							DirectConsumers = domainConsumers.Where(m => m.Direct).Select(m => m.Consumer).Distinct().ToArray(),
+						};
+
+					return info;
+				});
+			
+			return new MessageDirectory(_methodName, consumers, messages);
 		}
 	}
 }
