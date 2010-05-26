@@ -64,6 +64,9 @@
     <Compile Include="Design\IBusProfiler.cs" />
     <Compile Include="Design\IMessageProfiler.cs" />
     <Compile Include="Domain\DomainAwareMessageProfiler.cs" />
+    <Compile Include="Domain\DomainMessageMapping.cs" />
+    <Compile Include="Domain\IMessageScan.cs" />
+    <Compile Include="Domain\AssemblyMessageScan.cs" />
     <Compile Include="Scheduled\ScheduledConfig.cs" />
     <Compile Include="Scheduled\ScheduledInfo.cs" />
     <Compile Include="Scheduled\ScheduledModule.cs" />

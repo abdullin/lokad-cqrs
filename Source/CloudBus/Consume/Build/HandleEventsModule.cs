@@ -16,10 +16,11 @@ using Lokad;
 
 namespace CloudBus.Consume.Build
 {
+	
+
 	public sealed class HandleEventsModule : Module
 	{
-		Func<MessageInfo, bool> _messageFilter = type => true;
-		Func<ConsumerInfo, bool> _handlerFilter = type => true;
+		readonly HashSet<Func<DomainMessageMapping, bool>> _filters = new HashSet<Func<DomainMessageMapping, bool>>();
 
 		HashSet<string> _queueNames = new HashSet<string>();
 
@@ -40,13 +41,10 @@ namespace CloudBus.Consume.Build
 
 		public string LogName { get; set; }
 
-		public void WhereMessages(Func<MessageInfo, bool> messageFilter)
+		public HandleEventsModule Where(Func<DomainMessageMapping, bool> filter)
 		{
-			_messageFilter = messageFilter;
-		}
-		public void WhereConsumers(Func<ConsumerInfo, bool> handlerFilter)
-		{
-			_handlerFilter = handlerFilter;
+			_filters.Add(filter);
+			return this;
 		}
 
 		public void ListenTo(params string[] queueNames)
@@ -68,10 +66,8 @@ namespace CloudBus.Consume.Build
 
 			var transport = context.Resolve<IMessageTransport>(TypedParameter.From(transportConfig));
 
-			var directory = context
-				.Resolve<IMessageDirectory>()
-				.WhereConsumers(_handlerFilter)
-				.WhereMessages(_messageFilter);
+			var scan = context.Resolve<IMessageScan>();
+			var directory = scan.BuildDirectory(_filters);
 
 			log.DebugFormat("Discovered {0} events", directory.Messages.Length);
 

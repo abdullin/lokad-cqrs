@@ -6,6 +6,7 @@
 #endregion
 
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -30,7 +31,7 @@ namespace CloudBus.Domain
 			return e.InnerException;
 		}
 
-
+		[DebuggerNonUserCode]
 		public static void InvokeConsume(object consumer, object msg, string name)
 		{
 			try

@@ -19,7 +19,7 @@ namespace CloudBus.Domain.Build
 	public class DomainBuildModule : Module
 	{
 		readonly HashSet<Assembly> _assemblies = new HashSet<Assembly>();
-		readonly MessageDirectoryBuilder _directoryBuilder = new MessageDirectoryBuilder();
+		readonly AssemblyMessageScan _messageScanner = new AssemblyMessageScan();
 
 		MethodInfo _consumingMethod;
 		Func<Type, bool> _messageSelector;
@@ -27,7 +27,8 @@ namespace CloudBus.Domain.Build
 
 		public DomainBuildModule()
 		{
-			_directoryBuilder.LoadSystemMessages();
+			_messageScanner.LoadSystemMessages();
+			
 			UseDataContractSerializer();
 			ConsumeMethodSample<IConsumeMessage<string>>(i => i.Consume(""));
 		}
@@ -119,18 +120,27 @@ namespace CloudBus.Domain.Build
 			{
 				throw new InvalidOperationException("Domain assemblies should be referenced. See InAssemblyOf");
 			}
-
-			_directoryBuilder.LoadDomainMessagesAndConsumers(
+			_messageScanner.LoadDomainMessagesAndConsumers(
 				_assemblies,
 				_consumingMethod.DeclaringType,
 				_messageSelector);
 
-			var directory = _directoryBuilder.BuildDirectory(_consumingMethod);
+			_messageScanner.ConsumingMethod = _consumingMethod;
+			var directory = _messageScanner.BuildDirectory();
+
+			
+
 			foreach (var consumer in directory.Consumers)
 			{
-				builder.RegisterType(consumer.ConsumerType);
+				if (!consumer.ConsumerType.IsAbstract)
+				{
+					builder.RegisterType(consumer.ConsumerType);
+				}
 			}
+
+			builder.RegisterInstance(_messageScanner).As<IMessageScan>();
 			builder.RegisterInstance(directory);
+
 			builder
 				.RegisterType<DomainAwareMessageProfiler>()
 				.As<IMessageProfiler>()

@@ -18,8 +18,7 @@ namespace CloudBus.Consume.Build
 {
 	public sealed class HandleCommandsModule : Module
 	{
-		Func<MessageInfo, bool> _messageFilter = info => true;
-		Func<ConsumerInfo, bool> _consumersFilter = info => true;
+		readonly HashSet<Func<DomainMessageMapping,bool>> _filters = new HashSet<Func<DomainMessageMapping, bool>>();
 		
 		HashSet<string> _queueNames = new HashSet<string>();
 
@@ -40,14 +39,10 @@ namespace CloudBus.Consume.Build
 
 		public string LogName { get; set; }
 
-		public void WhereMessages(Func<MessageInfo, bool> messageFilter)
+		public HandleCommandsModule Where(Func<DomainMessageMapping,bool > filter)
 		{
-			_messageFilter = messageFilter;
-		}
-
-		public void WhereConsumers(Func<ConsumerInfo, bool> handlerFilter)
-		{
-			_consumersFilter = handlerFilter;
+			_filters.Add(filter);
+			return this;
 		}
 
 		IBusProcess ConfigureComponent(IComponentContext context)
@@ -64,10 +59,8 @@ namespace CloudBus.Consume.Build
 
 			var transport = context.Resolve<IMessageTransport>(TypedParameter.From(transportConfig));
 
-			var directory = context
-				.Resolve<IMessageDirectory>()
-				.WhereConsumers(_consumersFilter)
-				.WhereMessages(_messageFilter);
+			var scan = context.Resolve<IMessageScan>();
+			var directory = scan.BuildDirectory(_filters);
 
 			log.DebugFormat("Discovered {0} commands", directory.Messages.Length);
 			ThrowIfCommandHasMultipleConsumers(directory.Messages);
@@ -83,7 +76,7 @@ namespace CloudBus.Consume.Build
 			return consumer;
 		}
 
-		void ThrowIfCommandHasMultipleConsumers(MessageInfo[] commands)
+		static void ThrowIfCommandHasMultipleConsumers(IEnumerable<MessageInfo> commands)
 		{
 			var multipleConsumers = commands
 				.Where(c => c.DirectConsumers.Length > 1)

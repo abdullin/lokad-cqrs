@@ -9,49 +9,43 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Serialization;
 
 namespace CloudBus.Domain
 {
 	public sealed class MessageDirectoryBuilder
 	{
-		readonly List<DomainMessageConsumerMapping> _mappings = new List<DomainMessageConsumerMapping>();
+		readonly HashSet<Func<DomainMessageMapping, bool>> _filters = new HashSet<Func<DomainMessageMapping, bool>>();
 
-		static IEnumerable<Type> GetConsumedMessages(Type type, Type consumerTypeDefinition)
+		public void AddConstraint(Func<DomainMessageMapping, bool> constraint)
 		{
-			var interfaces = type
-				.GetInterfaces()
-				.Where(i => i.IsGenericType)
-				.Where(t => t.GetGenericTypeDefinition() == consumerTypeDefinition);
-
-			foreach (var consumerInterface in interfaces)
-			{
-				yield return consumerInterface.GetGenericArguments()[0];
-			}
+			_filters.Add(constraint);
 		}
 
-
-		public IMessageDirectory BuildDirectory(MethodInfo consumer)
+		public IMessageDirectory BuildDirectory(IEnumerable<DomainMessageMapping> domainMessageMappings, string methodName)
 		{
-			var consumers = _mappings
+			var mappings = _filters
+				.Aggregate(domainMessageMappings, (current, func) => current.Where(func))
+				.ToArray();
+
+			var consumers = mappings
 				.GroupBy(x => x.Consumer)
 				.Select(x => new ConsumerInfo(x.Key, x.ToArray(e => e.Message)))
 				.ToArray();
 
-			_mappings
+			mappings
 				.Where(m => false == m.Message.IsAbstract)
 				.SelectMany(t => t.Message.GetInterfaces());
 
 
-			var messages = _mappings
+			var messages = mappings
 				.ToLookup(x => x.Message)
 				.ToArray(x =>
 					{
-						var isDomainMessage = x.Exists(t => t.Consumer != typeof (BusSystem));
-						var isSystemMessage = x.Exists(t => t.Consumer == typeof (BusSystem));
+						var isDomainMessage = x.Exists(t => t.Consumer != typeof (DomainMessageMapping.BusSystem));
+						var isSystemMessage = x.Exists(t => t.Consumer == typeof (DomainMessageMapping.BusSystem));
 						var domainConsumers = x
-							.Where(t => t.Consumer != typeof (BusSystem))
-							.Where(t => t.Consumer != typeof (BusNull))
+							.Where(t => t.Consumer != typeof (DomainMessageMapping.BusSystem))
+							.Where(t => t.Consumer != typeof (DomainMessageMapping.BusNull))
 							.ToArray(t => t.Consumer);
 
 						return new MessageInfo(x.Key, domainConsumers, isDomainMessage, isSystemMessage);
@@ -84,7 +78,7 @@ namespace CloudBus.Domain
 					.ToArray();
 			}
 
-			return new MessageDirectory(consumer.Name, consumers, messages);
+			return new MessageDirectory(methodName, consumers, messages);
 		}
 
 		static IEnumerable<MessageInfo> EnumImplementorTree(MessageInfo info)
@@ -97,66 +91,6 @@ namespace CloudBus.Domain
 				{
 					yield return impl;
 				}
-			}
-		}
-
-		public void LoadDomainMessagesAndConsumers(IEnumerable<Assembly> assemblies, Type consumingTypeDefition,
-			Func<Type, bool> messageSelector)
-		{
-			var types = assemblies
-				.SelectMany(a => a.GetExportedTypes())
-				.ToList();
-
-			var mappings = types
-				.Where(t => false == t.IsAbstract)
-				.SelectMany(handler =>
-					GetConsumedMessages(handler, consumingTypeDefition)
-						.Select(c => new DomainMessageConsumerMapping(c, handler)))
-				.ToList();
-
-			_mappings.AddRange(mappings);
-
-			// add unmapped messages
-			var listed = mappings.ToSet(m => m.Message);
-
-
-			var unmapped = types
-				.Where(messageSelector)
-				.Where(m => false == listed.Contains(m))
-				.Select(c => new DomainMessageConsumerMapping(c, typeof (BusNull)));
-
-			_mappings.AddRange(unmapped);
-		}
-
-		public void LoadSystemMessages()
-		{
-			var mappings = GetType()
-				.Assembly
-				.GetTypes()
-				.Where(t => t.IsPublic)
-				.Where(t => t.IsDefined(typeof (DataContractAttribute), false))
-				.Select(c => new DomainMessageConsumerMapping(c, typeof (BusSystem)));
-
-			_mappings.AddRange(mappings);
-		}
-
-		static class BusNull
-		{
-		}
-
-		static class BusSystem
-		{
-		}
-
-		sealed class DomainMessageConsumerMapping
-		{
-			public readonly Type Consumer;
-			public readonly Type Message;
-
-			public DomainMessageConsumerMapping(Type message, Type consumer)
-			{
-				Message = message;
-				Consumer = consumer;
 			}
 		}
 	}

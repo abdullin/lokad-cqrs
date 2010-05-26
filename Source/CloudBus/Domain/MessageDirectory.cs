@@ -6,7 +6,9 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using Lokad;
 
 namespace CloudBus.Domain
 {
@@ -52,6 +54,18 @@ namespace CloudBus.Domain
 			return new MessageDirectory(_consumeMethodName, _consumers, include);
 		}
 
+		static Maybe<ConsumerInfo> DropMessages(ConsumerInfo ci, IEnumerable<MessageInfo> excluding)
+		{
+			var dropping = excluding
+				.SelectMany(mi => mi.Implements.Convert(x => x.MessageType).Append(mi.MessageType));
+
+			var types = ci.MessageTypes.Except(dropping).ToArray();
+			if (types.Length == 0)
+				return Maybe<ConsumerInfo>.Empty;
+
+			return new ConsumerInfo(ci.ConsumerType, types);
+		}
+
 		public IMessageDirectory WhereConsumers(Func<ConsumerInfo, bool> filter)
 		{
 			var exclude = _consumers.Where(mi => !filter(mi));
@@ -59,6 +73,8 @@ namespace CloudBus.Domain
 			{
 				return this;
 			}
+
+
 			var include = _consumers.Where(filter).ToArray();
 			return new MessageDirectory(_consumeMethodName, include, _messages);
 		}
