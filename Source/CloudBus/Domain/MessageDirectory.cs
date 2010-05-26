@@ -5,6 +5,9 @@
 
 #endregion
 
+using System;
+using System.Linq;
+
 namespace CloudBus.Domain
 {
 	public sealed class MessageDirectory : IMessageDirectory
@@ -34,6 +37,30 @@ namespace CloudBus.Domain
 		public void InvokeConsume(object consumer, object message)
 		{
 			MessageReflectionUtil.InvokeConsume(consumer, message, _consumeMethodName);
+		}
+
+		public IMessageDirectory WhereMessages(Func<MessageInfo, bool> filter)
+		{
+			var exclude = _messages.Where(mi => !filter(mi));
+			if (!exclude.Any())
+			{
+				return this;
+			}
+
+			var include = _messages.Where(filter).ToArray();
+			
+			return new MessageDirectory(_consumeMethodName, _consumers, include);
+		}
+
+		public IMessageDirectory WhereConsumers(Func<ConsumerInfo, bool> filter)
+		{
+			var exclude = _consumers.Where(mi => !filter(mi));
+			if (!exclude.Any())
+			{
+				return this;
+			}
+			var include = _consumers.Where(filter).ToArray();
+			return new MessageDirectory(_consumeMethodName, include, _messages);
 		}
 	}
 }

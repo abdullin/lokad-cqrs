@@ -5,6 +5,8 @@
 
 #endregion
 
+using System;
+
 namespace CloudBus.Domain
 {
 	public interface IMessageDirectory
@@ -12,5 +14,8 @@ namespace CloudBus.Domain
 		ConsumerInfo[] Consumers { get; }
 		MessageInfo[] Messages { get; }
 		void InvokeConsume(object consumer, object message);
+
+		IMessageDirectory WhereMessages(Func<MessageInfo, bool> filter);
+		IMessageDirectory WhereConsumers(Func<ConsumerInfo, bool> filter);
 	}
 }

@@ -18,7 +18,9 @@ namespace CloudBus.Consume.Build
 {
 	public sealed class HandleCommandsModule : Module
 	{
-		Func<Type, bool> _commandFilter;
+		Func<MessageInfo, bool> _messageFilter = info => true;
+		Func<ConsumerInfo, bool> _consumersFilter = info => true;
+		
 		HashSet<string> _queueNames = new HashSet<string>();
 
 		public HandleCommandsModule()
@@ -29,7 +31,6 @@ namespace CloudBus.Consume.Build
 
 			LogName = "Commands";
 			ListenTo("azure-command");
-			ConsumeMessages(t => true);
 		}
 
 		public int NumberOfThreads { get; set; }
@@ -39,9 +40,14 @@ namespace CloudBus.Consume.Build
 
 		public string LogName { get; set; }
 
-		public void ConsumeMessages(Func<Type, bool> messageFilter)
+		public void WhereMessages(Func<MessageInfo, bool> messageFilter)
 		{
-			_commandFilter = messageFilter;
+			_messageFilter = messageFilter;
+		}
+
+		public void WhereConsumers(Func<ConsumerInfo, bool> handlerFilter)
+		{
+			_consumersFilter = handlerFilter;
 		}
 
 		IBusProcess ConfigureComponent(IComponentContext context)
@@ -58,17 +64,15 @@ namespace CloudBus.Consume.Build
 
 			var transport = context.Resolve<IMessageTransport>(TypedParameter.From(transportConfig));
 
-			var directory = context.Resolve<IMessageDirectory>();
+			var directory = context
+				.Resolve<IMessageDirectory>()
+				.WhereConsumers(_consumersFilter)
+				.WhereMessages(_messageFilter);
 
-			var commands = directory
-				.Messages
-				.Where(info => _commandFilter(info.MessageType))
-				.ToArray();
+			log.DebugFormat("Discovered {0} commands", directory.Messages.Length);
+			ThrowIfCommandHasMultipleConsumers(directory.Messages);
 
-			log.DebugFormat("Discovered {0} commands", commands.Length);
-
-			ThrowIfCommandHasMultipleConsumers(commands);
-			var dispatcher = new DispatchesToSingleConsumer(context.Resolve<ILifetimeScope>(), commands, directory);
+			var dispatcher = new DispatchesToSingleConsumer(context.Resolve<ILifetimeScope>(), directory);
 			dispatcher.Init();
 
 			var consumer = context.Resolve<ConsumingProcess>(

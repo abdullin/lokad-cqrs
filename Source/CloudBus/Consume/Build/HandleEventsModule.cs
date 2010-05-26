@@ -18,7 +18,9 @@ namespace CloudBus.Consume.Build
 {
 	public sealed class HandleEventsModule : Module
 	{
-		Func<Type, bool> _eventFilter;
+		Func<MessageInfo, bool> _messageFilter = type => true;
+		Func<ConsumerInfo, bool> _handlerFilter = type => true;
+
 		HashSet<string> _queueNames = new HashSet<string>();
 
 		public HandleEventsModule()
@@ -29,7 +31,6 @@ namespace CloudBus.Consume.Build
 
 			LogName = "Events";
 			ListenTo("azure-event");
-			ConsumeMessages(t => true);
 		}
 
 		public int NumberOfThreads { get; set; }
@@ -39,9 +40,13 @@ namespace CloudBus.Consume.Build
 
 		public string LogName { get; set; }
 
-		public void ConsumeMessages(Func<Type, bool> messageFilter)
+		public void WhereMessages(Func<MessageInfo, bool> messageFilter)
 		{
-			_eventFilter = messageFilter;
+			_messageFilter = messageFilter;
+		}
+		public void WhereConsumers(Func<ConsumerInfo, bool> handlerFilter)
+		{
+			_handlerFilter = handlerFilter;
 		}
 
 		public void ListenTo(params string[] queueNames)
@@ -63,16 +68,14 @@ namespace CloudBus.Consume.Build
 
 			var transport = context.Resolve<IMessageTransport>(TypedParameter.From(transportConfig));
 
-			var directory = context.Resolve<IMessageDirectory>();
+			var directory = context
+				.Resolve<IMessageDirectory>()
+				.WhereConsumers(_handlerFilter)
+				.WhereMessages(_messageFilter);
 
-			var events = directory
-				.Messages
-				.Where(info => _eventFilter(info.MessageType))
-				.ToArray();
+			log.DebugFormat("Discovered {0} events", directory.Messages.Length);
 
-			log.DebugFormat("Discovered {0} events", events.Length);
-
-			var dispatcher = new DispatchesToManyConsumers(context.Resolve<ILifetimeScope>(), events, directory);
+			var dispatcher = new DispatchesToManyConsumers(context.Resolve<ILifetimeScope>(), directory);
 			dispatcher.Init();
 
 			var consumer = context.Resolve<ConsumingProcess>(

@@ -16,23 +16,21 @@ namespace CloudBus.Consume
 	{
 		readonly ILifetimeScope _container;
 		readonly IDictionary<Type, Type[]> _dictionary = new Dictionary<Type, Type[]>();
-		readonly MessageInfo[] _events;
-		readonly IMessageDirectory _messageInvoker;
+		readonly IMessageDirectory _messageDirectory;
 
-		public DispatchesToManyConsumers(ILifetimeScope container, MessageInfo[] events, IMessageDirectory messageInvoker)
+		public DispatchesToManyConsumers(ILifetimeScope container, IMessageDirectory messageDirectory)
 		{
 			_container = container;
-			_events = events;
-			_messageInvoker = messageInvoker;
+			_messageDirectory = messageDirectory;
 		}
 
 		public void Init()
 		{
-			foreach (var group in _events)
+			foreach (var message in _messageDirectory.Messages)
 			{
-				if (group.AllConsumers.Length > 0)
+				if (message.AllConsumers.Length > 0)
 				{
-					_dictionary.Add(group.MessageType, group.AllConsumers);
+					_dictionary.Add(message.MessageType, message.AllConsumers);
 				}
 			}
 		}
@@ -49,7 +47,7 @@ namespace CloudBus.Consume
 					foreach (var consumerType in consumerTypes)
 					{
 						var consumer = scope.Resolve(consumerType);
-						_messageInvoker.InvokeConsume(consumer, message);
+						_messageDirectory.InvokeConsume(consumer, message);
 					}
 				}
 
