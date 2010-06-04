@@ -297,10 +297,12 @@ namespace CloudBus.Queue
 			var data = new MessageMessage(headers, message);
 			using (var stream = new MemoryStream())
 			{
+				//http://abdullin.com/journal/2010/6/4/azure-queue-messages-cannot-be-larger-than-8192-bytes.html
 				_messageSerializer.Serialize(data, stream);
-				if (stream.Length <= 7.Kb())
+				if (stream.Position < 6144)
 				{
-					return new CloudQueueMessage(stream.ToArray());
+					var bytes = stream.ToArray();
+					return new CloudQueueMessage(bytes);
 				}
 			}
 			// overflow
