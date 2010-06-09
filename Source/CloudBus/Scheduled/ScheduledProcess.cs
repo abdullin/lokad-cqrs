@@ -7,8 +7,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Transactions;
 using Lokad;
 using Lokad.Quality;
 
@@ -25,6 +27,7 @@ namespace CloudBus.Scheduled
 		readonly TimeSpan _sleepOnEmptyChain;
 		readonly TimeSpan _sleepOnFailure;
 		readonly ScheduledState[] _tasks;
+		readonly IsolationLevel _isolationLevel;
 
 		Thread[] _controlThreads = new Thread[0];
 		bool _haveStarted;
@@ -42,6 +45,7 @@ namespace CloudBus.Scheduled
 			_sleepBetweenCommands = config.SleepBetweenCommands;
 			_sleepOnEmptyChain = config.SleepOnEmptyChain;
 			_sleepOnFailure = config.SleepOnFailure;
+			_isolationLevel = config.IsolationLevel;
 			_profiler = profiler;
 		}
 
@@ -98,13 +102,28 @@ namespace CloudBus.Scheduled
 			}
 		}
 
+		TransactionOptions GetTransactionOptions()
+		{
+			return new TransactionOptions
+			{
+				IsolationLevel = Transaction.Current == null ? _isolationLevel : Transaction.Current.IsolationLevel,
+				Timeout = Debugger.IsAttached ? 45.Minutes() : 0.Minutes(),
+			};
+		}
+
 		void RunCommandTillItFinishes(ScheduledState state)
 		{
 			using (_profiler.TrackContext(state.Name))
 			{
 				while (_shouldContinue)
 				{
-					var result = state.Happen();
+					var transactionOptions = GetTransactionOptions();
+					TimeSpan result;
+					using (var scope = new TransactionScope(TransactionScopeOption.Required, transactionOptions))
+					{
+						result = state.Happen();
+						scope.Complete();
+					}
 
 					if (result > TimeSpan.Zero)
 					{

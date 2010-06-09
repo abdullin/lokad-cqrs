@@ -6,13 +6,24 @@
 #endregion
 
 using System;
+using System.Transactions;
+using Lokad;
 
 namespace CloudBus.Scheduled
 {
 	public sealed class ScheduledConfig
 	{
+		public IsolationLevel IsolationLevel { get; set; }
 		public TimeSpan SleepBetweenCommands { get; set; }
 		public TimeSpan SleepOnEmptyChain { get; set; }
 		public TimeSpan SleepOnFailure { get; set; }
+
+		public ScheduledConfig()
+		{
+			IsolationLevel = IsolationLevel.ReadCommitted;
+			SleepBetweenCommands = 1.Seconds();
+			SleepOnEmptyChain = 10.Seconds();
+			SleepOnFailure = 10.Seconds();
+		}
 	}
 }
