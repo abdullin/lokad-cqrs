@@ -36,7 +36,14 @@ namespace CloudBus.Build
 			string result = null;
 			if (HasCloudEnvironment)
 			{
-				result = RoleEnvironment.GetConfigurationSettingValue(key);
+				try
+				{
+					result = RoleEnvironment.GetConfigurationSettingValue(key);
+				}
+				catch (RoleEnvironmentException)
+				{
+					// no setting in dev?
+				}
 			}
 			if (string.IsNullOrEmpty(result))
 			{
