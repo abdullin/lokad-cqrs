@@ -7,11 +7,14 @@
 
 using System.Configuration;
 using Lokad;
+using Lokad.Quality;
+using Lokad.Settings;
 using Microsoft.WindowsAzure.ServiceRuntime;
 
 namespace CloudBus.Build
 {
-	public sealed class CloudSettingsProvider : IProvideBusSettings
+	[UsedImplicitly]
+	public sealed class CloudSettingsProvider : IProvideBusSettings, ISettingsProvider
 	{
 		static readonly bool HasCloudEnvironment;
 
@@ -40,6 +43,17 @@ namespace CloudBus.Build
 				result = ConfigurationManager.AppSettings[key];
 			}
 			return string.IsNullOrEmpty(result) ? Maybe<string>.Empty : result;
+		}
+
+		Maybe<string> ISettingsProvider.GetValue(string name)
+		{
+			return GetString(name);
+		}
+
+		ISettingsProvider ISettingsProvider.Filtered(ISettingsKeyFilter acceptor)
+		{
+			// no filtering
+			return this;
 		}
 	}
 }

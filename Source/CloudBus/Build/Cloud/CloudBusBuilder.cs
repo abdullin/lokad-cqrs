@@ -16,6 +16,7 @@ using CloudBus.Scheduled;
 using CloudBus.Serialization;
 using CloudBus.Transport;
 using Lokad.Diagnostics;
+using Lokad.Settings;
 using Microsoft.WindowsAzure;
 
 namespace CloudBus.Build.Cloud
@@ -36,7 +37,7 @@ namespace CloudBus.Build.Cloud
 			_builder.RegisterType<DefaultCloudBusHost>().As<ICloudBusHost>().SingleInstance();
 			_builder.RegisterType<AzureQueueTransport>().As<IMessageTransport>();
 			_builder.RegisterType<BinaryMessageSerializer>().As<IMessageSerializer>().SingleInstance();
-			_builder.RegisterType<CloudSettingsProvider>().As<IProvideBusSettings>().SingleInstance();
+			_builder.RegisterType<CloudSettingsProvider>().As<IProvideBusSettings, ISettingsProvider>().SingleInstance();
 		}
 
 		public CloudBusBuilder CloudStorageAccountIsDev()

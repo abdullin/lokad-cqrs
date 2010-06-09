@@ -13,6 +13,7 @@ using CloudBus.Queue;
 using CloudBus.Serialization;
 using CloudBus.Transport;
 using Lokad.Diagnostics;
+using Lokad.Settings;
 using Microsoft.WindowsAzure;
 
 namespace CloudBus.Build.Client
@@ -25,7 +26,7 @@ namespace CloudBus.Build.Client
 		{
 			CloudStorageAccountIsDev();
 
-			_builder.RegisterType<CloudSettingsProvider>().As<IProvideBusSettings>().SingleInstance();
+			_builder.RegisterType<CloudSettingsProvider>().As<IProvideBusSettings, ISettingsProvider>().SingleInstance();
 			_builder.RegisterInstance(TraceLog.Provider);
 			_builder.RegisterInstance(NullBusProfiler.Instance);
 			_builder.RegisterType<AzureQueueFactory>().As<IRouteMessages, IQueueManager>().SingleInstance();
