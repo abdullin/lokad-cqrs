@@ -14,10 +14,8 @@ namespace CloudBus.Domain
 {
 	public sealed class MessageDirectoryBuilder : IMessageDirectoryBuilder
 	{
-
-
-		IEnumerable<MessageMapping> _mappings;
-		string _methodName;
+		readonly IEnumerable<MessageMapping> _mappings;
+		readonly string _methodName;
 
 		public MessageDirectoryBuilder(IEnumerable<MessageMapping> mappings, string methodName)
 		{

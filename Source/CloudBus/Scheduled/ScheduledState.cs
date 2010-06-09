@@ -12,26 +12,22 @@ namespace CloudBus.Scheduled
 {
 	public sealed class ScheduledState
 	{
-		public readonly Func<TimeSpan> Delegate;
+		public readonly ScheduledTaskInfo Task;
 		public readonly string Name;
 
-		public ScheduledState(string name, Func<TimeSpan> @delegate)
+		public ScheduledState(string name, ScheduledTaskInfo task)
 		{
 			NextRun = SystemUtil.UtcNow;
 			LastException = Maybe<Exception>.Empty;
 			Name = name;
-			Delegate = @delegate;
+			Task = task;
 		}
 
 		public DateTime NextRun { get; private set; }
 		public int ExceptionCount { get; private set; }
 		public Maybe<Exception> LastException { get; private set; }
 
-		public TimeSpan Happen()
-		{
-			return Delegate();
-		}
-
+		
 		public void Completed()
 		{
 			NextRun = SystemUtil.UtcNow;

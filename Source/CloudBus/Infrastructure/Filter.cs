@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CloudBus.Domain
+namespace CloudBus
 {
 	public sealed class Filter<TItem>
 	{

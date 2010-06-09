@@ -86,7 +86,7 @@ namespace CloudBus.Tests
 		[TestFixtureSetUp]
 		public void FixtureSetUp()
 		{
-			var scanner = new AssemblyScanner();
+			var scanner = new MessageAssemblyScanner();
 			scanner.IncludeSystemMessages = true;
 			Mappings = scanner
 				.ConsumerMethodSample<IConsumeMessage<IMessage>>(m => m.Consume(null))

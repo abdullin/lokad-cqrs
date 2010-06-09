@@ -14,7 +14,7 @@ namespace CloudBus.Domain.Build
 {
 	public class DomainBuildModule : Module
 	{
-		readonly AssemblyScanner _builder = new AssemblyScanner();
+		readonly MessageAssemblyScanner _builder = new MessageAssemblyScanner();
 		Action<ContainerBuilder> _registerSerializer;
 
 		public DomainBuildModule()

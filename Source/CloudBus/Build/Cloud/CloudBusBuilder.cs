@@ -13,6 +13,7 @@ using CloudBus.Domain.Build;
 using CloudBus.PubSub.Build;
 using CloudBus.Queue;
 using CloudBus.Scheduled;
+using CloudBus.Scheduled.Build;
 using CloudBus.Serialization;
 using CloudBus.Transport;
 using Lokad.Diagnostics;

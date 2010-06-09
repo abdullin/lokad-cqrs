@@ -63,16 +63,21 @@
     <Compile Include="Consume\Build\HandleMessagesModule.cs" />
     <Compile Include="Design\IBusProfiler.cs" />
     <Compile Include="Design\IMessageProfiler.cs" />
-    <Compile Include="Domain\AssemblyScanner.cs" />
+    <Compile Include="Domain\MessageAssemblyScanner.cs" />
     <Compile Include="Domain\DomainAwareMessageProfiler.cs" />
-    <Compile Include="Domain\Filter.cs" />
+    <Compile Include="Infrastructure\Throw.cs" />
+    <Compile Include="Infrastructure\Filter.cs" />
     <Compile Include="Domain\IMessageDirectoryBuilder.cs" />
     <Compile Include="Domain\MessageMapping.cs" />
+    <Compile Include="Scheduled\DefaultTaskDispatcher.cs" />
+    <Compile Include="Scheduled\ExpressionTaskBuilder.cs" />
+    <Compile Include="Scheduled\IScheduledTaskDispatcher.cs" />
+    <Compile Include="Scheduled\IScheduledTaskBuilder.cs" />
     <Compile Include="Scheduled\ScheduledConfig.cs" />
-    <Compile Include="Scheduled\ScheduledInfo.cs" />
-    <Compile Include="Scheduled\ScheduledModule.cs" />
+    <Compile Include="Scheduled\Build\ScheduledModule.cs" />
     <Compile Include="Scheduled\ScheduledState.cs" />
     <Compile Include="Scheduled\ScheduledProcess.cs" />
+    <Compile Include="Scheduled\ScheduledTaskInfo.cs" />
     <Compile Include="Serialization\DataContractMessageSerializer.cs" />
     <Compile Include="Serialization\DataContractUtil.cs" />
     <Compile Include="Consume\DispatchesMultipleMessagesToSharedScope.cs" />
@@ -123,9 +128,7 @@
     <Compile Include="Queue\IQueueManager.cs" />
     <Compile Include="Queue\SubQueueType.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Scheduled\Build\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

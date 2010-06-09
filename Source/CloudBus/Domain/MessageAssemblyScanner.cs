@@ -15,7 +15,7 @@ using Lokad;
 
 namespace CloudBus.Domain
 {
-	public sealed class AssemblyScanner
+	public sealed class MessageAssemblyScanner
 	{
 		readonly HashSet<Assembly> _assemblies = new HashSet<Assembly>();
 		readonly Filter<Type> _consumerSelector = new Filter<Type>();
@@ -28,25 +28,25 @@ namespace CloudBus.Domain
 			get { return _consumingMethod; }
 		}
 
-		public AssemblyScanner WithAssemblyOf<T>()
+		public MessageAssemblyScanner WithAssemblyOf<T>()
 		{
 			_assemblies.Add(typeof (T).Assembly);
 			return this;
 		}
 
-		public AssemblyScanner WhereMessages(Func<Type, bool> filter)
+		public MessageAssemblyScanner WhereMessages(Func<Type, bool> filter)
 		{
 			_messageSelector.Where(filter);
 			return this;
 		}
 
-		public AssemblyScanner WhereConsumers(Func<Type, Boolean> filter)
+		public MessageAssemblyScanner WhereConsumers(Func<Type, Boolean> filter)
 		{
 			_consumerSelector.Where(filter);
 			return this;
 		}
 
-		public AssemblyScanner ConsumerMethodSample<THandler>(Expression<Action<THandler>> expression)
+		public MessageAssemblyScanner ConsumerMethodSample<THandler>(Expression<Action<THandler>> expression)
 		{
 			_consumingMethod = MessageReflectionUtil.ExpressConsumer(expression);
 			return this;
@@ -65,7 +65,7 @@ namespace CloudBus.Domain
 		}
 
 
-		public AssemblyScanner ConsumerInterfaceHas<TAttribute>()
+		public MessageAssemblyScanner ConsumerInterfaceHas<TAttribute>()
 			where TAttribute : Attribute
 		{
 			var methods = AppDomain
@@ -92,8 +92,8 @@ namespace CloudBus.Domain
 
 		public IEnumerable<MessageMapping> GetSystemMessages()
 		{
-			return GetType()
-				.Assembly
+			return Assembly
+				.GetExecutingAssembly()
 				.GetTypes()
 				.Where(t => t.IsPublic)
 				.Where(t => t.IsDefined(typeof (DataContractAttribute), false))

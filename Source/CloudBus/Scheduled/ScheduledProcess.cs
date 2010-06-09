@@ -28,7 +28,7 @@ namespace CloudBus.Scheduled
 		readonly TimeSpan _sleepOnFailure;
 		readonly ScheduledState[] _tasks;
 		readonly IsolationLevel _isolationLevel;
-
+		readonly IScheduledTaskDispatcher _dispatcher;
 		Thread[] _controlThreads = new Thread[0];
 		bool _haveStarted;
 		volatile bool _shouldContinue;
@@ -36,17 +36,20 @@ namespace CloudBus.Scheduled
 
 		public ScheduledProcess(
 			ILogProvider provider,
-			IEnumerable<ScheduledInfo> commands,
-			ScheduledConfig config, IBusProfiler profiler)
+			ScheduledTaskInfo[] commands,
+			ScheduledConfig config, 
+			IBusProfiler profiler, 
+			IScheduledTaskDispatcher dispatcher)
 		{
 			_log = provider.CreateLog<ScheduledProcess>();
 
-			_tasks = commands.ToArray(c => new ScheduledState(c.Name, c.Delegate));
+			_tasks = commands.ToArray(c => new ScheduledState(c.Name, c));
 			_sleepBetweenCommands = config.SleepBetweenCommands;
 			_sleepOnEmptyChain = config.SleepOnEmptyChain;
 			_sleepOnFailure = config.SleepOnFailure;
 			_isolationLevel = config.IsolationLevel;
 			_profiler = profiler;
+			_dispatcher = dispatcher;
 		}
 
 		public void Dispose()
@@ -121,7 +124,7 @@ namespace CloudBus.Scheduled
 					TimeSpan result;
 					using (var scope = new TransactionScope(TransactionScopeOption.Required, transactionOptions))
 					{
-						result = state.Happen();
+						result = _dispatcher.Execute(state.Task);
 						scope.Complete();
 					}
 

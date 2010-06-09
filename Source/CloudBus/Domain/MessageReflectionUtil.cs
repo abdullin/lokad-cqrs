@@ -16,20 +16,10 @@ namespace CloudBus.Domain
 {
 	static class MessageReflectionUtil
 	{
-		static MethodInfo InternalPreserveStackTraceMethod;
+		
 
 
-		static MessageReflectionUtil()
-		{
-			InternalPreserveStackTraceMethod = typeof (Exception).GetMethod("InternalPreserveStackTrace",
-				BindingFlags.Instance | BindingFlags.NonPublic);
-		}
-
-		public static Exception InnerExceptionWhilePreservingStackTrace(TargetInvocationException e)
-		{
-			InternalPreserveStackTraceMethod.Invoke(e.InnerException, new object[0]);
-			return e.InnerException;
-		}
+		
 
 		[DebuggerNonUserCode]
 		public static void InvokeConsume(object consumer, object msg, string name)
@@ -42,7 +32,7 @@ namespace CloudBus.Domain
 			}
 			catch (TargetInvocationException e)
 			{
-				throw InnerExceptionWhilePreservingStackTrace(e);
+				throw Throw.InnerExceptionWhilePreservingStackTrace(e);
 			}
 		}
 
