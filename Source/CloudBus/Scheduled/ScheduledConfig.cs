@@ -7,9 +7,8 @@
 
 using System;
 using System.Transactions;
-using Lokad;
 
-namespace CloudBus.Scheduled
+namespace Lokad.Cqrs.Scheduled
 {
 	public sealed class ScheduledConfig
 	{

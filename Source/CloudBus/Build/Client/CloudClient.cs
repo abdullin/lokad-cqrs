@@ -8,20 +8,20 @@
 using System;
 using System.Collections.Specialized;
 using Autofac;
-using CloudBus.Queue;
+using Lokad.Cqrs.Queue;
 using Lokad.Quality;
 
-namespace CloudBus.Build.Client
+namespace Lokad.Cqrs
 {
 	[UsedImplicitly]
-	public class ClientBus : IClientBus
+	public class CloudClient : ICloudClient
 	{
 		readonly IQueueManager _manager;
 		readonly IComponentContext _resolver;
 
 		readonly IWriteMessageQueue _writeMessageQueue;
 
-		public ClientBus(IQueueManager manager, string queueName, IComponentContext resolver)
+		public CloudClient(IQueueManager manager, string queueName, IComponentContext resolver)
 		{
 			_manager = manager;
 			_resolver = resolver;

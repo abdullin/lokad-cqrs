@@ -7,10 +7,11 @@
 
 using System;
 
-namespace Lokad.Cqrs.Domain
+namespace Lokad.Cqrs
 {
-	public interface IMessageDirectoryBuilder
+	public interface IEngineProfiler
 	{
-		IMessageDirectory BuildDirectory(Func<MessageMapping, bool> filter);
+		IDisposable TrackMessage(object instance, string messageId);
+		IDisposable TrackContext(string context);
 	}
 }

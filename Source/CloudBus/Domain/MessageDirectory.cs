@@ -5,7 +5,7 @@
 
 #endregion
 
-namespace CloudBus.Domain
+namespace Lokad.Cqrs.Domain
 {
 	public sealed class MessageDirectory : IMessageDirectory
 	{

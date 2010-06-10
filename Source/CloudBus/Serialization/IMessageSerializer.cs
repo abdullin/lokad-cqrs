@@ -8,7 +8,7 @@
 using System;
 using System.IO;
 
-namespace CloudBus.Serialization
+namespace Lokad.Cqrs.Serialization
 {
 	public interface IMessageSerializer
 	{

@@ -76,9 +76,9 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Source\CloudBus\CloudBus.csproj">
+    <ProjectReference Include="..\..\Source\CloudBus\Lokad.Cqrs.csproj">
       <Project>{FD6C8202-F530-4C09-8889-28DC383965AA}</Project>
-      <Name>CloudBus</Name>
+      <Name>Lokad.Cqrs</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

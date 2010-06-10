@@ -7,28 +7,27 @@
 
 using System.Collections.Generic;
 using Autofac;
-using Lokad;
 using Lokad.Quality;
 
-namespace CloudBus.Build.Cloud
+namespace Lokad.Cqrs
 {
 	[UsedImplicitly]
-	public sealed class DefaultCloudBusHost : ICloudBusHost
+	public sealed class DefaultCloudEngineHost : ICloudEngineHost
 	{
 		readonly IContainer _container;
 		readonly ILog _log;
-		readonly IEnumerable<IBusProcess> _serverThreads;
+		readonly IEnumerable<IEngineProcess> _serverThreads;
 
-		public IContainer Container { get { return _container; } }
+		
 
-		public DefaultCloudBusHost(
+		public DefaultCloudEngineHost(
 			IContainer container,
 			ILogProvider provider,
-			IEnumerable<IBusProcess> serverThreads)
+			IEnumerable<IEngineProcess> serverThreads)
 		{
 			_container = container;
 			_serverThreads = serverThreads;
-			_log = provider.CreateLog<DefaultCloudBusHost>();
+			_log = provider.CreateLog<DefaultCloudEngineHost>();
 		}
 
 		public void Start()
@@ -56,6 +55,11 @@ namespace CloudBus.Build.Cloud
 			}
 
 			_container.Dispose();
+		}
+
+		public TService Resolve<TService>()
+		{
+			return _container.Resolve<TService>();
 		}
 	}
 }

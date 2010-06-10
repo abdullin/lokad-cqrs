@@ -6,9 +6,8 @@
 #endregion
 
 using System;
-using Lokad;
 
-namespace CloudBus.Transport
+namespace Lokad.Cqrs.Transport
 {
 	public static class AzureQueuePolicy
 	{

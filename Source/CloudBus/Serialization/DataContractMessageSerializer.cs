@@ -11,10 +11,10 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Xml;
-using CloudBus.Domain;
+using Lokad.Cqrs.Domain;
 using Lokad.Quality;
 
-namespace CloudBus.Serialization
+namespace Lokad.Cqrs.Serialization
 {
 	[UsedImplicitly]
 	public sealed class DataContractMessageSerializer : IMessageSerializer

@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Lokad.Reflection;
 
-namespace CloudBus.Scheduled
+namespace Lokad.Cqrs.Scheduled
 {
 	public sealed class ExpressionTaskBuilder<TTask> : IScheduledTaskBuilder
 	{

@@ -5,14 +5,13 @@
 
 #endregion
 
-using CloudBus.Queue;
-using Lokad;
+using Lokad.Cqrs.Queue;
 using Lokad.Quality;
 
-namespace CloudBus.Consume
+namespace Lokad.Cqrs.Consume
 {
 	[UsedImplicitly]
-	public sealed class ConsumingProcess : IBusProcess
+	public sealed class ConsumingProcess : IEngineProcess
 	{
 		readonly IMessageDispatcher _dispatcher;
 		readonly ILog _log;

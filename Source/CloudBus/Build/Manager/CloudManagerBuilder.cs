@@ -8,45 +8,45 @@
 using System;
 using Autofac;
 using Autofac.Core;
-using CloudBus.Domain.Build;
-using CloudBus.Queue;
-using CloudBus.Transport;
+using Lokad.Cqrs.Domain.Build;
+using Lokad.Cqrs.Queue;
+using Lokad.Cqrs.Transport;
 using Lokad.Diagnostics;
 using Microsoft.WindowsAzure;
 
-namespace CloudBus.Build.Manage
+namespace Lokad.Cqrs
 {
-	public sealed class ManageBusBuilder
+	public sealed class CloudManagerBuilder
 	{
 		Action<ContainerBuilder> _actions = builder => { };
 
 
-		public ManageBusBuilder()
+		public CloudManagerBuilder()
 		{
 			CloudStorageAccountIsDev();
 			_actions += builder =>
 				{
 					builder.RegisterInstance(TraceLog.Provider).SingleInstance();
-					builder.RegisterInstance(NullBusProfiler.Instance);
+					builder.RegisterInstance(NullEngineProfiler.Instance);
 					builder.RegisterType<AzureQueueFactory>().As<IRouteMessages, IQueueManager>().SingleInstance();
 					builder.RegisterType<AzureQueueTransport>().As<IMessageTransport>();
 				};
 		}
 
-		public ManageBusBuilder CloudStorageAccountIsDev()
+		public CloudManagerBuilder CloudStorageAccountIsDev()
 		{
 			_actions += b => b.RegisterInstance(CloudStorageAccount.DevelopmentStorageAccount);
 			return this;
 		}
 
-		public ManageBusBuilder CloudStorageAccountIsFromString(string value)
+		public CloudManagerBuilder CloudStorageAccountIsFromString(string value)
 		{
 			var account = CloudStorageAccount.Parse(value);
 			_actions += b => b.RegisterInstance(account);
 			return this;
 		}
 
-		public ManageBusBuilder Domain(Action<DomainBuildModule> configuration)
+		public CloudManagerBuilder Domain(Action<DomainBuildModule> configuration)
 		{
 			ConfigureWith(configuration);
 			return this;
@@ -60,7 +60,7 @@ namespace CloudBus.Build.Manage
 			_actions += builder => builder.RegisterModule(module);
 		}
 
-		public ManageBusBuilder WithCustom(Action<ContainerBuilder> builder)
+		public CloudManagerBuilder WithCustom(Action<ContainerBuilder> builder)
 		{
 			_actions += builder;
 			return this;

@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudBus", "Source\CloudBus\CloudBus.csproj", "{FD6C8202-F530-4C09-8889-28DC383965AA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lokad.Cqrs", "Source\CloudBus\Lokad.Cqrs.csproj", "{FD6C8202-F530-4C09-8889-28DC383965AA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudBus.Tests", "Source\CloudBus.Tests\CloudBus.Tests.csproj", "{24DA9150-1C7E-45B3-8A75-EA529081237F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lokad.Cqrs.Tests", "Source\CloudBus.Tests\Lokad.Cqrs.Tests.csproj", "{24DA9150-1C7E-45B3-8A75-EA529081237F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{CBB0EA40-FEC5-48D9-A04D-782440D9D693}"
 EndProject

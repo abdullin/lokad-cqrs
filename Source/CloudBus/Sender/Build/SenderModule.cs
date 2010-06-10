@@ -7,9 +7,9 @@
 
 using System;
 using Autofac;
-using CloudBus.Queue;
+using Lokad.Cqrs.Queue;
 
-namespace CloudBus.Sender.Build
+namespace Lokad.Cqrs.Sender.Build
 {
 	public sealed class SenderModule : Module
 	{
@@ -20,8 +20,8 @@ namespace CloudBus.Sender.Build
 			_builders += builder => builder.Register(c =>
 				{
 					var queue = c.Resolve<IQueueManager>().GetWriteQueue(queueName);
-					return new DefaultBusSender(queue);
-				}).SingleInstance().As<IBusSender>();
+					return new DefaultMessageClient(queue);
+				}).SingleInstance().As<IMessageClient>();
 			return this;
 		}
 

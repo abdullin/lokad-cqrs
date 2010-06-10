@@ -5,13 +5,11 @@
 
 #endregion
 
-using System;
 
-namespace CloudBus
+namespace Lokad.Cqrs
 {
-	public interface IBusProfiler
+	public interface IMessageClient
 	{
-		IDisposable TrackMessage(object instance, string messageId);
-		IDisposable TrackContext(string context);
+		void Send(params object[] messages);
 	}
 }

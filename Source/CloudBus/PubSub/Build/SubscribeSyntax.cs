@@ -5,7 +5,7 @@
 
 #endregion
 
-namespace CloudBus.PubSub.Build
+namespace Lokad.Cqrs.PubSub.Build
 {
 	public sealed class SubscribeSyntax
 	{

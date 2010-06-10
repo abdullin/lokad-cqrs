@@ -8,7 +8,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace CloudBus.Queue
+namespace Lokad.Cqrs.Queue
 {
 	[DataContract]
 	[Serializable]

@@ -10,10 +10,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Transactions;
 using Autofac;
-using CloudBus.Transport;
-using Lokad;
+using Lokad.Cqrs.Transport;
 
-namespace CloudBus.PubSub.Build
+namespace Lokad.Cqrs.PubSub.Build
 {
 	public sealed class BuildPubSubModule : Module
 	{
@@ -78,7 +77,7 @@ namespace CloudBus.PubSub.Build
 		{
 		}
 
-		IBusProcess BuildComponent(IComponentContext context)
+		IEngineProcess BuildComponent(IComponentContext context)
 		{
 			var log = context.Resolve<ILogProvider>().CreateLog<BuildPubSubModule>();
 

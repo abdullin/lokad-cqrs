@@ -8,52 +8,50 @@
 using System;
 using Autofac;
 using Autofac.Core;
-using CloudBus.Consume.Build;
-using CloudBus.Domain.Build;
-using CloudBus.PubSub.Build;
-using CloudBus.Queue;
-using CloudBus.Scheduled;
-using CloudBus.Scheduled.Build;
-using CloudBus.Sender;
-using CloudBus.Sender.Build;
-using CloudBus.Serialization;
-using CloudBus.Transport;
+using Lokad.Cqrs.Consume.Build;
+using Lokad.Cqrs.Domain.Build;
+using Lokad.Cqrs.PubSub.Build;
+using Lokad.Cqrs.Queue;
+using Lokad.Cqrs.Scheduled.Build;
+using Lokad.Cqrs.Sender.Build;
+using Lokad.Cqrs.Serialization;
+using Lokad.Cqrs.Transport;
 using Lokad.Diagnostics;
 using Lokad.Settings;
 using Microsoft.WindowsAzure;
 
-namespace CloudBus.Build.Cloud
+namespace Lokad.Cqrs
 {
-	public class CloudBusBuilder
+	public class CloudEngineBuilder
 	{
 		readonly ContainerBuilder _builder = new ContainerBuilder();
 
-		public CloudBusBuilder()
+		public CloudEngineBuilder()
 		{
 			CloudStorageAccountIsDev();
 
 			_builder.RegisterInstance(TraceLog.Provider);
-			_builder.RegisterInstance(NullBusProfiler.Instance);
+			_builder.RegisterInstance(NullEngineProfiler.Instance);
 			_builder.RegisterInstance(SimpleMessageProfiler.Instance);
 
 			_builder.RegisterType<AzureQueueFactory>().As<IRouteMessages, IQueueManager>().SingleInstance();
-			_builder.RegisterType<DefaultCloudBusHost>().As<ICloudBusHost>().SingleInstance();
+			_builder.RegisterType<DefaultCloudEngineHost>().As<ICloudEngineHost>().SingleInstance();
 			_builder.RegisterType<AzureQueueTransport>().As<IMessageTransport>();
 			_builder.RegisterType<BinaryMessageSerializer>().As<IMessageSerializer>().SingleInstance();
-			_builder.RegisterType<CloudSettingsProvider>().As<IProvideBusSettings, ISettingsProvider>().SingleInstance();
+			_builder.RegisterType<CloudSettingsProvider>().As<IProfileSettings, ISettingsProvider>().SingleInstance();
 		}
 
-		public CloudBusBuilder CloudStorageAccountIsDev()
+		public CloudEngineBuilder CloudStorageAccountIsDev()
 		{
 			_builder.RegisterInstance(CloudStorageAccount.DevelopmentStorageAccount);
 			return this;
 		}
 
-		public CloudBusBuilder CloudStorageAccountIsFromConfig(string name)
+		public CloudEngineBuilder CloudStorageAccountIsFromConfig(string name)
 		{
 			_builder.Register(c =>
 				{
-					var value = c.Resolve<IProvideBusSettings>()
+					var value = c.Resolve<IProfileSettings>()
 						.GetString(name)
 						.ExposeException("Failed to load account from '{0}'", name);
 					return CloudStorageAccount.Parse(value);
@@ -62,40 +60,40 @@ namespace CloudBus.Build.Cloud
 		}
 
 
-		public CloudBusBuilder PublishSubscribe(Action<BuildPubSubModule> action)
+		public CloudEngineBuilder PublishSubscribe(Action<BuildPubSubModule> action)
 		{
 			ConfigureWith(action);
 			return this;
 		}
 
-		public CloudBusBuilder HandleMessages(Action<HandleMessagesModule> config)
+		public CloudEngineBuilder HandleMessages(Action<HandleMessagesModule> config)
 		{
 			ConfigureWith(config);
 			return this;
 		}
 
-		public CloudBusBuilder RunTasks(Action<ScheduledModule> config)
+		public CloudEngineBuilder RunTasks(Action<ScheduledModule> config)
 		{
 			ConfigureWith(config);
 			return this;
 		}
 
-		public CloudBusBuilder Domain(Action<DomainBuildModule> configuration)
+		public CloudEngineBuilder Domain(Action<DomainBuildModule> configuration)
 		{
 			ConfigureWith(configuration);
 			return this;
 		}
 
-		public CloudBusBuilder SendMessages(Action<SenderModule> configuration)
+		public CloudEngineBuilder SendMessages(Action<SenderModule> configuration)
 		{
 			ConfigureWith(configuration);
 			return this;
 		}
 
-		public ICloudBusHost Build()
+		public ICloudEngineHost Build()
 		{
 			var container = _builder.Build();
-			return container.Resolve<ICloudBusHost>(TypedParameter.From(container));
+			return container.Resolve<ICloudEngineHost>(TypedParameter.From(container));
 		}
 
 		void ConfigureWith<TModule>(Action<TModule> config)
@@ -106,7 +104,7 @@ namespace CloudBus.Build.Cloud
 			_builder.RegisterModule(module);
 		}
 
-		public CloudBusBuilder RegisterModule(IModule module)
+		public CloudEngineBuilder RegisterModule(IModule module)
 		{
 			_builder.RegisterModule(module);
 			return this;

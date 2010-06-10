@@ -2,7 +2,7 @@
 using System.Reflection;
 using Autofac;
 
-namespace CloudBus.Scheduled
+namespace Lokad.Cqrs.Scheduled
 {
 	public sealed class DefaultTaskDispatcher : IScheduledTaskDispatcher
 	{

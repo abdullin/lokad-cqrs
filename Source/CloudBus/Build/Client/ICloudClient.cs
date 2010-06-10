@@ -5,9 +5,9 @@
 
 #endregion
 
-namespace CloudBus.Build.Client
+namespace Lokad.Cqrs
 {
-	public interface IClientBus
+	public interface ICloudClient
 	{
 		void SendMessage(object message);
 		TService Resolve<TService>();

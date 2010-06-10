@@ -8,7 +8,7 @@
 using System.Transactions;
 using Microsoft.WindowsAzure.StorageClient;
 
-namespace CloudBus.Queue
+namespace Lokad.Cqrs.Queue
 {
 	public class TransactionCommitAddsMessage : IEnlistmentNotification
 	{

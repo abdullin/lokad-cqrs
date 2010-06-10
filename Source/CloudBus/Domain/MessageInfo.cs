@@ -8,7 +8,7 @@
 using System;
 using System.Diagnostics;
 
-namespace CloudBus.Domain
+namespace Lokad.Cqrs.Domain
 {
 	[DebuggerDisplay("{MessageType.Name}")]
 	public sealed class MessageInfo

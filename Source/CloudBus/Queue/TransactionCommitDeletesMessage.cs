@@ -6,10 +6,9 @@
 #endregion
 
 using System.Transactions;
-using Lokad;
 using Microsoft.WindowsAzure.StorageClient;
 
-namespace CloudBus.Queue
+namespace Lokad.Cqrs.Queue
 {
 	public class TransactionCommitDeletesMessage : IEnlistmentNotification
 	{

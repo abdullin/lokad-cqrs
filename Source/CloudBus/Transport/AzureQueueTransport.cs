@@ -10,11 +10,10 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Transactions;
-using CloudBus.Queue;
-using Lokad;
+using Lokad.Cqrs.Queue;
 using Lokad.Quality;
 
-namespace CloudBus.Transport
+namespace Lokad.Cqrs.Transport
 {
 	[UsedImplicitly]
 	public sealed class AzureQueueTransport : IMessageTransport
@@ -23,7 +22,7 @@ namespace CloudBus.Transport
 		readonly IsolationLevel _isolationLevel;
 		readonly ILog _log;
 		readonly IMessageProfiler _messageProfiler;
-		readonly IBusProfiler _profiler;
+		readonly IEngineProfiler _profiler;
 		readonly string[] _queueNames;
 		readonly IReadMessageQueue[] _queues;
 		readonly int _threadCount;
@@ -37,7 +36,7 @@ namespace CloudBus.Transport
 			AzureQueueTransportConfig config,
 			ILogProvider logProvider,
 			IQueueManager factory,
-			IBusProfiler profiler,
+			IEngineProfiler profiler,
 			IMessageProfiler messageProfiler)
 		{
 			_factory = factory;

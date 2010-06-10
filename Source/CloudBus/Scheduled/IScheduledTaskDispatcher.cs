@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CloudBus.Scheduled
+namespace Lokad.Cqrs.Scheduled
 {
 	public interface IScheduledTaskDispatcher
 	{

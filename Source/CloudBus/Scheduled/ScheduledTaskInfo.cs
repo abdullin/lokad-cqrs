@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace CloudBus.Scheduled
+namespace Lokad.Cqrs.Scheduled
 {
 	public sealed class ScheduledTaskInfo
 	{

@@ -12,7 +12,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Lokad.Reflection;
 
-namespace CloudBus.Domain
+namespace Lokad.Cqrs.Domain
 {
 	static class MessageReflectionUtil
 	{

@@ -8,7 +8,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace CloudBus.PubSub
+namespace Lokad.Cqrs.PubSub
 {
 	[DataContract]
 	[Serializable]

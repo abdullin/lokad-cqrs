@@ -5,12 +5,13 @@
 
 #endregion
 
-using Lokad;
-
-namespace CloudBus
+namespace Lokad.Cqrs
 {
-	public interface IProvideBusSettings
+	public interface ICloudEngineHost
 	{
-		Maybe<string> GetString(string key);
+		void Start();
+		void Initialize();
+		void Stop();
+		TService Resolve<TService>();
 	}
 }

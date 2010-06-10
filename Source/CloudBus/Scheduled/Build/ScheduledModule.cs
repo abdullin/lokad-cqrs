@@ -11,9 +11,9 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Transactions;
 using Autofac;
-using Lokad;
+using Lokad.Cqrs.Default;
 
-namespace CloudBus.Scheduled.Build
+namespace Lokad.Cqrs.Scheduled.Build
 {
 	public sealed class ScheduledModule : Module
 	{
@@ -58,7 +58,7 @@ namespace CloudBus.Scheduled.Build
 			builder.Register(c => ConfigureComponent(c, allTasks));
 		}
 
-		IBusProcess ConfigureComponent(IComponentContext context, ScheduledTaskInfo[] tasks)
+		IEngineProcess ConfigureComponent(IComponentContext context, ScheduledTaskInfo[] tasks)
 		{
 			var logger = context.Resolve<ILogProvider>().CreateLog<ScheduledModule>();
 			logger.DebugFormat("{0} task available", tasks.Length);
@@ -77,9 +77,9 @@ namespace CloudBus.Scheduled.Build
 			return builder;
 		}
 
-		public ExpressionTaskBuilder<IBusTask> WithDefaultInterfaces()
+		public ExpressionTaskBuilder<IScheduledTask> WithDefaultInterfaces()
 		{
-			return AdaptTasks<IBusTask>(t => t.Execute());
+			return AdaptTasks<IScheduledTask>(t => t.Execute());
 		}
 	}
 }

@@ -6,15 +6,14 @@
 #endregion
 
 using System.Configuration;
-using Lokad;
 using Lokad.Quality;
 using Lokad.Settings;
 using Microsoft.WindowsAzure.ServiceRuntime;
 
-namespace CloudBus.Build
+namespace Lokad.Cqrs
 {
 	[UsedImplicitly]
-	public sealed class CloudSettingsProvider : IProvideBusSettings, ISettingsProvider
+	public sealed class CloudSettingsProvider : IProfileSettings, ISettingsProvider
 	{
 		static readonly bool HasCloudEnvironment;
 

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace CloudBus.Scheduled
+namespace Lokad.Cqrs.Scheduled
 {
 	public interface IScheduledTaskBuilder
 	{

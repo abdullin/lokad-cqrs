@@ -10,11 +10,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Transactions;
 using Autofac;
-using CloudBus.Domain;
-using CloudBus.Transport;
-using Lokad;
+using Lokad.Cqrs.Domain;
+using Lokad.Cqrs.Transport;
 
-namespace CloudBus.Consume.Build
+namespace Lokad.Cqrs.Consume.Build
 {
 	
 
@@ -87,7 +86,7 @@ namespace CloudBus.Consume.Build
 			return this;
 		}
 
-		IBusProcess ConfigureComponent(IComponentContext context)
+		IEngineProcess ConfigureComponent(IComponentContext context)
 		{
 			var log = context.Resolve<ILogProvider>().CreateLog<HandleMessagesModule>();
 

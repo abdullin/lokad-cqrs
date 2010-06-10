@@ -5,9 +5,7 @@
 
 #endregion
 
-using System;
-
-namespace CloudBus.Domain
+namespace Lokad.Cqrs.Domain
 {
 	public interface IMessageDirectory
 	{

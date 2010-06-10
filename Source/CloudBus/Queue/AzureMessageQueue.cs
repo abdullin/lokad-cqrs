@@ -9,12 +9,11 @@ using System;
 using System.Collections.Specialized;
 using System.IO;
 using System.Transactions;
-using CloudBus.Serialization;
-using Lokad;
+using Lokad.Cqrs.Serialization;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
 
-namespace CloudBus.Queue
+namespace Lokad.Cqrs.Queue
 {
 	public sealed class AzureMessageQueue : IReadMessageQueue, IWriteMessageQueue
 	{

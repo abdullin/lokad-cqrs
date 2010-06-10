@@ -5,7 +5,7 @@
 
 #endregion
 
-namespace CloudBus.Consume
+namespace Lokad.Cqrs.Consume
 {
 	public interface IMessageDispatcher
 	{

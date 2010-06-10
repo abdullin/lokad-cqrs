@@ -6,9 +6,9 @@
 #endregion
 
 using System;
-using CloudBus.Queue;
+using Lokad.Cqrs.Queue;
 
-namespace CloudBus
+namespace Lokad.Cqrs
 {
 	public interface IMessageTransport : IDisposable
 	{

@@ -6,9 +6,8 @@
 #endregion
 
 using System;
-using Lokad;
 
-namespace CloudBus.Scheduled
+namespace Lokad.Cqrs.Scheduled
 {
 	public sealed class ScheduledState
 	{

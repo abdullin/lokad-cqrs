@@ -5,7 +5,7 @@
 
 #endregion
 
-namespace CloudBus.Queue
+namespace Lokad.Cqrs.Queue
 {
 	public enum SubQueueType
 	{

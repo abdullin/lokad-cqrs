@@ -5,7 +5,7 @@
 
 #endregion
 
-namespace CloudBus
+namespace Lokad.Cqrs
 {
 	public interface IMessageProfiler
 	{

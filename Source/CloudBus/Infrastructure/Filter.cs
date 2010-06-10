@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CloudBus
+namespace Lokad.Cqrs
 {
 	public sealed class Filter<TItem>
 	{

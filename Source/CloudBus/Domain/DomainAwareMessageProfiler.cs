@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using Lokad.Quality;
 
-namespace CloudBus.Domain
+namespace Lokad.Cqrs.Domain
 {
 	[UsedImplicitly]
 	public sealed class DomainAwareMessageProfiler : IMessageProfiler

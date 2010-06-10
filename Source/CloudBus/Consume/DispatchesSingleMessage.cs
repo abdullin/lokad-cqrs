@@ -9,10 +9,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Autofac;
-using CloudBus.Domain;
-using Lokad;
+using Lokad.Cqrs.Domain;
 
-namespace CloudBus.Consume
+namespace Lokad.Cqrs.Consume
 {
 	public sealed class DispatchesSingleMessage : IMessageDispatcher
 	{

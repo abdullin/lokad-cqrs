@@ -5,7 +5,7 @@
 
 #endregion
 
-namespace CloudBus.Build
+namespace Lokad.Cqrs
 {
 	sealed class SimpleMessageProfiler : IMessageProfiler
 	{

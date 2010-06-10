@@ -5,13 +5,9 @@
 
 #endregion
 
-namespace CloudBus
+namespace Lokad.Cqrs.Default
 {
-	public interface IConsumeMessage<TMessage> : IConsumeMessage
-		where TMessage : IBusMessage
+	public interface IMessage
 	{
-		void Consume(TMessage message);
 	}
-
-	public interface IConsumeMessage{}
 }

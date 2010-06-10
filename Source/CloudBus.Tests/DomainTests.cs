@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using CloudBus.Domain;
+using Lokad.Cqrs.Domain;
 using NUnit.Framework;
 using NUnit.Framework.SyntaxHelpers;
 

@@ -10,7 +10,7 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using Lokad.Quality;
 
-namespace CloudBus.Serialization
+namespace Lokad.Cqrs.Serialization
 {
 	[UsedImplicitly]
 	public sealed class BinaryMessageSerializer : IMessageSerializer

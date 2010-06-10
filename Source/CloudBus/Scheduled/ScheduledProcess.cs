@@ -6,23 +6,21 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Transactions;
-using Lokad;
 using Lokad.Quality;
 
-namespace CloudBus.Scheduled
+namespace Lokad.Cqrs.Scheduled
 {
 	[UsedImplicitly]
-	public sealed class ScheduledProcess : IBusProcess
+	public sealed class ScheduledProcess : IEngineProcess
 	{
 		public delegate void ChainProcessedDelegate(ScheduledState[] state, bool emptyChain);
 
 		readonly ILog _log;
-		readonly IBusProfiler _profiler;
+		readonly IEngineProfiler _profiler;
 		readonly TimeSpan _sleepBetweenCommands;
 		readonly TimeSpan _sleepOnEmptyChain;
 		readonly TimeSpan _sleepOnFailure;
@@ -38,7 +36,7 @@ namespace CloudBus.Scheduled
 			ILogProvider provider,
 			ScheduledTaskInfo[] commands,
 			ScheduledConfig config, 
-			IBusProfiler profiler, 
+			IEngineProfiler profiler, 
 			IScheduledTaskDispatcher dispatcher)
 		{
 			_log = provider.CreateLog<ScheduledProcess>();

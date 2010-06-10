@@ -8,8 +8,8 @@
     <ProjectGuid>{FD6C8202-F530-4C09-8889-28DC383965AA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CloudBus</RootNamespace>
-    <AssemblyName>Lokad.CloudBus</AssemblyName>
+    <RootNamespace>Lokad.Cqrs</RootNamespace>
+    <AssemblyName>Lokad.Cqrs</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -51,23 +51,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Build\Client\ClientBus.cs" />
-    <Compile Include="Build\Client\ClientBusBuilder.cs" />
-    <Compile Include="Build\Client\IClientBus.cs" />
+    <Compile Include="Build\Client\CloudClient.cs" />
+    <Compile Include="Build\Client\CloudClientBuilder.cs" />
+    <Compile Include="Build\Client\ICloudClient.cs" />
     <Compile Include="Build\CloudSettingsProvider.cs" />
-    <Compile Include="Build\Cloud\CloudBusBuilder.cs" />
-    <Compile Include="Build\Cloud\ServerHost.cs" />
-    <Compile Include="Build\NullBusProfiler.cs" />
+    <Compile Include="Build\Engine\CloudEngineBuilder.cs" />
+    <Compile Include="Build\Engine\ServerHost.cs" />
+    <Compile Include="Build\NullEngineProfiler.cs" />
     <Compile Include="Build\SimpleMessageProfiler.cs" />
-    <Compile Include="Design\IBusSender.cs" />
-    <Compile Include="Design\IProvideBusSettings.cs" />
-    <Compile Include="Build\Manage\ManageBusBuilder.cs" />
+    <Compile Include="Default\IScheduledTask.cs" />
+    <Compile Include="Design\IMessageClient.cs" />
+    <Compile Include="Design\IProfileSettings.cs" />
+    <Compile Include="Build\Manager\CloudManagerBuilder.cs" />
     <Compile Include="Consume\Build\HandleMessagesModule.cs" />
-    <Compile Include="Design\IBusProfiler.cs" />
+    <Compile Include="Design\IEngineProfiler.cs" />
     <Compile Include="Design\IMessageProfiler.cs" />
     <Compile Include="Domain\MessageAssemblyScanner.cs" />
     <Compile Include="Domain\DomainAwareMessageProfiler.cs" />
-    <Compile Include="Sender\DefaultBusSender.cs" />
+    <Compile Include="Sender\DefaultMessageClient.cs" />
     <Compile Include="Infrastructure\Throw.cs" />
     <Compile Include="Infrastructure\Filter.cs" />
     <Compile Include="Domain\IMessageDirectoryBuilder.cs" />
@@ -85,13 +86,13 @@
     <Compile Include="Serialization\DataContractMessageSerializer.cs" />
     <Compile Include="Serialization\DataContractUtil.cs" />
     <Compile Include="Consume\DispatchesMultipleMessagesToSharedScope.cs" />
-    <Compile Include="Design\IBusMessage.cs" />
+    <Compile Include="Default\IMessage.cs" />
     <Compile Include="Domain\ConsumerInfo.cs" />
-    <Compile Include="Build\Cloud\DefaultCloudBusHost.cs" />
+    <Compile Include="Build\Engine\DefaultCloudEngineHost.cs" />
     <Compile Include="Domain\MessageDirectory.cs" />
     <Compile Include="Domain\Build\DomainBuildModule.cs" />
-    <Compile Include="Build\Cloud\ICloudBusHost.cs" />
-    <Compile Include="Design\IConsumeMessage.cs" />
+    <Compile Include="Build\Engine\ICloudEngineHost.cs" />
+    <Compile Include="Default\IConsume.cs" />
     <Compile Include="Domain\IMessageDirectory.cs" />
     <Compile Include="Domain\MessageDirectoryBuilder.cs" />
     <Compile Include="Domain\MessageInfo.cs" />
@@ -128,7 +129,7 @@
     <Compile Include="Queue\MessageMessage.cs" />
     <Compile Include="Queue\TransactionCommitAddsMessage.cs" />
     <Compile Include="PubSub\PublishSubscribeProcess.cs" />
-    <Compile Include="Design\IBusProcess.cs" />
+    <Compile Include="Design\IEngineProcess.cs" />
     <Compile Include="Queue\IQueueManager.cs" />
     <Compile Include="Queue\SubQueueType.cs" />
   </ItemGroup>

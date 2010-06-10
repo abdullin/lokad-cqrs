@@ -8,9 +8,9 @@
 using System;
 using System.Collections.Generic;
 using Autofac;
-using CloudBus.Domain;
+using Lokad.Cqrs.Domain;
 
-namespace CloudBus.Consume
+namespace Lokad.Cqrs.Consume
 {
 	public sealed class DispatchesMultipleMessagesToSharedScope : IMessageDispatcher
 	{

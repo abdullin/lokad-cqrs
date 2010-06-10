@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Lokad.Quality;
 
-namespace CloudBus.PubSub
+namespace Lokad.Cqrs.PubSub
 {
 	[UsedImplicitly]
 	public sealed class InMemoryPublishSubscribeManager : IPublishSubscribeManager

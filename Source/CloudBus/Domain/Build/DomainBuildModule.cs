@@ -9,10 +9,11 @@ using System;
 using System.Linq.Expressions;
 using System.Reflection;
 using Autofac;
-using CloudBus.Serialization;
+using Lokad.Cqrs.Default;
+using Lokad.Cqrs.Serialization;
 using Module = Autofac.Module;
 
-namespace CloudBus.Domain.Build
+namespace Lokad.Cqrs.Domain.Build
 {
 	public class DomainBuildModule : Module
 	{
@@ -28,8 +29,8 @@ namespace CloudBus.Domain.Build
 
 		public DomainBuildModule WithDefaultInterfaces()
 		{
-			ConsumerMethodSample<IConsumeMessage<IBusMessage>>(i => i.Consume(null));
-			MessagesInherit<IBusMessage>();
+			ConsumerMethodSample<IConsume<IMessage>>(i => i.Consume(null));
+			MessagesInherit<IMessage>();
 			ConsumersInherit<IConsumeMessage>();
 			return this;
 		}

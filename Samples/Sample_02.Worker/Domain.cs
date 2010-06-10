@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Runtime.Serialization;
-using CloudBus;
 using Lokad;
+using Lokad.Cqrs;
+using Lokad.Cqrs.Default;
 
 namespace Sample_02.Worker
 {
 	[DataContract]
-	public sealed class SendPaymentMessage : IBusMessage
+	public sealed class SendPaymentMessage : IMessage
 	{
 		[DataMember]
 		public double Amount { get; private set; }
@@ -18,7 +19,7 @@ namespace Sample_02.Worker
 		}
 	}
 
-	public sealed class SendPaymentHandler : IConsumeMessage<SendPaymentMessage>
+	public sealed class SendPaymentHandler : IConsume<SendPaymentMessage>
 	{
 		public void Consume(SendPaymentMessage message)
 		{
@@ -26,19 +27,19 @@ namespace Sample_02.Worker
 		}
 	}
 
-	public sealed class ListenToEverythingHandler : IConsumeMessage<IBusMessage>
+	public sealed class ListenToEverythingHandler : IConsume<IMessage>
 	{
-		public void Consume(IBusMessage message)
+		public void Consume(IMessage message)
 		{
 			Trace.WriteLine("Generic listener just got message of type: " + message.GetType());
 		}
 	}
 
-	public sealed class SendPaymentsSometimes : IBusTask
+	public sealed class SendPaymentsSometimes : IScheduledTask
 	{
-		readonly IBusSender _sender;
+		readonly IMessageClient _sender;
 
-		public SendPaymentsSometimes(IBusSender sender)
+		public SendPaymentsSometimes(IMessageClient sender)
 		{
 			_sender = sender;
 		}

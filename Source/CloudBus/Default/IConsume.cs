@@ -5,15 +5,13 @@
 
 #endregion
 
-using Autofac;
-
-namespace CloudBus.Build.Cloud
+namespace Lokad.Cqrs.Default
 {
-	public interface ICloudBusHost
+	public interface IConsume<TMessage> : IConsumeMessage
+		where TMessage : IMessage
 	{
-		void Start();
-		void Initialize();
-		void Stop();
-		IContainer Container { get; }
+		void Consume(TMessage message);
 	}
+
+	public interface IConsumeMessage{}
 }

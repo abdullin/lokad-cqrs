@@ -5,20 +5,20 @@
 
 #endregion
 
-using CloudBus.Queue;
+using Lokad.Cqrs.Queue;
 
-namespace CloudBus.Sender
+namespace Lokad.Cqrs.Sender
 {
-	sealed class DefaultBusSender : IBusSender
+	sealed class DefaultMessageClient : IMessageClient
 	{
 		readonly IWriteMessageQueue _queue;
 
-		public DefaultBusSender(IWriteMessageQueue queue)
+		public DefaultMessageClient(IWriteMessageQueue queue)
 		{
 			_queue = queue;
 		}
 
-		public void Send(params IBusMessage[] messages)
+		public void Send(params object[] messages)
 		{
 			if (messages.Length == 0)
 				return;

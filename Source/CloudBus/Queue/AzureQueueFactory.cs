@@ -7,12 +7,11 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using CloudBus.Serialization;
-using Lokad;
+using Lokad.Cqrs.Serialization;
 using Lokad.Quality;
 using Microsoft.WindowsAzure;
 
-namespace CloudBus.Queue
+namespace Lokad.Cqrs.Queue
 {
 	[UsedImplicitly]
 	public sealed class AzureQueueFactory : IQueueManager, IRouteMessages

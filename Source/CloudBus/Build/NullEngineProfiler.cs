@@ -8,14 +8,14 @@
 using System;
 using Lokad.Quality;
 
-namespace CloudBus.Build
+namespace Lokad.Cqrs
 {
 	[UsedImplicitly]
-	sealed class NullBusProfiler : IBusProfiler
+	sealed class NullEngineProfiler : IEngineProfiler
 	{
-		public static readonly IBusProfiler Instance = new NullBusProfiler();
+		public static readonly IEngineProfiler Instance = new NullEngineProfiler();
 
-		IDisposable IBusProfiler.TrackMessage(object instance, string messageId)
+		IDisposable IEngineProfiler.TrackMessage(object instance, string messageId)
 		{
 			return null;
 		}

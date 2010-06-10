@@ -5,12 +5,10 @@
 
 #endregion
 
-using System;
-
-namespace CloudBus
+namespace Lokad.Cqrs
 {
-	public interface IBusProcess : IDisposable
+	public interface IProfileSettings
 	{
-		void Start();
+		Maybe<string> GetString(string key);
 	}
 }

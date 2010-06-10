@@ -7,7 +7,7 @@
 
 using System;
 
-namespace CloudBus.Queue
+namespace Lokad.Cqrs.Queue
 {
 	public interface IReadMessageQueue
 	{

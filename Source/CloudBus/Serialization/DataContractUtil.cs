@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 
-namespace CloudBus.Serialization
+namespace Lokad.Cqrs.Serialization
 {
 	static class DataContractUtil
 	{

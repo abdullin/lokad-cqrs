@@ -6,10 +6,9 @@
 #endregion
 
 using System.Collections.Specialized;
-using Lokad;
 using Microsoft.WindowsAzure.StorageClient;
 
-namespace CloudBus.Queue
+namespace Lokad.Cqrs.Queue
 {
 	public sealed class IncomingMessageEnvelope
 	{

@@ -5,29 +5,30 @@
 
 #endregion
 
-using Autofac;
-using CloudBus;
-using CloudBus.Build.Cloud;
 using Lokad;
+using Lokad.Cqrs;
 using Microsoft.WindowsAzure.Diagnostics;
 
 namespace Sample_01.Worker
 {
-	public class WorkerRole : CloudServerHost
+	public class WorkerRole : CloudEngineRole
 	{
-		protected override ICloudBusHost BuildHost()
+		protected override ICloudEngineHost BuildHost()
 		{
-			return new CloudBusBuilder()
-				.Domain(d => 
+			return new CloudEngineBuilder()
+			// this tells the server about the domain
+				.Domain(d =>
 					{
 						d.InCurrentAssembly();
 						d.WithDefaultInterfaces();
 					})
+				// we'll handle all messages incoming to this queue
 				.HandleMessages(mc =>
 					{
 						mc.ListenTo("sample-01");
 						mc.WithSingleConsumer();
 					})
+				// when we send message - default it to this queue as well
 				.SendMessages(m => m.DefaultToQueue("sample-01"))
 				.Build();
 		}
@@ -35,14 +36,15 @@ namespace Sample_01.Worker
 		public override bool OnStart()
 		{
 			DiagnosticMonitor.Start("DiagnosticsConnectionString");
-			WhenHostStarts += SendFirstMessage;
+			// we send first ping message, when host starts
+			WhenEngineStarts += SendFirstMessage;
 
 			return base.OnStart();
 		}
 
-		static void SendFirstMessage(ICloudBusHost host)
+		static void SendFirstMessage(ICloudEngineHost host)
 		{
-			var sender = host.Container.Resolve<IBusSender>();
+			var sender = host.Resolve<IMessageClient>();
 			var game = Rand.String.NextWord();
 			sender.Send(new PingPongCommand(0, game));
 		}

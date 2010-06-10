@@ -1,13 +1,14 @@
 ﻿using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Threading;
-using CloudBus;
+using Lokad.Cqrs;
+using Lokad.Cqrs.Default;
 using Lokad.Quality;
 
 namespace Sample_01.Worker
 {
 	[DataContract]
-	public sealed class PingPongCommand : IBusMessage
+	public sealed class PingPongCommand : IMessage
 	{
 		[DataMember]
 		public int Ball { get; private set; }
@@ -27,20 +28,20 @@ namespace Sample_01.Worker
 	}
 
 	[UsedImplicitly]
-	public sealed class PingPongHandler : IConsumeMessage<PingPongCommand>
+	public sealed class PingPongHandler : IConsume<PingPongCommand>
 	{
-		readonly IBusSender _sender;
+		readonly IMessageClient _sender;
 
-		public PingPongHandler(IBusSender sender)
+		public PingPongHandler(IMessageClient sender)
 		{
 			_sender = sender;
 		}
 
 		public void Consume(PingPongCommand message)
 		{
-			Trace.WriteLine("Ping " + message.Ball + " for game '" + message.Game +"'.");
+			const string format = "Ping #{0} in game '{1}'.";
+			Trace.WriteLine(string.Format(format, message.Ball, message.Game));
 			Thread.Sleep(1000);
-
 			
 			_sender.Send(message.Pong());
 		}

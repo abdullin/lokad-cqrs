@@ -6,9 +6,8 @@
 #endregion
 
 using System;
-using Lokad;
 
-namespace CloudBus.Queue
+namespace Lokad.Cqrs.Queue
 {
 	public sealed class GetMessageResult
 	{

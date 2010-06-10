@@ -7,10 +7,8 @@
 
 using System;
 using System.Reflection;
-using System.Runtime.Remoting.Messaging;
-using CloudBus.Queue;
 
-namespace CloudBus
+namespace Lokad.Cqrs
 {
 	static class Throw
 	{

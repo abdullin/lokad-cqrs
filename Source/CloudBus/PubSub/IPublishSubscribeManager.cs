@@ -5,7 +5,7 @@
 
 #endregion
 
-namespace CloudBus.PubSub
+namespace Lokad.Cqrs.PubSub
 {
 	/// <summary>
 	/// Analogue of the AMQP pub/sub

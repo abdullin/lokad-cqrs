@@ -5,14 +5,13 @@
 
 #endregion
 
-using CloudBus.Queue;
-using Lokad;
+using Lokad.Cqrs.Queue;
 using Lokad.Quality;
 
-namespace CloudBus.PubSub
+namespace Lokad.Cqrs.PubSub
 {
 	[UsedImplicitly]
-	public sealed class PublishSubscribeProcess : IBusProcess
+	public sealed class PublishSubscribeProcess : IEngineProcess
 	{
 		readonly ILog _log;
 		readonly IRouteMessages _router;

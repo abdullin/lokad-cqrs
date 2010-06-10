@@ -8,7 +8,7 @@
 using System;
 using System.Transactions;
 
-namespace CloudBus.Transport
+namespace Lokad.Cqrs.Transport
 {
 	public sealed class AzureQueueTransportConfig
 	{

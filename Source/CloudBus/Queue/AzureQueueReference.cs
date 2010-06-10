@@ -8,7 +8,7 @@
 using System;
 using System.Linq;
 
-namespace CloudBus.Queue
+namespace Lokad.Cqrs.Queue
 {
 	public sealed class AzureQueueReference
 	{

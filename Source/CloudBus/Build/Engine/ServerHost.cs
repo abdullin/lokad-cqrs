@@ -1,26 +1,27 @@
 ﻿using System;
-using System.Linq;
-using System.Net;
 using System.Threading;
-using Autofac;
 using Microsoft.WindowsAzure.ServiceRuntime;
 
-namespace CloudBus.Build.Cloud
+namespace Lokad.Cqrs
 {
-	public abstract class CloudServerHost : RoleEntryPoint
+	public abstract class CloudEngineRole : RoleEntryPoint
 	{
-		ICloudBusHost _host;
+		ICloudEngineHost _host;
 		volatile bool _shouldStop;
 
-		protected abstract ICloudBusHost BuildHost();
+		/// <summary>
+		/// Implement in the inheriting class to configure the bus host.
+		/// </summary>
+		/// <returns></returns>
+		protected abstract ICloudEngineHost BuildHost();
 
-		protected event Action<ICloudBusHost> WhenHostStarts = host => { }; 
+		protected event Action<ICloudEngineHost> WhenEngineStarts = host => { }; 
 
 		public override void Run()
 		{
 			_host.Start();
 
-			WhenHostStarts(_host);
+			WhenEngineStarts(_host);
 
 			while (false == _shouldStop)
 			{
