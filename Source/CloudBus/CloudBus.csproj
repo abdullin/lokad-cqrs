@@ -56,8 +56,10 @@
     <Compile Include="Build\Client\IClientBus.cs" />
     <Compile Include="Build\CloudSettingsProvider.cs" />
     <Compile Include="Build\Cloud\CloudBusBuilder.cs" />
+    <Compile Include="Build\Cloud\ServerHost.cs" />
     <Compile Include="Build\NullBusProfiler.cs" />
     <Compile Include="Build\SimpleMessageProfiler.cs" />
+    <Compile Include="Design\IBusSender.cs" />
     <Compile Include="Design\IProvideBusSettings.cs" />
     <Compile Include="Build\Manage\ManageBusBuilder.cs" />
     <Compile Include="Consume\Build\HandleMessagesModule.cs" />
@@ -65,6 +67,7 @@
     <Compile Include="Design\IMessageProfiler.cs" />
     <Compile Include="Domain\MessageAssemblyScanner.cs" />
     <Compile Include="Domain\DomainAwareMessageProfiler.cs" />
+    <Compile Include="Sender\DefaultBusSender.cs" />
     <Compile Include="Infrastructure\Throw.cs" />
     <Compile Include="Infrastructure\Filter.cs" />
     <Compile Include="Domain\IMessageDirectoryBuilder.cs" />
@@ -78,6 +81,7 @@
     <Compile Include="Scheduled\ScheduledState.cs" />
     <Compile Include="Scheduled\ScheduledProcess.cs" />
     <Compile Include="Scheduled\ScheduledTaskInfo.cs" />
+    <Compile Include="Sender\Build\SenderModule.cs" />
     <Compile Include="Serialization\DataContractMessageSerializer.cs" />
     <Compile Include="Serialization\DataContractUtil.cs" />
     <Compile Include="Consume\DispatchesMultipleMessagesToSharedScope.cs" />

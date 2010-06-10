@@ -7,8 +7,11 @@
 
 namespace CloudBus
 {
-	public interface IConsumeMessage<TMessage>
+	public interface IConsumeMessage<TMessage> : IConsumeMessage
+		where TMessage : IBusMessage
 	{
 		void Consume(TMessage message);
 	}
+
+	public interface IConsumeMessage{}
 }

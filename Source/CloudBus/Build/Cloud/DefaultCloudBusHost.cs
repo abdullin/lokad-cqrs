@@ -8,14 +8,18 @@
 using System.Collections.Generic;
 using Autofac;
 using Lokad;
+using Lokad.Quality;
 
 namespace CloudBus.Build.Cloud
 {
+	[UsedImplicitly]
 	public sealed class DefaultCloudBusHost : ICloudBusHost
 	{
 		readonly IContainer _container;
 		readonly ILog _log;
 		readonly IEnumerable<IBusProcess> _serverThreads;
+
+		public IContainer Container { get { return _container; } }
 
 		public DefaultCloudBusHost(
 			IContainer container,

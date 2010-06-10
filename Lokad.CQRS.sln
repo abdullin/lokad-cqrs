@@ -1,0 +1,51 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudBus", "Source\CloudBus\CloudBus.csproj", "{FD6C8202-F530-4C09-8889-28DC383965AA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudBus.Tests", "Source\CloudBus.Tests\CloudBus.Tests.csproj", "{24DA9150-1C7E-45B3-8A75-EA529081237F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{CBB0EA40-FEC5-48D9-A04D-782440D9D693}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{62414331-D497-493B-8DF2-A4EA8B5DDE42}"
+EndProject
+Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "Sample_01.Basic", "Samples\Sample_01.Basic\Sample_01.Basic.ccproj", "{F8114DFB-4BEB-4E20-B016-956A3343C708}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample_01.Worker", "Sample_01.Worker\Sample_01.Worker.csproj", "{DFCE11A8-B20F-49D7-9011-6E459E35FDDC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PingPong", "PingPong", "{48C1036C-BD1D-469E-BBB9-4F13B7C43E43}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FD6C8202-F530-4C09-8889-28DC383965AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD6C8202-F530-4C09-8889-28DC383965AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD6C8202-F530-4C09-8889-28DC383965AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD6C8202-F530-4C09-8889-28DC383965AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24DA9150-1C7E-45B3-8A75-EA529081237F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24DA9150-1C7E-45B3-8A75-EA529081237F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24DA9150-1C7E-45B3-8A75-EA529081237F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24DA9150-1C7E-45B3-8A75-EA529081237F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8114DFB-4BEB-4E20-B016-956A3343C708}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8114DFB-4BEB-4E20-B016-956A3343C708}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8114DFB-4BEB-4E20-B016-956A3343C708}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8114DFB-4BEB-4E20-B016-956A3343C708}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFCE11A8-B20F-49D7-9011-6E459E35FDDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFCE11A8-B20F-49D7-9011-6E459E35FDDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFCE11A8-B20F-49D7-9011-6E459E35FDDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFCE11A8-B20F-49D7-9011-6E459E35FDDC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{24DA9150-1C7E-45B3-8A75-EA529081237F} = {CBB0EA40-FEC5-48D9-A04D-782440D9D693}
+		{FD6C8202-F530-4C09-8889-28DC383965AA} = {CBB0EA40-FEC5-48D9-A04D-782440D9D693}
+		{48C1036C-BD1D-469E-BBB9-4F13B7C43E43} = {62414331-D497-493B-8DF2-A4EA8B5DDE42}
+		{F8114DFB-4BEB-4E20-B016-956A3343C708} = {48C1036C-BD1D-469E-BBB9-4F13B7C43E43}
+		{DFCE11A8-B20F-49D7-9011-6E459E35FDDC} = {48C1036C-BD1D-469E-BBB9-4F13B7C43E43}
+	EndGlobalSection
+EndGlobal

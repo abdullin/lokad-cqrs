@@ -22,8 +22,14 @@ namespace CloudBus.Domain.Build
 			//_messageScanner.LoadSystemMessages();
 
 			UseDataContractSerializer();
+		}
 
-			ConsumerMethodSample<IConsumeMessage<string>>(i => i.Consume(""));
+		public DomainBuildModule ImplementsBusInterfaces()
+		{
+			ConsumerMethodSample<IConsumeMessage<IBusMessage>>(i => i.Consume(null));
+			MessagesInherit<IBusMessage>();
+			ConsumersInherit<IConsumeMessage>();
+			return this;
 		}
 
 		public DomainBuildModule ConsumerMethodSample<THandler>(Expression<Action<THandler>> expression)

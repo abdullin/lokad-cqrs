@@ -14,6 +14,8 @@ using CloudBus.PubSub.Build;
 using CloudBus.Queue;
 using CloudBus.Scheduled;
 using CloudBus.Scheduled.Build;
+using CloudBus.Sender;
+using CloudBus.Sender.Build;
 using CloudBus.Serialization;
 using CloudBus.Transport;
 using Lokad.Diagnostics;
@@ -84,6 +86,11 @@ namespace CloudBus.Build.Cloud
 			return this;
 		}
 
+		public CloudBusBuilder SendMessages(Action<SenderModule> configuration)
+		{
+			ConfigureWith(configuration);
+			return this;
+		}
 
 		public ICloudBusHost Build()
 		{

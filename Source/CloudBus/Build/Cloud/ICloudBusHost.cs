@@ -5,6 +5,8 @@
 
 #endregion
 
+using Autofac;
+
 namespace CloudBus.Build.Cloud
 {
 	public interface ICloudBusHost
@@ -12,5 +14,6 @@ namespace CloudBus.Build.Cloud
 		void Start();
 		void Initialize();
 		void Stop();
+		IContainer Container { get; }
 	}
 }
