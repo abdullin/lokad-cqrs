@@ -5,9 +5,16 @@
 
 #endregion
 
+using System;
+
 namespace CloudBus
 {
 	public interface IBusMessage
 	{
+	}
+
+	public interface IBusTask
+	{
+		TimeSpan Execute();
 	}
 }

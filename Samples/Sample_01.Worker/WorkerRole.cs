@@ -21,7 +21,7 @@ namespace Sample_01.Worker
 				.Domain(d => 
 					{
 						d.InCurrentAssembly();
-						d.ImplementsBusInterfaces();
+						d.WithDefaultInterfaces();
 					})
 				.HandleMessages(mc =>
 					{
@@ -43,10 +43,8 @@ namespace Sample_01.Worker
 		static void SendFirstMessage(ICloudBusHost host)
 		{
 			var sender = host.Container.Resolve<IBusSender>();
-			sender.Send(new PingPongCommand()
-				{
-					Game = Rand.String.NextWord()
-				});
+			var game = Rand.String.NextWord();
+			sender.Send(new PingPongCommand(0, game));
 		}
 	}
 }

@@ -27,8 +27,8 @@ namespace CloudBus.Scheduled.Build
 			_config = new ScheduledConfig
 				{
 					SleepBetweenCommands = 0.Seconds(),
-					SleepOnEmptyChain = 1.Minutes(),
-					SleepOnFailure = 2.Minutes(),
+					SleepOnEmptyChain = 1.Seconds(),
+					SleepOnFailure = 1.Seconds(),
 					IsolationLevel = IsolationLevel.ReadCommitted
 				};
 
@@ -75,6 +75,11 @@ namespace CloudBus.Scheduled.Build
 			var builder = new ExpressionTaskBuilder<TTask>(tasks);
 			_builders.Add(builder);
 			return builder;
+		}
+
+		public ExpressionTaskBuilder<IBusTask> WithDefaultInterfaces()
+		{
+			return AdaptTasks<IBusTask>(t => t.Execute());
 		}
 	}
 }

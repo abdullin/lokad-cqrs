@@ -29,7 +29,13 @@ namespace CloudBus.Scheduled
 			return this;
 		}
 
-		public ExpressionTaskBuilder<TTask> WithAssemblyOf<TImplementation>()
+		public ExpressionTaskBuilder<TTask> InCurrentAssembly()
+		{
+			_assemblies.Add(Assembly.GetCallingAssembly());
+			return this;
+		}
+
+		public ExpressionTaskBuilder<TTask> InAssemblyOf<TImplementation>()
 			
 		{
 			var assembly = typeof (TImplementation).Assembly;
