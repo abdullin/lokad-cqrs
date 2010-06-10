@@ -7,8 +7,10 @@
 
 using System;
 using System.Linq.Expressions;
+using System.Reflection;
 using Autofac;
 using CloudBus.Serialization;
+using Module = Autofac.Module;
 
 namespace CloudBus.Domain.Build
 {
@@ -82,6 +84,12 @@ namespace CloudBus.Domain.Build
 		public DomainBuildModule InAssemblyOf<T>()
 		{
 			_builder.WithAssemblyOf<T>();
+			return this;
+		}
+
+		public DomainBuildModule InCurrentAssembly()
+		{
+			_builder.WithAssembly(Assembly.GetCallingAssembly());
 			return this;
 		}
 

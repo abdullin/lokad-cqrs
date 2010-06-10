@@ -18,9 +18,9 @@ namespace Sample_01.Worker
 		protected override ICloudBusHost BuildHost()
 		{
 			return new CloudBusBuilder()
-				.Domain(d =>
+				.Domain(d => 
 					{
-						d.InAssemblyOf<PingPongCommand>();
+						d.InCurrentAssembly();
 						d.ImplementsBusInterfaces();
 					})
 				.HandleMessages(mc =>
@@ -35,7 +35,7 @@ namespace Sample_01.Worker
 		public override bool OnStart()
 		{
 			DiagnosticMonitor.Start("DiagnosticsConnectionString");
-			OnHostStart += SendFirstMessage;
+			WhenHostStarts += SendFirstMessage;
 
 			return base.OnStart();
 		}

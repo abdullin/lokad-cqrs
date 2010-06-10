@@ -14,13 +14,13 @@ namespace CloudBus.Build.Cloud
 
 		protected abstract ICloudBusHost BuildHost();
 
-		protected event Action<ICloudBusHost> OnHostStart = host => { }; 
+		protected event Action<ICloudBusHost> WhenHostStarts = host => { }; 
 
 		public override void Run()
 		{
 			_host.Start();
 
-			OnHostStart(_host);
+			WhenHostStarts(_host);
 
 			while (false == _shouldStop)
 			{

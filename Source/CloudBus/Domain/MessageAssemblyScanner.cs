@@ -34,6 +34,12 @@ namespace CloudBus.Domain
 			return this;
 		}
 
+		public MessageAssemblyScanner WithAssembly(Assembly assembly)
+		{
+			_assemblies.Add(assembly);
+			return this;
+		}
+
 		public MessageAssemblyScanner WhereMessages(Func<Type, bool> filter)
 		{
 			_messageSelector.Where(filter);
