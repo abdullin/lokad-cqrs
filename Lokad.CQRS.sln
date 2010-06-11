@@ -1,10 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lokad.Cqrs", "Source\CloudBus\Lokad.Cqrs.csproj", "{FD6C8202-F530-4C09-8889-28DC383965AA}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lokad.Cqrs.Tests", "Source\CloudBus.Tests\Lokad.Cqrs.Tests.csproj", "{24DA9150-1C7E-45B3-8A75-EA529081237F}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{CBB0EA40-FEC5-48D9-A04D-782440D9D693}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{62414331-D497-493B-8DF2-A4EA8B5DDE42}"
@@ -21,20 +17,16 @@ Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "Sample_02", "Samples\Sample
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample_02.Worker", "Samples\Sample_02.Worker\Sample_02.Worker.csproj", "{00FE424E-9731-40D3-B6F8-896258AC3254}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lokad.Cqrs.Tests", "Source\Lokad.Cqrs.Tests\Lokad.Cqrs.Tests.csproj", "{24DA9150-1C7E-45B3-8A75-EA529081237F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lokad.Cqrs", "Source\Lokad.Cqrs\Lokad.Cqrs.csproj", "{FD6C8202-F530-4C09-8889-28DC383965AA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{FD6C8202-F530-4C09-8889-28DC383965AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FD6C8202-F530-4C09-8889-28DC383965AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FD6C8202-F530-4C09-8889-28DC383965AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FD6C8202-F530-4C09-8889-28DC383965AA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{24DA9150-1C7E-45B3-8A75-EA529081237F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{24DA9150-1C7E-45B3-8A75-EA529081237F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{24DA9150-1C7E-45B3-8A75-EA529081237F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{24DA9150-1C7E-45B3-8A75-EA529081237F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F8114DFB-4BEB-4E20-B016-956A3343C708}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F8114DFB-4BEB-4E20-B016-956A3343C708}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8114DFB-4BEB-4E20-B016-956A3343C708}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -51,6 +43,14 @@ Global
 		{00FE424E-9731-40D3-B6F8-896258AC3254}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{00FE424E-9731-40D3-B6F8-896258AC3254}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{00FE424E-9731-40D3-B6F8-896258AC3254}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24DA9150-1C7E-45B3-8A75-EA529081237F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24DA9150-1C7E-45B3-8A75-EA529081237F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24DA9150-1C7E-45B3-8A75-EA529081237F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24DA9150-1C7E-45B3-8A75-EA529081237F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD6C8202-F530-4C09-8889-28DC383965AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD6C8202-F530-4C09-8889-28DC383965AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD6C8202-F530-4C09-8889-28DC383965AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD6C8202-F530-4C09-8889-28DC383965AA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

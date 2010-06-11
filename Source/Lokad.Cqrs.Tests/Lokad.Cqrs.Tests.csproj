@@ -47,9 +47,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CloudBus\CloudBus.csproj">
+    <ProjectReference Include="..\Lokad.Cqrs\Lokad.Cqrs.csproj">
       <Project>{FD6C8202-F530-4C09-8889-28DC383965AA}</Project>
-      <Name>CloudBus</Name>
+      <Name>Lokad.Cqrs</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
