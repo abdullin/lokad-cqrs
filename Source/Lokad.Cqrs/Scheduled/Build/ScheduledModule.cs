@@ -35,6 +35,39 @@ namespace Lokad.Cqrs.Scheduled.Build
 			WithDefaultDispatcher();
 		}
 
+		/// <summary>
+		/// Modifies the isolation level of the tasks (defaults to <see cref="IsolationLevel.ReadCommitted"/>
+		/// </summary>
+		/// <param name="level">The isolation level to use.</param>
+		/// <returns>same module for inlining configs</returns>
+		public ScheduledModule WithIsolationLevel(IsolationLevel level)
+		{
+			_config.IsolationLevel = level;
+			return this;
+		}
+
+		/// <summary>
+		/// Sets the amount of time to sleep between the tasks/commands.
+		/// </summary>
+		/// <param name="sleepInterval">The sleep interval.</param>
+		/// <returns>same module for inlining configs</returns>
+		public ScheduledModule SleepBetweenCommands(TimeSpan sleepInterval)
+		{
+			_config.SleepBetweenCommands = sleepInterval;
+			return this;
+		}
+
+		/// <summary>
+		/// Sets the amount of time to sleep between the exceptions.
+		/// </summary>
+		/// <param name="timeToSleepBetweenExceptions">The time to sleep between exceptions.</param>
+		/// <returns>same module for inlining configs</returns>
+		public ScheduledModule SleepOnFailure(TimeSpan timeToSleepBetweenExceptions)
+		{
+			_config.SleepOnFailure = timeToSleepBetweenExceptions;
+			return this;
+		}
+
 		public ScheduledModule WithDefaultDispatcher()
 		{
 			_dispatcher = scope => new DefaultTaskDispatcher(scope);
