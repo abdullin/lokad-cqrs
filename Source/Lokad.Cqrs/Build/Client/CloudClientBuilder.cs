@@ -18,6 +18,9 @@ using Microsoft.WindowsAzure;
 
 namespace Lokad.Cqrs
 {
+	/// <summary>
+	/// Fluent API for creating and configuring <see cref="ICloudClient"/>
+	/// </summary>
 	public sealed class CloudClientBuilder
 	{
 		readonly ContainerBuilder _builder = new ContainerBuilder();
@@ -35,12 +38,22 @@ namespace Lokad.Cqrs
 			_builder.RegisterType<CloudClient>().SingleInstance();
 		}
 
+		/// <summary>
+		/// Uses default Development storage account for Windows Azure
+		/// </summary>
+		/// <returns>same builder for inling multiple configuration statements</returns>
+		/// <remarks>This option is enabled by default</remarks>
 		public CloudClientBuilder CloudStorageAccountIsDev()
 		{
 			_builder.RegisterInstance(CloudStorageAccount.DevelopmentStorageAccount);
 			return this;
 		}
 
+		/// <summary>
+		/// Uses development storage account defined in the configuration setting.
+		/// </summary>
+		/// <param name="name">The name of the configuration value to look up.</param>
+		/// <returns>same builder for inling multiple configuration statements</returns>
 		public CloudClientBuilder CloudStorageAccountIsFromConfig(string name)
 		{
 			_builder.Register(c =>
@@ -53,9 +66,14 @@ namespace Lokad.Cqrs
 			return this;
 		}
 
-		public CloudClientBuilder Domain(Action<DomainBuildModule> configuration)
+		/// <summary>
+		/// Configures the message domain for the instance of <see cref="ICloudEngineHost"/>.
+		/// </summary>
+		/// <param name="config">configuration syntax.</param>
+		/// <returns>same builder for inling multiple configuration statements</returns>
+		public CloudClientBuilder Domain(Action<DomainBuildModule> config)
 		{
-			ConfigureWith(configuration);
+			ConfigureWith(config);
 			return this;
 		}
 
@@ -75,6 +93,11 @@ namespace Lokad.Cqrs
 				TypedParameter.From(defaultQueue));
 		}
 
+		/// <summary>
+		/// Registers custom module.
+		/// </summary>
+		/// <param name="module">The custom module to register.</param>
+		/// <returns>same builder for inling multiple configuration statements</returns>
 		public CloudClientBuilder RegisterModule(IModule module)
 		{
 			_builder.RegisterModule(module);

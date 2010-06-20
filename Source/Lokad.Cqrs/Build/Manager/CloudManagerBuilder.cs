@@ -16,6 +16,9 @@ using Microsoft.WindowsAzure;
 
 namespace Lokad.Cqrs
 {
+	/// <summary>
+	/// Configures management environment for the Lokad.CQRS
+	/// </summary>
 	public sealed class CloudManagerBuilder
 	{
 		Action<ContainerBuilder> _actions = builder => { };
@@ -33,12 +36,22 @@ namespace Lokad.Cqrs
 				};
 		}
 
+		/// <summary>
+		/// Uses default Development storage account for Windows Azure
+		/// </summary>
+		/// <returns>same builder for inling multiple configuration statements</returns>
+		/// <remarks>This option is enabled by default</remarks>
 		public CloudManagerBuilder CloudStorageAccountIsDev()
 		{
 			_actions += b => b.RegisterInstance(CloudStorageAccount.DevelopmentStorageAccount);
 			return this;
 		}
 
+		/// <summary>
+		/// Uses development storage account from the string being passed.
+		/// </summary>
+		/// <param name="value">The account string to parse.</param>
+		/// <returns>same builder for inling multiple configuration statements</returns>
 		public CloudManagerBuilder CloudStorageAccountIsFromString(string value)
 		{
 			var account = CloudStorageAccount.Parse(value);

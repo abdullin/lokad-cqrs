@@ -6,7 +6,6 @@
 #endregion
 
 using System;
-using System.ComponentModel;
 using Autofac;
 using Autofac.Core;
 using Lokad.Cqrs.Consume.Build;
@@ -18,11 +17,15 @@ using Lokad.Cqrs.Sender.Build;
 using Lokad.Cqrs.Serialization;
 using Lokad.Cqrs.Transport;
 using Lokad.Diagnostics;
+using Lokad.Quality;
 using Lokad.Settings;
 using Microsoft.WindowsAzure;
 
 namespace Lokad.Cqrs
 {
+	/// <summary>
+	/// Fluent API for creating and configuring <see cref="ICloudEngineHost"/>
+	/// </summary>
 	public class CloudEngineBuilder : Syntax
 	{
 		readonly ContainerBuilder _builder = new ContainerBuilder();
@@ -42,14 +45,25 @@ namespace Lokad.Cqrs
 			_builder.RegisterType<CloudSettingsProvider>().As<IProfileSettings, ISettingsProvider>().SingleInstance();
 		}
 
+		/// <summary>
+		/// Uses default Development storage account for Windows Azure
+		/// </summary>
+		/// <returns>same builder for inling multiple configuration statements</returns>
+		/// <remarks>This option is enabled by default</remarks>
 		public CloudEngineBuilder CloudStorageAccountIsDev()
 		{
 			_builder.RegisterInstance(CloudStorageAccount.DevelopmentStorageAccount);
 			return this;
 		}
 
-		public CloudEngineBuilder CloudStorageAccountIsFromConfig(string name)
+		/// <summary>
+		/// Uses development storage account defined in the configuration setting.
+		/// </summary>
+		/// <param name="name">The name of the configuration value to look up.</param>
+		/// <returns>same builder for inling multiple configuration statements</returns>
+		public CloudEngineBuilder CloudStorageAccountIsFromConfig([NotNull] string name)
 		{
+			if (name == null) throw new ArgumentNullException("name");
 			_builder.Register(c =>
 				{
 					var value = c.Resolve<IProfileSettings>()
@@ -61,9 +75,14 @@ namespace Lokad.Cqrs
 		}
 
 
-		public CloudEngineBuilder PublishSubscribe(Action<BuildPubSubModule> action)
+		/// <summary>
+		/// Adds Publish Subscribe Feature to the instance of <see cref="ICloudEngineHost"/>.
+		/// </summary>
+		/// <param name="config">configuration syntax</param>
+		/// <returns>same builder for inling multiple configuration statements</returns>
+		public CloudEngineBuilder PublishSubscribe(Action<BuildPubSubModule> config)
 		{
-			ConfigureWith(action);
+			ConfigureWith(config);
 			return this;
 		}
 
@@ -71,31 +90,50 @@ namespace Lokad.Cqrs
 		/// Adds Message Handling Feature to the instance of <see cref="ICloudEngineHost"/>
 		/// </summary>
 		/// <param name="config">configuration syntax</param>
-		/// <returns>same builder for inling</returns>
+		/// <returns>same builder for inling multiple configuration statements</returns>
 		public CloudEngineBuilder HandleMessages(Action<HandleMessagesModule> config)
 		{
 			ConfigureWith(config);
 			return this;
 		}
 
+		/// <summary>
+		/// Adds Task Scheduling Feature to the instance of <see cref="ICloudEngineHost"/>
+		/// </summary>
+		/// <param name="config">configuration syntax</param>
+		/// <returns>same builder for inling multiple configuration statements</returns>
 		public CloudEngineBuilder RunTasks(Action<ScheduledModule> config)
 		{
 			ConfigureWith(config);
 			return this;
 		}
 
-		public CloudEngineBuilder Domain(Action<DomainBuildModule> configuration)
+		/// <summary>
+		/// Configures the message domain for the instance of <see cref="ICloudEngineHost"/>.
+		/// </summary>
+		/// <param name="config">configuration syntax.</param>
+		/// <returns>same builder for inling multiple configuration statements</returns>
+		public CloudEngineBuilder Domain(Action<DomainBuildModule> config)
 		{
-			ConfigureWith(configuration);
+			ConfigureWith(config);
 			return this;
 		}
 
-		public CloudEngineBuilder SendMessages(Action<SenderModule> configuration)
+		/// <summary>
+		/// Creates default message sender for the instance of <see cref="ICloudEngineHost"/>
+		/// </summary>
+		/// <param name="config">configuration syntax.</param>
+		/// <returns>same builder for inling multiple configuration statements</returns>
+		public CloudEngineBuilder SendMessages(Action<SenderModule> config)
 		{
-			ConfigureWith(configuration);
+			ConfigureWith(config);
 			return this;
 		}
 
+		/// <summary>
+		/// Builds this <see cref="ICloudEngineHost"/>.
+		/// </summary>
+		/// <returns>new instance of cloud engine host</returns>
 		public ICloudEngineHost Build()
 		{
 			var container = _builder.Build();
@@ -110,6 +148,11 @@ namespace Lokad.Cqrs
 			_builder.RegisterModule(module);
 		}
 
+		/// <summary>
+		/// Registers custom module.
+		/// </summary>
+		/// <param name="module">The custom module to register.</param>
+		/// <returns>same builder for inling multiple configuration statements</returns>
 		public CloudEngineBuilder RegisterModule(IModule module)
 		{
 			_builder.RegisterModule(module);
