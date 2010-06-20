@@ -2,7 +2,7 @@
 # For syntax see: http://linux.die.net/man/5/hgignore
 # Source: http://bitbucket.org/abdullin/snippets/
 
-# Visual Studio 
+# Visual Studio
 glob:*.user
 glob:*.suo
 glob:*.cache
@@ -21,3 +21,4 @@ relre:^Build/
 glob:Thumbs.db
 glob:*.bak
 glob:*.log
+glob:Resource/ILMerge/ILMerge*
