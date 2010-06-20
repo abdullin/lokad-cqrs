@@ -22,3 +22,4 @@ glob:Thumbs.db
 glob:*.bak
 glob:*.log
 glob:Resource/ILMerge/ILMerge*
+glob:Features/NHibernate/Build/

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Project DefaultTargets="integrate" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<PropertyGroup>
+		<ProjectPath>$(MSBuildProjectDirectory)</ProjectPath>
+		<BuildPath Condition="$(BuildPath)==''">$(MSBuildProjectDirectory)\Build</BuildPath>
+		<Version Condition="$(Version)==''">0.0.0.0</Version>
+		<OutputName>Lokad.Cqrs.NHibernate.dll</OutputName>
+		<MergeTool>..\..\Resource\ILmerge\ILMerge.exe</MergeTool>
+	</PropertyGroup>
+
+	<Target Name="clean">
+		<RemoveDir Directories="$(BuildPath)" />
+	</Target>
+	<Target Name="integrate" DependsOnTargets="clean;build" />
+
+	<Target Name="build">
+		<MakeDir Directories="$(BuildPath)"/>
+		<CreateItem Include="FluentNHibernate\*.dll;NHibernate.Linq\*.dll;NHProf\*.dll">
+			<Output ItemName="mergeLibraries" TaskParameter="Include"/>
+		</CreateItem>
+		<Exec Command="$(MergeTool) @(mergeLibraries->'&quot;%(FullPath)&quot;', ' ') /out:&quot;$(BuildPath)/$(OutputName)&quot;  /xmldocs=true /attr:&quot;FluentNHibernate/Nhibernate.dll&quot; /ver:$(Version) /keyfile:SharedKey.snk" />
+		<WriteLinesToFile Lines="@(mergeLibraries)" File="$(BuildPath)\$(OutputName).txt" />
+	</Target>
+	
+</Project>
