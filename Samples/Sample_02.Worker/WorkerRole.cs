@@ -15,17 +15,21 @@ namespace Sample_02.Worker
 		protected override ICloudEngineHost BuildHost()
 		{
 			return new CloudEngineBuilder()
+				// this tells the server about the domain
 				.Domain(d =>
 					{
 						d.WithDefaultInterfaces();
 						d.InCurrentAssembly();
 					})
+				// we'll handle all messages incoming to this queue
 				.HandleMessages(mc =>
 					{
 						mc.ListenTo("sample-02");
 						mc.WithMultipleConsumers();
 					})
+				// create IMessageClient that will send to sample-02 by default
 				.SendMessages(m => m.DefaultToQueue("sample-02"))
+				// enable and auto-wire scheduled tasks feature
 				.RunTasks(m => { m.WithDefaultInterfaces().InCurrentAssembly(); })
 				.Build();
 		}

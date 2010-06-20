@@ -17,6 +17,12 @@ namespace Sample_02.Worker
 		{
 			Amount = amount;
 		}
+
+		public override string ToString()
+		{
+			// makes the message more readable in the debug logs
+			return string.Format("Send Payment ({0})", Amount);
+		}
 	}
 
 	public sealed class SendPaymentHandler : IConsume<SendPaymentMessage>
@@ -31,7 +37,7 @@ namespace Sample_02.Worker
 	{
 		public void Consume(IMessage message)
 		{
-			Trace.WriteLine("Generic listener just got message of type: " + message.GetType());
+			Trace.WriteLine("Got message of type: " + message.GetType());
 		}
 	}
 
@@ -41,12 +47,14 @@ namespace Sample_02.Worker
 
 		public SendPaymentsSometimes(IMessageClient sender)
 		{
+			// sender will be injected by the IoC
 			_sender = sender;
 		}
 
 		public TimeSpan Execute()
 		{
 			var amount = (Rand.NextDouble()*100).Round(1);
+			// send new message
 			_sender.Send(new SendPaymentMessage(amount));
 			// sleep for
 			return 3.Seconds();

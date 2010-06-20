@@ -9,7 +9,7 @@ Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "Sample_01.Basic", "Samples\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01 PingPong", "01 PingPong", "{48C1036C-BD1D-469E-BBB9-4F13B7C43E43}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02 Tasks and Listening", "02 Tasks and Listening", "{2EBE3A47-8C6B-46E8-B896-01F172BE18EB}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02 Recurring Payments", "02 Recurring Payments", "{2EBE3A47-8C6B-46E8-B896-01F172BE18EB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample_01.Worker", "Samples\Sample_01.Worker\Sample_01.Worker.csproj", "{DFCE11A8-B20F-49D7-9011-6E459E35FDDC}"
 EndProject

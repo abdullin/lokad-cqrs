@@ -6,6 +6,7 @@
 #endregion
 
 using System;
+using System.ComponentModel;
 using Autofac;
 using Autofac.Core;
 using Lokad.Cqrs.Consume.Build;
@@ -22,7 +23,7 @@ using Microsoft.WindowsAzure;
 
 namespace Lokad.Cqrs
 {
-	public class CloudEngineBuilder
+	public class CloudEngineBuilder : Syntax
 	{
 		readonly ContainerBuilder _builder = new ContainerBuilder();
 
@@ -66,6 +67,11 @@ namespace Lokad.Cqrs
 			return this;
 		}
 
+		/// <summary>
+		/// Adds Message Handling Feature to the instance of <see cref="ICloudEngineHost"/>
+		/// </summary>
+		/// <param name="config">configuration syntax</param>
+		/// <returns>same builder for inling</returns>
 		public CloudEngineBuilder HandleMessages(Action<HandleMessagesModule> config)
 		{
 			ConfigureWith(config);
