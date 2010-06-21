@@ -1,0 +1,1 @@
+set "PATH=%ProgramFiles%\Microsoft SDKs\Windows\v6.0A\Bin;%PATH%"

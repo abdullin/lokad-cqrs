@@ -1,0 +1,10 @@
+<Configuration>
+  <NamespaceFolders>
+    <SkipFolder>FD6C8202-F530-4C09-8889-28DC383965AA/d:Build/d:Client</SkipFolder>
+    <SkipFolder>FD6C8202-F530-4C09-8889-28DC383965AA/d:Build/d:Engine</SkipFolder>
+    <SkipFolder>FD6C8202-F530-4C09-8889-28DC383965AA/d:Build/d:Manager</SkipFolder>
+    <SkipFolder>FD6C8202-F530-4C09-8889-28DC383965AA/d:Build</SkipFolder>
+    <SkipFolder>FD6C8202-F530-4C09-8889-28DC383965AA/d:Design</SkipFolder>
+    <SkipFolder>FD6C8202-F530-4C09-8889-28DC383965AA/d:Infrastructure</SkipFolder>
+  </NamespaceFolders>
+</Configuration>

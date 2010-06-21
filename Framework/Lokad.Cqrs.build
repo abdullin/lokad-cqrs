@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Project DefaultTargets="integrate" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<PropertyGroup>
+		<ProjectPath>$(MSBuildProjectDirectory)</ProjectPath>
+		<BuildPath Condition="$(BuildPath)==''">$(MSBuildProjectDirectory)\Build</BuildPath>
+		<Version Condition="$(Version)==''">0.0.0.0</Version>
+    <Configuration Condition="$(Configuration)==''">Release</Configuration>
+		<NHibernateName>Lokad.Cqrs.NHibernate.dll</NHibernateName>
+    <ILmerge>..\Resource\ILmerge\ILMerge.exe</ILmerge>
+    <Linker>Source\Lokad.Cqrs.Linker\bin\$(Configuration)\Lokad.Cqrs.Linker.exe</Linker>
+    <StackPath>$(BuildPath)\Stack</StackPath>
+    <TempPath>$(BuildPath)\Temp</TempPath>
+    <RawPath>$(BuildPath)\Raw</RawPath>
+    <TestPath>$(BuildPath)\Test</TestPath>
+  </PropertyGroup>
+
+	<Target Name="clean">
+    <MSBuild Projects="$(MSBuildProjectName).sln" Targets="Clean" Properties="Configuration=$(Configuration)"/>
+
+    <CreateItem Include="**/Debug/**/*.*;**/Release/**/*.*">
+      <Output ItemName="_binaryFiles" TaskParameter="Include"/>
+    </CreateItem>
+    <Delete Files="@(_binaryFiles)" TreatErrorsAsWarnings="true"/>
+    <RemoveDir Directories="$(BuildPath)" />
+	</Target>
+	<Target Name="integrate" DependsOnTargets="clean;build" />
+
+	<Target Name="build">
+    <MSBuild Projects="$(MSBuildProjectName).sln" Targets="Build" Properties="Configuration=$(Configuration)"/>		
+	</Target>
+
+  <Target Name="copy" DependsOnTargets="build">
+    <MakeDir Directories="$(BuildPath);$(StackPath);$(TempPath)"/>
+
+    <!--Library-->
+    <CreateItem Include="Source\**\bin\$(Configuration)\*.*;Library\*.*">
+      <Output ItemName="rawFiles" TaskParameter="Include"/>
+    </CreateItem>
+    <Copy SourceFiles="@(rawFiles)" DestinationFolder="$(RawPath)" />
+
+    <CreateItem Include="$(RawPath)\Lokad.Shared.*">
+      <Output ItemName="sharedFiles" TaskParameter="Include"/>
+    </CreateItem>
+    <Copy SourceFiles="@(sharedFiles)" DestinationFolder="$(StackPath)" />
+
+    
+    <!--Merge Lokad.Cqrs-->
+    <Exec Command="$(ILMerge) &quot;$(RawPath)\Lokad.Cqrs.dll&quot; &quot;$(RawPath)/Autofac.dll&quot; /out:&quot;$(StackPath)/Lokad.Cqrs.dll&quot; /keyfile:SharedKey.snk /xmldocs=true /ver:$(Version) /attr:&quot;$(RawPath)/Lokad.Cqrs.dll&quot;" />
+
+    <!--Merge Lokad.Cqrs.NHibernate-->
+    <CreateItem Include="Library\NHibernate.Core\*.dll;Library\NHibernate.Linq\*.dll;$(RawPath)\Lokad.Cqrs.NHibernate.dll">
+      <Output ItemName="mergeNHibernate" TaskParameter="Include"/>
+    </CreateItem>
+    <Exec Command="$(ILMerge) @(mergeNHibernate->'&quot;%(FullPath)&quot;', ' ') /out:&quot;$(StackPath)/Lokad.Cqrs.NHibernate.dll&quot;  /xmldocs=true /attr:&quot;$(RawPath)\Lokad.Cqrs.NHibernate.dll&quot; /ver:$(Version) /keyfile:SharedKey.snk" />
+    <WriteLinesToFile Lines="@(mergeNHibernate)" File="$(StackPath)\Lokad.Cqrs.NHibernate.txt" />
+    <Exec Command="$(Linker) &quot;$(StackPath)\Lokad.Cqrs.NHibernate.dll&quot; &quot;$(RawPath)\Lokad.Cqrs.dll&quot; &quot;$(StackPath)\Lokad.Cqrs.dll&quot; &quot;$(StackPath)\Lokad.Cqrs.NHibernate.dll&quot;" />
+    <Exec Command="sn.exe -Ra &quot;$(StackPath)\Lokad.Cqrs.NHibernate.dll&quot; SharedKey.snk" />
+   
+    <!--All Tests-->
+    <CreateItem Include="Tests\**\bin\$(Configuration)\*.*" Exclude="Tests\**\bin\$(Configuration)\*.xml;Tests\**\bin\$(Configuration)\*.pdb;">
+      <Output ItemName="testFiles" TaskParameter="Include"/>
+    </CreateItem>
+    <Copy SourceFiles="@(testFiles)" DestinationFolder="$(TestPath)" />
+  </Target>
+
+
+</Project>
