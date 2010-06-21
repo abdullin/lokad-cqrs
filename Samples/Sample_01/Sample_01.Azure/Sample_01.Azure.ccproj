@@ -4,13 +4,13 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>1.0.0</ProductVersion>
-    <ProjectGuid>{19c604e8-34e3-4f33-9841-3b6beaa71776}</ProjectGuid>
+    <ProjectGuid>{c78362a6-1d45-4290-b5c5-2ce98679919d}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Sample_02</RootNamespace>
-    <AssemblyName>Sample_02</AssemblyName>
+    <RootNamespace>Sample_01.Azure</RootNamespace>
+    <AssemblyName>Sample_01.Azure</AssemblyName>
     <StartDevelopmentStorage>True</StartDevelopmentStorage>
-    <Name>Sample_02</Name>
+    <Name>Sample_01.Azure</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -35,12 +35,12 @@
     <ServiceConfiguration Include="ServiceConfiguration.cscfg" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Sample_02.Worker\Sample_02.Worker.csproj">
-      <Name>Sample_02.Worker</Name>
-      <Project>{00fe424e-9731-40d3-b6f8-896258ac3254}</Project>
+    <ProjectReference Include="..\Sample_01.Worker\Sample_01.Worker.csproj">
+      <Name>Sample_01.Worker</Name>
+      <Project>{dfce11a8-b20f-49d7-9011-6e459e35fddc}</Project>
       <Private>True</Private>
       <RoleType>Worker</RoleType>
-      <RoleName>Sample_02.Worker</RoleName>
+      <RoleName>Sample_01.Worker</RoleName>
     </ProjectReference>
   </ItemGroup>
   <!-- Import the target files for this project template -->

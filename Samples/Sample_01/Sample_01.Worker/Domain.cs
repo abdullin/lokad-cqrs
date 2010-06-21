@@ -1,4 +1,13 @@
-﻿using System.Diagnostics;
+﻿#region (c) 2010 Lokad Open Source - New BSD License 
+
+// Copyright (c) Lokad 2010, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+// 
+// Lokad.CQRS for Windows Azure: http://code.google.com/p/lokad-cqrs/
+
+#endregion
+
+using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Threading;
 using Lokad.Cqrs;
@@ -12,6 +21,7 @@ namespace Sample_01.Worker
 	{
 		[DataMember]
 		public int Ball { get; private set; }
+
 		[DataMember]
 		public string Game { get; private set; }
 
@@ -23,7 +33,7 @@ namespace Sample_01.Worker
 
 		public PingPongCommand Pong()
 		{
-			return new PingPongCommand(Ball+1, Game);
+			return new PingPongCommand(Ball + 1, Game);
 		}
 	}
 
@@ -42,7 +52,7 @@ namespace Sample_01.Worker
 			const string format = "Ping #{0} in game '{1}'.";
 			Trace.WriteLine(string.Format(format, message.Ball, message.Game));
 			Thread.Sleep(1000);
-			
+
 			_sender.Send(message.Pong());
 		}
 	}

@@ -2,51 +2,47 @@
 
 // Copyright (c) Lokad 2010, http://www.lokad.com
 // This code is released as Open Source under the terms of the New BSD Licence
+// 
+// Lokad.CQRS for Windows Azure: http://code.google.com/p/lokad-cqrs/
 
 #endregion
 
-using Lokad;
 using Lokad.Cqrs;
 using Microsoft.WindowsAzure.Diagnostics;
 
-namespace Sample_01.Worker
+namespace Sample_02.Worker
 {
 	public class WorkerRole : CloudEngineRole
 	{
 		protected override ICloudEngineHost BuildHost()
 		{
+			// for more detail about this sample see:
+			// http://code.google.com/p/lokad-cqrs/wiki/GuidanceSeries
+
 			return new CloudEngineBuilder()
-			// this tells the server about the domain
+				// this tells the server about the domain
 				.Domain(d =>
 					{
-						d.InCurrentAssembly();
 						d.WithDefaultInterfaces();
+						d.InCurrentAssembly();
 					})
 				// we'll handle all messages incoming to this queue
 				.HandleMessages(mc =>
 					{
-						mc.ListenTo("sample-01");
-						mc.WithSingleConsumer();
+						mc.ListenTo("sample-02");
+						mc.WithMultipleConsumers();
 					})
-				// when we send message - default it to this queue as well
-				.SendMessages(m => m.DefaultToQueue("sample-01"))
+				// create IMessageClient that will send to sample-02 by default
+				.SendMessages(m => m.DefaultToQueue("sample-02"))
+				// enable and auto-wire scheduled tasks feature
+				.RunTasks(m => { m.WithDefaultInterfaces().InCurrentAssembly(); })
 				.Build();
 		}
 
 		public override bool OnStart()
 		{
 			DiagnosticMonitor.Start("DiagnosticsConnectionString");
-			// we send first ping message, when host starts
-			WhenEngineStarts += SendFirstMessage;
-
 			return base.OnStart();
-		}
-
-		static void SendFirstMessage(ICloudEngineHost host)
-		{
-			var sender = host.Resolve<IMessageClient>();
-			var game = Rand.String.NextWord();
-			sender.Send(new PingPongCommand(0, game));
 		}
 	}
 }

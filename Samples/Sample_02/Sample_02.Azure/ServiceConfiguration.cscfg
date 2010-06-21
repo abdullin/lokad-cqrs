@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<ServiceConfiguration serviceName="Sample_01.Basic" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceConfiguration">
-  <Role name="Sample_01.Worker">
+<ServiceConfiguration serviceName="Sample_02.Azure" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceConfiguration">
+  <Role name="Sample_02.Worker">
     <Instances count="1" />
     <ConfigurationSettings>
       <Setting name="DiagnosticsConnectionString" value="UseDevelopmentStorage=true" />

@@ -1,4 +1,13 @@
-﻿using System;
+﻿#region (c) 2010 Lokad Open Source - New BSD License 
+
+// Copyright (c) Lokad 2010, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+// 
+// Lokad.CQRS for Windows Azure: http://code.google.com/p/lokad-cqrs/
+
+#endregion
+
+using System;
 using System.Diagnostics;
 using System.Runtime.Serialization;
 using Lokad;
