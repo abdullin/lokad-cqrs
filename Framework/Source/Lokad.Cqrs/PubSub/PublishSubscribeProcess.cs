@@ -34,7 +34,7 @@ namespace Lokad.Cqrs.PubSub
 			_transport.MessageRecieved -= TransportOnMessageRecieved;
 		}
 
-		public void Start()
+		public void StartUp()
 		{
 			_log.DebugFormat("Starting pub/sub for {0}", _transport.ToString());
 			_transport.MessageRecieved += TransportOnMessageRecieved;

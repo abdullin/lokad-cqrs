@@ -31,7 +31,7 @@ namespace Lokad.Cqrs.Consume
 			_transport.MessageRecieved -= TransportOnMessageRecieved;
 		}
 
-		public void Start()
+		public void StartUp()
 		{
 			_log.DebugFormat("Starting consumption for {0}", _transport.ToString());
 			_transport.MessageRecieved += TransportOnMessageRecieved;

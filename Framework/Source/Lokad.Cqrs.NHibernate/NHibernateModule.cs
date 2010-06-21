@@ -7,6 +7,7 @@
 
 using System;
 using Autofac;
+using Lokad.Settings;
 using NHibernate;
 using NHibernate.Bytecode;
 using NHibernate.ByteCode.Castle;
@@ -28,7 +29,7 @@ namespace Lokad.Cqrs.NHibernate
 		{
 			builder.Register(c => c.Resolve<Configuration>().BuildSessionFactory()).SingleInstance();
 			builder.Register(ComposeSession).InstancePerLifetimeScope();
-			builder.RegisterType<NHibernateStarter>().As<IEngineProcess>();
+			builder.RegisterType<NHibernateStarter>().As<IStartable>();
 		}
 
 
@@ -50,9 +51,9 @@ namespace Lokad.Cqrs.NHibernate
 
 		Configuration ComposeConfiguration(IComponentContext context, string key, Func<string, Configuration> config)
 		{
-			var provider = context.Resolve<IProfileSettings>();
+			var provider = context.Resolve<ISettingsProvider>();
 			var connectionValue = provider
-				.GetString(key)
+				.GetValue(key)
 				.ExposeException("Could not load setting '{0}'", key);
 
 			var instance = config(connectionValue);

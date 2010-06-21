@@ -82,6 +82,8 @@ namespace Lokad.Cqrs
 		public void Apply(ContainerBuilder builder)
 		{
 			_actions(builder);
+			
+
 			_actions = containerBuilder => { };
 		}
 	}

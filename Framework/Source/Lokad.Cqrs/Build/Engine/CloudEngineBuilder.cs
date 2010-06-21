@@ -26,7 +26,7 @@ namespace Lokad.Cqrs
 	/// <summary>
 	/// Fluent API for creating and configuring <see cref="ICloudEngineHost"/>
 	/// </summary>
-	public class CloudEngineBuilder : Syntax
+	public class CloudEngineBuilder : ISyntax<ContainerBuilder>
 	{
 		readonly ContainerBuilder _builder = new ContainerBuilder();
 
@@ -157,6 +157,11 @@ namespace Lokad.Cqrs
 		{
 			_builder.RegisterModule(module);
 			return this;
+		}
+
+		ContainerBuilder ISyntax<ContainerBuilder>.Target
+		{
+			get { return _builder; }
 		}
 	}
 }

@@ -11,7 +11,7 @@ using NHibernate;
 namespace Lokad.Cqrs.NHibernate
 {
 	[UsedImplicitly]
-	public sealed class NHibernateStarter : IEngineProcess
+	public sealed class NHibernateStarter : IStartable
 	{
 		// is needed to initialize NHibernate on start.
 		readonly ISessionFactory _factory;
@@ -28,7 +28,7 @@ namespace Lokad.Cqrs.NHibernate
 		{
 		}
 
-		public void Start()
+		public void StartUp()
 		{
 			_log.DebugFormat("NHibernate started: {0}", _factory.Statistics.StartTime);
 		}

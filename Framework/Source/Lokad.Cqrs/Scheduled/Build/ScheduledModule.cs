@@ -91,7 +91,7 @@ namespace Lokad.Cqrs.Scheduled.Build
 			builder.Register(c => ConfigureComponent(c, allTasks));
 		}
 
-		IEngineProcess ConfigureComponent(IComponentContext context, ScheduledTaskInfo[] tasks)
+		IStartable ConfigureComponent(IComponentContext context, ScheduledTaskInfo[] tasks)
 		{
 			var logger = context.Resolve<ILogProvider>().CreateLog<ScheduledModule>();
 			logger.DebugFormat("{0} task available", tasks.Length);

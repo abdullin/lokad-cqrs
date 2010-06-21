@@ -53,7 +53,9 @@
     </CreateItem>
     <Exec Command="$(ILMerge) @(mergeNHibernate->'&quot;%(FullPath)&quot;', ' ') /out:&quot;$(StackPath)/Lokad.Cqrs.NHibernate.dll&quot;  /xmldocs=true /attr:&quot;$(RawPath)\Lokad.Cqrs.NHibernate.dll&quot; /ver:$(Version) /keyfile:SharedKey.snk" />
     <WriteLinesToFile Lines="@(mergeNHibernate)" File="$(StackPath)\Lokad.Cqrs.NHibernate.txt" />
-    <Exec Command="$(Linker) &quot;$(StackPath)\Lokad.Cqrs.NHibernate.dll&quot; &quot;$(RawPath)\Lokad.Cqrs.dll&quot; &quot;$(StackPath)\Lokad.Cqrs.dll&quot; &quot;$(StackPath)\Lokad.Cqrs.NHibernate.dll&quot;" />
+    
+    <Exec Command="$(Linker) &quot;$(StackPath)\Lokad.Cqrs.NHibernate.dll&quot; &quot;$(RawPath)\Autofac.dll&quot; &quot;$(StackPath)\Lokad.Cqrs.dll&quot; &quot;$(StackPath)\Lokad.Cqrs.NHibernate.dll&quot;" />
+    
     <Exec Command="sn.exe -Ra &quot;$(StackPath)\Lokad.Cqrs.NHibernate.dll&quot; SharedKey.snk" />
    
     <!--All Tests-->

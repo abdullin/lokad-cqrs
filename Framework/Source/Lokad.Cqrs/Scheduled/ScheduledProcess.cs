@@ -58,7 +58,7 @@ namespace Lokad.Cqrs.Scheduled
 				return;
 		}
 
-		public void Start()
+		public void StartUp()
 		{
 			_shouldContinue = true;
 			_controlThreads = new[]

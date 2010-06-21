@@ -10,10 +10,12 @@ using Autofac;
 using Lokad.Cqrs.NHibernate;
 
 // ReSharper disable CheckNamespace
-
 namespace Lokad.Cqrs
 // ReSharper restore CheckNamespace
 {
+	/// <summary>
+	/// Extends Lokad.CQRS Builder syntax
+	/// </summary>
 	public static class ExtendSyntax
 	{
 		public static TSyntax WithNHibernate<TSyntax>(this TSyntax syntax, Action<NHibernateModule> config)

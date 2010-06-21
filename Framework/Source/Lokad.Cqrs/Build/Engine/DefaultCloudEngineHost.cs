@@ -16,17 +16,17 @@ namespace Lokad.Cqrs
 	{
 		readonly IContainer _container;
 		readonly ILog _log;
-		readonly IEnumerable<IEngineProcess> _serverThreads;
+		readonly IEnumerable<IStartable> _serverProcesses;
 
 		
 
 		public DefaultCloudEngineHost(
 			IContainer container,
 			ILogProvider provider,
-			IEnumerable<IEngineProcess> serverThreads)
+			IEnumerable<IStartable> serverProcesses)
 		{
 			_container = container;
-			_serverThreads = serverThreads;
+			_serverProcesses = serverProcesses;
 			_log = provider.CreateLog<DefaultCloudEngineHost>();
 		}
 
@@ -34,9 +34,9 @@ namespace Lokad.Cqrs
 		{
 			_log.Info("Starting host");
 
-			foreach (var thread in _serverThreads)
+			foreach (var thread in _serverProcesses)
 			{
-				thread.Start();
+				thread.StartUp();
 			}
 		}
 
@@ -48,12 +48,6 @@ namespace Lokad.Cqrs
 		public void Stop()
 		{
 			_log.Info("Stopping host");
-
-			foreach (var thread in _serverThreads)
-			{
-				thread.Dispose();
-			}
-
 			_container.Dispose();
 		}
 

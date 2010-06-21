@@ -9,8 +9,7 @@ using System;
 
 namespace Lokad.Cqrs
 {
-	public interface IEngineProcess : IDisposable
+	public interface IEngineProcess : IStartable, IDisposable
 	{
-		void Start();
 	}
 }

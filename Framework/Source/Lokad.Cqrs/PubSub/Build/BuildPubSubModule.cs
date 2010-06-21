@@ -77,7 +77,7 @@ namespace Lokad.Cqrs.PubSub.Build
 		{
 		}
 
-		IEngineProcess BuildComponent(IComponentContext context)
+		IStartable BuildComponent(IComponentContext context)
 		{
 			var log = context.Resolve<ILogProvider>().CreateLog<BuildPubSubModule>();
 
