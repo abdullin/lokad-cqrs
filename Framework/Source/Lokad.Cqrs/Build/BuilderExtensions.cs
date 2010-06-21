@@ -91,5 +91,23 @@ namespace Lokad.Cqrs
 			}).SingleInstance();
 			return builder;
 		}
+
+
+		/// <summary>
+		/// Uses development storage account defined in the configuration setting.
+		/// </summary>
+		/// <typeparam name="TSyntax">The type of the syntax.</typeparam>
+		/// <param name="builder">The builder to extend.</param>
+		/// <param name="accountString">The account string.</param>
+		/// <returns>
+		/// same builder for inling multiple configuration statements
+		/// </returns>
+		public static TSyntax CloudStorageAccountIsFromString<TSyntax>(this TSyntax builder, string accountString)
+			where TSyntax : ISyntax<ContainerBuilder>
+		{
+			var account = CloudStorageAccount.Parse(accountString);
+			builder.Target.RegisterInstance(account);
+			return builder;
+		}
 	}
 }
