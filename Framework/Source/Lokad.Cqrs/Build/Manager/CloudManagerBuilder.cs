@@ -19,21 +19,19 @@ namespace Lokad.Cqrs
 	/// <summary>
 	/// Configures management environment for the Lokad.CQRS
 	/// </summary>
-	public sealed class CloudManagerBuilder
+	public sealed class CloudManagerBuilder : ISyntax<ContainerBuilder>
 	{
-		Action<ContainerBuilder> _actions = builder => { };
+		readonly ContainerBuilder _builder = new ContainerBuilder();
 
 
 		public CloudManagerBuilder()
 		{
 			CloudStorageAccountIsDev();
-			_actions += builder =>
-				{
-					builder.RegisterInstance(TraceLog.Provider).SingleInstance();
-					builder.RegisterInstance(NullEngineProfiler.Instance);
-					builder.RegisterType<AzureQueueFactory>().As<IRouteMessages, IQueueManager>().SingleInstance();
-					builder.RegisterType<AzureQueueTransport>().As<IMessageTransport>();
-				};
+
+			_builder.RegisterInstance(TraceLog.Provider).SingleInstance();
+			_builder.RegisterInstance(NullEngineProfiler.Instance);
+			_builder.RegisterType<AzureQueueFactory>().As<IRouteMessages, IQueueManager>().SingleInstance();
+			_builder.RegisterType<AzureQueueTransport>().As<IMessageTransport>();
 		}
 
 		/// <summary>
@@ -43,7 +41,7 @@ namespace Lokad.Cqrs
 		/// <remarks>This option is enabled by default</remarks>
 		public CloudManagerBuilder CloudStorageAccountIsDev()
 		{
-			_actions += b => b.RegisterInstance(CloudStorageAccount.DevelopmentStorageAccount);
+			_builder.RegisterInstance(CloudStorageAccount.DevelopmentStorageAccount);
 			return this;
 		}
 
@@ -55,7 +53,7 @@ namespace Lokad.Cqrs
 		public CloudManagerBuilder CloudStorageAccountIsFromString(string value)
 		{
 			var account = CloudStorageAccount.Parse(value);
-			_actions += b => b.RegisterInstance(account);
+			_builder.RegisterInstance(account);
 			return this;
 		}
 
@@ -70,21 +68,18 @@ namespace Lokad.Cqrs
 		{
 			var module = new TModule();
 			config(module);
-			_actions += builder => builder.RegisterModule(module);
+			_builder.RegisterModule(module);
 		}
 
 		public CloudManagerBuilder WithCustom(Action<ContainerBuilder> builder)
 		{
-			_actions += builder;
+			builder(_builder);
 			return this;
 		}
 
-		public void Apply(ContainerBuilder builder)
+		public ContainerBuilder Target
 		{
-			_actions(builder);
-			
-
-			_actions = containerBuilder => { };
+			get { return _builder; }
 		}
 	}
 }

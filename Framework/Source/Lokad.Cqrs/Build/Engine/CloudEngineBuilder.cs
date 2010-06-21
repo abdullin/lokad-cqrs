@@ -159,7 +159,7 @@ namespace Lokad.Cqrs
 			return this;
 		}
 
-		ContainerBuilder ISyntax<ContainerBuilder>.Target
+		public ContainerBuilder Target
 		{
 			get { return _builder; }
 		}

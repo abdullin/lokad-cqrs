@@ -21,7 +21,7 @@ namespace Lokad.Cqrs
 	/// <summary>
 	/// Fluent API for creating and configuring <see cref="ICloudClient"/>
 	/// </summary>
-	public sealed class CloudClientBuilder
+	public sealed class CloudClientBuilder : ISyntax<ContainerBuilder>
 	{
 		readonly ContainerBuilder _builder = new ContainerBuilder();
 
@@ -102,6 +102,11 @@ namespace Lokad.Cqrs
 		{
 			_builder.RegisterModule(module);
 			return this;
+		}
+
+		public ContainerBuilder Target
+		{
+			get { return _builder; }
 		}
 	}
 }
