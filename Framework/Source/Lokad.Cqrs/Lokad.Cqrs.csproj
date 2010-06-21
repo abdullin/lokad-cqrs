@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Build\BuilderExtensions.cs" />
     <Compile Include="Build\Client\CloudClient.cs" />
     <Compile Include="Build\Client\CloudClientBuilder.cs" />
     <Compile Include="Build\Client\ICloudClient.cs" />

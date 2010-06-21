@@ -5,6 +5,7 @@
 
 #endregion
 
+using System;
 using System.Collections.Generic;
 using Autofac;
 using Lokad.Quality;
@@ -12,13 +13,13 @@ using Lokad.Quality;
 namespace Lokad.Cqrs
 {
 	[UsedImplicitly]
-	public sealed class DefaultCloudEngineHost : ICloudEngineHost
+	public sealed class DefaultCloudEngineHost : ICloudEngineHost, IDisposable
 	{
 		readonly IContainer _container;
 		readonly ILog _log;
 		readonly IEnumerable<IStartable> _serverProcesses;
 
-		
+		volatile bool _disposed;
 
 		public DefaultCloudEngineHost(
 			IContainer container,
@@ -47,6 +48,7 @@ namespace Lokad.Cqrs
 
 		public void Stop()
 		{
+			_disposed = true;
 			_log.Info("Stopping host");
 			_container.Dispose();
 		}
@@ -54,6 +56,14 @@ namespace Lokad.Cqrs
 		public TService Resolve<TService>()
 		{
 			return _container.Resolve<TService>();
+		}
+
+		public void Dispose()
+		{
+			if (!_disposed)
+				return;
+			_disposed = true;
+				_container.Dispose();
 		}
 	}
 }

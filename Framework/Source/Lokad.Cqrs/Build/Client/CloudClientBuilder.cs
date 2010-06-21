@@ -7,14 +7,12 @@
 
 using System;
 using Autofac;
-using Autofac.Core;
 using Lokad.Cqrs.Domain.Build;
 using Lokad.Cqrs.Queue;
 using Lokad.Cqrs.Serialization;
 using Lokad.Cqrs.Transport;
 using Lokad.Diagnostics;
 using Lokad.Settings;
-using Microsoft.WindowsAzure;
 
 namespace Lokad.Cqrs
 {
@@ -27,7 +25,7 @@ namespace Lokad.Cqrs
 
 		public CloudClientBuilder()
 		{
-			CloudStorageAccountIsDev();
+			this.CloudStorageAccountIsDev();
 
 			_builder.RegisterType<CloudSettingsProvider>().As<IProfileSettings, ISettingsProvider>().SingleInstance();
 			_builder.RegisterInstance(TraceLog.Provider);
@@ -39,52 +37,14 @@ namespace Lokad.Cqrs
 		}
 
 		/// <summary>
-		/// Uses default Development storage account for Windows Azure
-		/// </summary>
-		/// <returns>same builder for inling multiple configuration statements</returns>
-		/// <remarks>This option is enabled by default</remarks>
-		public CloudClientBuilder CloudStorageAccountIsDev()
-		{
-			_builder.RegisterInstance(CloudStorageAccount.DevelopmentStorageAccount);
-			return this;
-		}
-
-		/// <summary>
-		/// Uses development storage account defined in the configuration setting.
-		/// </summary>
-		/// <param name="name">The name of the configuration value to look up.</param>
-		/// <returns>same builder for inling multiple configuration statements</returns>
-		public CloudClientBuilder CloudStorageAccountIsFromConfig(string name)
-		{
-			_builder.Register(c =>
-				{
-					var value = c.Resolve<IProfileSettings>()
-						.GetString(name)
-						.ExposeException("Failed to load account from '{0}'", name);
-					return CloudStorageAccount.Parse(value);
-				}).SingleInstance();
-			return this;
-		}
-
-		/// <summary>
 		/// Configures the message domain for the instance of <see cref="ICloudEngineHost"/>.
 		/// </summary>
 		/// <param name="config">configuration syntax.</param>
 		/// <returns>same builder for inling multiple configuration statements</returns>
 		public CloudClientBuilder Domain(Action<DomainBuildModule> config)
 		{
-			ConfigureWith(config);
-			return this;
+			return this.WithModule(config);
 		}
-
-		void ConfigureWith<TModule>(Action<TModule> config)
-			where TModule : IModule, new()
-		{
-			var module = new TModule();
-			config(module);
-			_builder.RegisterModule(module);
-		}
-
 
 		public CloudClient BuildFor(string defaultQueue)
 		{
@@ -93,18 +53,7 @@ namespace Lokad.Cqrs
 				TypedParameter.From(defaultQueue));
 		}
 
-		/// <summary>
-		/// Registers custom module.
-		/// </summary>
-		/// <param name="module">The custom module to register.</param>
-		/// <returns>same builder for inling multiple configuration statements</returns>
-		public CloudClientBuilder RegisterModule(IModule module)
-		{
-			_builder.RegisterModule(module);
-			return this;
-		}
-
-		public ContainerBuilder Target
+		ContainerBuilder ISyntax<ContainerBuilder>.Target
 		{
 			get { return _builder; }
 		}

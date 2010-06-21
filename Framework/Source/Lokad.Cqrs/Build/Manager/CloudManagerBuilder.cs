@@ -7,7 +7,6 @@
 
 using System;
 using Autofac;
-using Autofac.Core;
 using Lokad.Cqrs.Domain.Build;
 using Lokad.Cqrs.Queue;
 using Lokad.Cqrs.Transport;
@@ -23,10 +22,9 @@ namespace Lokad.Cqrs
 	{
 		readonly ContainerBuilder _builder = new ContainerBuilder();
 
-
 		public CloudManagerBuilder()
 		{
-			CloudStorageAccountIsDev();
+			this.CloudStorageAccountIsDev();
 
 			_builder.RegisterInstance(TraceLog.Provider).SingleInstance();
 			_builder.RegisterInstance(NullEngineProfiler.Instance);
@@ -34,52 +32,19 @@ namespace Lokad.Cqrs
 			_builder.RegisterType<AzureQueueTransport>().As<IMessageTransport>();
 		}
 
-		/// <summary>
-		/// Uses default Development storage account for Windows Azure
-		/// </summary>
-		/// <returns>same builder for inling multiple configuration statements</returns>
-		/// <remarks>This option is enabled by default</remarks>
-		public CloudManagerBuilder CloudStorageAccountIsDev()
-		{
-			_builder.RegisterInstance(CloudStorageAccount.DevelopmentStorageAccount);
-			return this;
-		}
-
-		/// <summary>
-		/// Uses development storage account from the string being passed.
-		/// </summary>
-		/// <param name="value">The account string to parse.</param>
-		/// <returns>same builder for inling multiple configuration statements</returns>
-		public CloudManagerBuilder CloudStorageAccountIsFromString(string value)
-		{
-			var account = CloudStorageAccount.Parse(value);
-			_builder.RegisterInstance(account);
-			return this;
-		}
-
 		public CloudManagerBuilder Domain(Action<DomainBuildModule> configuration)
 		{
-			ConfigureWith(configuration);
-			return this;
+			return this.WithModule(configuration);
 		}
 
-		void ConfigureWith<TModule>(Action<TModule> config)
-			where TModule : IModule, new()
-		{
-			var module = new TModule();
-			config(module);
-			_builder.RegisterModule(module);
-		}
-
-		public CloudManagerBuilder WithCustom(Action<ContainerBuilder> builder)
-		{
-			builder(_builder);
-			return this;
-		}
-
-		public ContainerBuilder Target
+		ContainerBuilder ISyntax<ContainerBuilder>.Target
 		{
 			get { return _builder; }
+		}
+
+		public IContainer Build()
+		{
+			return _builder.Build();
 		}
 	}
 }
