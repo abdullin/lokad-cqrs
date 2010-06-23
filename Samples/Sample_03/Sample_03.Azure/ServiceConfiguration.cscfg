@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<ServiceConfiguration serviceName="Sample_03.Azure" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceConfiguration">
+  <Role name="Sample_03.Worker">
+    <Instances count="1" />
+    <ConfigurationSettings>
+      <Setting name="DiagnosticsConnectionString" value="UseDevelopmentStorage=true" />
+      <Setting name="MyDbFile" value="Sample03.db3" />
+    </ConfigurationSettings>
+  </Role>
+</ServiceConfiguration>
