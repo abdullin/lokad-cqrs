@@ -37,7 +37,6 @@ namespace Sample_03.Worker
 				};
 
 			_session.Save(balanceEntity);
-
 			
 			Trace.WriteLine("Created account " + account.Id.ToReadable());
 			_client.Send(new AddSomeBonusMessage(account.Id));
@@ -76,7 +75,8 @@ namespace Sample_03.Worker
 
 		public void Consume(AddSomeBonusMessage message)
 		{
-			// just to keep sample readable
+			// just to keep sample trace logs readable
+			// in a nice way
 			SystemUtil.Sleep(1.Seconds());
 
 			// we are using LINQ for NHibernate here
@@ -113,11 +113,11 @@ namespace Sample_03.Worker
 					Total = total
 				};
 
-			Trace.WriteLine(string.Format(
-				"Account {0} - adding {1} bonus with new total {2}", 
-				message.AccountId.ToReadable(), 10, total));
-
 			_session.Save(bonus);
+
+			Trace.WriteLine(string.Format(
+				"Account {0} - adding {1} bonus with new total {2}",
+				message.AccountId.ToReadable(), 10, total));
 			_client.Send(new AddSomeBonusMessage(message.AccountId));
 
 			// here's the interesting part.
