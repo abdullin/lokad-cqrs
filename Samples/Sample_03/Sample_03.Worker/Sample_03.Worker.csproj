@@ -68,6 +68,7 @@
   <ItemGroup>
     <Compile Include="Persistence.cs" />
     <Compile Include="Domain.cs" />
+    <Compile Include="StringUtil.cs" />
     <Compile Include="WorkerRole.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -6,7 +6,6 @@ namespace Sample_03.Worker
 	public class AccountEntity
 	{
 		public virtual Guid Id { get; private set; }
-
 		public virtual IList<BalanceEntity> Balance { get; private set; }
 
 		public AccountEntity()

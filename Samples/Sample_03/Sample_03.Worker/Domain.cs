@@ -23,10 +23,11 @@ namespace Sample_03.Worker
 
 		public TimeSpan Execute()
 		{
+			// create new account
 			var account = new AccountEntity();
 			_session.Save(account);
 
-
+			// add initial balance of 0 to account
 			var balanceEntity = new BalanceEntity()
 				{
 					Change = 0,
@@ -38,11 +39,9 @@ namespace Sample_03.Worker
 			_session.Save(balanceEntity);
 
 			
-			Trace.WriteLine("Inserted");
-
-
+			Trace.WriteLine("Created account " + account.Id.ToReadable());
 			_client.Send(new AddSomeBonusMessage(account.Id));
-
+			// sleep till the next run
 			return 10.Seconds();
 		}
 	}
@@ -64,14 +63,6 @@ namespace Sample_03.Worker
 		}
 	}
 
-	static class StringUtil
-	{
-		public static string ToReadable(this Guid guid)
-		{
-			return guid.ToString().Substring(0, 6);
-		}
-	}
-
 	public sealed class AddSomeBonusHandler : IConsume<AddSomeBonusMessage>
 	{
 		readonly ISession _session;
@@ -85,7 +76,10 @@ namespace Sample_03.Worker
 
 		public void Consume(AddSomeBonusMessage message)
 		{
+			// just to keep sample readable
 			SystemUtil.Sleep(1.Seconds());
+
+			// we are using LINQ for NHibernate here
 			var balance = _session
 				.Linq<BalanceEntity>()
 				.Where(e => e.Account.Id == message.AccountId)
@@ -125,6 +119,17 @@ namespace Sample_03.Worker
 
 			_session.Save(bonus);
 			_client.Send(new AddSomeBonusMessage(message.AccountId));
+
+			// here's the interesting part.
+			// If we throw exception here, then:
+			// Nothing will be changed in the database
+			// and messages will NOT be sent (volatile transactions).
+
+			// this applies to the entire code block
+
+			// after the message is processed, NHibernate transaction will
+			// be completed and session - flushed
+			// same with the message transactions
 		}
 	}
 }
