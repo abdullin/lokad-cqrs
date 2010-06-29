@@ -12,6 +12,7 @@
     <TempPath>$(BuildPath)\Temp</TempPath>
     <RawPath>$(BuildPath)\Raw</RawPath>
     <TestPath>$(BuildPath)\Test</TestPath>
+    <MergedPath>$(BuildPath)\Merged</MergedPath>
   </PropertyGroup>
 
 	<Target Name="clean">
@@ -38,7 +39,7 @@
     </CreateItem>
     <Copy SourceFiles="@(rawFiles)" DestinationFolder="$(RawPath)" />
 
-    <CreateItem Include="$(RawPath)\Lokad.*">
+    <CreateItem Include="$(RawPath)\Lokad.*" Exclude="$(RawPath)\Lokad.Cqrs.*">
       <Output ItemName="sharedFiles" TaskParameter="Include"/>
     </CreateItem>
     <Copy SourceFiles="@(sharedFiles)" DestinationFolder="$(StackPath)" />
@@ -50,8 +51,9 @@
     <Copy SourceFiles="@(tempFiles)" DestinationFolder="$(TempPath)" />
     
     
+    <!--Lokad STACK merger-->
     <!--Merge Lokad.Cqrs-->
-    <Exec Command="$(ILMerge) &quot;$(RawPath)\Lokad.Cqrs.dll&quot; &quot;$(RawPath)/Autofac.dll&quot; /out:&quot;$(StackPath)/Lokad.Cqrs.dll&quot; /keyfile:SharedKey.snk /xmldocs=true /ver:$(Version) /attr:&quot;$(RawPath)/Lokad.Cqrs.dll&quot; /lib:&quot;$(TempPath)&quot;" />
+    <Exec Command='$(ILMerge) "$(RawPath)\Lokad.Cqrs.dll" "$(RawPath)/Autofac.dll" /out:"$(StackPath)/Lokad.Cqrs.dll" /keyfile:SharedKey.snk /xmldocs=true /ver:$(Version) /attr:"$(RawPath)/Lokad.Cqrs.dll" /lib:"$(TempPath)"' />
 
     <!--Merge Lokad.Cqrs.NHibernate-->
     <CreateItem Include="Library\NHibernate.Core\*.dll;Library\NHibernate.Linq\*.dll;$(RawPath)\Lokad.Cqrs.NHibernate.dll">
@@ -63,12 +65,13 @@
     <Exec Command="$(Linker) &quot;$(StackPath)\Lokad.Cqrs.NHibernate.dll&quot; &quot;$(RawPath)\Autofac.dll&quot; &quot;$(StackPath)\Lokad.Cqrs.dll&quot; &quot;$(StackPath)\Lokad.Cqrs.NHibernate.dll&quot;" />
     <Exec Command="sn.exe -Ra &quot;$(StackPath)\Lokad.Cqrs.NHibernate.dll&quot; SharedKey.snk" />
     
-    <!--Merge Lokad.Cqrs.ProtoBuf-->
+    <!--abdullin: we need to keep ProtoBuf separate, since DCS extensions are not supported, yet-->
     <Exec Command='$(ILMerge) "$(RawPath)\Lokad.Cqrs.ProtoBuf.dll" "$(RawPath)/protobuf-net.dll" /out:"$(StackPath)/Lokad.Cqrs.ProtoBuf.dll" /keyfile:SharedKey.snk /xmldocs=true /ver:$(Version) /attr:"$(RawPath)/Lokad.Cqrs.ProtoBuf.dll" /lib:"$(TempPath)"' />
     <Exec Command='$(Linker) "$(StackPath)\Lokad.Cqrs.ProtoBuf.dll" "$(RawPath)/Autofac.dll" "$(StackPath)\Lokad.Cqrs.dll" "$(StackPath)\Lokad.Cqrs.ProtoBuf.dll"' />
     <Exec Command='$(Linker) "$(StackPath)\Lokad.Cqrs.ProtoBuf.dll" "$(RawPath)/Lokad.Cqrs.dll" "$(StackPath)\Lokad.Cqrs.dll" "$(StackPath)\Lokad.Cqrs.ProtoBuf.dll"' />
     <Exec Command="sn.exe -Ra &quot;$(StackPath)\Lokad.Cqrs.ProtoBuf.dll&quot; SharedKey.snk" />
 
+    <!--End of Lokad STACK merger-->
     <!--All Tests-->
     <CreateItem Include="Tests\**\bin\$(Configuration)\*.*" Exclude="Tests\**\bin\$(Configuration)\*.xml;Tests\**\bin\$(Configuration)\*.pdb;">
       <Output ItemName="testFiles" TaskParameter="Include"/>
