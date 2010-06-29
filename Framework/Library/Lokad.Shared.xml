@@ -3564,6 +3564,73 @@
       <param name="path">The path to load from.</param>
       <returns>graph loaded from the specified path</returns>
     </member>
+    <member name="T:Lokad.EnumComparer`1">
+      <summary>
+            A fast and efficient implementation of <see cref="T:System.Collections.Generic.IEqualityComparer`1" /> for Enum types.
+            Useful for dictionaries that use Enums as their keys. 
+            </summary>
+      <remarks>
+            http://www.codeproject.com/KB/cs/EnumComparer.aspx
+            </remarks>
+      <example>
+        <code>
+            var dict = new Dictionary&lt;DayOfWeek, string&gt;(EnumComparer&lt;DayOfWeek&gt;.Instance);
+            </code>
+      </example>
+      <typeparam name="TEnum">The type of the Enum.</typeparam>
+    </member>
+    <member name="F:Lokad.EnumComparer`1.Instance">
+      <summary>
+            The singleton accessor.
+            </summary>
+    </member>
+    <member name="M:Lokad.EnumComparer`1.#ctor">
+      <summary>
+            A private constructor to prevent user instantiation.
+            </summary>
+    </member>
+    <member name="M:Lokad.EnumComparer`1.Equals(`0,`0)">
+      <summary>
+            Determines whether the specified objects are equal.
+            </summary>
+      <param name="x">The first object of type <typeparamref name="TEnum" /> to compare.</param>
+      <param name="y">The second object of type <typeparamref name="TEnum" /> to compare.</param>
+      <returns>
+            true if the specified objects are equal; otherwise, false.
+            </returns>
+    </member>
+    <member name="M:Lokad.EnumComparer`1.GetHashCode(`0)">
+      <summary>
+            Returns a hash code for the specified object.
+            </summary>
+      <param name="obj">The <see cref="T:System.Object" /> for which a hash code is to be returned.</param>
+      <returns>A hash code for the specified object.</returns>
+      <exception cref="T:System.ArgumentNullException">
+            The type of <paramref name="obj" /> is a reference type and <paramref name="obj" /> is null.
+            </exception>
+    </member>
+    <member name="M:Lokad.EnumComparer`1.GenerateEquals">
+      <summary>
+            Generates a comparison method similiar to this:
+            <code>
+            bool Equals(TEnum x, TEnum y)
+            {
+                return x == y;
+            }
+            </code></summary>
+      <returns>The generated method.</returns>
+    </member>
+    <member name="M:Lokad.EnumComparer`1.GenerateGetHashCode">
+      <summary>
+            Generates a GetHashCode method similar to this:
+            <code>
+            int GetHashCode(TEnum obj)
+            {
+                return ((int)obj).GetHashCode();
+            }
+            </code></summary>
+      <returns>The generated method.</returns>
+    </member>
     <member name="T:Lokad.EnumUtil">
       <summary>
             Enum helper class from xLim
@@ -3631,6 +3698,11 @@
     <member name="F:Lokad.EnumUtil`1.ValuesWithoutDefault">
       <summary>
             Values of the <typeparamref name="TEnum" /> without the default value.
+            </summary>
+    </member>
+    <member name="F:Lokad.EnumUtil`1.Comparer">
+      <summary>
+            Efficient comparer for the enum
             </summary>
     </member>
     <member name="M:Lokad.EnumUtil`1.ConvertSafelyFrom``1(``0)">
@@ -4067,6 +4139,23 @@
             </summary>
       <param name="offset">The offset.</param>
       <returns>formatted string</returns>
+    </member>
+    <member name="T:Lokad.GuidUtil">
+      <summary>
+            Guid comb generator as in NHibernate
+            </summary>
+    </member>
+    <member name="M:Lokad.GuidUtil.NewComb">
+      <summary>
+            Generates new COMB Guid
+            </summary>
+      <returns>new comb guid</returns>
+    </member>
+    <member name="M:Lokad.GuidUtil.NewStringSortable">
+      <summary>
+            Creates GUIDs that have same uniqueness as COMB, but are string-sortable
+            </summary>
+      <returns>String-sortable GUID</returns>
     </member>
     <member name="T:Lokad.ResourceUtil`1">
       <summary>
