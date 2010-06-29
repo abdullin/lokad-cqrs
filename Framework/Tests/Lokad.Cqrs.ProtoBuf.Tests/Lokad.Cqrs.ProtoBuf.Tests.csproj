@@ -10,8 +10,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Lokad.Cqrs.ProtoBuf.Tests</RootNamespace>
     <AssemblyName>Lokad.Cqrs.ProtoBuf.Tests</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -42,7 +43,9 @@
     <Reference Include="Lokad.Testing">
       <HintPath>..\..\Library\Lokad.Testing.dll</HintPath>
     </Reference>
-    <Reference Include="protobuf-net, Version=1.0.0.282, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL" />
+    <Reference Include="protobuf-net">
+      <HintPath>..\..\Library\protobuf-net\protobuf-net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
@@ -54,7 +57,6 @@
   <ItemGroup>
     <Compile Include="ExtentSyntaxForProtoBufTests.cs" />
     <Compile Include="Fixture.cs" />
-    <Compile Include="FormatterCache.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProtoBufDataTests.cs" />
     <Compile Include="ProtoBufNativeTests.cs" />

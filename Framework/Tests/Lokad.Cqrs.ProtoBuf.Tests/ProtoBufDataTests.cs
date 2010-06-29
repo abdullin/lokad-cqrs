@@ -1,4 +1,7 @@
-﻿using System.Runtime.Serialization;
+﻿using System;
+using System.Collections.Concurrent;
+using System.IO;
+using System.Runtime.Serialization;
 using Lokad.Quality;
 using NUnit.Framework;
 
@@ -9,12 +12,19 @@ namespace Lokad.Cqrs.ProtoBuf.Tests
 	{
 		// ReSharper disable InconsistentNaming
 
+		
 		[Test]
 		public void Roundtrip_Data()
 		{
 			var result = RoundTrip(new SimpleDataClass("Some"));
 			Assert.AreEqual("Some", result.Field);
+		}
 
+		[Test, Ignore("Proto-buf currently does not support extensions for DCA")]
+		public void Roundtrip_Legacy()
+		{
+			var result = RoundTrip(new SimpleDataClass("Some"), typeof (CustomDataClass));
+			Assert.AreEqual("Some", result.Field);
 		}
 
 
@@ -33,7 +43,7 @@ namespace Lokad.Cqrs.ProtoBuf.Tests
 		}
 
 		[DataContract]
-		public sealed class SimpleDataClass
+		public sealed class SimpleDataClass : IExtensibleDataObject
 		{
 			[DataMember(Order = 1)]
 			public string Field { get; private set; }
@@ -47,12 +57,14 @@ namespace Lokad.Cqrs.ProtoBuf.Tests
 			SimpleDataClass()
 			{
 			}
+
+			public ExtensionDataObject ExtensionData { get; set; }
 		}
 
 		[DataContract(Namespace = "Custom", Name = "Type")]
-		public sealed class CustomDataClass
+		public sealed class CustomDataClass : IExtensibleDataObject
 		{
-			
+			public ExtensionDataObject ExtensionData { get; set; }
 		}
 	}
 }

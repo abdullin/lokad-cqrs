@@ -25,6 +25,13 @@ namespace Lokad.Cqrs.ProtoBuf.Tests
 			Assert.AreEqual("Some", result.Field);
 		}
 
+		[Test]
+		public void Roundtrip_Via()
+		{
+			var result = RoundTrip(new SimpleProtoClass("Some"), typeof(CustomProtoClass));
+			Assert.AreEqual("Some", result.Field);
+		}
+
 
 		[Test]
 		public void Default_reference_is_type_name()
@@ -41,7 +48,7 @@ namespace Lokad.Cqrs.ProtoBuf.Tests
 		}
 
 		[ProtoContract]
-		public sealed class SimpleProtoClass
+		public sealed class SimpleProtoClass : IExtensible
 		{
 			[ProtoMember(1)]
 			public string Field { get; private set; }
@@ -55,11 +62,27 @@ namespace Lokad.Cqrs.ProtoBuf.Tests
 			SimpleProtoClass()
 			{
 			}
+
+			IExtension _extensible;
+
+
+			public IExtension GetExtensionObject(bool createIfMissing)
+			{
+				return Extensible.GetExtensionObject(ref _extensible, createIfMissing);
+			}
 		}
 
 		[ProtoContract(Name = "Custom")]
-		public sealed class CustomProtoClass
+		public sealed class CustomProtoClass : IExtensible
 		{
+
+			IExtension _extensible;
+
+
+			public IExtension GetExtensionObject(bool createIfMissing)
+			{
+				return Extensible.GetExtensionObject(ref _extensible, createIfMissing);
+			}
 		}
 	}
 }
