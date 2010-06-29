@@ -42,10 +42,16 @@
       <Output ItemName="sharedFiles" TaskParameter="Include"/>
     </CreateItem>
     <Copy SourceFiles="@(sharedFiles)" DestinationFolder="$(StackPath)" />
-
+    
+    
+    <CreateItem Include="**\bin\$(Configuration)\Microsoft*.dll">
+      <Output ItemName="tempFiles" TaskParameter="Include"/>
+    </CreateItem>
+    <Copy SourceFiles="@(tempFiles)" DestinationFolder="$(TempPath)" />
+    
     
     <!--Merge Lokad.Cqrs-->
-    <Exec Command="$(ILMerge) &quot;$(RawPath)\Lokad.Cqrs.dll&quot; &quot;$(RawPath)/Autofac.dll&quot; /out:&quot;$(StackPath)/Lokad.Cqrs.dll&quot; /keyfile:SharedKey.snk /xmldocs=true /ver:$(Version) /attr:&quot;$(RawPath)/Lokad.Cqrs.dll&quot;" />
+    <Exec Command="$(ILMerge) &quot;$(RawPath)\Lokad.Cqrs.dll&quot; &quot;$(RawPath)/Autofac.dll&quot; /out:&quot;$(StackPath)/Lokad.Cqrs.dll&quot; /keyfile:SharedKey.snk /xmldocs=true /ver:$(Version) /attr:&quot;$(RawPath)/Lokad.Cqrs.dll&quot; /lib:&quot;$(TempPath)&quot;" />
 
     <!--Merge Lokad.Cqrs.NHibernate-->
     <CreateItem Include="Library\NHibernate.Core\*.dll;Library\NHibernate.Linq\*.dll;$(RawPath)\Lokad.Cqrs.NHibernate.dll">
@@ -57,7 +63,7 @@
     <Exec Command="$(Linker) &quot;$(StackPath)\Lokad.Cqrs.NHibernate.dll&quot; &quot;$(RawPath)\Autofac.dll&quot; &quot;$(StackPath)\Lokad.Cqrs.dll&quot; &quot;$(StackPath)\Lokad.Cqrs.NHibernate.dll&quot;" />
     
     <Exec Command="sn.exe -Ra &quot;$(StackPath)\Lokad.Cqrs.NHibernate.dll&quot; SharedKey.snk" />
-   
+
     <!--All Tests-->
     <CreateItem Include="Tests\**\bin\$(Configuration)\*.*" Exclude="Tests\**\bin\$(Configuration)\*.xml;Tests\**\bin\$(Configuration)\*.pdb;">
       <Output ItemName="testFiles" TaskParameter="Include"/>
