@@ -10,7 +10,7 @@ using System.Reflection;
 
 namespace Lokad.Cqrs
 {
-	static class Throw
+	public static class Throw
 	{
 		static readonly MethodInfo InternalPreserveStackTraceMethod;
 

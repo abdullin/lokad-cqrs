@@ -9,16 +9,16 @@ using System;
 using System.Linq.Expressions;
 using System.Reflection;
 using Autofac;
+using Autofac.Core;
 using Lokad.Cqrs.Default;
 using Lokad.Cqrs.Serialization;
-using Module = Autofac.Module;
 
 namespace Lokad.Cqrs.Domain.Build
 {
-	public class DomainBuildModule : Module
+	public class DomainBuildModule : IModule, ISyntax<ContainerBuilder>
 	{
-		readonly MessageAssemblyScanner _builder = new MessageAssemblyScanner();
-		Action<ContainerBuilder> _registerSerializer;
+		readonly MessageAssemblyScanner _scanner = new MessageAssemblyScanner();
+		readonly ContainerBuilder _builder = new ContainerBuilder();
 
 		public DomainBuildModule()
 		{
@@ -37,69 +37,67 @@ namespace Lokad.Cqrs.Domain.Build
 
 		public DomainBuildModule ConsumerMethodSample<THandler>(Expression<Action<THandler>> expression)
 		{
-			_builder.ConsumerMethodSample(expression);
+			_scanner.ConsumerMethodSample(expression);
 			return this;
 		}
 
 		public DomainBuildModule MessagesInherit<TInterface>()
 		{
-			_builder.WhereMessages(type =>
+			_scanner.WhereMessages(type =>
 				typeof (TInterface).IsAssignableFrom(type)
 					&& type.IsAbstract == false);
-			_builder.WithAssemblyOf<TInterface>();
+			_scanner.WithAssemblyOf<TInterface>();
 
 			return this;
 		}
 
 		public DomainBuildModule ConsumersInherit<TInterface>()
 		{
-			_builder.WhereConsumers(type =>
+			_scanner.WhereConsumers(type =>
 				typeof (TInterface).IsAssignableFrom(type)
 					&& type.IsAbstract == false);
-			_builder.WithAssemblyOf<TInterface>();
+			_scanner.WithAssemblyOf<TInterface>();
 			return this;
 		}
 
 		public DomainBuildModule UseDataContractSerializer()
 		{
-			_registerSerializer = (builder) =>
-				{
-					builder
-						.RegisterType<DataContractMessageSerializer>()
-						.As<IMessageSerializer>()
-						.SingleInstance();
-				};
+			_builder
+				.RegisterType<DataContractMessageSerializer>()
+				.As<IMessageSerializer>()
+				.SingleInstance();
 			return this;
 		}
 
 		public DomainBuildModule UseBinarySerializer()
 		{
-			_registerSerializer = (builder) =>
-				builder
-					.RegisterType<BinaryMessageSerializer>()
-					.As<IMessageSerializer>()
-					.SingleInstance();
+			_builder
+				.RegisterType<BinaryMessageSerializer>()
+				.As<IMessageSerializer>()
+				.SingleInstance();
 			return this;
 		}
 
 		public DomainBuildModule InAssemblyOf<T>()
 		{
-			_builder.WithAssemblyOf<T>();
+			_scanner.WithAssemblyOf<T>();
 			return this;
 		}
 
 		public DomainBuildModule InCurrentAssembly()
 		{
-			_builder.WithAssembly(Assembly.GetCallingAssembly());
+			_scanner.WithAssembly(Assembly.GetCallingAssembly());
 			return this;
 		}
 
-		protected override void Load(ContainerBuilder builder)
-		{
-			_builder.IncludeSystemMessages = true;
-			var mappings = _builder.Build();
+		
 
-			var directoryBuilder = new MessageDirectoryBuilder(mappings, _builder.ConsumingMethod.Name);
+		public void Configure(IComponentRegistry componentRegistry)
+		{
+			_scanner.IncludeSystemMessages = true;
+			var mappings = _scanner.Build();
+
+			var directoryBuilder = new MessageDirectoryBuilder(mappings, _scanner.ConsumingMethod.Name);
 
 			var directory = directoryBuilder.BuildDirectory(m => true);
 
@@ -108,19 +106,24 @@ namespace Lokad.Cqrs.Domain.Build
 			{
 				if (!consumer.ConsumerType.IsAbstract)
 				{
-					builder.RegisterType(consumer.ConsumerType);
+					_builder.RegisterType(consumer.ConsumerType);
 				}
 			}
 
-			builder.RegisterInstance(directoryBuilder).As<IMessageDirectoryBuilder>();
-			builder.RegisterInstance(directory);
+			_builder.RegisterInstance(directoryBuilder).As<IMessageDirectoryBuilder>();
+			_builder.RegisterInstance(directory);
 
-			builder
+			_builder
 				.RegisterType<DomainAwareMessageProfiler>()
 				.As<IMessageProfiler>()
 				.SingleInstance();
 
-			_registerSerializer(builder);
+			_builder.Update(componentRegistry);
+		}
+
+		public ContainerBuilder Target
+		{
+			get { return _builder; }
 		}
 	}
 }

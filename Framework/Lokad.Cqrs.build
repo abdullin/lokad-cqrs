@@ -38,7 +38,7 @@
     </CreateItem>
     <Copy SourceFiles="@(rawFiles)" DestinationFolder="$(RawPath)" />
 
-    <CreateItem Include="$(RawPath)\Lokad.Shared.*">
+    <CreateItem Include="$(RawPath)\Lokad.*">
       <Output ItemName="sharedFiles" TaskParameter="Include"/>
     </CreateItem>
     <Copy SourceFiles="@(sharedFiles)" DestinationFolder="$(StackPath)" />
@@ -61,8 +61,12 @@
     <WriteLinesToFile Lines="@(mergeNHibernate)" File="$(StackPath)\Lokad.Cqrs.NHibernate.txt" />
     
     <Exec Command="$(Linker) &quot;$(StackPath)\Lokad.Cqrs.NHibernate.dll&quot; &quot;$(RawPath)\Autofac.dll&quot; &quot;$(StackPath)\Lokad.Cqrs.dll&quot; &quot;$(StackPath)\Lokad.Cqrs.NHibernate.dll&quot;" />
-    
     <Exec Command="sn.exe -Ra &quot;$(StackPath)\Lokad.Cqrs.NHibernate.dll&quot; SharedKey.snk" />
+    
+    <!--Merge Lokad.Cqrs.ProtoBuf-->
+    <Exec Command='$(ILMerge) "$(RawPath)\Lokad.Cqrs.ProtoBuf.dll" "$(RawPath)/protobuf-net.dll" /out:"$(StackPath)/Lokad.Cqrs.ProtoBuf.dll" /keyfile:SharedKey.snk /xmldocs=true /ver:$(Version) /attr:"$(RawPath)/Lokad.Cqrs.ProtoBuf.dll" /lib:"$(TempPath)"' />
+    <Exec Command='$(Linker) "$(StackPath)\Lokad.Cqrs.ProtoBuf.dll" "$(RawPath)/Autofac.dll" "$(StackPath)\Lokad.Cqrs.dll" "$(StackPath)\Lokad.Cqrs.ProtoBuf.dll"' />
+    <Exec Command="sn.exe -Ra &quot;$(StackPath)\Lokad.Cqrs.ProtoBuf.dll&quot; SharedKey.snk" />
 
     <!--All Tests-->
     <CreateItem Include="Tests\**\bin\$(Configuration)\*.*" Exclude="Tests\**\bin\$(Configuration)\*.xml;Tests\**\bin\$(Configuration)\*.pdb;">

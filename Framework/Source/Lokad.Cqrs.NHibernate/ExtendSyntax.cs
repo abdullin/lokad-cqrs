@@ -9,15 +9,20 @@ using System;
 using Autofac;
 using Lokad.Cqrs.NHibernate;
 
-// ReSharper disable CheckNamespace
 namespace Lokad.Cqrs
-// ReSharper restore CheckNamespace
 {
 	/// <summary>
 	/// Extends Lokad.CQRS Builder syntax
 	/// </summary>
 	public static class ExtendSyntax
 	{
+		/// <summary>
+		/// Configures NHibernate ORM to be used in the Container
+		/// </summary>
+		/// <typeparam name="TSyntax">The type of the syntax to extend.</typeparam>
+		/// <param name="syntax">The syntax.</param>
+		/// <param name="config">Configuration for the NHibernate.</param>
+		/// <returns>Same configurer instance for inlining multiple config statements.</returns>
 		public static TSyntax WithNHibernate<TSyntax>(this TSyntax syntax, Action<NHibernateModule> config)
 			where TSyntax : ISyntax<ContainerBuilder>
 		{
