@@ -19,15 +19,13 @@ namespace Lokad.Cqrs.ProtoBuf
 	public sealed class ProtoBufMessageSerializer : IMessageSerializer
 	{
 		readonly IDictionary<string, Type> _contract2Type = new Dictionary<string, Type>();
-		readonly ICollection<Type> _knownTypes;
 		readonly IDictionary<Type, string> _type2Contract = new Dictionary<Type, string>();
 		readonly IDictionary<Type, IFormatter> _type2Formatter = new Dictionary<Type, IFormatter>();
 
+		[UsedImplicitly]
 		public ProtoBufMessageSerializer(ICollection<Type> knownTypes)
 		{
-			_knownTypes = knownTypes;
-
-			foreach (var type in _knownTypes)
+			foreach (var type in knownTypes)
 			{
 				var reference = ProtoBufUtil.GetContractReference(type);
 				var formatter = ProtoBufUtil.CreateFormatter(type);
