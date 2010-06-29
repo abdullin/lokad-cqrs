@@ -66,6 +66,7 @@
     <!--Merge Lokad.Cqrs.ProtoBuf-->
     <Exec Command='$(ILMerge) "$(RawPath)\Lokad.Cqrs.ProtoBuf.dll" "$(RawPath)/protobuf-net.dll" /out:"$(StackPath)/Lokad.Cqrs.ProtoBuf.dll" /keyfile:SharedKey.snk /xmldocs=true /ver:$(Version) /attr:"$(RawPath)/Lokad.Cqrs.ProtoBuf.dll" /lib:"$(TempPath)"' />
     <Exec Command='$(Linker) "$(StackPath)\Lokad.Cqrs.ProtoBuf.dll" "$(RawPath)/Autofac.dll" "$(StackPath)\Lokad.Cqrs.dll" "$(StackPath)\Lokad.Cqrs.ProtoBuf.dll"' />
+    <Exec Command='$(Linker) "$(StackPath)\Lokad.Cqrs.ProtoBuf.dll" "$(RawPath)/Lokad.Cqrs.dll" "$(StackPath)\Lokad.Cqrs.dll" "$(StackPath)\Lokad.Cqrs.ProtoBuf.dll"' />
     <Exec Command="sn.exe -Ra &quot;$(StackPath)\Lokad.Cqrs.ProtoBuf.dll&quot; SharedKey.snk" />
 
     <!--All Tests-->
