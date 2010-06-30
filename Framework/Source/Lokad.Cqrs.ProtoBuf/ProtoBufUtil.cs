@@ -44,7 +44,15 @@ namespace Lokad.Cqrs.ProtoBuf
 					.GetMethod("PrepareSerializer")
 					.MakeGenericMethod(type)
 					.Invoke(null, null);
+			}
+			catch (TargetInvocationException tie)
+			{
+				var message = string.Format("Failed to prepare ProtoBuf serializer for '{0}'.", type);
+				throw new InvalidOperationException(message, tie.InnerException);
+			}
 
+			try
+			{
 				return (IFormatter) typeof (Serializer)
 					.GetMethod("CreateFormatter")
 					.MakeGenericMethod(type)
@@ -52,7 +60,8 @@ namespace Lokad.Cqrs.ProtoBuf
 			}
 			catch (TargetInvocationException tie)
 			{
-				throw Throw.InnerExceptionWhilePreservingStackTrace(tie);
+				var message = string.Format("Failed to create ProtoBuf formatter for '{0}'.", type);
+				throw new InvalidOperationException(message, tie.InnerException);
 			}
 		}
 	}
