@@ -69,14 +69,14 @@ namespace Lokad.Cqrs.Serialization
 			}
 		}
 
-		public string GetContractNameByType(Type messageType)
+		public Maybe<string> GetContractNameByType(Type messageType)
 		{
-			return _type2Contract[messageType];
+			return _type2Contract.GetValue(messageType);
 		}
 
-		public Type GetTypeByContractName(string contractName)
+		public Maybe<Type> GetTypeByContractName(string contractName)
 		{
-			return _contract2Type[contractName];
+			return _contract2Type.GetValue(contractName);
 		}
 	}
 }

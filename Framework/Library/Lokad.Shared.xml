@@ -604,6 +604,27 @@
       <param name="type">The type of the object to deserialize.</param>
       <returns>deserialized object</returns>
     </member>
+    <member name="T:Lokad.Serialization.IDataContractMapper">
+      <summary>
+            Class responsible 
+            </summary>
+    </member>
+    <member name="M:Lokad.Serialization.IDataContractMapper.GetContractNameByType(System.Type)">
+      <summary>
+            Gets the contract name by the type
+            </summary>
+      <param name="messageType">Type of the message.</param>
+      <returns>
+      </returns>
+    </member>
+    <member name="M:Lokad.Serialization.IDataContractMapper.GetTypeByContractName(System.String)">
+      <summary>
+            Gets the type by contract name.
+            </summary>
+      <param name="contractName">Name of the contract.</param>
+      <returns>
+      </returns>
+    </member>
     <member name="T:Lokad.Maybe`1">
       <summary>
             Helper class that indicates nullable value in a good-citizenship code

@@ -7,6 +7,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Xml.Serialization;
 using Lokad.Quality;
+using Lokad.Serialization;
 
 // ReSharper disable InconsistentNaming
 

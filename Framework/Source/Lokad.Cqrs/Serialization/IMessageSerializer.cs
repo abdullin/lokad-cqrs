@@ -7,15 +7,12 @@
 
 using System;
 using System.IO;
+using Lokad.Serialization;
 
 namespace Lokad.Cqrs.Serialization
 {
-	public interface IMessageSerializer
+	public interface IMessageSerializer : IDataSerializer, IDataContractMapper
 	{
-		void Serialize(object instance, Stream destination);
-		object Deserialize(Stream source, Type type);
-
-		string GetContractNameByType(Type messageType);
-		Type GetTypeByContractName(string contractName);
+	
 	}
 }

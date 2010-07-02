@@ -27,12 +27,12 @@ namespace Lokad.Cqrs.Serialization
 			return _formatter.Deserialize(source);
 		}
 
-		public string GetContractNameByType(Type messageType)
+		public Maybe<string> GetContractNameByType(Type messageType)
 		{
 			return messageType.AssemblyQualifiedName;
 		}
 
-		public Type GetTypeByContractName(string contractName)
+		public Maybe<Type> GetTypeByContractName(string contractName)
 		{
 			return Type.GetType(contractName);
 		}

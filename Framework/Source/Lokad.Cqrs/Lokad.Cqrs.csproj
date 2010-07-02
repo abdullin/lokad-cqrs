@@ -31,6 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Lokad.Serialization">
+      <HintPath>..\..\Library\Lokad.Serialization.dll</HintPath>
+    </Reference>
     <Reference Include="Lokad.Shared, Version=1.5.173.0, Culture=neutral, PublicKeyToken=43f0664b2b4db1fc, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Library\Lokad.Shared.dll</HintPath>
@@ -68,6 +71,8 @@
     <Compile Include="Design\IMessageProfiler.cs" />
     <Compile Include="Domain\MessageAssemblyScanner.cs" />
     <Compile Include="Domain\DomainAwareMessageProfiler.cs" />
+    <Compile Include="ProtoBuf\ExtendSyntaxWithProtoBuf.cs" />
+    <Compile Include="ProtoBuf\ProtoBufMessageSerializer.cs" />
     <Compile Include="Sender\DefaultMessageClient.cs" />
     <Compile Include="Infrastructure\Throw.cs" />
     <Compile Include="Infrastructure\Filter.cs" />

@@ -7,6 +7,7 @@
 
 using System;
 using Lokad.Quality;
+using Lokad.Serialization;
 using NUnit.Framework;
 using ProtoBuf;
 

@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Lokad.Serialization">
+      <HintPath>..\..\Library\Lokad.Serialization.dll</HintPath>
+    </Reference>
     <Reference Include="Lokad.Shared, Version=1.5.196.0, Culture=neutral, PublicKeyToken=43f0664b2b4db1fc, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Library\Lokad.Shared.dll</HintPath>
@@ -59,10 +62,6 @@
     <Compile Include="ProtoBufXmlTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Source\Lokad.Cqrs.ProtoBuf\Lokad.Cqrs.ProtoBuf.csproj">
-      <Project>{CD1F6516-7A9F-426D-B6DF-6E2DF9E434CE}</Project>
-      <Name>Lokad.Cqrs.ProtoBuf</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Source\Lokad.Cqrs\Lokad.Cqrs.csproj">
       <Project>{FD6C8202-F530-4C09-8889-28DC383965AA}</Project>
       <Name>Lokad.Cqrs</Name>

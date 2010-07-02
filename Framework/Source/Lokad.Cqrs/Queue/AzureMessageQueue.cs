@@ -178,7 +178,9 @@ namespace Lokad.Cqrs.Queue
 			string contract = attributes
 				.GetLastString(MessageAttributeType.ContractName)
 				.ExposeException("Protocol violation: message should have contract name");
-			var type = _messageSerializer.GetTypeByContractName(contract);
+			var type = _messageSerializer
+				.GetTypeByContractName(contract)
+				.ExposeException("Unsupported contract name: '{0}'", contract);
 
 			using (
 				var stream = new MemoryStream(queueAsBytes, MessageHeader.FixedSize + (int) header.AttributesLength,
@@ -310,7 +312,10 @@ namespace Lokad.Cqrs.Queue
 			var messageId = GuidUtil.NewComb();
 			var created = SystemUtil.UtcNow;
 
-			var contract = _messageSerializer.GetContractNameByType(message.GetType());
+			var messageType = message.GetType();
+			var contract = _messageSerializer
+				.GetContractNameByType(messageType)
+				.ExposeException("Can't find contract for message of type: '{0}'.", messageType);
 
 			var referenceId = created.ToString(DateFormatInBlobName) + "-" + messageId;
 
