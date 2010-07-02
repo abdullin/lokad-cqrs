@@ -22,8 +22,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lokad.Cqrs.Linker", "Source
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lokad.Cqrs.ProtoBuf.Tests", "Tests\Lokad.Cqrs.ProtoBuf.Tests\Lokad.Cqrs.ProtoBuf.Tests.csproj", "{B29FAA6C-F0DE-4683-A6E3-993A5030D45B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lokad.Serialization", "Lokad.Serialization\Lokad.Serialization.csproj", "{631C893F-9A8E-4737-9616-FF0DB352469E}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -84,16 +82,6 @@ Global
 		{B29FAA6C-F0DE-4683-A6E3-993A5030D45B}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{B29FAA6C-F0DE-4683-A6E3-993A5030D45B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{B29FAA6C-F0DE-4683-A6E3-993A5030D45B}.Release|x86.ActiveCfg = Release|Any CPU
-		{631C893F-9A8E-4737-9616-FF0DB352469E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{631C893F-9A8E-4737-9616-FF0DB352469E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{631C893F-9A8E-4737-9616-FF0DB352469E}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{631C893F-9A8E-4737-9616-FF0DB352469E}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{631C893F-9A8E-4737-9616-FF0DB352469E}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{631C893F-9A8E-4737-9616-FF0DB352469E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{631C893F-9A8E-4737-9616-FF0DB352469E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{631C893F-9A8E-4737-9616-FF0DB352469E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{631C893F-9A8E-4737-9616-FF0DB352469E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{631C893F-9A8E-4737-9616-FF0DB352469E}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -101,7 +89,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{FD6C8202-F530-4C09-8889-28DC383965AA} = {CBB0EA40-FEC5-48D9-A04D-782440D9D693}
 		{24DA9150-1C7E-45B3-8A75-EA529081237F} = {CBB0EA40-FEC5-48D9-A04D-782440D9D693}
-		{631C893F-9A8E-4737-9616-FF0DB352469E} = {CBB0EA40-FEC5-48D9-A04D-782440D9D693}
 		{FB8810A2-0888-4400-B7F4-1736A983A894} = {50854899-7A0C-4BC3-84F3-771D052DE41E}
 		{F22669EA-5DF1-4D1D-A411-E3D906A989C2} = {50854899-7A0C-4BC3-84F3-771D052DE41E}
 		{B29FAA6C-F0DE-4683-A6E3-993A5030D45B} = {50854899-7A0C-4BC3-84F3-771D052DE41E}
