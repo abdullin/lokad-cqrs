@@ -31,13 +31,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Autofac, Version=2.1.12.802, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Library\Autofac.dll</HintPath>
-    </Reference>
     <Reference Include="Lokad.Shared, Version=1.5.173.0, Culture=neutral, PublicKeyToken=43f0664b2b4db1fc, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Library\Lokad.Shared.dll</HintPath>
+    </Reference>
+    <Reference Include="Lokad.Stack">
+      <HintPath>..\..\Library\Lokad.Stack.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.WindowsAzure.ServiceRuntime, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.WindowsAzure.StorageClient, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -100,10 +99,9 @@
     <Compile Include="PubSub\Build\BuildPubSubModule.cs" />
     <Compile Include="Domain\MessageReflectionUtil.cs" />
     <Compile Include="PubSub\Build\SubscribeSyntax.cs" />
-    <Compile Include="Queue\HeaderInfo.cs" />
+    <Compile Include="Queue\MessagePart.cs" />
     <Compile Include="Queue\IRouteMessages.cs" />
     <Compile Include="Queue\IWriteMessageQueue.cs" />
-    <Compile Include="Queue\OutgoingMessageEnvelope.cs" />
     <Compile Include="Consume\ConsumingProcess.cs" />
     <Compile Include="Consume\DispatchesSingleMessage.cs" />
     <Compile Include="Consume\IMessageDispatcher.cs" />
@@ -127,7 +125,7 @@
     <Compile Include="Queue\GetMessageResult.cs" />
     <Compile Include="Queue\GetMessageResultState.cs" />
     <Compile Include="Queue\IncomingMessageEnvelope.cs" />
-    <Compile Include="Queue\MessageMessage.cs" />
+    <Compile Include="Queue\MessageBody.cs" />
     <Compile Include="Queue\TransactionCommitAddsMessage.cs" />
     <Compile Include="PubSub\PublishSubscribeProcess.cs" />
     <Compile Include="Design\IEngineProcess.cs" />

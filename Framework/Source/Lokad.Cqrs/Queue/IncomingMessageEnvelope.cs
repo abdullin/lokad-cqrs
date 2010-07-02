@@ -5,6 +5,7 @@
 
 #endregion
 
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using Microsoft.WindowsAzure.StorageClient;
 
@@ -12,74 +13,76 @@ namespace Lokad.Cqrs.Queue
 {
 	public sealed class IncomingMessageEnvelope
 	{
-		public readonly bool ContainsMessageObject;
-		public readonly NameValueCollection Headers;
-		public readonly string Sender;
-		public readonly string Topic;
-		public readonly string TransportMessageId;
-		readonly string _blobReference;
-		readonly object _message;
-		readonly string _typeReference;
+		public readonly ICollection<MessagePart> MessageParts;
+		public readonly CloudQueueMessage Original;
+		public readonly bool ContainsBody;
+		readonly byte[] _includedBody;
+		readonly string _contract;
+		readonly string _reference;
+		public readonly string _topic;
 
-		public IncomingMessageEnvelope(MessageMessage message, CloudQueueMessage cloudMessage)
-		{
-			_message = message.Message;
-			TransportMessageId = cloudMessage.Id;
-
-
-			Headers = new NameValueCollection();
-			foreach (var headerInfo in message.Headers)
-			{
-				Headers.Add(headerInfo.Key, headerInfo.Value);
-			}
-
-			Headers["azure-receipt"] = cloudMessage.PopReceipt;
-
-			Topic = Headers["topic"];
-			Sender = Headers["sender"];
-
-
-			ContainsMessageObject = _message != null;
-
-			if (!ContainsMessageObject)
-			{
-				_blobReference = Headers["content-blob-ref"];
-				_typeReference = Headers["content-blob-type"];
-			}
-		}
-
-		public object MessageObject
+		public byte[] IncludedBody
 		{
 			get
 			{
-				Enforce.That(ContainsMessageObject, "Don't ask for message without checking first");
-				return _message;
+				Enforce.That(ContainsBody, "Don't access body, when it is absent");
+				return _includedBody;
 			}
 		}
 
-		public string DataReference
+		public string Contract
 		{
 			get
 			{
-				Enforce.That(!ContainsMessageObject, "Don't ask for reference, when there is object");
-				return _blobReference;
+				Enforce.That(_contract != null);
+				return _contract;
 			}
 		}
 
-		public string TypeReference
+		public string Reference
 		{
 			get
 			{
-				Enforce.That(!ContainsMessageObject, "Don't ask for reference, when there is object");
-				return _typeReference;
+				Enforce.NotNull(() => _reference);
+				return _reference;
+			}
+		}
+		public string Topic
+		{
+			get
+			{
+				Enforce.NotNull(() => _topic);
+				return _topic;
 			}
 		}
 
-		public override string ToString()
+		public IncomingMessageEnvelope(MessageBody message, CloudQueueMessage cloudMessage)
 		{
-			if (null == _message)
-				return "[Blob]";
-			return "[" + _message.GetType().Name + "]";
+			MessageParts = message.Parts;
+			Original = cloudMessage;
+
+			foreach (var part in MessageParts)
+			{
+
+				switch (part.Type)
+				{
+					case MessageType.ContractName:
+						_contract = part.StringValue;
+						break;
+					case MessageType.BinaryBody:
+						ContainsBody = true;
+						_includedBody = part.BinaryValue;
+						break;
+					case MessageType.Topic:
+						_topic = part.StringValue;
+						break;
+					case MessageType.StorageReference:
+						_reference = part.StringValue;
+						break;
+				}
+			}
 		}
+
+		
 	}
 }

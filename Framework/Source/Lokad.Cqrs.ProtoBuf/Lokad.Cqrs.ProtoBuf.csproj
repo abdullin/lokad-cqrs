@@ -31,14 +31,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Autofac">
-      <HintPath>..\..\Library\Autofac.dll</HintPath>
-    </Reference>
     <Reference Include="Lokad.Shared">
       <HintPath>..\..\Library\Lokad.Shared.dll</HintPath>
     </Reference>
-    <Reference Include="protobuf-net">
-      <HintPath>..\..\Library\protobuf-net\protobuf-net.dll</HintPath>
+    <Reference Include="Lokad.Stack">
+      <HintPath>..\..\Library\Lokad.Stack.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -49,7 +46,6 @@
     <Compile Include="AttributeHelper.cs" />
     <Compile Include="ExtendSyntaxWithProtoBuf.cs" />
     <Compile Include="ProtoBufMessageSerializer.cs" />
-    <Compile Include="ExtendMaybe.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProtoBufUtil.cs" />
   </ItemGroup>

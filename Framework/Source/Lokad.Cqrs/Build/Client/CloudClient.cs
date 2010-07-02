@@ -30,13 +30,7 @@ namespace Lokad.Cqrs
 
 		public void SendMessage(object message)
 		{
-			var end = new OutgoingMessageEnvelope
-				{
-					Topic = message.GetType().FullName,
-					Sender = "Client"
-				};
-
-			_writeMessageQueue.SendMessages(new[] {message}, end.CopyHeaders);
+			_writeMessageQueue.SendMessages(new[] {message}, parts => parts.AddSender("Client"));
 		}
 
 		public TService Resolve<TService>()
@@ -44,7 +38,7 @@ namespace Lokad.Cqrs
 			return _resolver.Resolve<TService>();
 		}
 
-		public void SendMessages(object[] messages, Action<NameValueCollection> headers)
+		public void SendMessages(object[] messages, Action<MessageParts> headers)
 		{
 			_writeMessageQueue.SendMessages(messages, headers);
 		}

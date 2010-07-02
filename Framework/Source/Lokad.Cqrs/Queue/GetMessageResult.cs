@@ -42,9 +42,10 @@ namespace Lokad.Cqrs.Queue
 			}
 		}
 
-		public static GetMessageResult Success(IncomingMessage message)
+		public static GetMessageResult Success(IncomingMessageEnvelope envelope, object data)
 		{
-			return new GetMessageResult(message, GetMessageResultState.Success, null);
+			var m = new IncomingMessage(data, envelope);
+			return new GetMessageResult(m, GetMessageResultState.Success, null);
 		}
 
 		public static GetMessageResult Error(Exception ex)

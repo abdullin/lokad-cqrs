@@ -552,6 +552,58 @@
             </summary>
       <value>The underlying object.</value>
     </member>
+    <member name="T:Lokad.ISyntax`2">
+      <summary>
+            Interface for implementing decoupled configuration extensions 
+            that are limited by the subject.
+            </summary>
+      <typeparam name="TTarget">The type of the target.</typeparam>
+      <typeparam name="TSubject">The type of the subject to extend.</typeparam>
+    </member>
+    <member name="T:Lokad.Serialization.IDataSerializer">
+      <summary>
+            Generic data serializer interface.
+            </summary>
+    </member>
+    <member name="M:Lokad.Serialization.IDataSerializer.Serialize(System.Object,System.IO.Stream)">
+      <summary>
+            Serializes the object to the specified stream
+            </summary>
+      <param name="instance">The instance.</param>
+      <param name="destinationStream">The destination stream.</param>
+    </member>
+    <member name="M:Lokad.Serialization.IDataSerializer.Deserialize(System.IO.Stream,System.Type)">
+      <summary>
+            Deserializes the object from specified source stream.
+            </summary>
+      <param name="sourceStream">The source stream.</param>
+      <param name="type">The type of the object to deserialize.</param>
+      <returns>deserialized object</returns>
+    </member>
+    <member name="T:Lokad.Serialization.BinaryDataSerializer">
+      <summary>
+            Binary data serializer using <see cref="T:System.Runtime.Serialization.Formatters.Binary.BinaryFormatter" /></summary>
+    </member>
+    <member name="F:Lokad.Serialization.BinaryDataSerializer.Instance">
+      <summary>
+            Singleton instance of the serializer
+            </summary>
+    </member>
+    <member name="M:Lokad.Serialization.BinaryDataSerializer.Serialize(System.Object,System.IO.Stream)">
+      <summary>
+            Serializes the object to the specified stream
+            </summary>
+      <param name="instance">The instance.</param>
+      <param name="destinationStream">The destination stream.</param>
+    </member>
+    <member name="M:Lokad.Serialization.BinaryDataSerializer.Deserialize(System.IO.Stream,System.Type)">
+      <summary>
+            Deserializes the object from specified source stream.
+            </summary>
+      <param name="sourceStream">The source stream.</param>
+      <param name="type">The type of the object to deserialize.</param>
+      <returns>deserialized object</returns>
+    </member>
     <member name="T:Lokad.Maybe`1">
       <summary>
             Helper class that indicates nullable value in a good-citizenship code
@@ -578,6 +630,22 @@
             </summary>
       <param name="defaultValue">The default value.</param>
       <returns>value</returns>
+    </member>
+    <member name="M:Lokad.Maybe`1.GetValue(System.Func{Lokad.Maybe{`0}})">
+      <summary>
+            Retrieves value from this instance, using a <paramref name="defaultValue" />
+            factory, if it is absent
+            </summary>
+      <param name="defaultValue">The default value to provide.</param>
+      <returns>maybe value</returns>
+    </member>
+    <member name="M:Lokad.Maybe`1.GetValue(Lokad.Maybe{`0})">
+      <summary>
+            Retrieves value from this instance, using a <paramref name="defaultValue" />
+            if it is absent
+            </summary>
+      <param name="defaultValue">The default value to provide.</param>
+      <returns>maybe value</returns>
     </member>
     <member name="M:Lokad.Maybe`1.Apply(System.Action{`0})">
       <summary>
@@ -983,12 +1051,11 @@
             Base attribute for marking classes with some design constraints
             </summary>
     </member>
-    <member name="M:Lokad.Quality.ClassDesignAttribute.#ctor(System.String,System.String[])">
+    <member name="M:Lokad.Quality.ClassDesignAttribute.#ctor(System.String[])">
       <summary>
             Initializes a new instance of the <see cref="T:Lokad.Quality.ClassDesignAttribute" /> class.
             </summary>
-      <param name="firstDesignTag">The first design tag.</param>
-      <param name="otherDesignTags">The other design tags.</param>
+      <param name="designTags">The design tags.</param>
     </member>
     <member name="M:Lokad.Quality.ClassDesignAttribute.#ctor(System.String)">
       <summary>
@@ -996,12 +1063,17 @@
             </summary>
       <param name="classDesignTag">The class design tag.</param>
     </member>
-    <member name="M:Lokad.Quality.ClassDesignAttribute.#ctor(Lokad.Quality.DesignTag,Lokad.Quality.DesignTag[])">
+    <member name="M:Lokad.Quality.ClassDesignAttribute.#ctor(Lokad.Quality.DesignTag)">
       <summary>
             Initializes a new instance of the <see cref="T:Lokad.Quality.ClassDesignAttribute" /> class.
             </summary>
-      <param name="firstDesignTag">The first design tag.</param>
-      <param name="otherDesignTags">The other design tags.</param>
+      <param name="designTag">The design tag.</param>
+    </member>
+    <member name="M:Lokad.Quality.ClassDesignAttribute.#ctor(Lokad.Quality.DesignTag[])">
+      <summary>
+            Initializes a new instance of the <see cref="T:Lokad.Quality.ClassDesignAttribute" /> class.
+            </summary>
+      <param name="designTags">The design tags.</param>
     </member>
     <member name="P:Lokad.Quality.ClassDesignAttribute.ClassDesignTags">
       <summary>
@@ -1078,8 +1150,14 @@
             	Converts the tag to string.
             </summary>
       <param name="tag">The tag.</param>
-      <returns>
-      </returns>
+      <returns>string representation for the tag</returns>
+    </member>
+    <member name="M:Lokad.Quality.DesignUtil.ConvertTagsToStrings(Lokad.Quality.DesignTag[])">
+      <summary>
+            Converts multiple tags to strings.
+            </summary>
+      <param name="tags">The tags to convert.</param>
+      <returns>array of string representations for the design tags</returns>
     </member>
     <member name="M:Lokad.Quality.DesignUtil.GetClassDesignTags(System.Type,System.Boolean)">
       <summary>

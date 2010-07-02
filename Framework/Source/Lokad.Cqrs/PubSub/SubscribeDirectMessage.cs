@@ -7,6 +7,7 @@
 
 using System;
 using System.Runtime.Serialization;
+using Lokad.Quality;
 
 namespace Lokad.Cqrs.PubSub
 {
@@ -14,9 +15,18 @@ namespace Lokad.Cqrs.PubSub
 	[Serializable]
 	public sealed class SubscribeDirectMessage
 	{
-		[DataMember] public readonly string Queue;
-		[DataMember] public readonly string SubscriptionId;
-		[DataMember] public readonly string Topic;
+		[DataMember(Order = 1)]
+		public string Queue { get; private set; }
+		[DataMember(Order = 2)]
+		public string SubscriptionId { get; private set; }
+		[DataMember(Order = 3)]
+		public string Topic { get; private set; }
+
+		[UsedImplicitly]
+		SubscribeDirectMessage()
+		{
+		}
+
 
 		public SubscribeDirectMessage(string topic, string queue, string subscriptionId)
 		{

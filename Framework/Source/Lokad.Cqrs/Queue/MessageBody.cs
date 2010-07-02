@@ -6,22 +6,27 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Runtime.Serialization;
+using ProtoBuf;
+using System.Linq;
 
 namespace Lokad.Cqrs.Queue
 {
 	[DataContract]
 	[Serializable]
-	public sealed class MessageMessage
+	public sealed class MessageBody
 	{
-		[DataMember] public readonly HeaderInfo[] Headers;
-		[DataMember] public readonly object Message;
+		[DataMember(Order = 1)]public readonly MessagePart[] Parts;
 
-		public MessageMessage(NameValueCollection headers, object message)
+		MessageBody()
 		{
-			Message = message;
-			Headers = headers.AllKeys.Convert(k => new HeaderInfo(k, headers[(string) k]));
+		}
+
+		public MessageBody(IEnumerable<MessagePart> parts)
+		{
+			Parts = parts.ToArray();
 		}
 	}
 }

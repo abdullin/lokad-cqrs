@@ -32,19 +32,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Autofac, Version=2.2.2.875, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Library\Autofac.dll</HintPath>
-    </Reference>
     <Reference Include="Lokad.Shared, Version=1.5.196.0, Culture=neutral, PublicKeyToken=43f0664b2b4db1fc, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Library\Lokad.Shared.dll</HintPath>
     </Reference>
+    <Reference Include="Lokad.Stack">
+      <HintPath>..\..\Library\Lokad.Stack.dll</HintPath>
+    </Reference>
     <Reference Include="Lokad.Testing">
       <HintPath>..\..\Library\Lokad.Testing.dll</HintPath>
-    </Reference>
-    <Reference Include="protobuf-net">
-      <HintPath>..\..\Library\protobuf-net\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

@@ -11,21 +11,25 @@ namespace Lokad.Cqrs.Queue
 {
 	public sealed class IncomingMessage
 	{
-		public readonly NameValueCollection Headers;
+		
 		public readonly object Message;
-		public readonly string Sender;
-		public readonly string Topic;
+		
 		public readonly string TransportMessageId;
+		public readonly string Receipt;
+		IncomingMessageEnvelope _envelope;
+
+		public string Topic
+		{
+			get { return _envelope.Topic; }
+		}
 
 
 		public IncomingMessage(object message, IncomingMessageEnvelope envelope)
 		{
 			Message = message;
-			TransportMessageId = envelope.TransportMessageId;
-			Headers = envelope.Headers;
-
-			Topic = envelope.Topic;
-			Sender = envelope.Sender;
+			_envelope = envelope;
+			TransportMessageId = _envelope.Original.Id;
+			Receipt = _envelope.Original.PopReceipt;
 		}
 	}
 }

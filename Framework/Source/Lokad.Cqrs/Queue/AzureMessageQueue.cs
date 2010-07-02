@@ -6,12 +6,14 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Transactions;
 using Lokad.Cqrs.Serialization;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
+using System.Linq;
 
 namespace Lokad.Cqrs.Queue
 {
@@ -23,7 +25,7 @@ namespace Lokad.Cqrs.Queue
 		readonly IMessageProfiler _debugger;
 		readonly CloudQueue _discardQueue;
 		readonly ILog _log;
-		readonly IMessageSerializer _messageSerializer;
+		readonly IMessageSerializer _serializer;
 		readonly CloudQueue _posionQueue;
 		readonly CloudQueue _queue;
 
@@ -37,7 +39,7 @@ namespace Lokad.Cqrs.Queue
 			string queueName,
 			int retryCount,
 			ILogProvider provider,
-			IMessageSerializer messageSerializer, IMessageProfiler debugger)
+			IMessageSerializer serializer, IMessageProfiler debugger)
 		{
 			var blobClient = account.CreateCloudBlobClient();
 			blobClient.RetryPolicy = RetryPolicies.NoRetry();
@@ -58,7 +60,7 @@ namespace Lokad.Cqrs.Queue
 			_account = account;
 			_debugger = debugger;
 
-			_messageSerializer = messageSerializer;
+			_serializer = serializer;
 			_retryCount = retryCount;
 		}
 
@@ -110,60 +112,75 @@ namespace Lokad.Cqrs.Queue
 				TransactionalMoveMessage(message, _posionQueue);
 				return GetMessageResult.Retry;
 			}
-
+			Type messageType;
 			IncomingMessageEnvelope envelope;
-
+			
 			try
 			{
 				using (var stream = new MemoryStream(message.AsBytes))
 				{
-					var data = (MessageMessage) _messageSerializer.Deserialize(stream, typeof (MessageMessage));
+					var data = (MessageBody) _serializer.Deserialize(stream, typeof (MessageBody));
 					envelope = new IncomingMessageEnvelope(data, message);
 				}
 			}
 			catch (Exception ex)
 			{
-				_log.ErrorFormat(ex, "Failed to deserialize message {0}. Moving to poison", message.Id);
-				TransactionalMoveMessage(message, _posionQueue);
+				_log.ErrorFormat(ex, "Failed to deserialize envelope {0}. Moving to poison", message.Id);
+				MoveIncomingToPoison(message);
 				return GetMessageResult.Retry;
 			}
-
-			if (envelope.ContainsMessageObject)
-			{
-				var m = new IncomingMessage(envelope.MessageObject, envelope);
-
-
-				return GetMessageResult.Success(m);
-			}
-
-			_log.DebugFormat("Message {0} references data {1}; downloading it.", message.Id, envelope.DataReference);
-
-			Type messageType;
-
 			try
 			{
-				messageType = _messageSerializer.GetTypeByContractName(envelope.TypeReference);
+				messageType = _serializer.GetTypeByContractName(envelope.Contract);
 			}
 			catch (Exception ex)
 			{
-				_log.ErrorFormat(ex, "Failed to discover type '{0}' of message {1}",
-					envelope.TypeReference,
-					message.Id);
+				_log.ErrorFormat(ex, "Unknown contract type: {0} for message {1}", envelope.Contract, message.Id);
 				MoveIncomingToPoison(message);
 				return GetMessageResult.Retry;
 			}
 
-			var blobReference = _cloudBlob.GetBlobReference(envelope.DataReference);
-			var bytes = blobReference.DownloadByteArray();
-
 			try
 			{
-				using (var stream = new MemoryStream(bytes))
+				if (envelope.ContainsBody)
 				{
-					var data = _messageSerializer.Deserialize(stream, messageType);
-					var m = new IncomingMessage(data, envelope);
-					return GetMessageResult.Success(m);
+					using (var readBody = new MemoryStream(envelope.IncludedBody))
+					{
+						var data = _serializer.Deserialize(readBody, messageType);
+						return GetMessageResult.Success(envelope, data);
+					}
 				}
+			}
+			catch (Exception ex)
+			{
+				_log.ErrorFormat(ex, "Failed to deserialize embedded message {0}. Moving to poison", message.Id);
+				MoveIncomingToPoison(message);
+				return GetMessageResult.Retry;
+			}
+
+			_log.DebugFormat("Message {0} references data {1}; downloading it.", message.Id, envelope.Reference);
+
+			// retriable problem
+			
+			try
+			{
+				var blobReference = _cloudBlob.GetBlobReference(envelope.Reference);
+				IncomingMessageEnvelope referenced;
+				using (var stream = blobReference.OpenRead())
+				{
+					var data = (MessageBody)_serializer.Deserialize(stream, typeof(MessageBody));
+					referenced = new IncomingMessageEnvelope(data, message);
+				}
+				using (var ms = new MemoryStream(referenced.IncludedBody))
+				{
+					var data = _serializer.Deserialize(ms, messageType);
+					return GetMessageResult.Success(referenced, data);
+				}
+			}
+			catch (StorageClientException)
+			{
+				// retriable
+				throw;
 			}
 			catch (Exception ex)
 			{
@@ -176,7 +193,7 @@ namespace Lokad.Cqrs.Queue
 		public void AckMessage(IncomingMessage message)
 		{
 			var id = message.TransportMessageId;
-			var receipt = message.Headers["azure-receipt"];
+			var receipt = message.Receipt;
 
 			if (_log.IsDebugEnabled())
 			{
@@ -187,7 +204,7 @@ namespace Lokad.Cqrs.Queue
 
 		public void DiscardMessage(IncomingMessage message)
 		{
-			var receipt = message.Headers["azure-receipt"];
+			var receipt = message.Receipt;
 			if (string.IsNullOrEmpty(receipt))
 			{
 				throw new InvalidOperationException("Can't discard non-azure message");
@@ -213,7 +230,7 @@ namespace Lokad.Cqrs.Queue
 			}
 		}
 
-		public void SendMessages(object[] messages, Action<NameValueCollection> headers)
+		public void SendMessages(object[] messages, Action<MessageParts> headers)
 		{
 			if (messages.Length == 0)
 				return;
@@ -224,7 +241,7 @@ namespace Lokad.Cqrs.Queue
 			}
 		}
 
-		public void RouteMessages(IncomingMessage[] messages, Action<NameValueCollection> headers)
+		public void RouteMessages(IncomingMessage[] messages, Action<MessageParts> headers)
 		{
 			foreach (var message in messages)
 			{
@@ -275,53 +292,68 @@ namespace Lokad.Cqrs.Queue
 			}
 		}
 
-		CloudQueueMessage PackToNewMessage(Action<NameValueCollection> modify, object message)
+		//http://abdullin.com/journal/2010/6/4/azure-queue-messages-cannot-be-larger-than-8192-bytes.html
+		const int CloudQueueLimit = 6144;
+
+		CloudQueueMessage PackToNewMessage(Action<MessageParts> modify, object message)
 		{
 			// optimistic serialization for now
-			var messageId = Guid.NewGuid();
-			var referenceId = SystemUtil.UtcNow.ToString(DateFormatInBlobName) + messageId;
+			var messageId = GuidUtil.NewComb();
+			var created = SystemUtil.UtcNow;
 
-			var headers = new NameValueCollection();
+			var parts = new MessageParts();
 
-			OutgoingMessageEnvelope
-				.Build(e =>
-					{
-						e.Topic = message.GetType().FullName;
-						e.Sender = _queue.Uri.ToString();
-						e.Id = messageId;
-					})
-				.CopyHeaders(headers);
-			modify(headers);
+			var contract = _serializer.GetContractNameByType(message.GetType());
 
-			var data = new MessageMessage(headers, message);
+			parts.AddTopic(contract);
+			parts.AddContract(contract);
+			parts.AddSender(_queue.Uri.ToString());
+			parts.AddIdentity(messageId.ToString());
+			parts.AddCreated(created);
+
+			modify(parts);
+
+			var referenceId = created.ToString(DateFormatInBlobName) + messageId;
+			
 			using (var stream = new MemoryStream())
 			{
-				//http://abdullin.com/journal/2010/6/4/azure-queue-messages-cannot-be-larger-than-8192-bytes.html
-				_messageSerializer.Serialize(data, stream);
-				if (stream.Position < 6144)
+				using (var body = new MemoryStream())
+				{
+					_serializer.Serialize(message, body);
+					parts.AddBody(body.ToArray());
+				}
+
+				var m = new MessageBody(parts.AllParts);
+				_serializer.Serialize(m, stream);
+
+				if (stream.Position < CloudQueueLimit)
 				{
 					var bytes = stream.ToArray();
 					return new CloudQueueMessage(bytes);
 				}
+
+				stream.Seek(0, SeekOrigin.Begin);
+
+				// upload message
+
+				_cloudBlob
+					.GetBlobReference(referenceId)
+					.UploadFromStream(stream);
 			}
-			// overflow
-			using (var stream = new MemoryStream())
+
+			using (var referenceStream = new MemoryStream())
 			{
-				_messageSerializer.Serialize(message, stream);
-				_cloudBlob.GetBlobReference(referenceId).UploadByteArray(stream.ToArray());
+				var reference = new MessageParts();
+				reference.AddBlobReference(_cloudBlob.Uri, referenceId);
+				reference.AddCreated(created);
+				reference.AddTopic(contract);
+				reference.AddContract(contract);
+
+				var m = new MessageBody(reference.AllParts);
+				_serializer.Serialize(m, referenceStream);
+				return new CloudQueueMessage(referenceStream.ToArray());
 			}
-
-			headers["content-blob-ref"] = referenceId;
-
-			headers["content-blob-type"] = _messageSerializer.GetContractNameByType(message.GetType());
-
-
-			var data2 = new MessageMessage(headers, null);
-			using (var stream = new MemoryStream())
-			{
-				_messageSerializer.Serialize(data2, stream);
-				return new CloudQueueMessage(stream.ToArray());
-			}
+			
 		}
 
 

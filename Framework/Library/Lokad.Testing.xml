@@ -601,7 +601,7 @@
       <typeparam name="TComponent">The type of the component.</typeparam>
       <param name="instance">The actual instance.</param>
     </member>
-    <member name="M:Lokad.Testing.MockContainer.Build(System.Action{Autofac.Builder.ContainerBuilder})">
+    <member name="M:Lokad.Testing.MockContainer.Build(System.Action{Autofac.ContainerBuilder})">
       <summary>
             Builds the specified registration into the container.
             </summary>
