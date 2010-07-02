@@ -5,15 +5,17 @@
 
 #endregion
 
+using Lokad.Cqrs.Queue;
+
 namespace Lokad.Cqrs
 {
 	sealed class SimpleMessageProfiler : IMessageProfiler
 	{
 		public static readonly IMessageProfiler Instance = new SimpleMessageProfiler();
 
-		public string GetReadableMessageInfo(object instance, string messageId)
+		public string GetReadableMessageInfo(UnpackedMessage message)
 		{
-			return instance.GetType().Name + "- " + messageId;
+			return message.ContractType.Name + "- " + message.TransportMessageId;
 		}
 	}
 }

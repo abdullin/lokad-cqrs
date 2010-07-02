@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Autofac;
 using Lokad.Cqrs.Domain;
+using Lokad.Cqrs.Queue;
 
 namespace Lokad.Cqrs.Consume
 {
@@ -57,11 +58,10 @@ namespace Lokad.Cqrs.Consume
 			}
 		}
 
-		public bool DispatchMessage(string topic, object message)
+		public bool DispatchMessage(UnpackedMessage message)
 		{
 			Type consumerType;
-			var type = message.GetType();
-			if (_messageConsumers.TryGetValue(type, out consumerType))
+			if (_messageConsumers.TryGetValue(message.ContractType, out consumerType))
 			{
 				using (var scope = _container.BeginLifetimeScope())
 				{

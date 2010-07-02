@@ -6,6 +6,7 @@
 #endregion
 
 using System;
+using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs.Queue
 {
@@ -15,9 +16,9 @@ namespace Lokad.Cqrs.Queue
 		public static readonly GetMessageResult Retry = new GetMessageResult(null, GetMessageResultState.Retry, null);
 		public readonly GetMessageResultState State;
 		readonly Exception _exception;
-		readonly IncomingMessage _message;
+		readonly UnpackedMessage _message;
 
-		GetMessageResult(IncomingMessage message, GetMessageResultState state, Exception exception)
+		GetMessageResult(UnpackedMessage message, GetMessageResultState state, Exception exception)
 		{
 			_message = message;
 			State = state;
@@ -33,7 +34,7 @@ namespace Lokad.Cqrs.Queue
 			}
 		}
 
-		public IncomingMessage Message
+		public UnpackedMessage Message
 		{
 			get
 			{
@@ -42,10 +43,9 @@ namespace Lokad.Cqrs.Queue
 			}
 		}
 
-		public static GetMessageResult Success(IncomingMessageEnvelope envelope, object data)
+		public static GetMessageResult Success(UnpackedMessage message)
 		{
-			var m = new IncomingMessage(data, envelope);
-			return new GetMessageResult(m, GetMessageResultState.Success, null);
+			return new GetMessageResult(message, GetMessageResultState.Success, null);
 		}
 
 		public static GetMessageResult Error(Exception ex)

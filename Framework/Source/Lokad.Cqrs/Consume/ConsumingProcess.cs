@@ -38,9 +38,9 @@ namespace Lokad.Cqrs.Consume
 			_transport.Start();
 		}
 
-		bool TransportOnMessageRecieved(IncomingMessage arg)
+		bool TransportOnMessageRecieved(UnpackedMessage arg)
 		{
-			return _dispatcher.DispatchMessage(arg.Topic, arg.Message);
+			return _dispatcher.DispatchMessage(arg);
 		}
 	}
 }

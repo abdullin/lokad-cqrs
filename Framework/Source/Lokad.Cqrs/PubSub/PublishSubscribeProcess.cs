@@ -71,19 +71,20 @@ namespace Lokad.Cqrs.PubSub
 			return false;
 		}
 
-		bool TransportOnMessageRecieved(IncomingMessage incomingMessage)
+		bool TransportOnMessageRecieved(UnpackedMessage incomingMessage)
 		{
-			if (Manage(incomingMessage.Message))
+			if (Manage(incomingMessage.Content))
 				return true;
 
-			var topic = incomingMessage.Topic;
-			if (string.IsNullOrEmpty(topic))
+			var topic = incomingMessage.Attributes.GetLastString(MessageAttributeType.Topic);
+
+			if (!topic.HasValue)
 			{
 				_log.DebugFormat("Discarding message {0} without topic", incomingMessage.TransportMessageId);
 				return false;
 			}
 
-			var subscribers = _store.GetSubscribers(topic);
+			var subscribers = _store.GetSubscribers(topic.Value);
 			if (subscribers.Length > 0)
 			{
 				_router.RouteMessages(new[] {incomingMessage}, subscribers);

@@ -13,7 +13,7 @@ namespace Lokad.Cqrs.Queue
 	public interface IWriteMessageQueue
 	{
 		Uri Uri { get; }
-		void SendMessages(object[] messages, Action<MessageParts> headers);
-		void RouteMessages(IncomingMessage[] messages, Action<MessageParts> headers);
+		void SendMessages(object[] messages, Action<MessageAttributeBuilder> headers);
+		void RouteMessages(UnpackedMessage[] messages, Action<MessageAttributeBuilder> headers);
 	}
 }

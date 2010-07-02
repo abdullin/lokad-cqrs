@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.Serialization;
 using Lokad;
 using Lokad.Cqrs;
 using Lokad.Cqrs.Default;
+using Lokad.Cqrs.Queue;
 using NUnit.Framework;
+using ProtoBuf;
 
 namespace CloudBus.Tests
 {
@@ -38,8 +41,10 @@ namespace CloudBus.Tests
 			Host.Initialize();
 			Host.Start();
 			var client = Host.Resolve<IMessageClient>();
-			client.Send(new Hello(){World = "Hello"});
+
+			client.Send(new Hello {World = "Hello"});
 			client.Send(new Hello{World = Rand.String.NextText(6000,6000)});
+
 			SystemUtil.Sleep(50.Seconds());
 			Host.Stop();
 		}
@@ -51,11 +56,30 @@ namespace CloudBus.Tests
 			[DataMember(Order = 1)]
 			public string World { get; set; }
 		}
-		public sealed class doSomething : IConsume<Hello>
+		public sealed class DoSomething : IConsume<Hello>
 		{
 			public void Consume(Hello message)
 			{
 				Trace.WriteLine("Consumed with length: " + message.World.Length);
+
+				Trace.WriteLine("Message total: " + MessageContext.Current.Header.GetTotalLength());
+			}
+		}
+	}
+
+	[TestFixture]
+	public sealed class FormatTests
+	{
+		// ReSharper disable InconsistentNaming
+		[Test]
+		public void Test()
+		{
+			
+			using (var mem = new MemoryStream())
+			{
+				var fix = MessageHeader.ForData(Rand.Next(1000),Rand.Next(0,12),0);
+				Serializer.Serialize(mem,fix);
+				Assert.AreEqual(MessageHeader.FixedSize, mem.Position);
 			}
 		}
 	}

@@ -52,7 +52,7 @@ namespace Lokad.Cqrs.Queue
 			}
 		}
 
-		public void RouteMessages(IncomingMessage[] messages, params string[] references)
+		public void RouteMessages(UnpackedMessage[] messages, params string[] references)
 		{
 			//var endpoints = references.Convert(AzureQueueReference.FromUri);
 

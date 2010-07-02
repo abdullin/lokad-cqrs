@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using Autofac;
 using Lokad.Cqrs.Domain;
+using Lokad.Cqrs.Queue;
 
 namespace Lokad.Cqrs.Consume
 {
@@ -35,19 +36,19 @@ namespace Lokad.Cqrs.Consume
 			}
 		}
 
-		public bool DispatchMessage(string topic, object message)
+		public bool DispatchMessage(UnpackedMessage unpacked)
 		{
 			// we get failure if one of the subscribers fails
 			Type[] consumerTypes;
-			var type = message.GetType();
-			if (_dispatcher.TryGetValue(type, out consumerTypes))
+			
+			if (_dispatcher.TryGetValue(unpacked.ContractType, out consumerTypes))
 			{
 				using (var scope = _container.BeginLifetimeScope())
 				{
 					foreach (var consumerType in consumerTypes)
 					{
 						var consumer = scope.Resolve(consumerType);
-						_directory.InvokeConsume(consumer, message);
+						_directory.InvokeConsume(consumer, unpacked.Content);
 					}
 				}
 

@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using Lokad.Cqrs.Queue;
 using Lokad.Quality;
 
 namespace Lokad.Cqrs.Domain
@@ -22,15 +23,15 @@ namespace Lokad.Cqrs.Domain
 		}
 
 
-		public string GetReadableMessageInfo(object instance, string messageId)
+		public string GetReadableMessageInfo(UnpackedMessage message)
 		{
 			GetInfoDelegate value;
-			var type = instance.GetType();
+			var type = message.GetType();
 			if (_delegates.TryGetValue(type, out value))
 			{
-				return value(instance, messageId);
+				return value(message);
 			}
-			return type.Name + " - " + messageId;
+			return type.Name + " - " + message.TransportMessageId;
 		}
 
 		static IDictionary<Type, GetInfoDelegate> BuildFrom(IMessageDirectory directory)
@@ -46,16 +47,16 @@ namespace Lokad.Cqrs.Domain
 
 				if (hasStringOverride)
 				{
-					delegates.Add(type, (o, id) => o.ToString());
+					delegates.Add(type, m => m.Content.ToString());
 				}
 				else
 				{
-					delegates.Add(type, (o, id) => type.Name + " - " + id);
+					delegates.Add(type, m => type.Name + " - " + m.TransportMessageId);
 				}
 			}
 			return delegates;
 		}
 
-		delegate string GetInfoDelegate(object message, string messageId);
+		delegate string GetInfoDelegate(UnpackedMessage message);
 	}
 }

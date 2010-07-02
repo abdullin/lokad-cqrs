@@ -53,8 +53,8 @@ namespace Lokad.Cqrs.Transport
 		}
 
 		public event Action Started = () => { };
-		public event Func<IncomingMessage, bool> MessageRecieved = m => false;
-		public event Action<IncomingMessage, Exception> MessageHandlerFailed = (message, exception) => { };
+		public event Func<UnpackedMessage, bool> MessageRecieved = m => false;
+		public event Action<UnpackedMessage, Exception> MessageHandlerFailed = (message, exception) => { };
 
 		public void Dispose()
 		{
@@ -107,17 +107,17 @@ namespace Lokad.Cqrs.Transport
 		}
 
 
-		Result<IncomingMessage, Exception> Process(IReadMessageQueue queue, IncomingMessage message)
+		Result<UnpackedMessage, Exception> Process(IReadMessageQueue queue, UnpackedMessage message)
 		{
 			bool consumed;
 
 			try
 			{
-				consumed = ProcessSingleMessage(message, MessageRecieved);
+				consumed = ProcessSingleMessage(message, m => MessageRecieved(m));
 			}
 			catch (Exception ex)
 			{
-				var info = _messageProfiler.GetReadableMessageInfo(message.Message, message.TransportMessageId);
+				var info = _messageProfiler.GetReadableMessageInfo(message);
 				var text = string.Format("Failed to consume '{0}' from '{1}'. TransportId: {2}", info, queue.Uri,
 					message.TransportMessageId);
 
@@ -140,40 +140,50 @@ namespace Lokad.Cqrs.Transport
 			return message;
 		}
 
-		bool ProcessSingleMessage(IncomingMessage message, Func<IncomingMessage, bool> messageRecieved)
+		bool ProcessSingleMessage(UnpackedMessage message, Func<UnpackedMessage, bool> messageRecieved)
 		{
 			if (messageRecieved == null)
 				return false;
 
-			using (_profiler.TrackMessage(message.Message, message.TransportMessageId))
+			
+			
+			try
 			{
-				foreach (Func<IncomingMessage, bool> func in messageRecieved.GetInvocationList())
+				MessageContext.OverrideContext(message);
+				using (_profiler.TrackMessage(message))
 				{
-					if (func(message))
+					foreach (Func<UnpackedMessage, bool> func in messageRecieved.GetInvocationList())
 					{
-						return true;
+						if (func(message))
+						{
+							return true;
+						}
 					}
 				}
+			}
+			finally
+			{
+				MessageContext.OverrideContext(null);
 			}
 			return false;
 		}
 
-		void Discard(IReadMessageQueue queue, IncomingMessage detail)
+		void Discard(IReadMessageQueue queue, UnpackedMessage detail)
 		{
 			_log.DebugFormat("Discarding message {0} ({1}) because there are no consumers for it.",
-				detail.Message, detail.TransportMessageId);
+				detail.Content, detail.TransportMessageId);
 
 			queue.DiscardMessage(detail);
 		}
 
 
-		void MessageHandlingProblem(IncomingMessage message, Exception ex)
+		void MessageHandlingProblem(UnpackedMessage message, Exception ex)
 		{
 			MessageHandlerFailed(message, ex);
 			// do nothing. Message will show up in the queue with the increased enqueue count.
 		}
 
-		void FinalizeSuccess(IReadMessageQueue queue, IncomingMessage message, TransactionScope tx)
+		void FinalizeSuccess(IReadMessageQueue queue, UnpackedMessage message, TransactionScope tx)
 		{
 			queue.AckMessage(message);
 			tx.Complete();

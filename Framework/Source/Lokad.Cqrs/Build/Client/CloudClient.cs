@@ -38,7 +38,7 @@ namespace Lokad.Cqrs
 			return _resolver.Resolve<TService>();
 		}
 
-		public void SendMessages(object[] messages, Action<MessageParts> headers)
+		public void SendMessages(object[] messages, Action<MessageAttributeBuilder> headers)
 		{
 			_writeMessageQueue.SendMessages(messages, headers);
 		}

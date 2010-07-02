@@ -14,7 +14,7 @@ namespace Lokad.Cqrs.Queue
 		Uri Uri { get; }
 		void Init();
 		GetMessageResult GetMessage();
-		void AckMessage(IncomingMessage message);
-		void DiscardMessage(IncomingMessage message);
+		void AckMessage(UnpackedMessage message);
+		void DiscardMessage(UnpackedMessage message);
 	}
 }

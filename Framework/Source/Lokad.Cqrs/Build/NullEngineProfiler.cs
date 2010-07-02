@@ -6,16 +6,29 @@
 #endregion
 
 using System;
+using Lokad.Cqrs.Queue;
 using Lokad.Quality;
 
 namespace Lokad.Cqrs
 {
+	public static class MessageContext
+	{
+		[ThreadStatic] static UnpackedMessage _current;
+
+		public static UnpackedMessage Current { get { return _current; } }
+
+		internal static void OverrideContext(UnpackedMessage message)
+		{
+			_current = message;
+		}
+	}
+
 	[UsedImplicitly]
 	sealed class NullEngineProfiler : IEngineProfiler
 	{
 		public static readonly IEngineProfiler Instance = new NullEngineProfiler();
 
-		IDisposable IEngineProfiler.TrackMessage(object instance, string messageId)
+		IDisposable IEngineProfiler.TrackMessage(UnpackedMessage message)
 		{
 			return null;
 		}

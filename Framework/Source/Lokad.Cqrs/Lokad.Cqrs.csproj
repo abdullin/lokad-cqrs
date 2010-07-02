@@ -99,7 +99,7 @@
     <Compile Include="PubSub\Build\BuildPubSubModule.cs" />
     <Compile Include="Domain\MessageReflectionUtil.cs" />
     <Compile Include="PubSub\Build\SubscribeSyntax.cs" />
-    <Compile Include="Queue\MessagePart.cs" />
+    <Compile Include="Queue\MessageAttribute.cs" />
     <Compile Include="Queue\IRouteMessages.cs" />
     <Compile Include="Queue\IWriteMessageQueue.cs" />
     <Compile Include="Consume\ConsumingProcess.cs" />
@@ -116,7 +116,7 @@
     <Compile Include="Transport\AzureQueueTransportConfig.cs" />
     <Compile Include="Design\IMessageTransport.cs" />
     <Compile Include="Queue\IReadMessageQueue.cs" />
-    <Compile Include="Queue\IncomingMessage.cs" />
+    <Compile Include="Queue\UnpackedCloudMessage.cs" />
     <Compile Include="Serialization\IMessageSerializer.cs" />
     <Compile Include="Queue\AzureMessageQueue.cs" />
     <Compile Include="Transport\AzureQueueTransport.cs" />
@@ -124,7 +124,6 @@
     <Compile Include="Queue\TransactionCommitDeletesMessage.cs" />
     <Compile Include="Queue\GetMessageResult.cs" />
     <Compile Include="Queue\GetMessageResultState.cs" />
-    <Compile Include="Queue\IncomingMessageEnvelope.cs" />
     <Compile Include="Queue\MessageBody.cs" />
     <Compile Include="Queue\TransactionCommitAddsMessage.cs" />
     <Compile Include="PubSub\PublishSubscribeProcess.cs" />
