@@ -39,11 +39,10 @@
     </CreateItem>
     <Copy SourceFiles="@(rawFiles)" DestinationFolder="$(RawPath)" />
 
-    <CreateItem Include="$(RawPath)\Lokad.*" Exclude="$(RawPath)\Lokad.Cqrs.*">
+    <CreateItem Include="$(RawPath)\Lokad.Shared.*">
       <Output ItemName="sharedFiles" TaskParameter="Include"/>
     </CreateItem>
     <Copy SourceFiles="@(sharedFiles)" DestinationFolder="$(StackPath)" />
-    
     
     <CreateItem Include="**\bin\$(Configuration)\Microsoft*.dll">
       <Output ItemName="tempFiles" TaskParameter="Include"/>
@@ -53,7 +52,8 @@
     
     <!--Lokad STACK merger-->
     <!--Merge Lokad.Cqrs-->
-    <Exec Command='$(ILMerge) "$(RawPath)\Lokad.Cqrs.dll" "$(RawPath)/Autofac.dll" /out:"$(StackPath)/Lokad.Cqrs.dll" /keyfile:SharedKey.snk /xmldocs=true /ver:$(Version) /attr:"$(RawPath)/Lokad.Cqrs.dll" /lib:"$(TempPath)"' />
+    <Exec Command='$(ILMerge) "$(RawPath)\Lokad.Cqrs.dll" "$(RawPath)/Lokad.Stack.dll" /out:"$(StackPath)/Lokad.Cqrs.Stack.dll" /keyfile:SharedKey.snk /xmldocs=true /ver:$(Version) /attr:"$(RawPath)/Lokad.Cqrs.dll" /lib:"$(TempPath)"' />
+    
 
     <!--Merge Lokad.Cqrs.NHibernate-->
     <CreateItem Include="Library\NHibernate.Core\*.dll;Library\NHibernate.Linq\*.dll;$(RawPath)\Lokad.Cqrs.NHibernate.dll">
@@ -62,14 +62,17 @@
     <Exec Command="$(ILMerge) @(mergeNHibernate->'&quot;%(FullPath)&quot;', ' ') /out:&quot;$(StackPath)/Lokad.Cqrs.NHibernate.dll&quot;  /xmldocs=true /attr:&quot;$(RawPath)\Lokad.Cqrs.NHibernate.dll&quot; /ver:$(Version) /keyfile:SharedKey.snk" />
     <WriteLinesToFile Lines="@(mergeNHibernate)" File="$(StackPath)\Lokad.Cqrs.NHibernate.txt" />
     
-    <Exec Command="$(Linker) &quot;$(StackPath)\Lokad.Cqrs.NHibernate.dll&quot; &quot;$(RawPath)\Autofac.dll&quot; &quot;$(StackPath)\Lokad.Cqrs.dll&quot; &quot;$(StackPath)\Lokad.Cqrs.NHibernate.dll&quot;" />
+    <Exec Command="$(Linker) &quot;$(StackPath)\Lokad.Cqrs.NHibernate.dll&quot; &quot;$(RawPath)\Lokad.Stack.dll&quot; &quot;$(StackPath)\Lokad.Cqrs.Stack.dll&quot; &quot;$(StackPath)\Lokad.Cqrs.NHibernate.dll&quot;" />
     <Exec Command="sn.exe -Ra &quot;$(StackPath)\Lokad.Cqrs.NHibernate.dll&quot; SharedKey.snk" />
-    
-    <!--abdullin: we need to keep ProtoBuf separate, since DCS extensions are not supported, yet-->
+
+    <Exec Command='$(ILMerge) "$(RawPath)\Lokad.Testing.dll" "$(RawPath)/Lokad.Quality.dll" /out:"$(StackPath)/Lokad.Cqrs.Testing.dll" /keyfile:SharedKey.snk /xmldocs=true /ver:$(Version) /attr:"$(RawPath)/Lokad.Testing.dll" /lib:"$(TempPath)"' />
+    <Exec Command='$(Linker) "$(StackPath)\Lokad.Cqrs.Testing.dll" "$(RawPath)/Lokad.Stack.dll" "$(StackPath)\Lokad.Cqrs.Stack.dll" "$(StackPath)\Lokad.Cqrs.Testing.dll"' />
+    <Exec Command="sn.exe -Ra &quot;$(StackPath)\Lokad.Cqrs.Testing.dll&quot; SharedKey.snk" />
+    <!--abdullin: we need to keep ProtoBuf separate, since DCS extensions are not supported, yet--><!--
     <Exec Command='$(ILMerge) "$(RawPath)\Lokad.Cqrs.ProtoBuf.dll" "$(RawPath)/protobuf-net.dll" /out:"$(StackPath)/Lokad.Cqrs.ProtoBuf.dll" /keyfile:SharedKey.snk /xmldocs=true /ver:$(Version) /attr:"$(RawPath)/Lokad.Cqrs.ProtoBuf.dll" /lib:"$(TempPath)"' />
     <Exec Command='$(Linker) "$(StackPath)\Lokad.Cqrs.ProtoBuf.dll" "$(RawPath)/Autofac.dll" "$(StackPath)\Lokad.Cqrs.dll" "$(StackPath)\Lokad.Cqrs.ProtoBuf.dll"' />
     <Exec Command='$(Linker) "$(StackPath)\Lokad.Cqrs.ProtoBuf.dll" "$(RawPath)/Lokad.Cqrs.dll" "$(StackPath)\Lokad.Cqrs.dll" "$(StackPath)\Lokad.Cqrs.ProtoBuf.dll"' />
-    <Exec Command="sn.exe -Ra &quot;$(StackPath)\Lokad.Cqrs.ProtoBuf.dll&quot; SharedKey.snk" />
+    <Exec Command="sn.exe -Ra &quot;$(StackPath)\Lokad.Cqrs.ProtoBuf.dll&quot; SharedKey.snk" />-->
 
     <!--End of Lokad STACK merger-->
     <!--All Tests-->
