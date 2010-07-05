@@ -26,12 +26,12 @@ namespace Lokad.Cqrs.Domain
 		public string GetReadableMessageInfo(UnpackedMessage message)
 		{
 			GetInfoDelegate value;
-			var type = message.GetType();
-			if (_delegates.TryGetValue(type, out value))
+			
+			if (_delegates.TryGetValue(message.ContractType, out value))
 			{
 				return value(message);
 			}
-			return type.Name + " - " + message.TransportMessageId;
+			return message.ContractType.Name + " - " + message.TransportMessageId;
 		}
 
 		static IDictionary<Type, GetInfoDelegate> BuildFrom(IMessageDirectory directory)
