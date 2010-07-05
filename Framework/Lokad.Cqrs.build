@@ -39,7 +39,7 @@
     </CreateItem>
     <Copy SourceFiles="@(rawFiles)" DestinationFolder="$(RawPath)" />
 
-    <CreateItem Include="$(RawPath)\Lokad.Shared.*">
+    <CreateItem Include="$(RawPath)\Lokad.Shared.*;$(RawPath)\Lokad.Serialization.*">
       <Output ItemName="sharedFiles" TaskParameter="Include"/>
     </CreateItem>
     <Copy SourceFiles="@(sharedFiles)" DestinationFolder="$(StackPath)" />
@@ -56,10 +56,14 @@
     
 
     <!--Merge Lokad.Cqrs.NHibernate-->
-    <CreateItem Include="Library\NHibernate.Core\*.dll;Library\NHibernate.Linq\*.dll;$(RawPath)\Lokad.Cqrs.NHibernate.dll">
+    <CreateItem Include="Library\NHibernate.Core\*.dll;Library\NHibernate.Linq\*.dll;$(RawPath)\Lokad.Cqrs.NHibernate.dll" Exclude="Library\NHibernate.Core\log4net.dll">
       <Output ItemName="mergeNHibernate" TaskParameter="Include"/>
     </CreateItem>
     <Exec Command="$(ILMerge) @(mergeNHibernate->'&quot;%(FullPath)&quot;', ' ') /out:&quot;$(StackPath)/Lokad.Cqrs.NHibernate.dll&quot;  /xmldocs=true /attr:&quot;$(RawPath)\Lokad.Cqrs.NHibernate.dll&quot; /ver:$(Version) /keyfile:SharedKey.snk" />
+    <Exec Command='$(Linker) "$(StackPath)\Lokad.Cqrs.NHibernate.dll" "Library\NHibernate.Core\log4net.dll" "$(StackPath)\Lokad.Cqrs.Stack.dll" "$(StackPath)\Lokad.Cqrs.NHibernate.dll"' />
+    <Exec Command='sn.exe -Ra "$(StackPath)\Lokad.Cqrs.NHibernate.dll" SharedKey.snk' />
+
+
     <WriteLinesToFile Lines="@(mergeNHibernate)" File="$(StackPath)\Lokad.Cqrs.NHibernate.txt" />
     
     <Exec Command="$(Linker) &quot;$(StackPath)\Lokad.Cqrs.NHibernate.dll&quot; &quot;$(RawPath)\Lokad.Stack.dll&quot; &quot;$(StackPath)\Lokad.Cqrs.Stack.dll&quot; &quot;$(StackPath)\Lokad.Cqrs.NHibernate.dll&quot;" />
