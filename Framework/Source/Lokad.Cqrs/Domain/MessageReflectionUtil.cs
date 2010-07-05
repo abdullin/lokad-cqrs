@@ -22,8 +22,16 @@ namespace Lokad.Cqrs.Domain
 			Enforce.Arguments(() => messageHandler, () => messageInstance, () => methodName);
 			try
 			{
-				var type = messageHandler.GetType();
-				var consume = type.GetMethod(methodName, new[] {messageInstance.GetType()});
+				var handlerType = messageHandler.GetType();
+				var messageType = messageInstance.GetType();
+				var consume = handlerType.GetMethod(methodName, new[] {messageType});
+
+				if (null == consume)
+					throw Errors.InvalidOperation("Unable to find consuming method {0}.{1}({2}).", 
+						handlerType.Name, 
+						methodName, 
+						messageType.Name);
+
 				consume.Invoke(messageHandler, new[] {messageInstance});
 			}
 			catch (TargetInvocationException e)
