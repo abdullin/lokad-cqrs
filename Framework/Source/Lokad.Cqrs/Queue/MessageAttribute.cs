@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
 using System.Runtime.Serialization;
+using System.Text;
 using Lokad.Quality;
 using ProtoBuf;
 
@@ -69,25 +70,67 @@ namespace Lokad.Cqrs.Queue
 			CustomAttributeName = customAttributeName;
 			NumberValue = numberValue;
 		}
+
+		public override string ToString()
+		{
+			return string.Format("{0}: {1}", GetName(), GetValue());
+		}
+
+		public string GetName()
+		{
+			switch(Type)
+			{
+				case MessageAttributeType.CustomBinary:
+				case MessageAttributeType.CustomNumber:
+				case MessageAttributeType.CustomString:
+					return CustomAttributeName;
+				default:
+					return Type.ToString();
+			}
+		}
+
+		public object GetValue()
+		{
+			if (null != BinaryValue)
+				return BinaryValue;
+			if (null != StringValue)
+				return StringValue;
+			return NumberValue;
+		}
 	}
 
 	[ProtoContract]
 	public sealed class MessageAttributes
 	{
 		[ProtoMember(1, DataFormat = DataFormat.Default)]
-		public readonly MessageAttribute[] Attributes;
+		public readonly MessageAttribute[] Items;
 
-		public MessageAttributes(MessageAttribute[] attributes)
+		public MessageAttributes(MessageAttribute[] items)
 		{
-			Attributes = attributes;
+			Items = items;
 		}
 
 		[UsedImplicitly]
 		MessageAttributes()
 		{
-			Attributes = new MessageAttribute[0];
+			Items = new MessageAttribute[0];
 		}
 
+		public Maybe<string> GetAttributeString(MessageAttributeType type)
+		{
+			for (int i = Items.Length - 1; i >= 0; i--)
+			{
+				var item = Items[i];
+				if (item.Type == type)
+				{
+					var value = item.StringValue;
+					if (value == null)
+						throw Errors.InvalidOperation("String attribute can't be null");
+					return value;
+				}
+			}
+			return Maybe<string>.Empty;
+		}
 	}
 
 	
@@ -149,25 +192,7 @@ namespace Lokad.Cqrs.Queue
 		}
 	}
 
-	public static class ExtendAttributes
-	{
-		
-		public static Maybe<string> GetLastString(this MessageAttribute[] attributes, MessageAttributeType type)
-		{
-			for (int i = attributes.Length - 1; i >= 0; i--)
-			{
-				var item = attributes[i];
-				if (item.Type == type)
-				{
-					var value = item.StringValue;
-					if (value == null)
-						throw Errors.InvalidOperation("Required string attribute can't be null");
-					return value;
-				}
-			}
-			return Maybe<string>.Empty;
-		}
-	}
+	
 
 
 
@@ -180,11 +205,12 @@ namespace Lokad.Cqrs.Queue
 		BinaryBody = 3,
 		CustomString = 4,
 		CustomBinary = 5,
-		Topic = 6,
-		Sender = 7,
-		Identity = 8,
-		CreatedUtc = 9,
-		StorageReference = 10,
-		StorageContainer = 11
+		CustomNumber = 6,
+		Topic = 7,
+		Sender = 8,
+		Identity = 9,
+		CreatedUtc =10,
+		StorageReference = 11,
+		StorageContainer = 12
 	}
 }
