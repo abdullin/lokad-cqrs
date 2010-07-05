@@ -7,52 +7,112 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Runtime.Serialization;
+using System.IO;
 using Lokad.Quality;
-using Microsoft.WindowsAzure.StorageClient;
 using ProtoBuf;
-using System.Linq;
 
 namespace Lokad.Cqrs.Queue
 {
 	public class UnpackedMessage
 	{
-		
-
-
 		public readonly Type ContractType;
 		public readonly MessageHeader Header;
 		public readonly MessageAttribute[] Attributes;
 		public readonly object Content;
-		public readonly string TransportMessageId;
+		
+		readonly IDictionary<string, object> _dynamicState = new Dictionary<string, object>();
 
-		public UnpackedMessage(MessageHeader header, MessageAttribute[] attributes, object content, string transportMessageId, Type contractType)
+		public UnpackedMessage(MessageHeader header, MessageAttribute[] attributes, object content, Type contractType)
 		{
 			Header = header;
 			ContractType = contractType;
-			TransportMessageId = transportMessageId;
-
 			Attributes = attributes;
 			Content = content;
 		}
+
+		public Maybe<TValue> GetState<TValue>(string key)
+		{
+			return _dynamicState
+				.GetValue(key)
+				.Convert(o => (TValue) o);
+		}
+
+		public Maybe<TValue> GetState<TValue>()
+		{
+			return _dynamicState
+				.GetValue(typeof(TValue).Name)
+				.Convert(o => (TValue)o);
+		}
+
+		public TValue GetRequiredState<TValue>()
+		{
+			return GetState<TValue>().ExposeException("Should have required state " + typeof (TValue));
+		}
+		
+		public UnpackedMessage WithState<TValue>(TValue value)
+		{
+			_dynamicState.Add(typeof(TValue).Name, value);
+			return this;
+		}
+
+		public UnpackedMessage WithState<TValue>(string key, TValue value)
+		{
+			_dynamicState.Add(key, value);
+			return this;
+		}
 	}
 
-	[ProtoContract()]
+	public static class MessageUtil
+	{
+		public static MemoryStream SaveReferenceToStream(MessageAttributes attributes)
+		{
+			var stream = new MemoryStream();
+			// skip header
+			stream.Seek(MessageHeader.FixedSize, SeekOrigin.Begin);
+
+			// write reference
+			Serializer.Serialize(stream, attributes);
+			long attributesLength = stream.Position - MessageHeader.FixedSize;
+			// write header
+			stream.Seek(0, SeekOrigin.Begin);
+			Serializer.Serialize(stream, MessageHeader.ForReference(attributesLength, 0));
+			return stream;
+		}
+
+		public static MemoryStream SaveDataToStream(MessageAttributes messageAttributes, Action<Stream> message)
+		{
+			var stream = new MemoryStream();
+
+			// skip header
+			stream.Seek(MessageHeader.FixedSize, SeekOrigin.Begin);
+
+			// save attributes
+
+			Serializer.Serialize(stream, messageAttributes);
+			var attributesLength = stream.Position - MessageHeader.FixedSize;
+
+			// save message
+			message(stream);
+			var bodyLength = stream.Position - attributesLength - MessageHeader.FixedSize;
+			// write the header
+			stream.Seek(0, SeekOrigin.Begin);
+			var messageHeader = MessageHeader.ForData(attributesLength, bodyLength, 0);
+			Serializer.Serialize(stream, messageHeader);
+			return stream;
+		}
+	}
+
+	[ProtoContract]
 	public sealed class MessageHeader
 	{
 		public const int FixedSize = 28;
 		public const int CommonMessageFormatVersion = 2010020701;
 		public const int ReferenceMessageFormatVersion = 2010020702;
 
-		[ProtoMember(1, DataFormat = DataFormat.FixedSize, IsRequired = true)]
-		public readonly int MessageFormatVersion;
-		[ProtoMember(2, DataFormat = DataFormat.FixedSize, IsRequired = true)]
-		public readonly long AttributesLength;
-		[ProtoMember(3, DataFormat = DataFormat.FixedSize, IsRequired = true)]
-		public readonly long ContentLength;
-		[ProtoMember(4, DataFormat = DataFormat.FixedSize, IsRequired = true)]
-		public readonly int Checksum;
+		[ProtoMember(1, DataFormat = DataFormat.FixedSize, IsRequired = true)] public readonly int MessageFormatVersion;
+		[ProtoMember(2, DataFormat = DataFormat.FixedSize, IsRequired = true)] public readonly long AttributesLength;
+		[ProtoMember(3, DataFormat = DataFormat.FixedSize, IsRequired = true)] public readonly long ContentLength;
+		[ProtoMember(4, DataFormat = DataFormat.FixedSize, IsRequired = true)] public readonly int Checksum;
 
 		public long GetTotalLength()
 		{
@@ -82,7 +142,5 @@ namespace Lokad.Cqrs.Queue
 		MessageHeader()
 		{
 		}
-
 	}
-	
 }

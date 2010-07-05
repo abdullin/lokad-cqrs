@@ -6,6 +6,7 @@
 #endregion
 
 using Lokad.Cqrs.Queue;
+using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs
 {
@@ -15,7 +16,10 @@ namespace Lokad.Cqrs
 
 		public string GetReadableMessageInfo(UnpackedMessage message)
 		{
-			return message.ContractType.Name + "- " + message.TransportMessageId;
+			var contract = message.ContractType.Name;
+			return message
+				.GetState<CloudQueueMessage>()
+				.Convert(s => contract + " - " + s.Id, contract);
 		}
 	}
 }

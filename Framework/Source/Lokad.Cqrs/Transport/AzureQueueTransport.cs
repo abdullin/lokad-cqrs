@@ -118,8 +118,7 @@ namespace Lokad.Cqrs.Transport
 			catch (Exception ex)
 			{
 				var info = _messageProfiler.GetReadableMessageInfo(message);
-				var text = string.Format("Failed to consume '{0}' from '{1}'. TransportId: {2}", info, queue.Uri,
-					message.TransportMessageId);
+				var text = string.Format("Failed to consume '{0}' from '{1}'", info, queue.Uri);
 
 				_log.Error(ex, text);
 				return ex;
@@ -133,7 +132,7 @@ namespace Lokad.Cqrs.Transport
 				}
 				catch (Exception ex)
 				{
-					_log.ErrorFormat(ex, "Failed to discard the message {0}", message.TransportMessageId);
+					_log.ErrorFormat(ex, "Failed to discard the message {0}", _profiler.TrackMessage(message));
 				}
 			}
 
@@ -170,8 +169,8 @@ namespace Lokad.Cqrs.Transport
 
 		void Discard(IReadMessageQueue queue, UnpackedMessage detail)
 		{
-			_log.DebugFormat("Discarding message {0} ({1}) because there are no consumers for it.",
-				detail.Content, detail.TransportMessageId);
+			_log.DebugFormat("Discarding message {0} because there are no consumers for it.",
+				_messageProfiler.GetReadableMessageInfo(detail));
 
 			queue.DiscardMessage(detail);
 		}

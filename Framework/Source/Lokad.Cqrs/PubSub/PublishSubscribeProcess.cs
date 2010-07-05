@@ -17,6 +17,7 @@ namespace Lokad.Cqrs.PubSub
 		readonly IRouteMessages _router;
 		readonly IPublishSubscribeManager _store;
 		readonly IMessageTransport _transport;
+		readonly IMessageProfiler _profiler;
 
 		public PublishSubscribeProcess(IMessageTransport transport, IPublishSubscribeManager manager, IRouteMessages router,
 			ILogProvider provider)
@@ -80,7 +81,8 @@ namespace Lokad.Cqrs.PubSub
 
 			if (!topic.HasValue)
 			{
-				_log.DebugFormat("Discarding message {0} without topic", incomingMessage.TransportMessageId);
+				var info = _profiler.GetReadableMessageInfo(incomingMessage);
+				_log.DebugFormat("Discarding message {0} without topic", info);
 				return false;
 			}
 

@@ -12,17 +12,16 @@ namespace Lokad.Cqrs.Queue
 {
 	public class TransactionCommitDeletesMessage : IEnlistmentNotification
 	{
-		readonly string _messageId;
-		readonly string _popId;
+		readonly CloudQueueMessage _message;
 		readonly CloudQueue _queue;
 
 
-		public TransactionCommitDeletesMessage(CloudQueue queue, string messageId, string popId)
+		public TransactionCommitDeletesMessage(CloudQueue queue, CloudQueueMessage message)
 		{
-			Enforce.Arguments(() => queue, () => messageId, () => popId);
+			Enforce.Arguments(() => queue, () => message);
 			_queue = queue;
-			_messageId = messageId;
-			_popId = popId;
+			_message = message;
+
 		}
 
 		public void Prepare(PreparingEnlistment preparingEnlistment)
@@ -34,7 +33,7 @@ namespace Lokad.Cqrs.Queue
 		{
 			try
 			{
-				_queue.DeleteMessage(_messageId, _popId);
+				_queue.DeleteMessage(_message);
 			}
 			catch (StorageClientException ex)
 			{

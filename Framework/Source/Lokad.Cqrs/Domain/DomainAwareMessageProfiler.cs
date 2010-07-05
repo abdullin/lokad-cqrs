@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using Lokad.Cqrs.Queue;
 using Lokad.Quality;
+using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs.Domain
 {
@@ -31,7 +32,15 @@ namespace Lokad.Cqrs.Domain
 			{
 				return value(message);
 			}
-			return message.ContractType.Name + " - " + message.TransportMessageId;
+			return GetDefaultInfo(message);
+		}
+
+		static string GetDefaultInfo(UnpackedMessage message)
+		{
+			var contract = message.ContractType.Name;
+			return message
+				.GetState<CloudQueueMessage>()
+				.Convert(s => contract + " - " + s.Id, contract);
 		}
 
 		static IDictionary<Type, GetInfoDelegate> BuildFrom(IMessageDirectory directory)
@@ -51,7 +60,7 @@ namespace Lokad.Cqrs.Domain
 				}
 				else
 				{
-					delegates.Add(type, m => type.Name + " - " + m.TransportMessageId);
+					delegates.Add(type, GetDefaultInfo);
 				}
 			}
 			return delegates;

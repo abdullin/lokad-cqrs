@@ -23,7 +23,7 @@ namespace Lokad.Cqrs.Queue
 		readonly IMessageProfiler _debugger;
 		readonly CloudQueue _discardQueue;
 		readonly ILog _log;
-		readonly IMessageSerializer _messageSerializer;
+		readonly IMessageSerializer _serializer;
 		readonly CloudQueue _posionQueue;
 		readonly CloudQueue _queue;
 
@@ -37,7 +37,7 @@ namespace Lokad.Cqrs.Queue
 			string queueName,
 			int retryCount,
 			ILogProvider provider,
-			IMessageSerializer messageSerializer, IMessageProfiler debugger)
+			IMessageSerializer serializer, IMessageProfiler debugger)
 		{
 			var blobClient = account.CreateCloudBlobClient();
 			blobClient.RetryPolicy = RetryPolicies.NoRetry();
@@ -58,7 +58,7 @@ namespace Lokad.Cqrs.Queue
 			_account = account;
 			_debugger = debugger;
 
-			_messageSerializer = messageSerializer;
+			_serializer = serializer;
 			_retryCount = retryCount;
 		}
 
@@ -113,8 +113,7 @@ namespace Lokad.Cqrs.Queue
 
 			try
 			{
-				var buffer = message.AsBytes;
-				var unpacked = GetMessageFromBuffer(buffer, message);
+				var unpacked = GetMessageFromCloud(message, message.AsBytes);
 				return GetMessageResult.Success(unpacked);
 			}
 			catch (StorageClientException ex)
@@ -149,94 +148,79 @@ namespace Lokad.Cqrs.Queue
 			}
 		}
 
-		UnpackedMessage GetMessageFromBuffer(byte[] buffer, CloudQueueMessage cloud)
+		UnpackedMessage GetMessageFromCloud(CloudQueueMessage cloud, byte[] buffer)
 		{
 			// unefficient reading for now, since protobuf-net does not support reading parts
 			var header = GetHeaderFromBuffer(buffer);
 			if (header.MessageFormatVersion == MessageHeader.CommonMessageFormatVersion)
 			{
 				var attributes = GetAttributesFromBuffer(buffer, header);
-				return UnpackMessage(buffer, header, attributes, cloud);
+				var message = UnpackMessage(buffer, header, attributes).WithState(cloud);
+				return message;
 			}
 			if (header.MessageFormatVersion == MessageHeader.ReferenceMessageFormatVersion)
 			{
 				var attributes = GetAttributesFromBuffer(buffer, header);
 				var reference = attributes
 					.GetLastString(MessageAttributeType.StorageReference)
-					.ExposeException("Protocol violation: message should have storage reference", MessageAttributeType.StorageReference);
+					.ExposeException("Protocol violation: message should have storage reference");
 				var blob = _cloudBlob.GetBlobReference(reference);
-				buffer = blob.DownloadByteArray();
-				return GetMessageFromBuffer(buffer, cloud);
+				var currentBuffer = blob.DownloadByteArray();
+				return GetMessageFromCloud(cloud, currentBuffer);
 			}
 			throw Errors.InvalidOperation("Unknown message format: {0}", header.MessageFormatVersion);
 		}
 
-		UnpackedMessage UnpackMessage(byte[] queueAsBytes, MessageHeader header, MessageAttribute[] attributes,
-			CloudQueueMessage cloud)
+		UnpackedMessage UnpackMessage(byte[] queueAsBytes, MessageHeader header, MessageAttribute[] attributes)
 		{
-			UnpackedMessage unpacked;
 			string contract = attributes
 				.GetLastString(MessageAttributeType.ContractName)
 				.ExposeException("Protocol violation: message should have contract name");
-			var type = _messageSerializer
+			var type = _serializer
 				.GetTypeByContractName(contract)
 				.ExposeException("Unsupported contract name: '{0}'", contract);
 
-			using (
-				var stream = new MemoryStream(queueAsBytes, MessageHeader.FixedSize + (int) header.AttributesLength,
-					(int) header.ContentLength))
+			var index = MessageHeader.FixedSize + (int) header.AttributesLength;
+			var count = (int) header.ContentLength;
+			using (var stream = new MemoryStream(queueAsBytes, index, count))
 			{
-				var instance = _messageSerializer.Deserialize(stream, type);
-				unpacked = new UnpackedCloudMessage(header, attributes, instance, cloud, type);
+				var instance = _serializer.Deserialize(stream, type);
+				return new UnpackedMessage(header, attributes, instance, type);
 			}
-			return unpacked;
 		}
 
 		public void AckMessage(UnpackedMessage message)
 		{
 			Enforce.Argument(() => message);
-			var cloudMessage = message as UnpackedCloudMessage;
 
-			if (null == cloudMessage)
-			{
-				throw Errors.InvalidOperation("Can't ACK message '{0}'", message);
-			}
+			var cloud = message.GetRequiredState<CloudQueueMessage>();
 
 			if (_log.IsDebugEnabled())
 			{
 				_log.Debug(_debugger.GetReadableMessageInfo(message));
 			}
-			var id = cloudMessage.TransportMessageId;
-			var receipt = cloudMessage.PopReceipt;
-			TransactionalDeleteMessage(id, receipt);
+			
+			TransactionalDeleteMessage(cloud);
 		}
 
-		public void DiscardMessage(UnpackedMessage unpacked)
+		public void DiscardMessage(UnpackedMessage message)
 		{
-			Enforce.Argument(() => unpacked);
+			Enforce.Argument(() => message);
 
-			var message = unpacked as UnpackedCloudMessage;
-			if (message == null)
-			{
-				throw Errors.InvalidOperation("Can't discard message '{0}'", unpacked);
-			}
-			// new discarded message
-			// could be optimized by copying blob reference
-			var packed = PackNewMessage(message.Content, nv => { });
-
+			var cloud = message.GetRequiredState<CloudQueueMessage>();
 
 			if (Transaction.Current == null)
 			{
-				_discardQueue.AddMessage(packed);
-				_queue.DeleteMessage(packed);
+				_discardQueue.AddMessage(cloud);
+				_queue.DeleteMessage(cloud);
 			}
 			else
 			{
 				Transaction.Current.EnlistVolatile(
-					new TransactionCommitDeletesMessage(_queue, message.TransportMessageId, message.PopReceipt),
+					new TransactionCommitDeletesMessage(_queue, cloud),
 					EnlistmentOptions.None);
 				Transaction.Current.EnlistVolatile(
-					new TransactionCommitAddsMessage(_discardQueue, packed),
+					new TransactionCommitAddsMessage(_discardQueue, cloud),
 					EnlistmentOptions.None);
 			}
 		}
@@ -277,7 +261,7 @@ namespace Lokad.Cqrs.Queue
 			else
 			{
 				Transaction.Current.EnlistVolatile(
-					new TransactionCommitDeletesMessage(_queue, message.Id, message.PopReceipt),
+					new TransactionCommitDeletesMessage(_queue, message),
 					EnlistmentOptions.None);
 				Transaction.Current.EnlistVolatile(
 					new TransactionCommitAddsMessage(target, message),
@@ -291,15 +275,15 @@ namespace Lokad.Cqrs.Queue
 			TransactionalMoveMessage(message, _posionQueue);
 		}
 
-		void TransactionalDeleteMessage(string id, string receipt)
+		void TransactionalDeleteMessage(CloudQueueMessage message)
 		{
 			if (Transaction.Current == null)
 			{
-				_queue.DeleteMessage(id, receipt);
+				_queue.DeleteMessage(message);
 			}
 			else
 			{
-				Transaction.Current.EnlistVolatile(new TransactionCommitDeletesMessage(_queue, id, receipt), EnlistmentOptions.None);
+				Transaction.Current.EnlistVolatile(new TransactionCommitDeletesMessage(_queue, message), EnlistmentOptions.None);
 			}
 		}
 
@@ -307,13 +291,13 @@ namespace Lokad.Cqrs.Queue
 		const int CloudQueueLimit = 6144;
 
 
-		CloudQueueMessage PackNewMessage(object message, Action<MessageAttributeBuilder> modify)
+		CloudQueueMessage PackNewMessage(object message,  Action<MessageAttributeBuilder> modify)
 		{
 			var messageId = GuidUtil.NewComb();
 			var created = SystemUtil.UtcNow;
 
 			var messageType = message.GetType();
-			var contract = _messageSerializer
+			var contract = _serializer
 				.GetContractNameByType(messageType)
 				.ExposeException("Can't find contract for message of type: '{0}'.", messageType);
 
@@ -321,38 +305,18 @@ namespace Lokad.Cqrs.Queue
 
 			var builder = new MessageAttributeBuilder();
 			builder.AddTopic(contract);
-			builder.AddSender(_queue.Uri.ToString());
-
-
 			builder.AddContract(contract);
+			builder.AddSender(_queue.Uri.ToString());
 			builder.AddIdentity(messageId.ToString());
-
 			builder.AddCreated(created);
 			modify(builder);
-			var messageAttributes = builder.Build();
+			var attributes = builder.Build();
 
-			using (var stream = new MemoryStream())
+			using (var stream = MessageUtil.SaveDataToStream(attributes, s => _serializer.Serialize(message, s)))
 			{
-				// skip header
-				stream.Seek(MessageHeader.FixedSize, SeekOrigin.Begin);
-
-				// save attributes
-
-				Serializer.Serialize(stream, messageAttributes);
-				var attributesLength = stream.Position - MessageHeader.FixedSize;
-
-				// save message
-				_messageSerializer.Serialize(message, stream);
-				var bodyLength = stream.Position - attributesLength - MessageHeader.FixedSize;
-
-				var totalLength = stream.Position;
-				// write the header
-				stream.Seek(0, SeekOrigin.Begin);
-				Serializer.Serialize(stream, MessageHeader.ForData(attributesLength, bodyLength, 0));
-
-				// write message to queue
-				if (totalLength < CloudQueueLimit)
+				if (stream.Length < CloudQueueLimit)
 				{
+					// write message to queue
 					return new CloudQueueMessage(stream.ToArray());
 				}
 				// write message to blob
@@ -362,7 +326,6 @@ namespace Lokad.Cqrs.Queue
 					.UploadFromStream(stream);
 			}
 
-
 			// ok, we didn't fit, so create reference message
 			var reference = new MessageAttributeBuilder();
 			reference.AddBlobReference(_cloudBlob.Uri, referenceId);
@@ -370,18 +333,8 @@ namespace Lokad.Cqrs.Queue
 			reference.AddContract(contract);
 
 			// write reference message
-			using (var stream = new MemoryStream())
+			using (var stream = MessageUtil.SaveReferenceToStream(reference.Build()))
 			{
-				// skip header
-				stream.Seek(MessageHeader.FixedSize, SeekOrigin.Begin);
-
-				// write reference
-				Serializer.Serialize(stream, reference.Build());
-				long attributesLength = stream.Position - MessageHeader.FixedSize;
-				// write header
-				stream.Seek(0, SeekOrigin.Begin);
-				Serializer.Serialize(stream, MessageHeader.ForReference(attributesLength, 0));
-				// create queue
 				return new CloudQueueMessage(stream.ToArray());
 			}
 		}

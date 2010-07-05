@@ -121,7 +121,6 @@
     <Compile Include="Transport\AzureQueueTransportConfig.cs" />
     <Compile Include="Design\IMessageTransport.cs" />
     <Compile Include="Queue\IReadMessageQueue.cs" />
-    <Compile Include="Queue\UnpackedCloudMessage.cs" />
     <Compile Include="Serialization\IMessageSerializer.cs" />
     <Compile Include="Queue\AzureMessageQueue.cs" />
     <Compile Include="Transport\AzureQueueTransport.cs" />
