@@ -71,12 +71,12 @@ namespace Lokad.Cqrs.PubSub
 				{
 					yield return regexSubscription.Subscriber;
 				}
-				if (_directLookup.Contains(topic))
+			}
+			if (_directLookup.Contains(topic))
+			{
+				foreach (var subscriber in _directLookup[topic])
 				{
-					foreach (var subscriber in _directLookup[topic])
-					{
-						yield return subscriber;
-					}
+					yield return subscriber;
 				}
 			}
 		}
