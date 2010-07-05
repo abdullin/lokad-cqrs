@@ -66,7 +66,7 @@ namespace Lokad.Cqrs.Consume
 				using (var scope = _container.BeginLifetimeScope())
 				{
 					var consumer = scope.Resolve(consumerType);
-					_messageDirectory.InvokeConsume(consumer, message);
+					_messageDirectory.InvokeConsume(consumer, message.Content);
 				}
 
 				return true;
