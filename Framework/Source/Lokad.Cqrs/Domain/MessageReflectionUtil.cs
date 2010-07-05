@@ -16,19 +16,15 @@ namespace Lokad.Cqrs.Domain
 {
 	static class MessageReflectionUtil
 	{
-		
-
-
-		
-
 		[DebuggerNonUserCode]
-		public static void InvokeConsume(object consumer, object msg, string name)
+		public static void InvokeConsume(object messageHandler, object messageInstance, string methodName)
 		{
+			Enforce.Arguments(() => messageHandler, () => messageInstance, () => methodName);
 			try
 			{
-				var type = consumer.GetType();
-				var consume = type.GetMethod(name, new[] {msg.GetType()});
-				consume.Invoke(consumer, new[] {msg});
+				var type = messageHandler.GetType();
+				var consume = type.GetMethod(methodName, new[] {messageInstance.GetType()});
+				consume.Invoke(messageHandler, new[] {messageInstance});
 			}
 			catch (TargetInvocationException e)
 			{
