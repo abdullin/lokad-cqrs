@@ -11,8 +11,6 @@ using System.Transactions;
 using Lokad.Cqrs.Serialization;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
-using ProtoBuf;
-
 namespace Lokad.Cqrs.Queue
 {
 	public sealed class AzureMessageQueue : IReadMessageQueue, IWriteMessageQueue
@@ -129,64 +127,23 @@ namespace Lokad.Cqrs.Queue
 			}
 		}
 
-		static MessageAttribute[] GetAttributesFromBuffer(byte[] queueAsBytes, MessageHeader header)
-		{
-			MessageAttribute[] attributes;
-			using (var stream = new MemoryStream(queueAsBytes, MessageHeader.FixedSize, (int) header.AttributesLength))
-			{
-				var contract = Serializer.Deserialize<MessageAttributes>(stream);
-				attributes = contract.Attributes;
-			}
-			return attributes;
-		}
-
-		static MessageHeader GetHeaderFromBuffer(byte[] queueAsBytes)
-		{
-			using (var stream = new MemoryStream(queueAsBytes, 0, MessageHeader.FixedSize))
-			{
-				return Serializer.Deserialize<MessageHeader>(stream);
-			}
-		}
-
 		UnpackedMessage GetMessageFromCloud(CloudQueueMessage cloud, byte[] buffer)
 		{
 			// unefficient reading for now, since protobuf-net does not support reading parts
-			var header = GetHeaderFromBuffer(buffer);
-			if (header.MessageFormatVersion == MessageHeader.CommonMessageFormatVersion)
+			var header = MessageUtil.ReadHeader(buffer);
+			if (header.MessageFormatVersion == MessageHeader.DataMessageFormatVersion)
 			{
-				var attributes = GetAttributesFromBuffer(buffer, header);
-				var message = UnpackMessage(buffer, header, attributes).WithState(cloud);
-				return message;
+				return MessageUtil.ReadDataMessage(buffer, _serializer).WithState(cloud);
 			}
 			if (header.MessageFormatVersion == MessageHeader.ReferenceMessageFormatVersion)
 			{
-				var attributes = GetAttributesFromBuffer(buffer, header);
-				var reference = attributes
-					.GetLastString(MessageAttributeType.StorageReference)
-					.ExposeException("Protocol violation: message should have storage reference");
+				var reference = MessageUtil.ReadReferenceMessage(buffer);
+
 				var blob = _cloudBlob.GetBlobReference(reference);
 				var currentBuffer = blob.DownloadByteArray();
 				return GetMessageFromCloud(cloud, currentBuffer);
 			}
 			throw Errors.InvalidOperation("Unknown message format: {0}", header.MessageFormatVersion);
-		}
-
-		UnpackedMessage UnpackMessage(byte[] queueAsBytes, MessageHeader header, MessageAttribute[] attributes)
-		{
-			string contract = attributes
-				.GetLastString(MessageAttributeType.ContractName)
-				.ExposeException("Protocol violation: message should have contract name");
-			var type = _serializer
-				.GetTypeByContractName(contract)
-				.ExposeException("Unsupported contract name: '{0}'", contract);
-
-			var index = MessageHeader.FixedSize + (int) header.AttributesLength;
-			var count = (int) header.ContentLength;
-			using (var stream = new MemoryStream(queueAsBytes, index, count))
-			{
-				var instance = _serializer.Deserialize(stream, type);
-				return new UnpackedMessage(header, attributes, instance, type);
-			}
 		}
 
 		public void AckMessage(UnpackedMessage message)
@@ -312,7 +269,7 @@ namespace Lokad.Cqrs.Queue
 			modify(builder);
 			var attributes = builder.Build();
 
-			using (var stream = MessageUtil.SaveDataToStream(attributes, s => _serializer.Serialize(message, s)))
+			using (var stream = MessageUtil.SaveDataMessageToStream(attributes, s => _serializer.Serialize(message, s)))
 			{
 				if (stream.Length < CloudQueueLimit)
 				{
@@ -333,7 +290,7 @@ namespace Lokad.Cqrs.Queue
 			reference.AddContract(contract);
 
 			// write reference message
-			using (var stream = MessageUtil.SaveReferenceToStream(reference.Build()))
+			using (var stream = MessageUtil.SaveReferenceMessageToStream(reference.Build()))
 			{
 				return new CloudQueueMessage(stream.ToArray());
 			}

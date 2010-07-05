@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Lokad.Cqrs.Serialization;
 using Lokad.Quality;
 using ProtoBuf;
 
@@ -17,12 +18,12 @@ namespace Lokad.Cqrs.Queue
 	{
 		public readonly Type ContractType;
 		public readonly MessageHeader Header;
-		public readonly MessageAttribute[] Attributes;
+		public readonly MessageAttributes Attributes;
 		public readonly object Content;
 		
 		readonly IDictionary<string, object> _dynamicState = new Dictionary<string, object>();
 
-		public UnpackedMessage(MessageHeader header, MessageAttribute[] attributes, object content, Type contractType)
+		public UnpackedMessage(MessageHeader header, MessageAttributes attributes, object content, Type contractType)
 		{
 			Header = header;
 			ContractType = contractType;
@@ -64,7 +65,7 @@ namespace Lokad.Cqrs.Queue
 
 	public static class MessageUtil
 	{
-		public static MemoryStream SaveReferenceToStream(MessageAttributes attributes)
+		public static MemoryStream SaveReferenceMessageToStream(MessageAttributes attributes)
 		{
 			var stream = new MemoryStream();
 			// skip header
@@ -79,7 +80,7 @@ namespace Lokad.Cqrs.Queue
 			return stream;
 		}
 
-		public static MemoryStream SaveDataToStream(MessageAttributes messageAttributes, Action<Stream> message)
+		public static MemoryStream SaveDataMessageToStream(MessageAttributes messageAttributes, Action<Stream> message)
 		{
 			var stream = new MemoryStream();
 
@@ -100,13 +101,63 @@ namespace Lokad.Cqrs.Queue
 			Serializer.Serialize(stream, messageHeader);
 			return stream;
 		}
+
+		public static MessageAttributes ReadAttributes(byte[] message, MessageHeader header)
+		{
+			using (var stream = new MemoryStream(message, MessageHeader.FixedSize, (int) header.AttributesLength))
+			{
+				return Serializer.Deserialize<MessageAttributes>(stream);
+			}
+		}
+
+		public static MessageHeader ReadHeader(byte[] buffer)
+		{
+			using (var stream = new MemoryStream(buffer, 0, MessageHeader.FixedSize))
+			{
+				return Serializer.Deserialize<MessageHeader>(stream);
+			}
+		}
+
+		public static string ReadReferenceMessage(byte[] buffer)
+		{
+			var header = ReadHeader(buffer);
+			if (header.MessageFormatVersion != MessageHeader.ReferenceMessageFormatVersion)
+				throw new InvalidOperationException("Unexpected message format");
+
+			var attributes = ReadAttributes(buffer, header);
+			return attributes.GetAttributeString(MessageAttributeType.StorageReference)
+				.ExposeException("Protocol violation: reference message should have storage reference");
+		}
+
+		public static UnpackedMessage ReadDataMessage(byte[] buffer, IMessageSerializer serializer)
+		{
+			var header = ReadHeader(buffer);
+			if (header.MessageFormatVersion != MessageHeader.DataMessageFormatVersion)
+				throw new InvalidOperationException("Unexpected message format");
+
+			var attributes = ReadAttributes(buffer, header);
+			string contract = attributes
+				.GetAttributeString(MessageAttributeType.ContractName)
+				.ExposeException("Protocol violation: message should have contract name");
+			var type = serializer
+				.GetTypeByContractName(contract)
+				.ExposeException("Unsupported contract name: '{0}'", contract);
+
+			var index = MessageHeader.FixedSize + (int)header.AttributesLength;
+			var count = (int)header.ContentLength;
+			using (var stream = new MemoryStream(buffer, index, count))
+			{
+				var instance = serializer.Deserialize(stream, type);
+				return new UnpackedMessage(header, attributes, instance, type);
+			}
+		}
 	}
 
 	[ProtoContract]
 	public sealed class MessageHeader
 	{
 		public const int FixedSize = 28;
-		public const int CommonMessageFormatVersion = 2010020701;
+		public const int DataMessageFormatVersion = 2010020701;
 		public const int ReferenceMessageFormatVersion = 2010020702;
 
 		[ProtoMember(1, DataFormat = DataFormat.FixedSize, IsRequired = true)] public readonly int MessageFormatVersion;
@@ -130,7 +181,7 @@ namespace Lokad.Cqrs.Queue
 
 		public static MessageHeader ForData(long attributesLength, long contentLength, int checksum)
 		{
-			return new MessageHeader(CommonMessageFormatVersion, attributesLength, contentLength, checksum);
+			return new MessageHeader(DataMessageFormatVersion, attributesLength, contentLength, checksum);
 		}
 
 		public static MessageHeader ForReference(long attributesLength, int checksum)
