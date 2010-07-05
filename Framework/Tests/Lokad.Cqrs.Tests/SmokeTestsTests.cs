@@ -30,9 +30,18 @@ namespace CloudBus.Tests
 				})
 				.HandleMessages(m =>
 				{
-					m.ListenTo("test-01");
+					m.ListenTo("test-hi", "test-bye");
 					m.WithMultipleConsumers();
-				}).SendMessages(m => m.DefaultToQueue("test-01")).Build();
+				})
+				.PublishSubscribe(m =>
+					{
+						m.ListenTo("test-in");
+						m.ManagerIsInMemory()
+							.DirectBinding("Hello", "test-hi")
+							.DirectBinding("Bye", "test-bye");
+					})
+				.SendMessages(m => m.DefaultToQueue("test-in"))
+				.Build();
 		}
 
 		[Test]
@@ -42,11 +51,18 @@ namespace CloudBus.Tests
 			Host.Start();
 			var client = Host.Resolve<IMessageClient>();
 
-			client.Send(new Hello {World = "Hello"});
-			client.Send(new Hello{World = Rand.String.NextText(6000,6000)});
+			client.Send(new Hello {Word = "World"});
+			client.Send(new Hello{Word = Rand.String.NextText(6000,6000)});
+			client.Send(new Bye{Word = "Earth"});
 
 			SystemUtil.Sleep(50.Seconds());
 			Host.Stop();
+		}
+
+		[Test]
+		public void Test2()
+		{
+			
 		}
 
 
@@ -54,13 +70,19 @@ namespace CloudBus.Tests
 		public sealed class Hello : IMessage
 		{
 			[DataMember(Order = 1)]
-			public string World { get; set; }
+			public string Word { get; set; }
+		}
+		[DataContract]
+		public sealed class Bye : IMessage
+		{
+			[DataMember(Order = 1)]
+			public string Word { get; set; }
 		}
 		public sealed class DoSomething : IConsume<Hello>
 		{
 			public void Consume(Hello message)
 			{
-				Trace.WriteLine("Consumed with length: " + message.World.Length);
+				Trace.WriteLine("Consumed with length: " + message.Word.Length);
 
 				Trace.WriteLine("Message total: " + MessageContext.Current.Header.GetTotalLength());
 			}
