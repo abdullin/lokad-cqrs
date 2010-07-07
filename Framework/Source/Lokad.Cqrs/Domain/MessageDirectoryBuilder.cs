@@ -30,7 +30,11 @@ namespace Lokad.Cqrs.Domain
 				.GroupBy(x => x.Consumer)
 				.Select(x =>
 					{
-						var directs = x.Where(m => m.Direct).Select(m => m.Message).Distinct();
+						var directs = x
+							.Where(m => m.Direct)
+							.Select(m => m.Message)
+							.Distinct();
+
 						var assignables = x
 							.Select(m => m.Message)
 							.Where(t => directs.Any(d => d.IsAssignableFrom(t)))
@@ -45,13 +49,12 @@ namespace Lokad.Cqrs.Domain
 				.ToLookup(x => x.Message)
 				.ToArray(x =>
 				{
-					
 					var domainConsumers = x
 						.Where(t => t.Consumer != typeof(MessageMapping.BusSystem))
 						.Where(t => t.Consumer != typeof(MessageMapping.BusNull))
 						.ToArray();
 
-					var info = new MessageInfo()
+					var info = new MessageInfo
 						{
 							MessageType = x.Key,
 							IsDomainMessage = x.Exists(t => t.Consumer != typeof (MessageMapping.BusSystem)),
@@ -63,8 +66,24 @@ namespace Lokad.Cqrs.Domain
 
 					return info;
 				});
+
+			var includedTypes = messages
+				.ToSet(m => m.MessageType);
+
+			// message directory should still include all messages for the serializers
+			var orphanedMessages = _mappings
+				.Where(m => !includedTypes.Contains(m.Message))
+				.ToArray(m => new MessageInfo
+					{
+						MessageType = m.Message,
+						IsDomainMessage = false,
+						IsSystemMessage = false,
+						AllConsumers = Type.EmptyTypes,
+						DerivedConsumers = Type.EmptyTypes,
+						DirectConsumers = Type.EmptyTypes
+					});
 			
-			return new MessageDirectory(_methodName, consumers, messages);
+			return new MessageDirectory(_methodName, consumers, messages.Append(orphanedMessages));
 		}
 	}
 }

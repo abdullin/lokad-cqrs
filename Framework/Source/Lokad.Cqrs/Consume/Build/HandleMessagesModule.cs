@@ -75,6 +75,11 @@ namespace Lokad.Cqrs.Consume.Build
 			return this;
 		}
 
+		public HandleMessagesModule WhereMessagesDontInherit<TInterface>()
+		{
+			return WhereMessages(mm => !typeof (TInterface).IsAssignableFrom(mm.Message));
+		}
+
 		public HandleMessagesModule WhereMessagesInherit<TInterface>()
 		{
 			return WhereMessages(mm => typeof (TInterface).IsAssignableFrom(mm.Message));

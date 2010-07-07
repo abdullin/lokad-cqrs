@@ -77,6 +77,8 @@ namespace CloudBus.Tests
 			}
 		}
 
+		public sealed class OrphanCommand : IDomainCommand{}
+
 		#endregion
 
 		IMessageDirectoryBuilder Builder { get; set;}
@@ -86,8 +88,11 @@ namespace CloudBus.Tests
 		[TestFixtureSetUp]
 		public void FixtureSetUp()
 		{
-			var scanner = new MessageAssemblyScanner();
-			scanner.IncludeSystemMessages = true;
+			var scanner = new MessageAssemblyScanner
+				{
+					IncludeSystemMessages = true
+				};
+
 			Mappings = scanner
 				.ConsumerMethodSample<IConsumeMessage<IMessage>>(m => m.Consume(null))
 				.WhereConsumers(t => typeof(IConsumeMessage).IsAssignableFrom(t))
@@ -122,6 +127,14 @@ namespace CloudBus.Tests
 			CollectionAssert.Contains(consumer.MessageTypes, typeof(ISomethingHappenedEvent));
 			CollectionAssert.Contains(consumer.MessageTypes, typeof(SomethingHappenedEvent));
 			CollectionAssert.Contains(consumer.MessageTypes, typeof(DoSomethingCommand));
+		}
+
+		[Test]
+		public void Orphans_are_kept()
+		{
+			var directory = Builder.BuildDirectory(mm => typeof(ListenToAll) != mm.Consumer);
+
+			CollectionAssert.Contains(directory.Messages.ToArray(m => m.MessageType), typeof(OrphanCommand));
 		}
 	}
 }
