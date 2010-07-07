@@ -46,15 +46,10 @@ namespace Lokad.Cqrs.Consume
 			ThrowIfCommandHasMultipleConsumers(_messageDirectory.Messages);
 			foreach (var messageInfo in _messageDirectory.Messages)
 			{
-				if (!messageInfo.IsSystemMessage)
-				{
-					Enforce.That(messageInfo.AllConsumers.Length == 1);
-				}
 				if (messageInfo.AllConsumers.Length > 0)
 				{
 					_messageConsumers[messageInfo.MessageType] = messageInfo.AllConsumers[0];
 				}
-				
 			}
 		}
 
