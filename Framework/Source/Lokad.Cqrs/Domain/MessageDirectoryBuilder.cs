@@ -11,11 +11,19 @@ using System.Linq;
 
 namespace Lokad.Cqrs.Domain
 {
+	/// <summary>
+	/// Default implementation of the message directory builder
+	/// </summary>
 	public sealed class MessageDirectoryBuilder : IMessageDirectoryBuilder
 	{
 		readonly IEnumerable<MessageMapping> _mappings;
 		readonly string _methodName;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="MessageDirectoryBuilder"/> class.
+		/// </summary>
+		/// <param name="mappings">The message mappings.</param>
+		/// <param name="methodName">Name of the method for the invocation.</param>
 		public MessageDirectoryBuilder(IEnumerable<MessageMapping> mappings, string methodName)
 		{
 			_mappings = mappings;
@@ -54,7 +62,7 @@ namespace Lokad.Cqrs.Domain
 						.Where(t => t.Consumer != typeof(MessageMapping.BusNull))
 						.ToArray();
 
-					var info = new MessageInfo
+					return new MessageInfo
 						{
 							MessageType = x.Key,
 							IsDomainMessage = x.Exists(t => t.Consumer != typeof (MessageMapping.BusSystem)),
@@ -63,8 +71,6 @@ namespace Lokad.Cqrs.Domain
 							DerivedConsumers = domainConsumers.Where(m => !m.Direct).Select(m => m.Consumer).Distinct().ToArray(),
 							DirectConsumers = domainConsumers.Where(m => m.Direct).Select(m => m.Consumer).Distinct().ToArray(),
 						};
-
-					return info;
 				});
 
 			var includedTypes = messages

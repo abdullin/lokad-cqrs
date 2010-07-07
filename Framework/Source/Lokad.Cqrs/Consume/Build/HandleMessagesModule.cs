@@ -15,8 +15,6 @@ using Lokad.Cqrs.Transport;
 
 namespace Lokad.Cqrs.Consume.Build
 {
-	
-
 	public sealed class HandleMessagesModule : Module
 	{
 		readonly Filter<MessageMapping> _filter = new Filter<MessageMapping>();
@@ -60,8 +58,16 @@ namespace Lokad.Cqrs.Consume.Build
 			return this;
 		}
 
+		/// <summary>
+		/// Gets or sets the number of threads.
+		/// </summary>
+		/// <value>The number of threads.</value>
 		public int NumberOfThreads { get; set; }
 
+		/// <summary>
+		/// Gets or sets the isolation level.
+		/// </summary>
+		/// <value>The isolation level.</value>
 		public IsolationLevel IsolationLevel { get; set; }
 		public Func<uint, TimeSpan> SleepWhenNoMessages { get; set; }
 
@@ -69,22 +75,62 @@ namespace Lokad.Cqrs.Consume.Build
 		public bool DebugPrintsMessageTree { get; set; }
 		public bool DebugPrintsConsumerTree { get; set; }
 
-		public HandleMessagesModule WhereMessages(Func<MessageMapping, bool> filter)
+		/// <summary>
+		/// Adds custom filters for <see cref="MessageMapping"/>, that will be used
+		/// for configuring this message handler.
+		/// </summary>
+		/// <param name="filter">The filter.</param>
+		/// <returns></returns>
+		public HandleMessagesModule WhereMappings(Func<MessageMapping, bool> filter)
 		{
 			_filter.Where(filter);
 			return this;
 		}
 
-		public HandleMessagesModule WhereMessagesDontInherit<TInterface>()
+		/// <summary>
+		/// Adds filter to exclude all message mappings, where messages derive from the specified class
+		/// </summary>
+		/// <typeparam name="TMessage">The type of the message.</typeparam>
+		/// <returns>same module instance for chaining fluent configurations</returns>
+		public HandleMessagesModule WhereMessagesAreNot<TMessage>()
 		{
-			return WhereMessages(mm => !typeof (TInterface).IsAssignableFrom(mm.Message));
+			return WhereMappings(mm => !typeof(TMessage).IsAssignableFrom(mm.Message));
 		}
 
-		public HandleMessagesModule WhereMessagesInherit<TInterface>()
+		/// <summary>
+		/// Adds filter to include only message mappings, where messages derive from the specified class
+		/// </summary>
+		/// <typeparam name="TMessage">The type of the message.</typeparam>
+		/// <returns>same module instance for chaining fluent configurations</returns>
+		public HandleMessagesModule WhereMessagesAre<TMessage>()
 		{
-			return WhereMessages(mm => typeof (TInterface).IsAssignableFrom(mm.Message));
+			return WhereMappings(mm => typeof(TMessage).IsAssignableFrom(mm.Message));
 		}
 
+		/// <summary>
+		/// Adds filter to include only message mappings, where consumers derive from the specified class
+		/// </summary>
+		/// <typeparam name="TConsumer">The type of the consumer.</typeparam>
+		/// <returns>same module instance for chaining fluent configurations</returns>
+		public HandleMessagesModule WhereConsumersAre<TConsumer>()
+		{
+			return WhereMappings(mm => typeof(TConsumer).IsAssignableFrom(mm.Consumer));
+		}
+		/// <summary>
+		/// Adds filter to exclude all message mappings, where consumers derive from the specified class
+		/// </summary>
+		/// <typeparam name="TConsumer">The type of the consumer.</typeparam>
+		/// <returns>same module instance for chaining fluent configurations</returns>
+		public HandleMessagesModule WhereConsumersAreNot<TConsumer>()
+		{
+			return WhereMappings(mm => !typeof(TConsumer).IsAssignableFrom(mm.Consumer));
+		}
+
+		/// <summary>
+		/// Specifies names of the queues to listen to
+		/// </summary>
+		/// <param name="queueNames">The queue names to listen to.</param>
+		/// <returns>same module instance for chaining fluent configurations</returns>
 		public HandleMessagesModule ListenTo(params string[] queueNames)
 		{
 			_queueNames = queueNames.ToSet();
@@ -96,6 +142,10 @@ namespace Lokad.Cqrs.Consume.Build
 			var log = context.Resolve<ILogProvider>().CreateLog<HandleMessagesModule>();
 
 			var queueNames = _queueNames.ToArray();
+
+			if (queueNames.Length == 0)
+				throw Errors.InvalidOperation("No queue names are specified. Please use ListenTo method");
+
 			var transportConfig = new AzureQueueTransportConfig(
 				LogName,
 				NumberOfThreads,

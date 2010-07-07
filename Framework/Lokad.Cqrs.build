@@ -63,7 +63,6 @@
     <Exec Command='$(Linker) "$(StackPath)\Lokad.Cqrs.NHibernate.dll" "Library\NHibernate.Core\log4net.dll" "$(StackPath)\Lokad.Cqrs.Stack.dll" "$(StackPath)\Lokad.Cqrs.NHibernate.dll"' />
     <Exec Command='sn.exe -Ra "$(StackPath)\Lokad.Cqrs.NHibernate.dll" SharedKey.snk' />
 
-
     <WriteLinesToFile Lines="@(mergeNHibernate)" File="$(StackPath)\Lokad.Cqrs.NHibernate.txt" />
     
     <Exec Command="$(Linker) &quot;$(StackPath)\Lokad.Cqrs.NHibernate.dll&quot; &quot;$(RawPath)\Lokad.Stack.dll&quot; &quot;$(StackPath)\Lokad.Cqrs.Stack.dll&quot; &quot;$(StackPath)\Lokad.Cqrs.NHibernate.dll&quot;" />
