@@ -60,6 +60,7 @@
     <Compile Include="Build\CloudSettingsProvider.cs" />
     <Compile Include="Build\Engine\CloudEngineBuilder.cs" />
     <Compile Include="Build\Engine\ServerHost.cs" />
+    <Compile Include="Lmf\MessageContext.cs" />
     <Compile Include="Build\NullEngineProfiler.cs" />
     <Compile Include="Build\SimpleMessageProfiler.cs" />
     <Compile Include="Default\IScheduledTask.cs" />
@@ -71,6 +72,11 @@
     <Compile Include="Design\IMessageProfiler.cs" />
     <Compile Include="Domain\MessageAssemblyScanner.cs" />
     <Compile Include="Domain\DomainAwareMessageProfiler.cs" />
+    <Compile Include="Lmf\MessageAttributeBuilder.cs" />
+    <Compile Include="Lmf\MessageAttributes.cs" />
+    <Compile Include="Lmf\MessageAttributeType.cs" />
+    <Compile Include="Lmf\MessageHeader.cs" />
+    <Compile Include="Lmf\MessageUtil.cs" />
     <Compile Include="ProtoBuf\ExtendSyntaxWithProtoBuf.cs" />
     <Compile Include="ProtoBuf\ProtoBufMessageSerializer.cs" />
     <Compile Include="Sender\DefaultMessageClient.cs" />
@@ -104,7 +110,7 @@
     <Compile Include="PubSub\Build\BuildPubSubModule.cs" />
     <Compile Include="Domain\MessageReflectionUtil.cs" />
     <Compile Include="PubSub\Build\SubscribeSyntax.cs" />
-    <Compile Include="Queue\MessageAttribute.cs" />
+    <Compile Include="Lmf\MessageAttribute.cs" />
     <Compile Include="Queue\IRouteMessages.cs" />
     <Compile Include="Queue\IWriteMessageQueue.cs" />
     <Compile Include="Consume\ConsumingProcess.cs" />
@@ -128,7 +134,7 @@
     <Compile Include="Queue\TransactionCommitDeletesMessage.cs" />
     <Compile Include="Queue\GetMessageResult.cs" />
     <Compile Include="Queue\GetMessageResultState.cs" />
-    <Compile Include="Queue\MessageBody.cs" />
+    <Compile Include="Lmf\UnpackedMessage.cs" />
     <Compile Include="Queue\TransactionCommitAddsMessage.cs" />
     <Compile Include="PubSub\PublishSubscribeProcess.cs" />
     <Compile Include="Design\IEngineProcess.cs" />

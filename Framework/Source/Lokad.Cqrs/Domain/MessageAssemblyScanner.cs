@@ -63,7 +63,6 @@ namespace Lokad.Cqrs.Domain
 				return false;
 			if (a.FullName.StartsWith("System."))
 				return false;
-
 			if (a.FullName.StartsWith("Microsoft."))
 				return false;
 			return true;

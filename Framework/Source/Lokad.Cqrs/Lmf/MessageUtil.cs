@@ -1,68 +1,10 @@
-#region (c) 2010 Lokad Open Source - New BSD License 
-
-// Copyright (c) Lokad 2010, http://www.lokad.com
-// This code is released as Open Source under the terms of the New BSD Licence
-
-#endregion
-
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
 using Lokad.Cqrs.Serialization;
-using Lokad.Quality;
 using ProtoBuf;
 
-namespace Lokad.Cqrs.Queue
+namespace Lokad.Cqrs
 {
-	public class UnpackedMessage
-	{
-		public readonly Type ContractType;
-		public readonly MessageHeader Header;
-		public readonly MessageAttributes Attributes;
-		public readonly object Content;
-		
-		readonly IDictionary<string, object> _dynamicState = new Dictionary<string, object>();
-
-		public UnpackedMessage(MessageHeader header, MessageAttributes attributes, object content, Type contractType)
-		{
-			Header = header;
-			ContractType = contractType;
-			Attributes = attributes;
-			Content = content;
-		}
-
-		public Maybe<TValue> GetState<TValue>(string key)
-		{
-			return _dynamicState
-				.GetValue(key)
-				.Convert(o => (TValue) o);
-		}
-
-		public Maybe<TValue> GetState<TValue>()
-		{
-			return _dynamicState
-				.GetValue(typeof(TValue).Name)
-				.Convert(o => (TValue)o);
-		}
-
-		public TValue GetRequiredState<TValue>()
-		{
-			return GetState<TValue>().ExposeException("Should have required state " + typeof (TValue));
-		}
-		
-		public UnpackedMessage WithState<TValue>(TValue value)
-		{
-			_dynamicState.Add(typeof(TValue).Name, value);
-			return this;
-		}
-
-		public UnpackedMessage WithState<TValue>(string key, TValue value)
-		{
-			_dynamicState.Add(key, value);
-			return this;
-		}
-	}
-
 	public static class MessageUtil
 	{
 		public static MemoryStream SaveReferenceMessageToStream(MessageAttributes attributes)
@@ -150,48 +92,6 @@ namespace Lokad.Cqrs.Queue
 				var instance = serializer.Deserialize(stream, type);
 				return new UnpackedMessage(header, attributes, instance, type);
 			}
-		}
-	}
-
-	[ProtoContract]
-	public sealed class MessageHeader
-	{
-		public const int FixedSize = 28;
-		public const int DataMessageFormatVersion = 2010020701;
-		public const int ReferenceMessageFormatVersion = 2010020702;
-
-		[ProtoMember(1, DataFormat = DataFormat.FixedSize, IsRequired = true)] public readonly int MessageFormatVersion;
-		[ProtoMember(2, DataFormat = DataFormat.FixedSize, IsRequired = true)] public readonly long AttributesLength;
-		[ProtoMember(3, DataFormat = DataFormat.FixedSize, IsRequired = true)] public readonly long ContentLength;
-		[ProtoMember(4, DataFormat = DataFormat.FixedSize, IsRequired = true)] public readonly int Checksum;
-
-		public long GetTotalLength()
-		{
-			return FixedSize + AttributesLength + ContentLength;
-		}
-
-
-		public MessageHeader(int messageFormatVersion, long attributesLength, long contentLength, int checksum)
-		{
-			MessageFormatVersion = messageFormatVersion;
-			AttributesLength = attributesLength;
-			ContentLength = contentLength;
-			Checksum = checksum;
-		}
-
-		public static MessageHeader ForData(long attributesLength, long contentLength, int checksum)
-		{
-			return new MessageHeader(DataMessageFormatVersion, attributesLength, contentLength, checksum);
-		}
-
-		public static MessageHeader ForReference(long attributesLength, int checksum)
-		{
-			return new MessageHeader(ReferenceMessageFormatVersion, attributesLength, 0, checksum);
-		}
-
-		[UsedImplicitly]
-		MessageHeader()
-		{
 		}
 	}
 }
