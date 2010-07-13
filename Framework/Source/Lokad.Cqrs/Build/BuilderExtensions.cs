@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using Autofac;
 using Autofac.Core;
 using Microsoft.WindowsAzure;
@@ -87,9 +88,21 @@ namespace Lokad.Cqrs
 				var value = c.Resolve<IProfileSettings>()
 					.GetString(name)
 					.ExposeException("Failed to load account from '{0}'", name);
-				return CloudStorageAccount.Parse(value);
+				var account = CloudStorageAccount.Parse(value);
+				DisableNagleForQueuesAndTables(account);
+				return account;
 			}).SingleInstance();
+
+
 			return builder;
+		}
+
+		static void DisableNagleForQueuesAndTables(CloudStorageAccount account)
+		{
+			// http://blogs.msdn.com/b/windowsazurestorage/archive/2010/06/25/nagle-s-algorithm-is-not-friendly-towards-small-requests.aspx
+			// improving transfer speeds for the small requests
+			ServicePointManager.FindServicePoint(account.TableEndpoint).UseNagleAlgorithm = false;
+			ServicePointManager.FindServicePoint(account.QueueEndpoint).UseNagleAlgorithm = false;
 		}
 
 
@@ -107,6 +120,7 @@ namespace Lokad.Cqrs
 		{
 			var account = CloudStorageAccount.Parse(accountString);
 			builder.Target.RegisterInstance(account);
+			DisableNagleForQueuesAndTables(account);
 			return builder;
 		}
 	}
