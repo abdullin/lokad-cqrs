@@ -33,11 +33,9 @@ namespace Lokad.Cqrs.Views.Sql
 
 		public const string UniformViewTableName = "[View_BigTable]";
 
-		public static void PatchRecord(SqlCommand cmd, object partition, Maybe<object> identity, Type type, IDataSerializer ser, Action<object> patch)
+		public static void PatchRecord(SqlCommand cmd, string partition, string identity, Type type, IDataSerializer ser, Action<object> patch)
 		{
-			var query = identity.Convert(i => new IndexQuery(QueryViewOperand.Equal, i));
-
-
+			var query = new IndexQuery(QueryViewOperand.Equal, identity);
 			var list = new List<ViewEntity>();
 			ReadList(cmd, new SqlViewQuery(1, partition, query), (s,p,i) => list.Add(new ViewEntity(p,i,ser.Deserialize(s, type))));
 
@@ -52,18 +50,18 @@ namespace Lokad.Cqrs.Views.Sql
 
 		}
 
-		public static void WriteRecord(SqlCommand cmd, object partition, Maybe<object> identity, Type type, Action<Stream> data)
+		public static void WriteRecord(SqlCommand cmd, string partition, string identity, Type type, Action<Stream> data)
 		{
 			DeleteRecord(cmd, type, partition, identity);
 			cmd.Parameters.Clear();
 			InsertRecord(cmd, partition, identity, data);
 		}
 
-		static void InsertRecord(SqlCommand cmd, object partition, Maybe<object> identity, Action<Stream> data)
+		static void InsertRecord(SqlCommand cmd, object partition, string identity, Action<Stream> data)
 		{
 			cmd.CommandText = "INSERT INTO " + UniformViewTableName + " (Partition, Id, Data) VALUES (@part,@id,@data)";
 			cmd.Parameters.AddWithValue("@part", partition);
-			cmd.Parameters.AddWithValue("@id", identity.GetValue((object)DBNull.Value));
+			cmd.Parameters.AddWithValue("@id", identity);
 			using (var mem = new MemoryStream())
 			{
 				data(mem);
@@ -72,41 +70,43 @@ namespace Lokad.Cqrs.Views.Sql
 			cmd.ExecuteNonQuery();
 		}
 
-		static void UpdateRecord(SqlCommand cmd, object partition, Maybe<object> identity, Type type, Action<Stream> data)
+		static void UpdateRecord(SqlCommand cmd, string partition, string identity, Type type, Action<Stream> data)
 		{
 			var builder = new StringBuilder("UPDATE " + UniformViewTableName);
-
-			var id = identity.GetValue((object) DBNull.Value);
-			AddFilterClause(cmd, builder, partition, new IndexQuery(QueryViewOperand.Equal, id));
+			AddFilterClause(cmd, builder, partition, new IndexQuery(QueryViewOperand.Equal, identity));
 			builder.Append(" SET Data=@data");
 			using (var mem = new MemoryStream())
 			{
 				data(mem);
 				cmd.Parameters.AddWithValue("@data", mem.ToArray());
 			}
+			cmd.CommandText = builder.ToString();
 			cmd.ExecuteNonQuery();
 		}
 
-		public static void DeleteRecord(SqlCommand cmd, Type type, object partition, Maybe<object> identity)
+
+
+		public static void DeleteRecord(SqlCommand cmd, Type type, string partition, string identity)
 		{
 			var builder = new StringBuilder();
 			builder.Append("DELETE " + UniformViewTableName);
-			var id = identity.GetValue((object) DBNull.Value);
-			AddFilterClause(cmd, builder, partition, new IndexQuery(QueryViewOperand.Equal, id));
+			AddFilterClause(cmd, builder, partition, new IndexQuery(QueryViewOperand.Equal, identity));
+			cmd.CommandText = builder.ToString();
 			cmd.ExecuteNonQuery();
 		}
 
-		public static void DeletePartition(SqlCommand cmd, Type type, object partition)
+		public static void DeletePartition(SqlCommand cmd, Type type, string partition)
 		{
 			var builder = new StringBuilder();
 			builder.Append("DELETE " + UniformViewTableName);
 			AddFilterClause(cmd, builder, partition, Maybe<IndexQuery>.Empty);
+			cmd.CommandText = builder.ToString();
 			cmd.ExecuteNonQuery();
 		}
 
 		
 
-		static void AddFilterClause(SqlCommand cmd, StringBuilder sb, object partition, Maybe<IndexQuery> index)
+		static void AddFilterClause(SqlCommand cmd, StringBuilder sb, string partition, Maybe<IndexQuery> index)
 		{
 			sb.Append(" WHERE Partition=@part");
 			cmd.Parameters.AddWithValue("@part", partition);
@@ -118,7 +118,7 @@ namespace Lokad.Cqrs.Views.Sql
 			});
 		}
 
-		public delegate void Reader(Stream stream, object partition, Maybe<object> identity);
+		public delegate void Reader(Stream stream, string partition, string identity);
 
 		public static void ReadList(SqlCommand cmd, SqlViewQuery query, Reader processor)
 		{
@@ -140,8 +140,8 @@ namespace Lokad.Cqrs.Views.Sql
 			{
 				while (reader.Read())
 				{
-					var partition = reader[1];
-					var id = reader.IsDBNull(2) ? Maybe<object>.Empty : Maybe.From(reader[2]);
+					var partition = (string)reader[1];
+					var id = (string)reader[2];
 					using (var memory = new MemoryStream((byte[])reader[0]))
 					{
 						processor(memory, partition, id);
@@ -153,24 +153,29 @@ namespace Lokad.Cqrs.Views.Sql
 
 	public sealed class ViewEntity
 	{
-		public readonly object Partition;
-		public readonly Maybe<object> Identity;
+		public readonly string Partition;
+		public readonly string Identity;
 		public readonly object Value;
 
-		public ViewEntity(object partition, Maybe<object> identity, object value)
+		public ViewEntity(string partition, string identity, object value)
 		{
 			Partition = partition;
 			Identity = identity;
 			Value = value;
 		}
+
+		public ViewEntity<TView> Cast<TView>()
+		{
+			return new ViewEntity<TView>(Partition, Identity, (TView)Value);
+		}
 	}
 	public sealed class ViewEntity<TView>
 	{
-		public readonly object Partition;
-		public readonly Maybe<object> Identity;
+		public readonly string Partition;
+		public readonly string Identity;
 		public readonly TView Value;
 
-		public ViewEntity(object partition, Maybe<object> identity, TView value)
+		public ViewEntity(string partition, string identity, TView value)
 		{
 			Partition = partition;
 			Identity = identity;

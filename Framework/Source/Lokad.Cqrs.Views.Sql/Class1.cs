@@ -19,18 +19,21 @@ namespace Lokad.Cqrs.Views.Sql
 		//void Update<TView>(Action<TView> patch, object partition, Maybe<object> identity);
 		//void Delete<TView>(object partition, Maybe<object> identity);
 
-		void Write(Type view, object item, object partition, Maybe<object> identity);
-		void Update(Type view, Action<object> patch, object partition, Maybe<object> identity);
-		void Delete(Type type, object partition, Maybe<object> identity);
+		void Write(Type view, object item, string partition, string identity);
+		void Patch(Type view, Action<object> patch, string partition, string identity);
+		void Delete(Type type, string partition, string identity);
+		
+		void DeletePartition(Type type, string partition);
+		// secondary indexes to be added here
 	}
 
 	public static class ExtendIPublishViews
 	{
-		public static void Write<TView>(this IPublishViews self, TView view, object partition, Maybe<object> identity)
+		public static void Write<TView>(this IPublishViews self, TView view, string partition, string identity)
 		{
 			self.Write(typeof(TView), view, partition, identity);
 		}
-		public static void Delete<TView>(this IPublishViews self, object partition, Maybe<object> identity)
+		public static void Delete<TView>(this IPublishViews self, string partition, string identity)
 		{
 			self.Delete(typeof(TView), partition,identity);
 		}
@@ -49,37 +52,27 @@ namespace Lokad.Cqrs.Views.Sql
 			_serializer = serializer;
 		}
 
-		public void Write(Type view, object item, object partition, Maybe<object> identity)
+		public void Write(Type type, object view, string partition, string identity)
 		{
-			using (var conn = _factory())
-			{
-				conn.Open();
-				using (var tx = conn.BeginTransaction(_level))
-				{
-					using (var cmd = new SqlCommand("", conn, tx))
-					{
-						SqlViewDialect.WriteRecord(cmd, partition, identity, view, s => _serializer.Serialize(item, s));
-					}
-				}
-			}
+			Execute(cmd => SqlViewDialect.WriteRecord(cmd, partition, identity, type, s => _serializer.Serialize(view, s)));
 		}
 
-		public void Update(Type view, Action<object> patch, object partition, Maybe<object> identity)
+		public void Patch(Type view, Action<object> patch, string partition, string identity)
 		{
-			using (var conn = _factory())
-			{
-				conn.Open();
-				using (var tx = conn.BeginTransaction(_level))
-				{
-					using (var cmd = new SqlCommand("", conn, tx))
-					{
-						SqlViewDialect.PatchRecord(cmd, partition, identity, view, _serializer, patch);
-					}
-				}
-			}
+			Execute(cmd => SqlViewDialect.PatchRecord(cmd, partition, identity, view, _serializer, patch));
 		}
 
-		public void Delete(Type type, object partition, Maybe<object> identity)
+		public void Delete(Type type, string partition, string identity)
+		{
+			Execute(cmd => SqlViewDialect.DeleteRecord(cmd, type, partition, identity));
+		}
+
+		public void DeletePartition(Type type, string partition)
+		{
+			Execute(cmd => SqlViewDialect.DeletePartition(cmd, type, partition));
+		}
+
+		void Execute(Action<SqlCommand> exec)
 		{
 			using (var conn = _factory())
 			{
@@ -88,9 +81,11 @@ namespace Lokad.Cqrs.Views.Sql
 				{
 					using (var cmd = new SqlCommand("", conn, tx))
 					{
-						SqlViewDialect.DeleteRecord(cmd, type, partition, identity);
+						exec(cmd);
 					}
+					tx.Commit();
 				}
+
 			}
 		}
 	}
@@ -98,11 +93,8 @@ namespace Lokad.Cqrs.Views.Sql
 
 	public interface IQueryViews<in TQuery>
 	{
-		Maybe<object> Load(Type type, object partition);
-		Maybe<object> Load(Type type, object partition, object identity);
-
-		Maybe<TView> Load<TView>(object partition);
-		Maybe<TView> Load<TView>(object partition, object identity);
+		Maybe<object> Load(Type type, string partition, string identity);
+		Maybe<TView> Load<TView>(string partition, string identity);
 
 		void List<TView>(TQuery query, Action<ViewEntity<TView>> process);
 		void List(Type type, TQuery query, Action<ViewEntity> process);
@@ -111,15 +103,15 @@ namespace Lokad.Cqrs.Views.Sql
 	public sealed class SqlViewQuery
 	{
 		public readonly Maybe<IndexQuery> IndexQuery = Maybe<IndexQuery>.Empty;
-		public readonly object PartitionKey;
+		public readonly string PartitionKey;
 		public readonly Maybe<int> RecordLimit = Maybe<int>.Empty;
 
-		public SqlViewQuery(object partitionKey)
+		public SqlViewQuery(string partitionKey)
 		{
 			PartitionKey = partitionKey;
 		}
 
-		public SqlViewQuery(Maybe<int> recordLimit, object partitionKey, Maybe<IndexQuery> indexQuery)
+		public SqlViewQuery(Maybe<int> recordLimit, string partitionKey, Maybe<IndexQuery> indexQuery)
 		{
 			RecordLimit = recordLimit;
 			IndexQuery = indexQuery;

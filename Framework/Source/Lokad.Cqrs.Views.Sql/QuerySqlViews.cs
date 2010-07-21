@@ -28,15 +28,8 @@ namespace Lokad.Cqrs.Views.Sql
 			_factory = factory;
 		}
 
-		public Maybe<object> Load(Type type, object partition)
-		{
-			var result = Maybe<object>.Empty;
-			var q = new SqlViewQuery(1, partition, Maybe<IndexQuery>.Empty);
-			List(type, q, a => result = a);
-			return result;
-		}
-
-		public Maybe<object> Load(Type type, object partition, object identity)
+	
+		public Maybe<object> Load(Type type, string partition, string identity)
 		{
 			var result = Maybe<object>.Empty;
 			var q = new SqlViewQuery(1, partition, new IndexQuery(QueryViewOperand.Equal, identity));
@@ -44,12 +37,8 @@ namespace Lokad.Cqrs.Views.Sql
 			return result;
 		}
 
-		public Maybe<TView> Load<TView>(object partition)
-		{
-			return Load(typeof (TView), partition).Convert(t => (TView)t);
-		}
 
-		public Maybe<TView> Load<TView>(object partition, object identity)
+		public Maybe<TView> Load<TView>(string partition, string identity)
 		{
 			return Load(typeof(TView), partition, identity).Convert(t => (TView)t);
 		}

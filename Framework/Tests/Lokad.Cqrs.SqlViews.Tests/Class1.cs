@@ -24,7 +24,7 @@ namespace Lokad.Cqrs.SqlViews.Tests
 			pub.Write(new MyView()
 				{
 					Value = "Asd"
-				}, );
+				}, "Test", "Id");
 		}
 
 
