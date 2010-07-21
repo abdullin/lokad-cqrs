@@ -8,9 +8,10 @@
 using System;
 using System.Data;
 using System.Data.SqlClient;
+using Lokad.Cqrs.Views.Sql;
 using Lokad.Serialization;
 
-namespace Lokad.Cqrs.Views.Sql
+namespace Lokad.Cqrs
 {
 	public interface IPublishViews
 	{
@@ -20,7 +21,7 @@ namespace Lokad.Cqrs.Views.Sql
 		//void Delete<TView>(object partition, Maybe<object> identity);
 
 		void Write(Type view, object item, string partition, string identity);
-		void Patch(Type view, Action<object> patch, string partition, string identity);
+		void Patch(Type type, string partition, string identity, Action<object> patch);
 		void Delete(Type type, string partition, string identity);
 		
 		void DeletePartition(Type type, string partition);
@@ -37,104 +38,93 @@ namespace Lokad.Cqrs.Views.Sql
 		{
 			self.Delete(typeof(TView), partition,identity);
 		}
+
+		public static void Patch<TView>(this IPublishViews self, string partition, string identity, Action<TView> patch)
+		{
+			self.Patch(typeof(TView), partition, identity, o => patch((TView)o));
+		}
+
+		public static void DeletePartition<TView>(this IPublishViews self, string partition)
+		{
+			self.DeletePartition(typeof(TView), partition);
+		}
 	}
+
+
 
 	public sealed class PublishSqlViews : IPublishViews
 	{
-		readonly IsolationLevel _level;
-		readonly Func<SqlConnection> _factory;
-		readonly IDataSerializer _serializer;
+		readonly IDbPartitionManager _manager;
+		readonly SqlViewDialect _dialect;
 
-		public PublishSqlViews(IsolationLevel level, Func<SqlConnection> factory, IDataSerializer serializer)
+		public PublishSqlViews(IDbPartitionManager manager, SqlViewDialect dialect)
 		{
-			_level = level;
-			_factory = factory;
-			_serializer = serializer;
+			_manager = manager;
+			_dialect = dialect;
 		}
 
 		public void Write(Type type, object view, string partition, string identity)
 		{
-			Execute(cmd => SqlViewDialect.WriteRecord(cmd, partition, identity, type, s => _serializer.Serialize(view, s)));
+			_manager.Execute(type, partition, cmd => _dialect.WriteRecord(cmd, type, partition, identity, view));
 		}
 
-		public void Patch(Type view, Action<object> patch, string partition, string identity)
+		public void Patch(Type type, string partition, string identity, Action<object> patch)
 		{
-			Execute(cmd => SqlViewDialect.PatchRecord(cmd, partition, identity, view, _serializer, patch));
+			_manager.Execute(type, partition, cmd => _dialect.PatchRecord(cmd, type, partition, identity, patch));
 		}
 
 		public void Delete(Type type, string partition, string identity)
 		{
-			Execute(cmd => SqlViewDialect.DeleteRecord(cmd, type, partition, identity));
+			_manager.Execute(type, partition, cmd => _dialect.DeleteRecord(cmd, type, partition, identity));
 		}
 
 		public void DeletePartition(Type type, string partition)
 		{
-			Execute(cmd => SqlViewDialect.DeletePartition(cmd, type, partition));
+			_manager.Execute(type, partition, cmd => _dialect.DeletePartition(cmd, type, partition));
 		}
 
-		void Execute(Action<SqlCommand> exec)
-		{
-			using (var conn = _factory())
-			{
-				conn.Open();
-				using (var tx = conn.BeginTransaction(_level))
-				{
-					using (var cmd = new SqlCommand("", conn, tx))
-					{
-						exec(cmd);
-					}
-					tx.Commit();
-				}
-
-			}
-		}
 	}
 
-
-	public interface IQueryViews<in TQuery>
+	public interface IQueryViews
 	{
-		Maybe<object> Load(Type type, string partition, string identity);
-		Maybe<TView> Load<TView>(string partition, string identity);
-
-		void List<TView>(TQuery query, Action<ViewEntity<TView>> process);
-		void List(Type type, TQuery query, Action<ViewEntity> process);
+		void Query(Type type, string partition, ViewQuery query, Action<ViewEntity> process);
 	}
-	
-	public sealed class SqlViewQuery
+
+
+	public sealed class ViewQuery
 	{
 		public readonly Maybe<IndexQuery> IndexQuery = Maybe<IndexQuery>.Empty;
-		public readonly string PartitionKey;
 		public readonly Maybe<int> RecordLimit = Maybe<int>.Empty;
 
-		public SqlViewQuery(string partitionKey)
+		public static readonly ViewQuery Empty = new ViewQuery();
+
+		public ViewQuery()
 		{
-			PartitionKey = partitionKey;
 		}
 
-		public SqlViewQuery(Maybe<int> recordLimit, string partitionKey, Maybe<IndexQuery> indexQuery)
+		public ViewQuery(Maybe<int> recordLimit, Maybe<IndexQuery> indexQuery)
 		{
 			RecordLimit = recordLimit;
 			IndexQuery = indexQuery;
-			PartitionKey = partitionKey;
 		}
 
-		public SqlViewQuery SetMaxRecords(int limit)
+		public ViewQuery SetMaxRecords(int limit)
 		{
-			return new SqlViewQuery(limit, PartitionKey, IndexQuery);
+			return new ViewQuery(limit, IndexQuery);
 		}
 
-		public SqlViewQuery WithIndexQuery(QueryViewOperand operand, object value)
+		public ViewQuery WithIndexQuery(QueryViewOperand operand, string value)
 		{
-			return new SqlViewQuery(RecordLimit, PartitionKey, new IndexQuery(operand, value));
+			return new ViewQuery(RecordLimit, new IndexQuery(operand, value));
 		}
 	}
 
 	public sealed class IndexQuery
 	{
 		public readonly QueryViewOperand Operand;
-		public readonly object Value;
+		public readonly string Value;
 
-		public IndexQuery(QueryViewOperand operand, object value)
+		public IndexQuery(QueryViewOperand operand, string value)
 		{
 			Operand = operand;
 			Value = value;

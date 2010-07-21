@@ -7,34 +7,51 @@ using System.Text;
 using Lokad.Cqrs.Views.Sql;
 using Lokad.Serialization;
 using NUnit.Framework;
-using ProtoBuf;
 
 namespace Lokad.Cqrs.SqlViews.Tests
 {
+
 	[TestFixture]
-	public sealed class ClassTests
+	public abstract class SimpleSqlFixture
 	{
-		[Test]
-		public void Test()
+
+		public DbPartitionManagerForSimpleSql Manager { get; private set; }
+		public IPublishViews Publish { get; private set; }
+		public IQueryViews Query { get; private set; }
+
+		readonly HashSet<Type> _views = new HashSet<Type>();
+
+		public void WithView<TView>()
 		{
-			var conn = @"Data Source=.\SQLExpress;Initial Catalog=Salescast.Beta;Integrated Security=true";
-
-			var pub = new PublishSqlViews(IsolationLevel.ReadCommitted, () => new SqlConnection(conn), new ProtoBufSerializer(new[] {typeof(MyView)}));
-
-			pub.Write(new MyView()
-				{
-					Value = "Asd"
-				}, "Test", "Id");
+			_views.Add(typeof (TView));
 		}
 
+		[TestFixtureSetUp]
+		public void FixtureSetUp()
+		{
+			var conn = @"Data Source=.\SQLExpress;Initial Catalog=LokadDev;Integrated Security=true";
+			var name = "View_Table";
 
-		
-	}
+			var serializer = new ProtoBufSerializer(_views);
+			Manager = new DbPartitionManagerForSimpleSql(conn, IsolationLevel.ReadCommitted, serializer, name);
+			Manager.CreateIfNotExist();
 
-	[ProtoContract]
-	public sealed class MyView
-	{
-		[ProtoMember(1)]
-		public string Value { get; set; }
+			var dialect = new SqlViewDialect(serializer, Manager);
+			Publish = new PublishSqlViews(Manager, dialect);
+			Query = new QuerySqlViews(Manager, dialect);
+
+			OnFixtureSetup();
+		}
+
+		public virtual void OnFixtureSetup()
+		{
+			
+		}
+
+		[TestFixtureTearDown]
+		public void FixtureTearDown()
+		{
+			Manager.DropTables();
+		}
 	}
 }
