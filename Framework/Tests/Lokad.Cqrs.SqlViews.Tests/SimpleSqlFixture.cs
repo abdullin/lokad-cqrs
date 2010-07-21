@@ -4,7 +4,6 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
-using Lokad.Cqrs.Views.Sql;
 using Lokad.Serialization;
 using NUnit.Framework;
 

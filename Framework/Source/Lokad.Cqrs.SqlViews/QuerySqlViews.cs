@@ -8,7 +8,7 @@
 using System;
 using Lokad.Quality;
 
-namespace Lokad.Cqrs.Views.Sql
+namespace Lokad.Cqrs.SqlViews
 {
 	/// <summary>
 	/// Simple query engine for views stored in a single SQL table
@@ -25,7 +25,7 @@ namespace Lokad.Cqrs.Views.Sql
 			_dialect = dialect;
 		}
 
-		public void Query(Type type, string partition, ViewQuery query, Action<ViewEntity> process)
+		public void QueryPartition(Type type, string partition, Maybe<IViewQuery> query, Action<ViewEntity> process)
 		{
 			_manager.Execute(type, partition, cmd => _dialect.ReadList(cmd, type, partition, query, process));
 		}

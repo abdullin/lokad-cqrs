@@ -1,15 +1,18 @@
-﻿using System.Collections.Generic;
-using Lokad.Cqrs.Views.Sql;
+﻿#region (c) 2010 Lokad Open Source - New BSD License 
+
+// Copyright (c) Lokad 2010, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
+using System.Linq;
 using Lokad.Testing;
 using NUnit.Framework;
-using System.Linq;
-
 
 // ReSharper disable InconsistentNaming
 
 namespace Lokad.Cqrs.SqlViews.Tests
 {
-
 	[TestFixture]
 	public sealed class When_view_published : SimpleSqlFixture
 	{
@@ -23,12 +26,12 @@ namespace Lokad.Cqrs.SqlViews.Tests
 
 		public override void OnFixtureSetup()
 		{
-			var view = new TestView()
+			var view = new TestView
 				{
 					Value = "Asd"
 				};
-			Publish.Write(view, "Root", "Id");
-			Expected = new[] { view };
+			Publish.Write("Root", "Id", view);
+			Expected = new[] {view};
 		}
 
 		[Test]
@@ -40,30 +43,30 @@ namespace Lokad.Cqrs.SqlViews.Tests
 		}
 
 		[Test]
-		public void It_could_be_listed()
-		{
-			var actual = Query.List<TestView>("Root").ToArray(s => s.Value);
-			CollectionAssert.AreEqual(Expected, actual);
-		}
-
-		[Test]
 		public void It_could_be_filtered()
 		{
-			var query = new ViewQuery().WithIndexQuery(QueryViewOperand.Equal, "Id");
-			var actual = Query.List<TestView>("Root", query).ToArray(s => s.Value);
+			var query = new ViewQuery().SetIdentityConstraint(ConstraintOperand.Equal, "Id");
+			var actual = Query.ListPartition<TestView>("Root", query).ToArray(s => s.Value);
 			CollectionAssert.AreEqual(Expected, actual);
 		}
 
 		[Test]
-		public void It_is_partition_scoped()
+		public void It_could_be_listed()
 		{
-			Query.Load<TestView>("Root2", "Id").ShouldFail();
+			var actual = Query.ListPartition<TestView>("Root").ToArray(s => s.Value);
+			CollectionAssert.AreEqual(Expected, actual);
 		}
 
 		[Test]
 		public void It_is_identity_scoped()
 		{
 			Query.Load<TestView>("Root", "Id2").ShouldFail();
+		}
+
+		[Test]
+		public void It_is_partition_scoped()
+		{
+			Query.Load<TestView>("Root2", "Id").ShouldFail();
 		}
 
 		[Test]

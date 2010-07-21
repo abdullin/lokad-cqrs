@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{F9B2E2BA-3AD7-4756-A54F-AB46078A2A5D}</ProjectGuid>
+    <ProjectGuid>{F840C5F0-9003-4131-8A26-6704A58F1334}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Lokad.Cqrs.Views.Sql</RootNamespace>
-    <AssemblyName>Lokad.Cqrs.Views.Sql</AssemblyName>
+    <RootNamespace>Lokad.Cqrs.SqlViews</RootNamespace>
+    <AssemblyName>Lokad.Cqrs.SqlViews</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -39,9 +39,10 @@
     <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
-    <Compile Include="ExtendIQueryViews.cs" />
+    <Compile Include="DbPartitionManagerForSimpleSql.cs" />
+    <Compile Include="IDbPartitionManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PublishSqlViews.cs" />
     <Compile Include="QuerySqlViews.cs" />
     <Compile Include="SqlViewDialect.cs" />
   </ItemGroup>

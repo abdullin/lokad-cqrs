@@ -15,10 +15,10 @@ namespace Lokad.Cqrs.SqlViews.Tests
 
 		public override void OnFixtureSetup()
 		{
-			Publish.Write(new TestView()
-			{
-				Value = "Asd"
-			}, "Root", "Id");
+			Publish.Write("Root", "Id", new TestView()
+					{
+						Value = "Asd"
+					});
 
 			Publish.Patch<TestView>("Root", "Id", tv => tv.Value = "Updated");
 		}

@@ -63,7 +63,6 @@
     <Compile Include="Lmf\MessageContext.cs" />
     <Compile Include="Build\NullEngineProfiler.cs" />
     <Compile Include="Build\SimpleMessageProfiler.cs" />
-    <Compile Include="Default\IScheduledTask.cs" />
     <Compile Include="Design\IMessageClient.cs" />
     <Compile Include="Design\IProfileSettings.cs" />
     <Compile Include="Build\Manager\CloudManagerBuilder.cs" />
@@ -97,13 +96,11 @@
     <Compile Include="Serialization\DataContractMessageSerializer.cs" />
     <Compile Include="Serialization\DataContractUtil.cs" />
     <Compile Include="Consume\DispatchesMultipleMessagesToSharedScope.cs" />
-    <Compile Include="Default\IMessage.cs" />
     <Compile Include="Domain\ConsumerInfo.cs" />
     <Compile Include="Build\Engine\DefaultCloudEngineHost.cs" />
     <Compile Include="Domain\MessageDirectory.cs" />
     <Compile Include="Domain\Build\DomainBuildModule.cs" />
     <Compile Include="Build\Engine\ICloudEngineHost.cs" />
-    <Compile Include="Default\IConsume.cs" />
     <Compile Include="Domain\IMessageDirectory.cs" />
     <Compile Include="Domain\MessageDirectoryBuilder.cs" />
     <Compile Include="Domain\MessageInfo.cs" />
