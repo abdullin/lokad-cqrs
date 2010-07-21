@@ -33,6 +33,7 @@ namespace CloudBus.Tests
 						m.WithDefaultInterfaces();
 						m.UseProtocolBuffers();
 						m.InCurrentAssembly();
+						m.CloudStorageAccountIsDev();
 					})
 				.HandleMessages(m =>
 					{

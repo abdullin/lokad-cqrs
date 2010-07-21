@@ -5,12 +5,12 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{24DA9150-1C7E-45B3-8A75-EA529081237F}</ProjectGuid>
+    <ProjectGuid>{00AD5841-FB06-4398-B49F-0457B9970EC7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CloudBus.Tests</RootNamespace>
-    <AssemblyName>CloudBus.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <RootNamespace>Lokad.Cqrs.SqlViews.Tests</RootNamespace>
+    <AssemblyName>Lokad.Cqrs.SqlViews.Tests</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -34,32 +34,28 @@
     <Reference Include="Lokad.Serialization">
       <HintPath>..\..\Library\Lokad.Serialization.dll</HintPath>
     </Reference>
-    <Reference Include="Lokad.Shared">
+    <Reference Include="Lokad.Shared, Version=2.0.6.0, Culture=neutral, PublicKeyToken=43f0664b2b4db1fc, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Library\Lokad.Shared.dll</HintPath>
-    </Reference>
-    <Reference Include="Lokad.Stack">
-      <HintPath>..\..\Library\Lokad.Stack.dll</HintPath>
     </Reference>
     <Reference Include="Lokad.Testing">
       <HintPath>..\..\Library\Lokad.Testing.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DomainTests.cs" />
-    <Compile Include="MessageUtilTests.cs" />
+    <Compile Include="SimpleSqlFixture.cs" />
+    <Compile Include="ClassTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SmokeTestsTests.cs" />
+    <Compile Include="When_view_published.cs" />
+    <Compile Include="When_view_updated.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Source\Lokad.Cqrs\Lokad.Cqrs.csproj">
-      <Project>{FD6C8202-F530-4C09-8889-28DC383965AA}</Project>
-      <Name>Lokad.Cqrs</Name>
+    <ProjectReference Include="..\..\Source\Lokad.Cqrs.SqlViews\Lokad.Cqrs.SqlViews.csproj">
+      <Project>{F840C5F0-9003-4131-8A26-6704A58F1334}</Project>
+      <Name>Lokad.Cqrs.SqlViews</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
