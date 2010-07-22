@@ -19,8 +19,10 @@ namespace Lokad.Cqrs.Consume.Build
 	{
 		readonly Filter<MessageMapping> _filter = new Filter<MessageMapping>();
 		HashSet<string> _queueNames = new HashSet<string>();
-
 		Func<ILifetimeScope, IMessageDirectory, IMessageDispatcher> _dispatcher;
+
+
+		Action<IMessageTransport, IComponentContext> _applyToTransport = (transport, context) => { };
 
 		public HandleMessagesModule()
 		{
@@ -32,6 +34,23 @@ namespace Lokad.Cqrs.Consume.Build
 			ListenTo("azure-messages");
 
 			WithSingleConsumer();
+		}
+
+		public HandleMessagesModule ApplyToTransport(Action<IMessageTransport, IComponentContext> config)
+		{
+			_applyToTransport += config;
+			return this;
+		}
+
+		public HandleMessagesModule WhenMessageHandlerFails(Action<UnpackedMessage, Exception> handler)
+		{
+			return ApplyToTransport((transport, context) =>
+				{
+					transport.MessageHandlerFailed += handler;
+					var builder = new ContainerBuilder();
+					builder.RegisterInstance(new DisposableAction(() => transport.MessageHandlerFailed -= handler));
+					builder.Update(context.ComponentRegistry);
+				});
 		}
 
 		public HandleMessagesModule WithSingleConsumer()
@@ -155,6 +174,9 @@ namespace Lokad.Cqrs.Consume.Build
 
 			var transport = context.Resolve<IMessageTransport>(TypedParameter.From(transportConfig));
 
+			_applyToTransport(transport, context);
+
+
 			var builder = context.Resolve<IMessageDirectoryBuilder>();
 			var filter = _filter.BuildFilter();
 			var directory = builder.BuildDirectory(filter);
@@ -167,6 +189,8 @@ namespace Lokad.Cqrs.Consume.Build
 			var consumer = context.Resolve<ConsumingProcess>(
 				TypedParameter.From(transport),
 				TypedParameter.From(dispatcher));
+
+
 
 			log.DebugFormat("Use {0} threads to listen to {1}", NumberOfThreads, queueNames.Join("; "));
 			return consumer;
