@@ -35,14 +35,14 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Lokad.Cqrs">
-      <HintPath>..\Library\Lokad.Cqrs.dll</HintPath>
-    </Reference>
     <Reference Include="Lokad.Cqrs.NHibernate">
-      <HintPath>..\Library\Lokad.Cqrs.NHibernate.dll</HintPath>
+      <HintPath>..\..\Library\Lokad.Cqrs.NHibernate.dll</HintPath>
+    </Reference>
+    <Reference Include="Lokad.Cqrs.Stack">
+      <HintPath>..\..\Library\Lokad.Cqrs.Stack.dll</HintPath>
     </Reference>
     <Reference Include="Lokad.Shared">
-      <HintPath>..\Library\Lokad.Shared.dll</HintPath>
+      <HintPath>..\..\Library\Lokad.Shared.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.WindowsAzure.ServiceRuntime, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
       <SpecificVersion>False</SpecificVersion>
@@ -59,10 +59,10 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Data.SQLite">
-      <HintPath>..\Library\System.Data.SQLite.DLL</HintPath>
-    </Reference>
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.SQLite">
+      <HintPath>..\..\Library\System.Data.SQLite.DLL</HintPath>
+    </Reference>
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>

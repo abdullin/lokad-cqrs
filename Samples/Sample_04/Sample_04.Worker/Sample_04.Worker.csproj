@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{DFCE11A8-B20F-49D7-9011-6E459E35FDDC}</ProjectGuid>
+    <ProjectGuid>{D54DD44E-CA1A-4F31-990B-4ABC0B39B2D0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Sample_01.Worker</RootNamespace>
-    <AssemblyName>Sample_01.Worker</AssemblyName>
+    <RootNamespace>Sample_04.Worker</RootNamespace>
+    <AssemblyName>Sample_04.Worker</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -36,8 +36,10 @@
     <Reference Include="Lokad.Cqrs.Stack">
       <HintPath>..\..\Library\Lokad.Cqrs.Stack.dll</HintPath>
     </Reference>
-    <Reference Include="Lokad.Shared, Version=1.5.173.0, Culture=neutral, PublicKeyToken=43f0664b2b4db1fc, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Lokad.Serialization">
+      <HintPath>..\..\Library\Lokad.Serialization.dll</HintPath>
+    </Reference>
+    <Reference Include="Lokad.Shared">
       <HintPath>..\..\Library\Lokad.Shared.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.WindowsAzure.ServiceRuntime, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
@@ -51,17 +53,24 @@
       <SpecificVersion>False</SpecificVersion>
       <Private>true</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json.Net20">
+      <HintPath>..\..\Library\Newtonsoft.Json.Net20.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Data.DataSetExtensions">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CustomExceptionLogger.cs" />
     <Compile Include="Domain.cs" />
     <Compile Include="WorkerRole.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

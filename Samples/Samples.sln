@@ -19,6 +19,12 @@ Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "Sample_03.Azure", "Sample_0
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample_03.Worker", "Sample_03\Sample_03.Worker\Sample_03.Worker.csproj", "{D84039AC-2E04-4326-963A-1D4CF9EFD66A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample 04 - Exception Handling Extensibility", "Sample 04 - Exception Handling Extensibility", "{A2769CC3-1403-4942-90F0-338336040E99}"
+EndProject
+Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "Sample_04.Azure", "Sample_04\Sample_04.Azure\Sample_04.Azure.ccproj", "{F267DB95-BB80-4CD3-A040-6781F615E992}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample_04.Worker", "Sample_04\Sample_04.Worker\Sample_04.Worker.csproj", "{D54DD44E-CA1A-4F31-990B-4ABC0B39B2D0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +55,14 @@ Global
 		{D84039AC-2E04-4326-963A-1D4CF9EFD66A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D84039AC-2E04-4326-963A-1D4CF9EFD66A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D84039AC-2E04-4326-963A-1D4CF9EFD66A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F267DB95-BB80-4CD3-A040-6781F615E992}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F267DB95-BB80-4CD3-A040-6781F615E992}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F267DB95-BB80-4CD3-A040-6781F615E992}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F267DB95-BB80-4CD3-A040-6781F615E992}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D54DD44E-CA1A-4F31-990B-4ABC0B39B2D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D54DD44E-CA1A-4F31-990B-4ABC0B39B2D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D54DD44E-CA1A-4F31-990B-4ABC0B39B2D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D54DD44E-CA1A-4F31-990B-4ABC0B39B2D0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -60,5 +74,7 @@ Global
 		{9B8E3FFD-627B-45AE-AAA9-BC06F3284922} = {1B1F22B9-3360-47FE-A197-00B99B0917CF}
 		{43A24120-1885-4C3F-A2B6-F2A3CC0FA959} = {5A39DD7A-1416-4E1C-916C-848AD2013274}
 		{D84039AC-2E04-4326-963A-1D4CF9EFD66A} = {5A39DD7A-1416-4E1C-916C-848AD2013274}
+		{F267DB95-BB80-4CD3-A040-6781F615E992} = {A2769CC3-1403-4942-90F0-338336040E99}
+		{D54DD44E-CA1A-4F31-990B-4ABC0B39B2D0} = {A2769CC3-1403-4942-90F0-338336040E99}
 	EndGlobalSection
 EndGlobal
