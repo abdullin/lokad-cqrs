@@ -14,6 +14,7 @@
 		Identity = 9,
 		CreatedUtc =10,
 		StorageReference = 11,
-		StorageContainer = 12
+		StorageContainer = 12,
+		ErrorText = 13
 	}
 }

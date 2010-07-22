@@ -75,6 +75,7 @@
     <Compile Include="Lmf\MessageAttributes.cs" />
     <Compile Include="Lmf\MessageAttributeType.cs" />
     <Compile Include="Lmf\MessageHeader.cs" />
+    <Compile Include="Lmf\MessagePrinter.cs" />
     <Compile Include="Lmf\MessageUtil.cs" />
     <Compile Include="ProtoBuf\ExtendSyntaxWithProtoBuf.cs" />
     <Compile Include="ProtoBuf\ProtoBufMessageSerializer.cs" />

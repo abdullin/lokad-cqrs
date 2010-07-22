@@ -9,12 +9,26 @@ namespace Lokad.Cqrs
 		[ProtoMember(1)]
 		readonly List<MessageAttribute> _list = new List<MessageAttribute>();
 
+		public MessageAttributeBuilder()
+		{
+		}
+
+		public MessageAttributeBuilder(IEnumerable<MessageAttribute> attributes)
+		{
+			_list = new List<MessageAttribute>(attributes);
+		}
+
+		public MessageAttributeBuilder(MessageAttributes attributes) : this(attributes.Items)
+		{
+
+		}
+
 		public void AddCustomString(string key, string value)
 		{
 			_list.Add(new MessageAttribute(key, value));
 		}
 
-		public void AddRange(MessageAttribute[] attributes)
+		public void AddRange(IEnumerable<MessageAttribute> attributes)
 		{
 			_list.AddRange(attributes);
 		}
@@ -34,6 +48,11 @@ namespace Lokad.Cqrs
 		public void AddSender(string sender)
 		{
 			Add(MessageAttributeType.Sender, sender);
+		}
+		public void AddError(string error)
+		{
+			Enforce.ArgumentNotEmpty(() => error);
+			Add(MessageAttributeType.ErrorText, error);
 		}
 		public void Add(MessageAttributeType type, string value)
 		{
