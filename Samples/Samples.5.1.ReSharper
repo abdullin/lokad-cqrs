@@ -1,0 +1,5 @@
+<Configuration>
+  <CodeAnnotations>
+    <DefaultNamespace>Lokad.Quality</DefaultNamespace>
+  </CodeAnnotations>
+</Configuration>

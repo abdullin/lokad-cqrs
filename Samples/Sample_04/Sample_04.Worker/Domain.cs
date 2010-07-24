@@ -19,6 +19,13 @@ using ProtoBuf;
 
 namespace Sample_04.Worker
 {
+	/// <summary>
+	/// That's the recommended way of defining messages:
+	/// 1. Immutable
+	/// 2. With Properties
+	/// 3. Private empty ctor for the ProtoBuf
+	/// 4. Public CTOR that sets the properties
+	/// </summary>
 	[ProtoContract]
 	public sealed class PingPongCommand : IMessage
 	{

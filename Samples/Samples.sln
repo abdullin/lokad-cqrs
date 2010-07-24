@@ -19,7 +19,7 @@ Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "Sample_03.Azure", "Sample_0
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample_03.Worker", "Sample_03\Sample_03.Worker\Sample_03.Worker.csproj", "{D84039AC-2E04-4326-963A-1D4CF9EFD66A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample 04 - Exception Handling Extensibility", "Sample 04 - Exception Handling Extensibility", "{A2769CC3-1403-4942-90F0-338336040E99}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample 04 - Recording Errors and ProtoBuf", "Sample 04 - Recording Errors and ProtoBuf", "{A2769CC3-1403-4942-90F0-338336040E99}"
 EndProject
 Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "Sample_04.Azure", "Sample_04\Sample_04.Azure\Sample_04.Azure.ccproj", "{F267DB95-BB80-4CD3-A040-6781F615E992}"
 EndProject
