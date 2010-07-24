@@ -39,7 +39,7 @@ namespace Sample_04.Worker
 						mc.ListenTo("sample-01");
 						mc.WithSingleConsumer();
 
-						// let's record failures to the specified blob
+						// let's record failures to the specified blob container
 						mc.LogExceptionsToBlob("sample-01-errors", RenderAdditionalContent);
 					})
 				// when we send message - default it to this queue as well

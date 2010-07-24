@@ -20,10 +20,11 @@ namespace Lokad.Cqrs.PubSub
 		readonly IMessageProfiler _profiler;
 
 		public PublishSubscribeProcess(IMessageTransport transport, IPublishSubscribeManager manager, IRouteMessages router,
-			ILogProvider provider)
+			ILogProvider provider, IMessageProfiler profiler)
 		{
 			_log = provider.CreateLog<PublishSubscribeProcess>();
 			_transport = transport;
+			_profiler = profiler;
 			_store = manager;
 			_router = router;
 		}
