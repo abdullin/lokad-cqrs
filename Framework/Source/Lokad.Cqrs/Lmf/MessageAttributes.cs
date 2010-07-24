@@ -1,4 +1,5 @@
-﻿using Lokad.Quality;
+﻿using System;
+using Lokad.Quality;
 using ProtoBuf;
 
 namespace Lokad.Cqrs
@@ -34,6 +35,22 @@ namespace Lokad.Cqrs
 				}
 			}
 			return Maybe<string>.Empty;
+		}
+
+		public Maybe<DateTime> GetAttributeDate(MessageAttributeType type)
+		{
+			for (int i = Items.Length - 1; i >= 0; i--)
+			{
+				var item = Items[i];
+				if (item.Type == type)
+				{
+					var value = item.NumberValue;
+					if (value == 0)
+						throw Errors.InvalidOperation("Date attribute can't be empty");
+					return DateTime.FromBinary(value);
+				}
+			}
+			return Maybe<DateTime>.Empty;
 		}
 	}
 }

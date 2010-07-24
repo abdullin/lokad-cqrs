@@ -28,13 +28,13 @@ namespace Lokad.Cqrs.Consume
 		{
 			_log.DebugFormat("Stopping consumption for {0}", _transport.ToString());
 			_transport.Dispose();
-			_transport.MessageRecieved -= TransportOnMessageRecieved;
+			_transport.MessageReceived -= TransportOnMessageRecieved;
 		}
 
 		public void StartUp()
 		{
 			_log.DebugFormat("Starting consumption for {0}", _transport.ToString());
-			_transport.MessageRecieved += TransportOnMessageRecieved;
+			_transport.MessageReceived += TransportOnMessageRecieved;
 			_transport.Start();
 		}
 

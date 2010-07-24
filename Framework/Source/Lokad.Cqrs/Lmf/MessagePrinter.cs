@@ -5,6 +5,8 @@
 
 #endregion
 
+using System;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -12,18 +14,32 @@ namespace Lokad.Cqrs
 {
 	public static class MessagePrinter
 	{
-		public static string PrintAttributes(MessageAttributes attributes, string indent = "")
+		/// <summary>
+		/// Nicely prints the attributes to the text writer.
+		/// </summary>
+		/// <param name="attributes">The attributes.</param>
+		/// <param name="writer">The writer.</param>
+		/// <param name="indent">The indent.</param>
+		public static void PrintAttributes(MessageAttributes attributes, TextWriter writer, string indent = "")
 		{
-			var builder = new StringBuilder();
 			var max = attributes.Items.Max(a => a.GetName().Length);
 
 			foreach (var item in attributes.Items)
 			{
-				builder
-					.AppendFormat("{2}{0,-" + (max + 2) + "}: {1}", item.GetName(), item.GetValue(), indent)
-					.AppendLine();
+				writer.Write(indent);
+				writer.WriteLine("{0,-" + (max + 2) + "} : {1}", item.GetName(), GetNiceValue(item));
 			}
-			return builder.ToString();
+		}
+
+		static object GetNiceValue(MessageAttribute attrib)
+		{
+			switch (attrib.Type)
+			{
+				case MessageAttributeType.CreatedUtc:
+					return DateTime.FromBinary(attrib.NumberValue);
+				default:
+					return attrib.GetValue();
+			}
 		}
 	}
 }

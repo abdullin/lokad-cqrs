@@ -7,6 +7,7 @@
 
 using System;
 using System.Reflection;
+using Autofac;
 
 namespace Lokad.Cqrs
 {
@@ -24,6 +25,16 @@ namespace Lokad.Cqrs
 		{
 			InternalPreserveStackTraceMethod.Invoke(e.InnerException, new object[0]);
 			return e.InnerException;
+		}
+	}
+
+	public static class ExtendIComponentContext
+	{
+		public static void WhenDisposed(this IComponentContext context, Action disposal)
+		{
+			var builder = new ContainerBuilder();
+			builder.RegisterInstance(new DisposableAction(disposal));
+			builder.Update(context.ComponentRegistry);
 		}
 	}
 }

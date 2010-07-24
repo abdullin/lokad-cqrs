@@ -60,6 +60,7 @@
     <Compile Include="Build\CloudSettingsProvider.cs" />
     <Compile Include="Build\Engine\CloudEngineBuilder.cs" />
     <Compile Include="Build\Engine\ServerHost.cs" />
+    <Compile Include="Consume\BlobExceptionLogger.cs" />
     <Compile Include="Lmf\MessageContext.cs" />
     <Compile Include="Build\NullEngineProfiler.cs" />
     <Compile Include="Build\SimpleMessageProfiler.cs" />

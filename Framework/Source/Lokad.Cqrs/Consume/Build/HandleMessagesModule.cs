@@ -12,6 +12,8 @@ using System.Transactions;
 using Autofac;
 using Lokad.Cqrs.Domain;
 using Lokad.Cqrs.Transport;
+using Lokad.Quality;
+using Microsoft.WindowsAzure;
 
 namespace Lokad.Cqrs.Consume.Build
 {
@@ -42,14 +44,23 @@ namespace Lokad.Cqrs.Consume.Build
 			return this;
 		}
 
+		[UsedImplicitly]
 		public HandleMessagesModule WhenMessageHandlerFails(Action<UnpackedMessage, Exception> handler)
 		{
 			return ApplyToTransport((transport, context) =>
 				{
 					transport.MessageHandlerFailed += handler;
-					var builder = new ContainerBuilder();
-					builder.RegisterInstance(new DisposableAction(() => transport.MessageHandlerFailed -= handler));
-					builder.Update(context.ComponentRegistry);
+					context.WhenDisposed(() => transport.MessageHandlerFailed -= handler);
+				});
+		}
+
+		[UsedImplicitly]
+		public HandleMessagesModule WhenMessageArrives(Func<UnpackedMessage, bool> interceptor)
+		{
+			return ApplyToTransport((transport, context) =>
+				{
+					transport.MessageReceived += interceptor;
+					context.WhenDisposed(() => transport.MessageReceived -= interceptor);
 				});
 		}
 
@@ -143,6 +154,30 @@ namespace Lokad.Cqrs.Consume.Build
 		public HandleMessagesModule WhereConsumersAreNot<TConsumer>()
 		{
 			return WhereMappings(mm => !typeof(TConsumer).IsAssignableFrom(mm.Consumer));
+		}
+
+		public HandleMessagesModule LogExceptionsToBlob(string containerName, params PrintMessageErrorDelegate[] optionalDelegates)
+		{
+
+			ApplyToTransport((transport, context) =>
+				{
+					var account = context.Resolve<CloudStorageAccount>();
+					var logger = new BlobExceptionLogger(account, containerName);
+
+					foreach (var @delegate in optionalDelegates)
+					{
+						logger.OnRender += @delegate;
+					}
+
+					Action<UnpackedMessage, Exception> action = logger.Handle;
+					transport.MessageHandlerFailed += action;
+					
+					context.WhenDisposed(() =>
+						{
+							transport.MessageHandlerFailed -= action;
+						});
+				});
+			return this;
 		}
 
 		/// <summary>

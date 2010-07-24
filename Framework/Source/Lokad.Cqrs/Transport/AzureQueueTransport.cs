@@ -53,9 +53,10 @@ namespace Lokad.Cqrs.Transport
 		}
 
 		public event Action Started = () => { };
-		public event Func<UnpackedMessage, bool> MessageRecieved = m => false;
+		public event Action Stopped = () => { };
+		public event Func<UnpackedMessage, bool> MessageReceived = m => false;
 		public event Action<UnpackedMessage, Exception> MessageHandlerFailed = (message, exception) => { };
-
+		
 		public void Dispose()
 		{
 			_shouldContinue = false;
@@ -71,6 +72,8 @@ namespace Lokad.Cqrs.Transport
 			{
 				thread.Join();
 			}
+
+			Stopped();
 		}
 
 		public int ThreadCount
@@ -113,7 +116,7 @@ namespace Lokad.Cqrs.Transport
 
 			try
 			{
-				consumed = ProcessSingleMessage(message, m => MessageRecieved(m));
+				consumed = ProcessSingleMessage(message, m => MessageReceived(m));
 			}
 			catch (Exception ex)
 			{
@@ -139,19 +142,17 @@ namespace Lokad.Cqrs.Transport
 			return message;
 		}
 
-		bool ProcessSingleMessage(UnpackedMessage message, Func<UnpackedMessage, bool> messageRecieved)
+		bool ProcessSingleMessage(UnpackedMessage message, Func<UnpackedMessage, bool> messageHandlers)
 		{
-			if (messageRecieved == null)
+			if (messageHandlers == null)
 				return false;
 
-			
-			
 			try
 			{
 				MessageContext.OverrideContext(message);
 				using (_profiler.TrackMessage(message))
 				{
-					foreach (Func<UnpackedMessage, bool> func in messageRecieved.GetInvocationList())
+					foreach (Func<UnpackedMessage, bool> func in messageHandlers.GetInvocationList())
 					{
 						if (func(message))
 						{

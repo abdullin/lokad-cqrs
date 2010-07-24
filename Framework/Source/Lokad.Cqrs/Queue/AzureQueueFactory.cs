@@ -87,6 +87,7 @@ namespace Lokad.Cqrs.Queue
 			AzureMessageQueue value;
 			if (!_queues.TryGetValue(queueName, out value))
 			{
+				
 				value = new AzureMessageQueue(_account, queueName, RetryCount, _logProvider, _serializer, _profiler);
 				value.Init();
 				_queues.Add(queueName, value);

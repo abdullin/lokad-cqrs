@@ -16,7 +16,8 @@ namespace Lokad.Cqrs
 		void Start();
 
 		event Action Started;
-		event Func<UnpackedMessage, bool> MessageRecieved;
+		event Action Stopped;
+		event Func<UnpackedMessage, bool> MessageReceived;
 		event Action<UnpackedMessage, Exception> MessageHandlerFailed;
 	}
 }

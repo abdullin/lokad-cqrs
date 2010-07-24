@@ -32,13 +32,13 @@ namespace Lokad.Cqrs.PubSub
 		{
 			_log.DebugFormat("Stopping pub/sub for {0}", _transport.ToString());
 			_transport.Dispose();
-			_transport.MessageRecieved -= TransportOnMessageRecieved;
+			_transport.MessageReceived -= TransportOnMessageReceived;
 		}
 
 		public void StartUp()
 		{
 			_log.DebugFormat("Starting pub/sub for {0}", _transport.ToString());
-			_transport.MessageRecieved += TransportOnMessageRecieved;
+			_transport.MessageReceived += TransportOnMessageReceived;
 			_transport.Start();
 		}
 
@@ -72,7 +72,7 @@ namespace Lokad.Cqrs.PubSub
 			return false;
 		}
 
-		bool TransportOnMessageRecieved(UnpackedMessage incomingMessage)
+		bool TransportOnMessageReceived(UnpackedMessage incomingMessage)
 		{
 			if (Manage(incomingMessage.Content))
 				return true;
