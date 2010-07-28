@@ -55,7 +55,7 @@ namespace Lokad.Cqrs.Consume
 				RenderException(exception, writer);
 			}
 
-			var fileName = date.ToString("yyyy-MM-dd-hh-mm-ss") + "-" + identity + ".txt";
+			var fileName = date.ToString("yyyy-MM-dd-HH-mm-ss") + "-" + identity + ".txt";
 			_container.GetBlobReference(fileName.ToLowerInvariant()).UploadText(builder.ToString());
 		}
 
