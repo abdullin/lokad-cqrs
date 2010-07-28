@@ -5,7 +5,7 @@ namespace Lokad.Cqrs.Xmpp
 	[Flags]
 	public enum XmppOptions
 	{
-		None,
+		None = 0x00,
 		/// <summary>
 		/// Automatically log in on connection. 
 		/// </summary>

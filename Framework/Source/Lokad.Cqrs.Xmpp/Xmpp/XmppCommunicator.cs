@@ -2,6 +2,7 @@
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
+using System.Xml;
 using jabber;
 using jabber.client;
 using jabber.protocol.client;
@@ -11,16 +12,16 @@ using Lokad.Quality;
 namespace Lokad.Cqrs.Xmpp
 {
 	[UsedImplicitly]
-	public class XmppNotifier : IStartable, IDisposable, IRealtimeNotifier
+	public class XmppCommunicator : IStartable, IDisposable, IRealtimeNotifier
 	{
 		readonly JabberClient _client;
 		
-		readonly ManualResetEvent _authenticated = new ManualResetEvent(false);
+		readonly ManualResetEvent _authPending = new ManualResetEvent(false);
 		readonly ILog _log;
 
 		public event XmppCertificateValidationCallback OnInvalidCertificate = (certificate, chain, errors) => false;
 		
-		public XmppNotifier(IXmppSettings settings, ILogProvider provider)
+		public XmppCommunicator(IXmppSettings settings, ILogProvider provider)
 		{
 			var jid = new JID(settings.JabberId);
 
@@ -28,21 +29,44 @@ namespace Lokad.Cqrs.Xmpp
 				{
 					User = jid.User,
 					Server = jid.Server,
+					Resource = jid.Resource,
 					NetworkHost = settings.NetworkHost,
 					Password = settings.Password,
+					AutoRoster = settings.Has(XmppOptions.AutoRoster),
 					AutoLogin = settings.Has(XmppOptions.AutoLogin),
 					AutoPresence = settings.Has(XmppOptions.AutoPresence),
+					AutoIQErrors = settings.Has(XmppOptions.AutoIQErrors),
 					AutoReconnect = 60,
-					Resource = jid.Resource,
 					KeepAlive = 60,
-					
-					};
+				};
+
+			_log = provider.Get(typeof(XmppCommunicator).FullName);
+
+			DebugLogSettings(settings);
+
 			_client.OnAuthenticate += OnAuthenticate;
+			_client.OnAuthError += OnClientAuthError;
 			_client.OnDisconnect += OnDisconnect;
 			_client.OnInvalidCertificate += OnClientInvalidCertificate;
-			
-			_log = provider.Get(typeof(XmppNotifier).FullName);
- 
+		}
+
+		void DebugLogSettings(IXmppSettings settings)
+		{
+			var pwd = string.IsNullOrEmpty(settings.Password) ? "<empty>" : (settings.Password.Length + " chars");
+			_log.DebugFormat("XMPP connecting. JID: '{0}', Priority: {1}, Host: '{2}', Pwd: {3}, Option: {4}",
+				settings.JabberId,
+				settings.Priority,
+				settings.NetworkHost,
+				pwd,settings.Options
+				);
+		}
+
+		void OnClientAuthError(object sender, XmlElement rp)
+		{
+			_authPending.Set();
+			var exception = new InvalidOperationException("Authentication failure");
+			exception.Data.Add("xml", rp);
+			throw exception;
 		}
 
 		bool OnClientInvalidCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
@@ -53,19 +77,19 @@ namespace Lokad.Cqrs.Xmpp
 
 		void OnAuthenticate(object sender)
 		{
-			_authenticated.Set();
+			_authPending.Set();
 		}
 		void OnDisconnect(object sender)
 		{
-			_authenticated.Reset();
+			_authPending.Reset();
 		}
 
 		public void StartUp()
 		{
 			_client.Connect();
-			if (!_authenticated.WaitOne(6000))
+			if (!_authPending.WaitOne(6000))
 			{
-				throw new InvalidOperationException("Failed to authenticate");
+				throw new InvalidOperationException("Failed to authenticate in time");
 			}
 		}
 		public void Dispose()
@@ -74,7 +98,8 @@ namespace Lokad.Cqrs.Xmpp
 			_client.OnDisconnect -= OnDisconnect;
 			_client.OnAuthenticate -= OnAuthenticate;
 			_client.OnInvalidCertificate -= OnClientInvalidCertificate;
-			_authenticated.Close();
+			_client.OnAuthError -= OnClientAuthError;
+			_authPending.Close();
 			_client.Dispose();
 		}
 		

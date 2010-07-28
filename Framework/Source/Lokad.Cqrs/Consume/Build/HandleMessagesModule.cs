@@ -10,8 +10,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Transactions;
 using Autofac;
+using Autofac.Core;
 using Lokad.Cqrs.Domain;
 using Lokad.Cqrs.Transport;
+using Lokad.Messaging;
 using Lokad.Quality;
 using Microsoft.WindowsAzure;
 
@@ -156,27 +158,29 @@ namespace Lokad.Cqrs.Consume.Build
 			return WhereMappings(mm => !typeof(TConsumer).IsAssignableFrom(mm.Consumer));
 		}
 
-		public HandleMessagesModule LogExceptionsToBlob(string containerName, params PrintMessageErrorDelegate[] optionalDelegates)
+		/// <summary>
+		/// Additional configuration to log the exceptions to BLOB.
+		/// </summary>
+		/// <param name="config">The config.</param>
+		/// <returns></returns>
+		public HandleMessagesModule LogExceptionsToBlob(Action<ConfigureBlobSavingOnException> config)
 		{
+			var configurer = new ConfigureBlobSavingOnException();
+			config(configurer);
+			ApplyToTransport(configurer.Apply);
+			return this;
+		}
 
-			ApplyToTransport((transport, context) =>
-				{
-					var account = context.Resolve<CloudStorageAccount>();
-					var logger = new BlobExceptionLogger(account, containerName);
-
-					foreach (var @delegate in optionalDelegates)
-					{
-						logger.OnRender += @delegate;
-					}
-
-					Action<UnpackedMessage, Exception> action = logger.Handle;
-					transport.MessageHandlerFailed += action;
-					
-					context.WhenDisposed(() =>
-						{
-							transport.MessageHandlerFailed -= action;
-						});
-				});
+		/// <summary>
+		/// Additional configuration to log the exceptions to active <see cref="IRealtimeNotifier"/>.
+		/// </summary>
+		/// <param name="config">The config.</param>
+		/// <returns></returns>
+		public HandleMessagesModule LogExceptionsToCommunicator(Action<ConfigureNotificationOnException> config)
+		{
+			var configurer = new ConfigureNotificationOnException();
+			config(configurer);
+			ApplyToTransport(configurer.Apply);
 			return this;
 		}
 

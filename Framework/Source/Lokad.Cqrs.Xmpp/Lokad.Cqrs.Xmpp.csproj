@@ -54,10 +54,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ExtendContainerBuilderSyntax.cs" />
     <Compile Include="Xmpp\ExtendIXmppSettings.cs" />
-    <Compile Include="Xmpp\GoogleTalkNotificationsModule.cs" />
+    <Compile Include="Xmpp\XmppCommunicationModule.cs" />
     <Compile Include="Xmpp\IXmppSettings.cs" />
     <Compile Include="Xmpp\XmppCertificateValidationCallback.cs" />
-    <Compile Include="Xmpp\XmppNotifier.cs" />
+    <Compile Include="Xmpp\XmppCommunicator.cs" />
     <Compile Include="Xmpp\XmppOptions.cs" />
     <Compile Include="Xmpp\XmppSettings.cs" />
   </ItemGroup>

@@ -72,6 +72,9 @@
     <Exec Command="sn.exe -Ra &quot;$(StackPath)\Lokad.Cqrs.Testing.dll&quot; SharedKey.snk" />
 
     <Exec Command='$(ILMerge) "$(RawPath)\Lokad.Cqrs.Xmpp.dll" "$(RawPath)\jabber-net.dll" "$(RawPath)\zlib.net.dll" "$(RawPath)\netlib.Dns.dll" /out:"$(StackPath)\Lokad.Cqrs.Xmpp.dll" /keyfile:SharedKey.snk /xmldocs=true /ver:$(Version) /attr:"$(RawPath)\Lokad.Cqrs.Xmpp.dll" /lib:"$(TempPath)"' />
+    <Exec Command='$(Linker) "$(StackPath)\Lokad.Cqrs.Xmpp.dll" "$(RawPath)\Lokad.Stack.dll" "$(StackPath)\Lokad.Cqrs.Stack.dll" "$(StackPath)\Lokad.Cqrs.Xmpp.dll"' />
+    <Exec Command="sn.exe -Ra &quot;$(StackPath)\Lokad.Cqrs.Xmpp.dll&quot; SharedKey.snk" />
+    
     <!--abdullin: we need to keep ProtoBuf separate, since DCS extensions are not supported, yet--><!--
     <Exec Command='$(ILMerge) "$(RawPath)\Lokad.Cqrs.ProtoBuf.dll" "$(RawPath)/protobuf-net.dll" /out:"$(StackPath)/Lokad.Cqrs.ProtoBuf.dll" /keyfile:SharedKey.snk /xmldocs=true /ver:$(Version) /attr:"$(RawPath)/Lokad.Cqrs.ProtoBuf.dll" /lib:"$(TempPath)"' />
     <Exec Command='$(Linker) "$(StackPath)\Lokad.Cqrs.ProtoBuf.dll" "$(RawPath)/Autofac.dll" "$(StackPath)\Lokad.Cqrs.dll" "$(StackPath)\Lokad.Cqrs.ProtoBuf.dll"' />

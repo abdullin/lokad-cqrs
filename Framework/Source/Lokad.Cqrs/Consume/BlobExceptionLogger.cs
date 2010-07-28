@@ -16,7 +16,7 @@ using Microsoft.WindowsAzure.StorageClient;
 namespace Lokad.Cqrs.Consume
 {
 
-
+	public delegate void PrintMessageErrorDelegate(UnpackedMessage message, Exception ex, TextWriter writer);
 	public sealed class BlobExceptionLogger
 	{
 		readonly CloudBlobContainer _container;
@@ -107,5 +107,5 @@ namespace Lokad.Cqrs.Consume
 		}
 	}
 
-	public delegate void PrintMessageErrorDelegate(UnpackedMessage message, Exception ex, TextWriter writer);
+	
 }

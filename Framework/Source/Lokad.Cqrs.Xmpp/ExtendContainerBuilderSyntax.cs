@@ -21,11 +21,11 @@ namespace Lokad.Cqrs
 		/// <param name="module">The module.</param>
 		/// <param name="configure">The configure.</param>
 		/// <returns></returns>
-		public static TModule NotifyViaGoogleTalk<TModule>(this TModule module,
-			Action<GoogleTalkNotificationsModule> configure)
+		public static TModule CommunicateWithXmpp<TModule>(this TModule module,
+			Action<XmppCommunicationModule> configure)
 			where TModule : ISyntax<ContainerBuilder, IRealtimeNotifier>
 		{
-			var m = new GoogleTalkNotificationsModule();
+			var m = new XmppCommunicationModule();
 			configure(m);
 			module.Target.RegisterModule(m);
 			return module;
