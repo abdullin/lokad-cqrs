@@ -3,6 +3,10 @@
   <WorkerRole name="Sample_04.Worker">
     <ConfigurationSettings>
       <Setting name="DiagnosticsConnectionString" />
+      <Setting name="XmppRecipient" />
+      <Setting name="XmppIdentity" />
+      <Setting name="XmppPassword" />
+      <Setting name="XmppNetworkHost" />
     </ConfigurationSettings>
   </WorkerRole>
 </ServiceDefinition>

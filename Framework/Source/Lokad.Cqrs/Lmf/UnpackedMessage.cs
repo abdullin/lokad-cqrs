@@ -26,7 +26,7 @@ namespace Lokad.Cqrs
 		/// <summary>
 		/// Available message attributes
 		/// </summary>
-		public readonly MessageAttributes Attributes;
+		public readonly MessageAttributesContract Attributes;
 		/// <summary>
 		/// Message content
 		/// </summary>
@@ -34,7 +34,7 @@ namespace Lokad.Cqrs
 		
 		readonly IDictionary<string, object> _dynamicState = new Dictionary<string, object>();
 
-		public UnpackedMessage(MessageHeader header, MessageAttributes attributes, object content, Type contractType)
+		public UnpackedMessage(MessageHeader header, MessageAttributesContract attributes, object content, Type contractType)
 		{
 			Header = header;
 			ContractType = contractType;

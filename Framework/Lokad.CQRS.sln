@@ -26,6 +26,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lokad.Cqrs.SqlViews.Tests",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lokad.Cqrs.SqlViews", "Source\Lokad.Cqrs.SqlViews\Lokad.Cqrs.SqlViews.csproj", "{F840C5F0-9003-4131-8A26-6704A58F1334}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lokad.Cqrs.Xmpp", "Source\Lokad.Cqrs.Xmpp\Lokad.Cqrs.Xmpp.csproj", "{4DFC5C73-2435-40C9-BC2B-5BA3A22980F9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -106,6 +108,16 @@ Global
 		{F840C5F0-9003-4131-8A26-6704A58F1334}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{F840C5F0-9003-4131-8A26-6704A58F1334}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{F840C5F0-9003-4131-8A26-6704A58F1334}.Release|x86.ActiveCfg = Release|Any CPU
+		{4DFC5C73-2435-40C9-BC2B-5BA3A22980F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4DFC5C73-2435-40C9-BC2B-5BA3A22980F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4DFC5C73-2435-40C9-BC2B-5BA3A22980F9}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{4DFC5C73-2435-40C9-BC2B-5BA3A22980F9}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{4DFC5C73-2435-40C9-BC2B-5BA3A22980F9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4DFC5C73-2435-40C9-BC2B-5BA3A22980F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4DFC5C73-2435-40C9-BC2B-5BA3A22980F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4DFC5C73-2435-40C9-BC2B-5BA3A22980F9}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{4DFC5C73-2435-40C9-BC2B-5BA3A22980F9}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{4DFC5C73-2435-40C9-BC2B-5BA3A22980F9}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -118,5 +130,6 @@ Global
 		{F22669EA-5DF1-4D1D-A411-E3D906A989C2} = {50854899-7A0C-4BC3-84F3-771D052DE41E}
 		{B29FAA6C-F0DE-4683-A6E3-993A5030D45B} = {50854899-7A0C-4BC3-84F3-771D052DE41E}
 		{F840C5F0-9003-4131-8A26-6704A58F1334} = {50854899-7A0C-4BC3-84F3-771D052DE41E}
+		{4DFC5C73-2435-40C9-BC2B-5BA3A22980F9} = {50854899-7A0C-4BC3-84F3-771D052DE41E}
 	EndGlobalSection
 EndGlobal

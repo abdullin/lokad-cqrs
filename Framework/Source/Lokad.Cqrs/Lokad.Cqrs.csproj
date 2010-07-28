@@ -61,6 +61,8 @@
     <Compile Include="Build\Engine\CloudEngineBuilder.cs" />
     <Compile Include="Build\Engine\ServerHost.cs" />
     <Compile Include="Consume\BlobExceptionLogger.cs" />
+    <Compile Include="Consume\Build\ConfigureBlobSavingOnException.cs" />
+    <Compile Include="Consume\Build\ConfigureNotificationOnException.cs" />
     <Compile Include="Lmf\MessageContext.cs" />
     <Compile Include="Build\NullEngineProfiler.cs" />
     <Compile Include="Build\SimpleMessageProfiler.cs" />
@@ -73,8 +75,8 @@
     <Compile Include="Domain\MessageAssemblyScanner.cs" />
     <Compile Include="Domain\DomainAwareMessageProfiler.cs" />
     <Compile Include="Lmf\MessageAttributeBuilder.cs" />
-    <Compile Include="Lmf\MessageAttributes.cs" />
-    <Compile Include="Lmf\MessageAttributeType.cs" />
+    <Compile Include="Lmf\MessageAttributesContract.cs" />
+    <Compile Include="Lmf\MessageAttributeTypeContract.cs" />
     <Compile Include="Lmf\MessageHeader.cs" />
     <Compile Include="Lmf\MessagePrinter.cs" />
     <Compile Include="Lmf\MessageUtil.cs" />
@@ -109,7 +111,7 @@
     <Compile Include="PubSub\Build\BuildPubSubModule.cs" />
     <Compile Include="Domain\MessageReflectionUtil.cs" />
     <Compile Include="PubSub\Build\SubscribeSyntax.cs" />
-    <Compile Include="Lmf\MessageAttribute.cs" />
+    <Compile Include="Lmf\MessageAttributeContract.cs" />
     <Compile Include="Queue\IRouteMessages.cs" />
     <Compile Include="Queue\IWriteMessageQueue.cs" />
     <Compile Include="Consume\ConsumingProcess.cs" />

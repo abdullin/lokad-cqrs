@@ -16,7 +16,7 @@ using Microsoft.WindowsAzure.StorageClient;
 namespace Lokad.Cqrs.Consume
 {
 
-
+	public delegate void PrintMessageErrorDelegate(UnpackedMessage message, Exception ex, TextWriter writer);
 	public sealed class BlobExceptionLogger
 	{
 		readonly CloudBlobContainer _container;
@@ -33,12 +33,12 @@ namespace Lokad.Cqrs.Consume
 		{
 			// get identity of the message or just unknown string
 			var identity = message.Attributes
-				.GetAttributeString(MessageAttributeType.Identity)
+				.GetAttributeString(MessageAttributeTypeContract.Identity)
 				.GetValue("unknown");
 
 			// get creation time of message, falling back to current date
 			var date = message.Attributes
-				.GetAttributeDate(MessageAttributeType.CreatedUtc)
+				.GetAttributeDate(MessageAttributeTypeContract.CreatedUtc)
 				.GetValue(DateTime.UtcNow);
 
 			var builder = new StringBuilder();
@@ -107,5 +107,5 @@ namespace Lokad.Cqrs.Consume
 		}
 	}
 
-	public delegate void PrintMessageErrorDelegate(UnpackedMessage message, Exception ex, TextWriter writer);
+	
 }

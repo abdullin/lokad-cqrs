@@ -13,9 +13,9 @@ namespace Lokad.Cqrs
 {
 	[ProtoContract]
 	[Serializable]
-	public class MessageAttribute
+	public class MessageAttributeContract
 	{
-		[ProtoMember(1, IsRequired = true)] public readonly MessageAttributeType Type;
+		[ProtoMember(1, IsRequired = true)] public readonly MessageAttributeTypeContract Type;
 		[ProtoMember(2)] public readonly string CustomAttributeName;
 
 		[ProtoMember(3)]
@@ -26,41 +26,41 @@ namespace Lokad.Cqrs
 		public readonly long NumberValue;
 
 		[UsedImplicitly]
-		MessageAttribute()
+		MessageAttributeContract()
 		{
 		}
 
-		public MessageAttribute(MessageAttributeType type, string stringValue)
+		public MessageAttributeContract(MessageAttributeTypeContract type, string stringValue)
 		{
 			Type = type;
 			StringValue = stringValue;
 		}
 
-		public MessageAttribute(MessageAttributeType type, byte[] binaryValue)
+		public MessageAttributeContract(MessageAttributeTypeContract type, byte[] binaryValue)
 		{
 			Type = type;
 			BinaryValue = binaryValue;
 		}
 
-		public MessageAttribute(MessageAttributeType type, long numberValue)
+		public MessageAttributeContract(MessageAttributeTypeContract type, long numberValue)
 		{
 			Type = type;
 			NumberValue = numberValue;
 		}
 
-		public MessageAttribute(string customAttributeName, byte[] binaryValue)
+		public MessageAttributeContract(string customAttributeName, byte[] binaryValue)
 		{
 			CustomAttributeName = customAttributeName;
 			BinaryValue = binaryValue;
 		}
 
-		public MessageAttribute(string customAttributeName, string stringValue)
+		public MessageAttributeContract(string customAttributeName, string stringValue)
 		{
 			CustomAttributeName = customAttributeName;
 			StringValue = stringValue;
 		}
 
-		public MessageAttribute(string customAttributeName, long numberValue)
+		public MessageAttributeContract(string customAttributeName, long numberValue)
 		{
 			CustomAttributeName = customAttributeName;
 			NumberValue = numberValue;
@@ -75,9 +75,9 @@ namespace Lokad.Cqrs
 		{
 			switch(Type)
 			{
-				case MessageAttributeType.CustomBinary:
-				case MessageAttributeType.CustomNumber:
-				case MessageAttributeType.CustomString:
+				case MessageAttributeTypeContract.CustomBinary:
+				case MessageAttributeTypeContract.CustomNumber:
+				case MessageAttributeTypeContract.CustomString:
 					return CustomAttributeName;
 				default:
 					return Type.ToString();

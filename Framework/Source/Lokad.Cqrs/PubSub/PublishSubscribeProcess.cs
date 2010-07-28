@@ -78,7 +78,7 @@ namespace Lokad.Cqrs.PubSub
 			if (Manage(incomingMessage.Content))
 				return true;
 
-			var topic = incomingMessage.Attributes.GetAttributeString(MessageAttributeType.Topic);
+			var topic = incomingMessage.Attributes.GetAttributeString(MessageAttributeTypeContract.Topic);
 
 			if (!topic.HasValue)
 			{

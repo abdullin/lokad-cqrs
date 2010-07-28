@@ -9,7 +9,7 @@ namespace Lokad.Cqrs
 {
 	public static class MessageUtil
 	{
-		public static MemoryStream SaveReferenceMessageToStream(MessageAttributes attributes)
+		public static MemoryStream SaveReferenceMessageToStream(MessageAttributesContract attributes)
 		{
 			var stream = new MemoryStream();
 			// skip header
@@ -32,7 +32,7 @@ namespace Lokad.Cqrs
 			}
 		}
 
-		public static MemoryStream SaveDataMessageToStream(MessageAttributes messageAttributes, Action<Stream> message)
+		public static MemoryStream SaveDataMessageToStream(MessageAttributesContract messageAttributes, Action<Stream> message)
 		{
 			var stream = new MemoryStream();
 
@@ -54,11 +54,11 @@ namespace Lokad.Cqrs
 			return stream;
 		}
 
-		public static MessageAttributes ReadAttributes(byte[] message, MessageHeader header)
+		public static MessageAttributesContract ReadAttributes(byte[] message, MessageHeader header)
 		{
 			using (var stream = new MemoryStream(message, MessageHeader.FixedSize, (int) header.AttributesLength))
 			{
-				return Serializer.Deserialize<MessageAttributes>(stream);
+				return Serializer.Deserialize<MessageAttributesContract>(stream);
 			}
 		}
 
@@ -93,7 +93,7 @@ namespace Lokad.Cqrs
 				throw new InvalidOperationException("Unexpected message format");
 
 			var attributes = ReadAttributes(buffer, header);
-			return attributes.GetAttributeString(MessageAttributeType.StorageReference)
+			return attributes.GetAttributeString(MessageAttributeTypeContract.StorageReference)
 				.ExposeException("Protocol violation: reference message should have storage reference");
 		}
 
@@ -105,7 +105,7 @@ namespace Lokad.Cqrs
 
 			var attributes = ReadAttributes(buffer, header);
 			string contract = attributes
-				.GetAttributeString(MessageAttributeType.ContractName)
+				.GetAttributeString(MessageAttributeTypeContract.ContractName)
 				.ExposeException("Protocol violation: message should have contract name");
 			var type = serializer
 				.GetTypeByContractName(contract)

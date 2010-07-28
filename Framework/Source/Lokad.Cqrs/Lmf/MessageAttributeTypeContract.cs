@@ -1,6 +1,6 @@
 ﻿namespace Lokad.Cqrs
 {
-	public enum MessageAttributeType : uint 
+	public enum MessageAttributeTypeContract : uint 
 	{
 		Undefined = 0,
 		ContractName = 1,
@@ -15,6 +15,7 @@
 		CreatedUtc =10,
 		StorageReference = 11,
 		StorageContainer = 12,
-		ErrorText = 13
+		ErrorText = 13,
+		Thread = 14
 	}
 }

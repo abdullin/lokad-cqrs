@@ -9,7 +9,6 @@
 
 using System;
 using System.Diagnostics;
-using System.Runtime.Serialization;
 using System.Threading;
 using Lokad;
 using Lokad.Cqrs;
@@ -77,6 +76,7 @@ namespace Sample_04.Worker
 			_sender.Send(message.Pong());
 		}
 	}
+
 	public class BounceFailedException : Exception
 	{
 		public BounceFailedException(string message) : base(message)

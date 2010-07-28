@@ -1,8 +1,9 @@
-﻿#region Copyright (c) 2009-2010 LOKAD SAS. All rights reserved.
+﻿#region (c) 2010 Lokad Open Source - New BSD License 
 
-// Copyright (c) 2009-2010 LOKAD SAS. All rights reserved.
-// You must not remove this notice, or any other, from this software.
-// This document is the property of LOKAD SAS and must not be disclosed.
+// Copyright (c) Lokad 2010, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+// 
+// Lokad.CQRS for Windows Azure: http://code.google.com/p/lokad-cqrs/
 
 #endregion
 
@@ -24,35 +25,58 @@ namespace Sample_04.Worker
 			// for more detail about this sample see:
 			// http://code.google.com/p/lokad-cqrs/wiki/GuidanceSeries
 
-			var host = new CloudEngineBuilder()
-				// this tells the server about the domain
-				.Domain(d =>
-					{
-						// let's use Protocol Buffers!
-						d.UseProtocolBuffers();
-						d.InCurrentAssembly();
-						d.WithDefaultInterfaces();
-					})
-				// we'll handle all messages incoming to this queue
-				.HandleMessages(mc =>
-					{
-						mc.ListenTo("sample-01");
-						mc.WithSingleConsumer();
+			var builder = new CloudEngineBuilder();
 
-						// let's record failures to the specified blob container
-						mc.LogExceptionsToBlob("sample-01-errors", RenderAdditionalContent);
-					})
-				// when we send message - default it to this queue as well
-				.SendMessages(m => m.DefaultToQueue("sample-01"))
-				.Build();
+			// this tells the server about the domain
+			builder.Domain(d =>
+				{
+					// let's use Protocol Buffers!
+					d.UseProtocolBuffers();
+					d.InCurrentAssembly();
+					d.WithDefaultInterfaces();
+				});
 
 
-			return host;
+			// we'll handle all messages incoming to this queue
+			builder.HandleMessages(mc =>
+				{
+					mc.ListenTo("sample-04");
+					mc.WithSingleConsumer();
+					// let's record failures to the specified blob 
+					// container using the pretty printer
+					mc.LogExceptionsToBlob(c =>
+						{
+							c.ContainerName = "sample-04-errors";
+							c.WithTextAppender(RenderAdditionalContent);
+						});
+
+					// set XmppRecipient in your config and enable this
+					// to send notifications to the specified Jabber
+					//
+					// mc.LogExceptionsToCommunicator(c => { c.ConfigKeyForRecipient = "XmppRecipient"; });
+				});
+
+
+			// using XMPP communicator. Make sure to put proper values in your config before enabling:
+			// XmppIdentity
+			// XmppPassword
+			// XmppNetworkHost (optional, talk.l.google.com for GTalk)
+
+			//builder.CommunicateWithXmpp(x =>
+			//    {
+			//        x.OnCertificateError((certificate, chain, errors) => true);
+			//        x.Resource = InstanceName;
+			//    });
+
+
+			// when we send message - default it to this queue as well
+			builder.SendMessages(m => m.DefaultToQueue("sample-04"));
+
+			return builder.Build();
 		}
 
 		static void RenderAdditionalContent(UnpackedMessage message, Exception exception, TextWriter builder)
 		{
-			
 			builder.WriteLine("Content");
 			builder.WriteLine("=======");
 			builder.WriteLine(message.ContractType.Name);

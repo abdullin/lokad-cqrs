@@ -38,6 +38,16 @@ namespace Lokad.Cqrs
 			return onStart;
 		}
 
+		public string InstanceName
+		{
+			get
+			{
+				return string.Format("{0}/{1}",
+					RoleEnvironment.CurrentRoleInstance.Role.Name,
+					RoleEnvironment.CurrentRoleInstance.Id);
+			}
+		}
+
 		public override void OnStop()
 		{
 			_host.Stop();
