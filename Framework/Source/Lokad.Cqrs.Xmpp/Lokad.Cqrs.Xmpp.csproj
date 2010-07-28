@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{4DFC5C73-2435-40C9-BC2B-5BA3A22980F9}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Lokad.Cqrs</RootNamespace>
+    <AssemblyName>Lokad.Cqrs.Xmpp</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="jabber-net">
+      <HintPath>..\..\Library\jabber-net\jabber-net.dll</HintPath>
+    </Reference>
+    <Reference Include="Lokad.Shared">
+      <HintPath>..\..\Library\Lokad.Shared.dll</HintPath>
+    </Reference>
+    <Reference Include="Lokad.Stack">
+      <HintPath>..\..\Library\Lokad.Stack.dll</HintPath>
+    </Reference>
+    <Reference Include="netlib.Dns">
+      <HintPath>..\..\Library\jabber-net\netlib.Dns.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
+    <Reference Include="zlib.net">
+      <HintPath>..\..\Library\jabber-net\zlib.net.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ExtendContainerBuilderSyntax.cs" />
+    <Compile Include="Xmpp\ExtendIXmppSettings.cs" />
+    <Compile Include="Xmpp\GoogleTalkNotificationsModule.cs" />
+    <Compile Include="Xmpp\IXmppSettings.cs" />
+    <Compile Include="Xmpp\XmppCertificateValidationCallback.cs" />
+    <Compile Include="Xmpp\XmppNotifier.cs" />
+    <Compile Include="Xmpp\XmppOptions.cs" />
+    <Compile Include="Xmpp\XmppSettings.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

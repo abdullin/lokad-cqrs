@@ -560,6 +560,60 @@
       <typeparam name="TTarget">The type of the target.</typeparam>
       <typeparam name="TSubject">The type of the subject to extend.</typeparam>
     </member>
+    <member name="T:Lokad.Messaging.IRealtimeNotifier">
+      <summary>
+            Real-time notification interface
+            </summary>
+    </member>
+    <member name="M:Lokad.Messaging.IRealtimeNotifier.Notify(System.String,System.String,Lokad.Messaging.RealtimeNotificationType)">
+      <summary>
+            Notifies the specified recipient (reliability is determined by the implementation.
+            </summary>
+      <param name="recipient">The recipient.</param>
+      <param name="body">The body.</param>
+      <param name="options">The options.</param>
+    </member>
+    <member name="T:Lokad.Messaging.NullRealtimeNotifier">
+      <summary>
+            Realtime notifier, that does not do anything
+            </summary>
+    </member>
+    <member name="F:Lokad.Messaging.NullRealtimeNotifier.Instance">
+      <summary>
+            Singleton instance of the <see cref="T:Lokad.Messaging.IRealtimeNotifier" /></summary>
+    </member>
+    <member name="M:Lokad.Messaging.NullRealtimeNotifier.Notify(System.String,System.String,Lokad.Messaging.RealtimeNotificationType)">
+      <summary>
+            Notifies the specified recipient (reliability is determined by the implementation.
+            </summary>
+      <param name="recipient">The recipient.</param>
+      <param name="body">The body.</param>
+      <param name="options">The options.</param>
+    </member>
+    <member name="T:Lokad.Messaging.RealtimeNotificationType">
+      <summary>
+            Message types for the <see cref="T:Lokad.Messaging.IRealtimeNotifier" /></summary>
+    </member>
+    <member name="F:Lokad.Messaging.RealtimeNotificationType.Normal">
+      <summary>
+      </summary>
+    </member>
+    <member name="F:Lokad.Messaging.RealtimeNotificationType.Error">
+      <summary>
+      </summary>
+    </member>
+    <member name="F:Lokad.Messaging.RealtimeNotificationType.Chat">
+      <summary>
+      </summary>
+    </member>
+    <member name="F:Lokad.Messaging.RealtimeNotificationType.Groupchat">
+      <summary>
+      </summary>
+    </member>
+    <member name="F:Lokad.Messaging.RealtimeNotificationType.Headline">
+      <summary>
+      </summary>
+    </member>
     <member name="T:Lokad.Serialization.IDataSerializer">
       <summary>
             Generic data serializer interface.
@@ -844,7 +898,7 @@
     <member name="M:Lokad.MaybeParse.Enum``1(System.String)">
       <summary>
             	Tries to parse the specified string into the enum, returning empty result
-            	on failure
+            	on failure. We ignore case in this scenario.
             </summary>
       <typeparam name="TEnum">
             	The type of the enum.
@@ -3777,42 +3831,6 @@
       <typeparam name="TEnum">The type of the enum.</typeparam>
       <returns>array instance of the enum values</returns>
     </member>
-    <member name="T:Lokad.EnumUtil`2">
-      <summary>
-            Ensures that enums can be converted between each other
-            </summary>
-      <typeparam name="TFromEnum">The type of from enum.</typeparam>
-      <typeparam name="TToEnum">The type of to enum.</typeparam>
-    </member>
-    <member name="T:Lokad.EnumUtil`1">
-      <summary>
-            Strongly-typed enumeration util
-            </summary>
-      <typeparam name="TEnum">The type of the enum.</typeparam>
-    </member>
-    <member name="F:Lokad.EnumUtil`1.Values">
-      <summary>
-            Values of the <typeparamref name="TEnum" /></summary>
-    </member>
-    <member name="F:Lokad.EnumUtil`1.ValuesWithoutDefault">
-      <summary>
-            Values of the <typeparamref name="TEnum" /> without the default value.
-            </summary>
-    </member>
-    <member name="F:Lokad.EnumUtil`1.Comparer">
-      <summary>
-            Efficient comparer for the enum
-            </summary>
-    </member>
-    <member name="M:Lokad.EnumUtil`1.ConvertSafelyFrom``1(``0)">
-      <summary>
-            Converts the safely from.
-            </summary>
-      <typeparam name="TSourceEnum">The type of the source enum.</typeparam>
-      <param name="enum">The @enum to convert from.</param>
-      <returns>converted enum</returns>
-      <exception cref="T:System.ArgumentException"> when conversion is not possible</exception>
-    </member>
     <member name="T:Lokad.ExtendInt32">
       <summary> Extensions to the <see cref="T:System.Int32" /></summary>
     </member>
@@ -4203,6 +4221,42 @@
       <returns>
             requested instance of <typeparamref name="TService" /></returns>
       <exception cref="T:Lokad.ResolutionException">if there is resolution problem</exception>
+    </member>
+    <member name="T:Lokad.EnumUtil`1">
+      <summary>
+            Strongly-typed enumeration util
+            </summary>
+      <typeparam name="TEnum">The type of the enum.</typeparam>
+    </member>
+    <member name="F:Lokad.EnumUtil`1.Values">
+      <summary>
+            Values of the <typeparamref name="TEnum" /></summary>
+    </member>
+    <member name="F:Lokad.EnumUtil`1.ValuesWithoutDefault">
+      <summary>
+            Values of the <typeparamref name="TEnum" /> without the default value.
+            </summary>
+    </member>
+    <member name="F:Lokad.EnumUtil`1.Comparer">
+      <summary>
+            Efficient comparer for the enum
+            </summary>
+    </member>
+    <member name="M:Lokad.EnumUtil`1.ConvertSafelyFrom``1(``0)">
+      <summary>
+            Converts the specified enum safely from the target enum. Matching is done
+            via the efficient <see cref="F:Lokad.EnumUtil`1.Comparer" /> initialized with <see cref="M:Lokad.MaybeParse.Enum``1(System.String)" /></summary>
+      <typeparam name="TSourceEnum">The type of the source enum.</typeparam>
+      <param name="enum">The @enum to convert from.</param>
+      <returns>converted enum</returns>
+      <exception cref="T:System.ArgumentException"> when conversion is not possible</exception>
+    </member>
+    <member name="T:Lokad.EnumUtil`2">
+      <summary>
+            Ensures that enums can be converted between each other
+            </summary>
+      <typeparam name="TFromEnum">The type of from enum.</typeparam>
+      <typeparam name="TToEnum">The type of to enum.</typeparam>
     </member>
     <member name="T:Lokad.FormatUtil">
       <summary>

@@ -20,7 +20,7 @@ namespace Lokad.Cqrs
 		/// <param name="attributes">The attributes.</param>
 		/// <param name="writer">The writer.</param>
 		/// <param name="indent">The indent.</param>
-		public static void PrintAttributes(MessageAttributes attributes, TextWriter writer, string indent = "")
+		public static void PrintAttributes(MessageAttributesContract attributes, TextWriter writer, string indent = "")
 		{
 			var max = attributes.Items.Max(a => a.GetName().Length);
 
@@ -31,11 +31,11 @@ namespace Lokad.Cqrs
 			}
 		}
 
-		static object GetNiceValue(MessageAttribute attrib)
+		static object GetNiceValue(MessageAttributeContract attrib)
 		{
 			switch (attrib.Type)
 			{
-				case MessageAttributeType.CreatedUtc:
+				case MessageAttributeTypeContract.CreatedUtc:
 					return DateTime.FromBinary(attrib.NumberValue);
 				default:
 					return attrib.GetValue();
