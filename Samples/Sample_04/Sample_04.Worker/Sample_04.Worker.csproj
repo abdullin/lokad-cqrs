@@ -36,6 +36,9 @@
     <Reference Include="Lokad.Cqrs.Stack">
       <HintPath>..\..\Library\Lokad.Cqrs.Stack.dll</HintPath>
     </Reference>
+    <Reference Include="Lokad.Cqrs.Xmpp">
+      <HintPath>..\..\Library\Lokad.Cqrs.Xmpp.dll</HintPath>
+    </Reference>
     <Reference Include="Lokad.Serialization">
       <HintPath>..\..\Library\Lokad.Serialization.dll</HintPath>
     </Reference>

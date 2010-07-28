@@ -4,6 +4,13 @@
     <Instances count="1" />
     <ConfigurationSettings>
       <Setting name="DiagnosticsConnectionString" value="UseDevelopmentStorage=true" />
+      
+      <!--Configure values below and uncomment code in WorkerRole-->
+      <!--You can use Google Talk or any Jabber-->
+      <Setting name="XmppRecipient" value="youd-admin@gmail.com" />
+      <Setting name="XmppIdentity" value="your-sample@gmail.com" />
+      <Setting name="XmppPassword" value="PWD" />
+      <Setting name="XmppNetworkHost" value="talk.l.google.com" />
     </ConfigurationSettings>
   </Role>
 </ServiceConfiguration>
