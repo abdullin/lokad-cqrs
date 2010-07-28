@@ -83,7 +83,8 @@ namespace Sample_04.Worker
 			try
 			{
 				// we'll use JSON serializer for printing messages nicely
-				builder.WriteLine(JsonConvert.SerializeObject(message.Content, Formatting.Indented));
+				var text = JsonConvert.SerializeObject(message.Content, Formatting.Indented);
+				builder.WriteLine(text);
 			}
 			catch (Exception ex)
 			{
