@@ -38,7 +38,7 @@ namespace Lokad.Cqrs.Consume.Build
 		internal void Apply(IMessageTransport transport, IComponentContext context)
 		{
 			var profiler = context.Resolve<IMessageProfiler>();
-			var notifier = context.Resolve<IRealtimeNotifier>();
+			var notifier = context.Resolve<ICommunicator>();
 			var recipient = context.Resolve<ISettingsProvider>()
 				.GetValue(ConfigKeyForRecipient)
 				.ExposeException("Failed to load recipient address for '{0}'.", ConfigKeyForRecipient);

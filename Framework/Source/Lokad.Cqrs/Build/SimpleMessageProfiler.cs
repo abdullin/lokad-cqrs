@@ -5,6 +5,7 @@
 
 #endregion
 
+using System;
 using Lokad.Cqrs.Queue;
 using Microsoft.WindowsAzure.StorageClient;
 

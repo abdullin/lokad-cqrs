@@ -9,9 +9,7 @@ using System;
 using Autofac;
 using Lokad.Cqrs.Domain.Build;
 using Lokad.Cqrs.Queue;
-using Lokad.Cqrs.Serialization;
 using Lokad.Cqrs.Transport;
-using Lokad.Diagnostics;
 using Lokad.Settings;
 
 namespace Lokad.Cqrs
@@ -25,15 +23,55 @@ namespace Lokad.Cqrs
 
 		public CloudClientBuilder()
 		{
-			this.CloudStorageAccountIsDev();
+			Azure.UseDevelopmentStorageAccount();
+			Serialization.UseBinaryFormatter();
+			Logging.LogToTrace();
+
 
 			_builder.RegisterType<CloudSettingsProvider>().As<IProfileSettings, ISettingsProvider>().SingleInstance();
-			_builder.RegisterInstance(TraceLog.Provider);
 			_builder.RegisterInstance(NullEngineProfiler.Instance);
 			_builder.RegisterType<AzureQueueFactory>().As<IRouteMessages, IQueueManager>().SingleInstance();
 			_builder.RegisterType<AzureQueueTransport>().As<IMessageTransport>();
-			_builder.RegisterType<BinaryMessageSerializer>().As<IMessageSerializer>().SingleInstance();
 			_builder.RegisterType<CloudClient>().SingleInstance();
+		}
+
+
+		public AutofacBuilderForLogging Logging
+		{
+			get { return new AutofacBuilderForLogging(_builder); }
+		}
+
+		public AutofacBuilderForSerialization Serialization
+		{
+			get { return new AutofacBuilderForSerialization(_builder); }
+		}
+
+		public AutofacBuilderForAzure Azure
+		{
+			get { return new AutofacBuilderForAzure(_builder); }
+		}
+
+		ContainerBuilder ISyntax<ContainerBuilder>.Target
+		{
+			get { return _builder; }
+		}
+
+		public CloudClientBuilder LoggingIs(Action<ISupportSyntaxForLogging> configure)
+		{
+			configure(Logging);
+			return this;
+		}
+
+		public CloudClientBuilder SerializationIs(Action<AutofacBuilderForSerialization> configure)
+		{
+			configure(Serialization);
+			return this;
+		}
+
+		public CloudClientBuilder AzureIs(Action<AutofacBuilderForAzure> configure)
+		{
+			configure(Azure);
+			return this;
 		}
 
 		/// <summary>
@@ -51,11 +89,6 @@ namespace Lokad.Cqrs
 			var container = _builder.Build();
 			return container.Resolve<CloudClient>(
 				TypedParameter.From(defaultQueue));
-		}
-
-		ContainerBuilder ISyntax<ContainerBuilder>.Target
-		{
-			get { return _builder; }
 		}
 	}
 }

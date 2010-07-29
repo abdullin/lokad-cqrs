@@ -36,7 +36,7 @@ namespace Lokad.Cqrs.Domain
 			}
 			catch (TargetInvocationException e)
 			{
-				throw Throw.InnerExceptionWhilePreservingStackTrace(e);
+				throw Errors.Inner(e);
 			}
 		}
 

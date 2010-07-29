@@ -31,7 +31,7 @@ namespace Lokad.Cqrs.SqlViews.Tests
 			var conn = @"Data Source=.\SQLExpress;Initial Catalog=LokadDev;Integrated Security=true";
 			var name = "View_Table";
 
-			var serializer = new ProtoBufSerializer(_views);
+			var serializer = new ProtoBufMessageSerializer(_views);
 			Manager = new DbPartitionManagerForSimpleSql(conn, IsolationLevel.ReadCommitted, serializer, name);
 			Manager.CreateIfNotExist();
 

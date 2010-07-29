@@ -1,8 +1,13 @@
-﻿using System;
-using System.Net;
+﻿#region (c) 2010 Lokad Open Source - New BSD License 
+
+// Copyright (c) Lokad 2010, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
+using System;
 using Autofac;
 using Autofac.Core;
-using Microsoft.WindowsAzure;
 
 namespace Lokad.Cqrs
 {
@@ -51,76 +56,6 @@ namespace Lokad.Cqrs
 			where TSyntax : ISyntax<ContainerBuilder>
 		{
 			builder.Target.RegisterModule(module);
-			return builder;
-		}
-
-
-		/// <summary>
-		/// Uses default Development storage account for Windows Azure
-		/// </summary>
-		/// <typeparam name="TSyntax">The type of the syntax.</typeparam>
-		/// <param name="builder">The builder to extend.</param>
-		/// <returns>
-		/// same builder for inling multiple configuration statements
-		/// </returns>
-		/// <remarks>This option is enabled by default</remarks>
-		public static TSyntax CloudStorageAccountIsDev<TSyntax>(this TSyntax builder)
-			where TSyntax : ISyntax<ContainerBuilder>
-		{
-			builder.Target.RegisterInstance(CloudStorageAccount.DevelopmentStorageAccount);
-			return builder;
-		}
-
-		/// <summary>
-		/// Uses development storage account defined in the configuration setting.
-		/// </summary>
-		/// <typeparam name="TSyntax">The type of the syntax.</typeparam>
-		/// <param name="builder">The builder to extend.</param>
-		/// <param name="name">The name of the configuration value to look up.</param>
-		/// <returns>
-		/// same builder for inling multiple configuration statements
-		/// </returns>
-		public static TSyntax CloudStorageAccountIsFromConfig<TSyntax>(this TSyntax builder, string name)
-			where TSyntax : ISyntax<ContainerBuilder>
-		{
-			builder.Target.Register(c =>
-			{
-				var value = c.Resolve<IProfileSettings>()
-					.GetString(name)
-					.ExposeException("Failed to load account from '{0}'", name);
-				var account = CloudStorageAccount.Parse(value);
-				DisableNagleForQueuesAndTables(account);
-				return account;
-			}).SingleInstance();
-
-
-			return builder;
-		}
-
-		static void DisableNagleForQueuesAndTables(CloudStorageAccount account)
-		{
-			// http://blogs.msdn.com/b/windowsazurestorage/archive/2010/06/25/nagle-s-algorithm-is-not-friendly-towards-small-requests.aspx
-			// improving transfer speeds for the small requests
-			ServicePointManager.FindServicePoint(account.TableEndpoint).UseNagleAlgorithm = false;
-			ServicePointManager.FindServicePoint(account.QueueEndpoint).UseNagleAlgorithm = false;
-		}
-
-
-		/// <summary>
-		/// Uses development storage account defined in the configuration setting.
-		/// </summary>
-		/// <typeparam name="TSyntax">The type of the syntax.</typeparam>
-		/// <param name="builder">The builder to extend.</param>
-		/// <param name="accountString">The account string.</param>
-		/// <returns>
-		/// same builder for inling multiple configuration statements
-		/// </returns>
-		public static TSyntax CloudStorageAccountIsFromString<TSyntax>(this TSyntax builder, string accountString)
-			where TSyntax : ISyntax<ContainerBuilder>
-		{
-			var account = CloudStorageAccount.Parse(accountString);
-			builder.Target.RegisterInstance(account);
-			DisableNagleForQueuesAndTables(account);
 			return builder;
 		}
 	}

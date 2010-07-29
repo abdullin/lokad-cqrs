@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Specialized;
+using System.Reflection;
 using Autofac;
 using Lokad.Cqrs.Queue;
 using Lokad.Quality;
@@ -35,7 +36,14 @@ namespace Lokad.Cqrs
 
 		public TService Resolve<TService>()
 		{
-			return _resolver.Resolve<TService>();
+			try
+			{
+				return _resolver.Resolve<TService>();
+			}
+			catch (TargetInvocationException e)
+			{
+				throw Errors.Inner(e);
+			}
 		}
 
 		public void SendMessages(object[] messages, Action<MessageAttributeBuilder> headers)

@@ -18,29 +18,31 @@ namespace Lokad.Cqrs
 	/// <summary>
 	/// Configures management environment for the Lokad.CQRS
 	/// </summary>
-	public sealed class CloudManagerBuilder : ISyntax<ContainerBuilder>
+	public sealed class CloudManagerBuilder : Syntax
 	{
 		readonly ContainerBuilder _builder = new ContainerBuilder();
 
+		public AutofacBuilderForLogging Logging { get { return new AutofacBuilderForLogging(_builder);}}
+
 		public CloudManagerBuilder()
 		{
-			this.CloudStorageAccountIsDev();
+			Logging.LogToTrace();
 
-			_builder.RegisterInstance(TraceLog.Provider).SingleInstance();
+			
 			_builder.RegisterInstance(NullEngineProfiler.Instance);
 			_builder.RegisterType<AzureQueueFactory>().As<IRouteMessages, IQueueManager>().SingleInstance();
 			_builder.RegisterType<AzureQueueTransport>().As<IMessageTransport>();
 		}
 
-		public CloudManagerBuilder Domain(Action<DomainBuildModule> configuration)
+		public CloudManagerBuilder DomainIs(Action<DomainBuildModule> configuration)
 		{
-			return this.WithModule(configuration);
+			var m = new DomainBuildModule();
+			configuration(m);
+			_builder.RegisterModule(m);
+			return this;
 		}
 
-		ContainerBuilder ISyntax<ContainerBuilder>.Target
-		{
-			get { return _builder; }
-		}
+		
 
 		public IContainer Build()
 		{

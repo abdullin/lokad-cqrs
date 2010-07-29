@@ -24,7 +24,7 @@ namespace Lokad.Cqrs.Scheduled
 				}
 				catch (TargetInvocationException e)
 				{
-					throw Throw.InnerExceptionWhilePreservingStackTrace(e);
+					throw Errors.Inner(e);
 				}
 			}
 		}

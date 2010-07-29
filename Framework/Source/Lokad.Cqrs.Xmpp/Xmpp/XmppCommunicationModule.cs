@@ -85,7 +85,7 @@ namespace Lokad.Cqrs.Xmpp
 
 
 			var builder = _builder.RegisterType<XmppCommunicator>()
-				.As<IRealtimeNotifier>()
+				.As<ICommunicator>()
 				.As<IStartable>()
 				.SingleInstance();
 

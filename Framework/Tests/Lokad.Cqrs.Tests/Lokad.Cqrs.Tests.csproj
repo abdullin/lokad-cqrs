@@ -54,7 +54,7 @@
     <Compile Include="DomainTests.cs" />
     <Compile Include="MessageUtilTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SmokeTestsTests.cs" />
+    <Compile Include="SmokeTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Source\Lokad.Cqrs\Lokad.Cqrs.csproj">

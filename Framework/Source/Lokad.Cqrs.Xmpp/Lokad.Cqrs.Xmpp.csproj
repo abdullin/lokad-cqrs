@@ -52,7 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ExtendContainerBuilderSyntax.cs" />
+    <Compile Include="ExtendSyntaxForICommunicator.cs" />
     <Compile Include="Xmpp\ExtendIXmppSettings.cs" />
     <Compile Include="Xmpp\XmppCommunicationModule.cs" />
     <Compile Include="Xmpp\IXmppSettings.cs" />

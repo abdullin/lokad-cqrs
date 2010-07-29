@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Lokad.Cqrs.Serialization;
+using Lokad.Serialization;
 using ProtoBuf;
-using Lokad;
+
 
 namespace Lokad.Cqrs
 {

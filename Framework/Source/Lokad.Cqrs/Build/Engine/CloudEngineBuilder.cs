@@ -13,37 +13,64 @@ using Lokad.Cqrs.PubSub.Build;
 using Lokad.Cqrs.Queue;
 using Lokad.Cqrs.Scheduled.Build;
 using Lokad.Cqrs.Sender.Build;
-using Lokad.Cqrs.Serialization;
 using Lokad.Cqrs.Transport;
-using Lokad.Diagnostics;
 using Lokad.Messaging;
 using Lokad.Settings;
 
 namespace Lokad.Cqrs
 {
+	
+
 	/// <summary>
 	/// Fluent API for creating and configuring <see cref="ICloudEngineHost"/>
 	/// </summary>
-	public class CloudEngineBuilder :
-		ISyntax<ContainerBuilder>,
-		ISyntax<ContainerBuilder, IRealtimeNotifier>
+	public class CloudEngineBuilder : Syntax, ISyntax<ContainerBuilder>
+		
 	{
 		readonly ContainerBuilder _builder = new ContainerBuilder();
 
+		public AutofacBuilderForLogging Logging { get { return new AutofacBuilderForLogging(_builder); } }
+		public CloudEngineBuilder LoggingIs(Action<ISupportSyntaxForLogging> configure)
+		{
+			configure(Logging);
+			return this;
+		}
+
+		public AutofacBuilderForSerialization Serialization { get { return new AutofacBuilderForSerialization(_builder);} }
+		public CloudEngineBuilder SerializationIs(Action<AutofacBuilderForSerialization> configure)
+		{
+			configure(Serialization);
+			return this;
+		}
+
+		public AutofacBuilderForAzure Azure { get { return new AutofacBuilderForAzure(_builder);}}
+		public CloudEngineBuilder AzureIs(Action<AutofacBuilderForAzure> configure)
+		{
+			configure(Azure);
+			return this;
+		}
+
+		//public AutofacBuilderForDomain Domain { get { return new AutofacBuilderForDomain(_builder);}}
+
+
 		public CloudEngineBuilder()
 		{
-			this.CloudStorageAccountIsDev();
-
-			_builder.RegisterInstance(TraceLog.Provider);
-			_builder.RegisterInstance(NullRealtimeNotifier.Instance);
+			// System presets
+			Logging.LogToTrace();
+			Serialization.UseBinaryFormatter();
+			_builder.RegisterInstance(NullCommunicator.Instance);
 			_builder.RegisterInstance(NullEngineProfiler.Instance);
 			_builder.RegisterInstance(SimpleMessageProfiler.Instance);
 
+			// Azure presets
+			Azure.UseDevelopmentStorageAccount();
 			_builder.RegisterType<AzureQueueFactory>().As<IRouteMessages, IQueueManager>().SingleInstance();
-			_builder.RegisterType<DefaultCloudEngineHost>().As<ICloudEngineHost>().SingleInstance();
 			_builder.RegisterType<AzureQueueTransport>().As<IMessageTransport>();
-			_builder.RegisterType<BinaryMessageSerializer>().As<IMessageSerializer>().SingleInstance();
 			_builder.RegisterType<CloudSettingsProvider>().As<IProfileSettings, ISettingsProvider>().SingleInstance();
+
+
+			// some defaults
+			_builder.RegisterType<DefaultCloudEngineHost>().As<ICloudEngineHost>().SingleInstance();
 		}
 
 		/// <summary>
@@ -51,7 +78,7 @@ namespace Lokad.Cqrs
 		/// </summary>
 		/// <param name="config">configuration syntax</param>
 		/// <returns>same builder for inling multiple configuration statements</returns>
-		public CloudEngineBuilder PublishSubscribe(Action<BuildPubSubModule> config)
+		public CloudEngineBuilder AddPublishSubscribe(Action<BuildPubSubModule> config)
 		{
 			return this.WithModule(config);
 		}
@@ -61,7 +88,7 @@ namespace Lokad.Cqrs
 		/// </summary>
 		/// <param name="config">configuration syntax</param>
 		/// <returns>same builder for inling multiple configuration statements</returns>
-		public CloudEngineBuilder HandleMessages(Action<HandleMessagesModule> config)
+		public CloudEngineBuilder AddMessageHandler(Action<HandleMessagesModule> config)
 		{
 			return this.WithModule(config);
 		}
@@ -71,7 +98,7 @@ namespace Lokad.Cqrs
 		/// </summary>
 		/// <param name="config">configuration syntax</param>
 		/// <returns>same builder for inling multiple configuration statements</returns>
-		public CloudEngineBuilder RunTasks(Action<ScheduledModule> config)
+		public CloudEngineBuilder AddScheduler(Action<ScheduledModule> config)
 		{
 			return this.WithModule(config);
 		}
@@ -81,7 +108,7 @@ namespace Lokad.Cqrs
 		/// </summary>
 		/// <param name="config">configuration syntax.</param>
 		/// <returns>same builder for inling multiple configuration statements</returns>
-		public CloudEngineBuilder Domain(Action<DomainBuildModule> config)
+		public CloudEngineBuilder DomainIs(Action<DomainBuildModule> config)
 		{
 			return this.WithModule(config);
 		}
@@ -91,7 +118,7 @@ namespace Lokad.Cqrs
 		/// </summary>
 		/// <param name="config">configuration syntax.</param>
 		/// <returns>same builder for inling multiple configuration statements</returns>
-		public CloudEngineBuilder SendMessages(Action<SenderModule> config)
+		public CloudEngineBuilder AddMessageClient(Action<SenderModule> config)
 		{
 			return this.WithModule(config);
 		}

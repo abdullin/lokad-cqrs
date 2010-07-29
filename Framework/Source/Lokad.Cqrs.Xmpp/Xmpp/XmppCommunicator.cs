@@ -12,7 +12,7 @@ using Lokad.Quality;
 namespace Lokad.Cqrs.Xmpp
 {
 	[UsedImplicitly]
-	public class XmppCommunicator : IStartable, IDisposable, IRealtimeNotifier
+	public class XmppCommunicator : IStartable, IDisposable, ICommunicator
 	{
 		readonly JabberClient _client;
 		
@@ -103,7 +103,7 @@ namespace Lokad.Cqrs.Xmpp
 			_client.Dispose();
 		}
 		
-		public void Notify(string recipient, string body, RealtimeNotificationType options)
+		public void Notify(string recipient, string body, CommunicationType options)
 		{
 			var type = EnumUtil<MessageType>.ConvertSafelyFrom(options);
 			try

@@ -11,26 +11,24 @@ using System.Reflection;
 using Autofac;
 using Autofac.Core;
 using Lokad.Cqrs.Default;
-using Lokad.Cqrs.Serialization;
+using Lokad.Serialization;
 
 namespace Lokad.Cqrs.Domain.Build
 {
 	/// <summary>
 	/// Module for building CQRS domains.
 	/// </summary>
-	public class DomainBuildModule : IModule, ISyntax<ContainerBuilder>
+	public class DomainBuildModule : IModule
 	{
 		readonly MessageAssemblyScanner _scanner = new MessageAssemblyScanner();
-		readonly ContainerBuilder _builder = new ContainerBuilder();
+		readonly ContainerBuilder _builder;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DomainBuildModule"/> class.
 		/// </summary>
 		public DomainBuildModule()
 		{
-			//_messageScanner.LoadSystemMessages();
-
-			UseDataContractSerializer();
+			_builder = new ContainerBuilder();
 		}
 
 		/// <summary>
@@ -110,35 +108,6 @@ namespace Lokad.Cqrs.Domain.Build
 			return this;
 		}
 
-
-
-
-		/// <summary>
-		/// Serialization is performed with <see cref="DataContractMessageSerializer"/>
-		/// </summary>
-		/// <returns>same module instance for chaining fluent configurations</returns>
-		public DomainBuildModule UseDataContractSerializer()
-		{
-			_builder
-				.RegisterType<DataContractMessageSerializer>()
-				.As<IMessageSerializer>()
-				.SingleInstance();
-			return this;
-		}
-
-		/// <summary>
-		/// Serialization is performed with <see cref="BinaryMessageSerializer"/>.
-		/// </summary>
-		/// <returns>same module instance for chaining fluent configurations</returns>
-		public DomainBuildModule UseBinarySerializer()
-		{
-			_builder
-				.RegisterType<BinaryMessageSerializer>()
-				.As<IMessageSerializer>()
-				.SingleInstance();
-			return this;
-		}
-
 		/// <summary>
 		/// Scans assemblies of the specified type for message mappings
 		/// </summary>
@@ -213,7 +182,7 @@ namespace Lokad.Cqrs.Domain.Build
 			}
 
 			_builder.RegisterInstance(directoryBuilder).As<IMessageDirectoryBuilder>();
-			_builder.RegisterInstance(directory);
+			_builder.RegisterInstance(directory).As<IMessageDirectory, IKnowSerializationTypes>();
 
 			_builder
 				.RegisterType<DomainAwareMessageProfiler>()

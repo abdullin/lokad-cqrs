@@ -8,7 +8,7 @@
 using System;
 using System.IO;
 using System.Transactions;
-using Lokad.Cqrs.Serialization;
+using Lokad.Serialization;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
 namespace Lokad.Cqrs.Queue
@@ -16,7 +16,6 @@ namespace Lokad.Cqrs.Queue
 	public sealed class AzureMessageQueue : IReadMessageQueue, IWriteMessageQueue
 	{
 		public const string DateFormatInBlobName = "yyyy-MM-dd-HH-mm-ss-ffff";
-		readonly CloudStorageAccount _account;
 		readonly CloudBlobContainer _cloudBlob;
 		readonly IMessageProfiler _debugger;
 		readonly CloudQueue _discardQueue;
@@ -51,9 +50,7 @@ namespace Lokad.Cqrs.Queue
 			_discardQueue = queueClient.GetQueueReference(_queueReference.SubQueue(SubQueueType.Discard).QueueName);
 
 			_log = provider.Get("Queue[" + queueName + "]");
-
-
-			_account = account;
+			
 			_debugger = debugger;
 
 			_serializer = serializer;
@@ -256,7 +253,7 @@ namespace Lokad.Cqrs.Queue
 			var messageType = message.GetType();
 			var contract = _serializer
 				.GetContractNameByType(messageType)
-				.ExposeException("Can't find contract for message of type: '{0}'.", messageType);
+				.ExposeException(() => QueueErrors.NoContractNameOnSend(messageType, _serializer));
 
 			var referenceId = created.ToString(DateFormatInBlobName) + "-" + messageId;
 

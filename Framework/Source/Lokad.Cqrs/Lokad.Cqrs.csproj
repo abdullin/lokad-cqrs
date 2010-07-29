@@ -53,13 +53,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Build\AutofacBuilderForAzure.cs" />
+    <Compile Include="Build\AutofacBuilderForLogging.cs" />
+    <Compile Include="Build\AutofacBuilderForSerialization.cs" />
     <Compile Include="Build\BuilderExtensions.cs" />
     <Compile Include="Build\Client\CloudClient.cs" />
     <Compile Include="Build\Client\CloudClientBuilder.cs" />
     <Compile Include="Build\Client\ICloudClient.cs" />
     <Compile Include="Build\CloudSettingsProvider.cs" />
     <Compile Include="Build\Engine\CloudEngineBuilder.cs" />
-    <Compile Include="Build\Engine\ServerHost.cs" />
+    <Compile Include="Build\Engine\CloudEngineRole.cs" />
+    <Compile Include="Build\ExtendSyntaxForCloudStorageAccount.cs" />
     <Compile Include="Consume\BlobExceptionLogger.cs" />
     <Compile Include="Consume\Build\ConfigureBlobSavingOnException.cs" />
     <Compile Include="Consume\Build\ConfigureNotificationOnException.cs" />
@@ -80,10 +84,9 @@
     <Compile Include="Lmf\MessageHeader.cs" />
     <Compile Include="Lmf\MessagePrinter.cs" />
     <Compile Include="Lmf\MessageUtil.cs" />
-    <Compile Include="ProtoBuf\ExtendSyntaxWithProtoBuf.cs" />
-    <Compile Include="ProtoBuf\ProtoBufMessageSerializer.cs" />
+    <Compile Include="Queue\QueueErrors.cs" />
     <Compile Include="Sender\DefaultMessageClient.cs" />
-    <Compile Include="Infrastructure\Throw.cs" />
+    <Compile Include="Infrastructure\ExtendIComponentContext.cs" />
     <Compile Include="Infrastructure\Filter.cs" />
     <Compile Include="Domain\IMessageDirectoryBuilder.cs" />
     <Compile Include="Domain\MessageMapping.cs" />
@@ -97,8 +100,6 @@
     <Compile Include="Scheduled\ScheduledProcess.cs" />
     <Compile Include="Scheduled\ScheduledTaskInfo.cs" />
     <Compile Include="Sender\Build\SenderModule.cs" />
-    <Compile Include="Serialization\DataContractMessageSerializer.cs" />
-    <Compile Include="Serialization\DataContractUtil.cs" />
     <Compile Include="Consume\DispatchesMultipleMessagesToSharedScope.cs" />
     <Compile Include="Domain\ConsumerInfo.cs" />
     <Compile Include="Build\Engine\DefaultCloudEngineHost.cs" />
@@ -121,14 +122,12 @@
     <Compile Include="PubSub\InMemoryPublishSubscribeManager.cs" />
     <Compile Include="PubSub\SubscribeDirectMessage.cs" />
     <Compile Include="PubSub\SubscribeRegexMessage.cs" />
-    <Compile Include="Serialization\BinaryMessageSerializer.cs" />
     <Compile Include="Queue\AzureQueueFactory.cs" />
     <Compile Include="Queue\AzureQueueReference.cs" />
     <Compile Include="Transport\AzureQueuePolicy.cs" />
     <Compile Include="Transport\AzureQueueTransportConfig.cs" />
     <Compile Include="Design\IMessageTransport.cs" />
     <Compile Include="Queue\IReadMessageQueue.cs" />
-    <Compile Include="Serialization\IMessageSerializer.cs" />
     <Compile Include="Queue\AzureMessageQueue.cs" />
     <Compile Include="Transport\AzureQueueTransport.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

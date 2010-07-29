@@ -9,6 +9,20 @@
              Assembly information class that is shared between all projects
             </summary>
     </member>
+    <member name="T:Lokad.ExtendISupportSyntaxForLogging">
+      <summary>
+            Extends logging syntax
+            </summary>
+    </member>
+    <member name="M:Lokad.ExtendISupportSyntaxForLogging.LogToStack``1(``0)">
+      <summary>
+            Registers the log provider from the current log4net stack <see cref="M:Lokad.Logging.LoggingStack.GetLogProvider" />.
+            See <see cref="T:Lokad.Logging.LoggingStack" /> for options on configuring Apache log4net options.
+            </summary>
+      <typeparam name="TModule">The type of the module.</typeparam>
+      <param name="module">The module.</param>
+      <returns>same module for the inlining</returns>
+    </member>
     <member name="T:Lokad.Logging.ListeningLogOptions">
       <summary>
             Log options

@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Autofac;
 using Lokad.Quality;
 
@@ -55,7 +56,14 @@ namespace Lokad.Cqrs
 
 		public TService Resolve<TService>()
 		{
-			return _container.Resolve<TService>();
+			try
+			{
+				return _container.Resolve<TService>();
+			}
+			catch (TargetInvocationException e)
+			{
+				throw Errors.Inner(e);
+			}
 		}
 
 		public void Dispose()

@@ -11,44 +11,84 @@ using System.Runtime.Serialization;
 using Lokad;
 using Lokad.Cqrs;
 using Lokad.Cqrs.Default;
-using Lokad.Cqrs.Queue;
 using NUnit.Framework;
 using ProtoBuf;
 
 namespace CloudBus.Tests
 {
 	[TestFixture]
-	public sealed class SmokeTestsTests
+	public sealed class SmokeTests
 	{
 		// ReSharper disable InconsistentNaming
 
-		ICloudEngineHost Host { get; set; }
+		#region Setup/Teardown
 
 		[SetUp]
 		public void SetUp()
 		{
-			Host = new CloudEngineBuilder()
-				.Domain(m =>
-					{
-						m.WithDefaultInterfaces();
-						m.UseProtocolBuffers();
-						m.InCurrentAssembly();
-						m.CloudStorageAccountIsDev();
-					})
-				.HandleMessages(m =>
-					{
-						m.ListenTo("test-hi", "test-bye");
-						m.WithMultipleConsumers();
-					})
-				.PublishSubscribe(m =>
-					{
-						m.ListenTo("test-in");
-						m.ManagerIsInMemory()
-							.DirectBinding("Hello", "test-hi")
-							.DirectBinding("Bye", "test-bye");
-					})
-				.SendMessages(m => m.DefaultToQueue("test-in"))
-				.Build();
+			var engine = new CloudEngineBuilder();
+			
+			engine.Azure.UseDevelopmentStorageAccount();
+			engine.Serialization.UseDataContractSerializer();
+
+			engine.DomainIs(m =>
+				{
+					m.WithDefaultInterfaces();
+					m.InCurrentAssembly();
+				});
+
+			engine.AddMessageHandler(x =>
+				{
+					x.ListenTo("test-hi", "test-bye");
+					x.WithMultipleConsumers();
+				});
+
+			engine.AddPublishSubscribe(x =>
+				{
+					x.ListenTo("test-in");
+					x.ManagerIsInMemory()
+						.DirectBinding("Hello", "test-hi")
+						.DirectBinding("Bye", "test-bye");
+				});
+
+			engine.AddMessageClient(x => x.DefaultToQueue("test-in"));
+
+
+			Host = engine.Build();
+		}
+
+		#endregion
+
+		ICloudEngineHost Host { get; set; }
+
+
+		[DataContract]
+		public sealed class Hello : IMessage
+		{
+			[DataMember(Order = 1)]
+			public string Word { get; set; }
+		}
+
+		[DataContract]
+		public sealed class Bye : IMessage
+		{
+			[DataMember(Order = 1)]
+			public string Word { get; set; }
+		}
+
+		public sealed class DoSomething : IConsume<Hello>, IConsume<Bye>
+		{
+			public void Consume(Bye message)
+			{
+				Trace.WriteLine("Bye length: " + message.Word.Length);
+				Trace.WriteLine("Message total: " + MessageContext.Current.Header.GetTotalLength());
+			}
+
+			public void Consume(Hello message)
+			{
+				Trace.WriteLine("Hello length: " + message.Word.Length);
+				Trace.WriteLine("Message total: " + MessageContext.Current.Header.GetTotalLength());
+			}
 		}
 
 		[Test]
@@ -69,36 +109,6 @@ namespace CloudBus.Tests
 		[Test]
 		public void Test2()
 		{
-		}
-
-
-		[DataContract]
-		public sealed class Hello : IMessage
-		{
-			[DataMember(Order = 1)]
-			public string Word { get; set; }
-		}
-
-		[DataContract]
-		public sealed class Bye : IMessage
-		{
-			[DataMember(Order = 1)]
-			public string Word { get; set; }
-		}
-
-		public sealed class DoSomething : IConsume<Hello>, IConsume<Bye>
-		{
-			public void Consume(Hello message)
-			{
-				Trace.WriteLine("Hello length: " + message.Word.Length);
-				Trace.WriteLine("Message total: " + MessageContext.Current.Header.GetTotalLength());
-			}
-
-			public void Consume(Bye message)
-			{
-				Trace.WriteLine("Bye length: " + message.Word.Length);
-				Trace.WriteLine("Message total: " + MessageContext.Current.Header.GetTotalLength());
-			}
 		}
 	}
 

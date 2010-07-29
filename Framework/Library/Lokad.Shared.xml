@@ -503,12 +503,197 @@
             Starts this instance up.
             </summary>
     </member>
+    <member name="T:Lokad.Serialization.IDataSerializer">
+      <summary>
+            Generic data serializer interface.
+            </summary>
+    </member>
+    <member name="M:Lokad.Serialization.IDataSerializer.Serialize(System.Object,System.IO.Stream)">
+      <summary>
+            Serializes the object to the specified stream
+            </summary>
+      <param name="instance">The instance.</param>
+      <param name="destinationStream">The destination stream.</param>
+    </member>
+    <member name="M:Lokad.Serialization.IDataSerializer.Deserialize(System.IO.Stream,System.Type)">
+      <summary>
+            Deserializes the object from specified source stream.
+            </summary>
+      <param name="sourceStream">The source stream.</param>
+      <param name="type">The type of the object to deserialize.</param>
+      <returns>deserialized object</returns>
+    </member>
+    <member name="T:Lokad.Serialization.IDataContractMapper">
+      <summary>
+            Class responsible for mapping types to contracts and vise-versa
+            </summary>
+    </member>
+    <member name="M:Lokad.Serialization.IDataContractMapper.GetContractNameByType(System.Type)">
+      <summary>
+            Gets the contract name by the type
+            </summary>
+      <param name="messageType">Type of the message.</param>
+      <returns>contract name (if found)</returns>
+    </member>
+    <member name="M:Lokad.Serialization.IDataContractMapper.GetTypeByContractName(System.String)">
+      <summary>
+            Gets the type by contract name.
+            </summary>
+      <param name="contractName">Name of the contract.</param>
+      <returns>type that could be used for contract deserialization (if found)</returns>
+    </member>
+    <member name="T:Lokad.Serialization.IMessageSerializer">
+      <summary>
+            Joins data serializer and contract mapper
+            </summary>
+    </member>
+    <member name="T:Lokad.Serialization.BinaryMessageSerializer">
+      <summary>
+            Message serializer that uses <see cref="T:System.Runtime.Serialization.Formatters.Binary.BinaryFormatter" />. It is recommended to user ProtocolBuffers instead.
+            </summary>
+    </member>
+    <member name="M:Lokad.Serialization.BinaryMessageSerializer.Serialize(System.Object,System.IO.Stream)">
+      <summary>
+            Serializes the object to the specified stream
+            </summary>
+      <param name="instance">The instance.</param>
+      <param name="destinationStream">The destination stream.</param>
+    </member>
+    <member name="M:Lokad.Serialization.BinaryMessageSerializer.Deserialize(System.IO.Stream,System.Type)">
+      <summary>
+            Deserializes the object from specified source stream.
+            </summary>
+      <param name="sourceStream">The source stream.</param>
+      <param name="type">The type of the object to deserialize.</param>
+      <returns>deserialized object</returns>
+    </member>
+    <member name="M:Lokad.Serialization.BinaryMessageSerializer.GetContractNameByType(System.Type)">
+      <summary>
+            Gets the contract name by the type
+            </summary>
+      <param name="messageType">Type of the message.</param>
+      <returns>contract name (if found)</returns>
+    </member>
+    <member name="M:Lokad.Serialization.BinaryMessageSerializer.GetTypeByContractName(System.String)">
+      <summary>
+            Gets the type by contract name.
+            </summary>
+      <param name="contractName">Name of the contract.</param>
+      <returns>type that could be used for contract deserialization (if found)</returns>
+    </member>
+    <member name="T:Lokad.Serialization.DataContractMessageSerializer">
+      <summary>
+            Message serializer for the <see cref="T:System.Runtime.Serialization.DataContractSerializer" /></summary>
+    </member>
+    <member name="M:Lokad.Serialization.DataContractMessageSerializer.#ctor(System.Collections.Generic.ICollection{System.Type})">
+      <summary>
+            Initializes a new instance of the <see cref="T:Lokad.Serialization.DataContractMessageSerializer" /> class.
+            </summary>
+      <param name="knownTypes">The known types.</param>
+    </member>
+    <member name="M:Lokad.Serialization.DataContractMessageSerializer.#ctor(Lokad.Serialization.IKnowSerializationTypes)">
+      <summary>
+            Initializes a new instance of the <see cref="T:Lokad.Serialization.DataContractMessageSerializer" /> class.
+            </summary>
+      <param name="know">The know.</param>
+    </member>
+    <member name="M:Lokad.Serialization.DataContractMessageSerializer.Serialize(System.Object,System.IO.Stream)">
+      <summary>
+            Serializes the object to the specified stream
+            </summary>
+      <param name="instance">The instance.</param>
+      <param name="destination">The destination stream.</param>
+    </member>
+    <member name="M:Lokad.Serialization.DataContractMessageSerializer.Deserialize(System.IO.Stream,System.Type)">
+      <summary>
+            Deserializes the object from specified source stream.
+            </summary>
+      <param name="sourceStream">The source stream.</param>
+      <param name="type">The type of the object to deserialize.</param>
+      <returns>deserialized object</returns>
+    </member>
+    <member name="M:Lokad.Serialization.DataContractMessageSerializer.GetContractNameByType(System.Type)">
+      <summary>
+            Gets the contract name by the type
+            </summary>
+      <param name="messageType">Type of the message.</param>
+      <returns>contract name (if found)</returns>
+    </member>
+    <member name="M:Lokad.Serialization.DataContractMessageSerializer.GetTypeByContractName(System.String)">
+      <summary>
+            Gets the type by contract name.
+            </summary>
+      <param name="contractName">Name of the contract.</param>
+      <returns>type that could be used for contract deserialization (if found)</returns>
+    </member>
+    <member name="T:Lokad.Serialization.DataContractUtil">
+      <summary>
+            Helper class to work with <see cref="T:System.Runtime.Serialization.DataContract" /></summary>
+    </member>
+    <member name="M:Lokad.Serialization.DataContractUtil.ThrowOnMessagesWithoutDataContracts(System.Collections.Generic.IEnumerable{System.Type})">
+      <summary>
+            Throws detailed exception the on messages without data contracts.
+            </summary>
+      <param name="knownTypes">The known types.</param>
+    </member>
+    <member name="M:Lokad.Serialization.DataContractUtil.GetContractReference(System.Type)">
+      <summary>
+            Gets the contract reference, combining contract properties.
+            </summary>
+      <param name="type">The type.</param>
+      <returns>
+      </returns>
+    </member>
+    <member name="T:Lokad.ExtendISupportSyntaxForSerialization">
+      <summary>
+            Syntax extensions for <see cref="T:Lokad.Serialization.ISupportSyntaxForSerialization" /></summary>
+    </member>
+    <member name="M:Lokad.ExtendISupportSyntaxForSerialization.UseBinaryFormatter``1(``0)">
+      <summary>
+            Uses the binary formatter.
+            </summary>
+      <typeparam name="TModule">The type of the module.</typeparam>
+      <param name="module">The module.</param>
+      <returns>
+      </returns>
+    </member>
+    <member name="M:Lokad.ExtendISupportSyntaxForSerialization.UseDataContractSerializer``1(``0)">
+      <summary>
+            Uses the data contract serializer.
+            </summary>
+      <typeparam name="TModule">The type of the module.</typeparam>
+      <param name="module">The module.</param>
+      <returns>
+      </returns>
+    </member>
+    <member name="T:Lokad.Serialization.IKnowSerializationTypes">
+      <summary>
+            Provides collection of known serialization types (for prebuilt serializers)
+            </summary>
+    </member>
+    <member name="M:Lokad.Serialization.IKnowSerializationTypes.GetKnownTypes">
+      <summary>
+            Gets the known serialization types.
+            </summary>
+      <returns>
+      </returns>
+    </member>
+    <member name="T:Lokad.Serialization.ISupportSyntaxForSerialization">
+      <summary>
+            Syntax support for .Serialization configurations.
+            </summary>
+    </member>
+    <member name="M:Lokad.Serialization.ISupportSyntaxForSerialization.RegisterSerializer``1">
+      <summary>
+            Registers the specified data serializer as singleton implementing <see cref="T:Lokad.Serialization.IMessageSerializer" />, <see cref="T:Lokad.Serialization.IDataSerializer" /> and <see cref="T:Lokad.Serialization.IDataContractMapper" />. It can import <see cref="T:Lokad.Serialization.IKnowSerializationTypes" /></summary>
+      <typeparam name="TSerializer">The type of the serializer.</typeparam>
+    </member>
     <member name="T:Lokad.ISyntax`1">
       <summary>
             Interface for implementing decoupled configuration extensions. It hides
             unnecessary members from the IntelliSense.
             </summary>
-      <typeparam name="TSyntaxTarget">syntax target</typeparam>
+      <typeparam name="TTarget">syntax target</typeparam>
     </member>
     <member name="M:Lokad.ISyntax`1.ToString">
       <summary>
@@ -552,20 +737,12 @@
             </summary>
       <value>The underlying object.</value>
     </member>
-    <member name="T:Lokad.ISyntax`2">
-      <summary>
-            Interface for implementing decoupled configuration extensions 
-            that are limited by the subject.
-            </summary>
-      <typeparam name="TTarget">The type of the target.</typeparam>
-      <typeparam name="TSubject">The type of the subject to extend.</typeparam>
-    </member>
-    <member name="T:Lokad.Messaging.IRealtimeNotifier">
+    <member name="T:Lokad.Messaging.ICommunicator">
       <summary>
             Real-time notification interface
             </summary>
     </member>
-    <member name="M:Lokad.Messaging.IRealtimeNotifier.Notify(System.String,System.String,Lokad.Messaging.RealtimeNotificationType)">
+    <member name="M:Lokad.Messaging.ICommunicator.Notify(System.String,System.String,Lokad.Messaging.CommunicationType)">
       <summary>
             Notifies the specified recipient (reliability is determined by the implementation.
             </summary>
@@ -573,16 +750,16 @@
       <param name="body">The body.</param>
       <param name="options">The options.</param>
     </member>
-    <member name="T:Lokad.Messaging.NullRealtimeNotifier">
+    <member name="T:Lokad.Messaging.NullCommunicator">
       <summary>
             Realtime notifier, that does not do anything
             </summary>
     </member>
-    <member name="F:Lokad.Messaging.NullRealtimeNotifier.Instance">
+    <member name="F:Lokad.Messaging.NullCommunicator.Instance">
       <summary>
-            Singleton instance of the <see cref="T:Lokad.Messaging.IRealtimeNotifier" /></summary>
+            Singleton instance of the <see cref="T:Lokad.Messaging.ICommunicator" /></summary>
     </member>
-    <member name="M:Lokad.Messaging.NullRealtimeNotifier.Notify(System.String,System.String,Lokad.Messaging.RealtimeNotificationType)">
+    <member name="M:Lokad.Messaging.NullCommunicator.Notify(System.String,System.String,Lokad.Messaging.CommunicationType)">
       <summary>
             Notifies the specified recipient (reliability is determined by the implementation.
             </summary>
@@ -590,94 +767,29 @@
       <param name="body">The body.</param>
       <param name="options">The options.</param>
     </member>
-    <member name="T:Lokad.Messaging.RealtimeNotificationType">
+    <member name="T:Lokad.Messaging.CommunicationType">
       <summary>
-            Message types for the <see cref="T:Lokad.Messaging.IRealtimeNotifier" /></summary>
+            Message types for the <see cref="T:Lokad.Messaging.ICommunicator" /></summary>
     </member>
-    <member name="F:Lokad.Messaging.RealtimeNotificationType.Normal">
+    <member name="F:Lokad.Messaging.CommunicationType.Normal">
       <summary>
       </summary>
     </member>
-    <member name="F:Lokad.Messaging.RealtimeNotificationType.Error">
+    <member name="F:Lokad.Messaging.CommunicationType.Error">
       <summary>
       </summary>
     </member>
-    <member name="F:Lokad.Messaging.RealtimeNotificationType.Chat">
+    <member name="F:Lokad.Messaging.CommunicationType.Chat">
       <summary>
       </summary>
     </member>
-    <member name="F:Lokad.Messaging.RealtimeNotificationType.Groupchat">
+    <member name="F:Lokad.Messaging.CommunicationType.Groupchat">
       <summary>
       </summary>
     </member>
-    <member name="F:Lokad.Messaging.RealtimeNotificationType.Headline">
+    <member name="F:Lokad.Messaging.CommunicationType.Headline">
       <summary>
       </summary>
-    </member>
-    <member name="T:Lokad.Serialization.IDataSerializer">
-      <summary>
-            Generic data serializer interface.
-            </summary>
-    </member>
-    <member name="M:Lokad.Serialization.IDataSerializer.Serialize(System.Object,System.IO.Stream)">
-      <summary>
-            Serializes the object to the specified stream
-            </summary>
-      <param name="instance">The instance.</param>
-      <param name="destinationStream">The destination stream.</param>
-    </member>
-    <member name="M:Lokad.Serialization.IDataSerializer.Deserialize(System.IO.Stream,System.Type)">
-      <summary>
-            Deserializes the object from specified source stream.
-            </summary>
-      <param name="sourceStream">The source stream.</param>
-      <param name="type">The type of the object to deserialize.</param>
-      <returns>deserialized object</returns>
-    </member>
-    <member name="T:Lokad.Serialization.BinaryDataSerializer">
-      <summary>
-            Binary data serializer using <see cref="T:System.Runtime.Serialization.Formatters.Binary.BinaryFormatter" /></summary>
-    </member>
-    <member name="F:Lokad.Serialization.BinaryDataSerializer.Instance">
-      <summary>
-            Singleton instance of the serializer
-            </summary>
-    </member>
-    <member name="M:Lokad.Serialization.BinaryDataSerializer.Serialize(System.Object,System.IO.Stream)">
-      <summary>
-            Serializes the object to the specified stream
-            </summary>
-      <param name="instance">The instance.</param>
-      <param name="destinationStream">The destination stream.</param>
-    </member>
-    <member name="M:Lokad.Serialization.BinaryDataSerializer.Deserialize(System.IO.Stream,System.Type)">
-      <summary>
-            Deserializes the object from specified source stream.
-            </summary>
-      <param name="sourceStream">The source stream.</param>
-      <param name="type">The type of the object to deserialize.</param>
-      <returns>deserialized object</returns>
-    </member>
-    <member name="T:Lokad.Serialization.IDataContractMapper">
-      <summary>
-            Class responsible 
-            </summary>
-    </member>
-    <member name="M:Lokad.Serialization.IDataContractMapper.GetContractNameByType(System.Type)">
-      <summary>
-            Gets the contract name by the type
-            </summary>
-      <param name="messageType">Type of the message.</param>
-      <returns>
-      </returns>
-    </member>
-    <member name="M:Lokad.Serialization.IDataContractMapper.GetTypeByContractName(System.String)">
-      <summary>
-            Gets the type by contract name.
-            </summary>
-      <param name="contractName">Name of the contract.</param>
-      <returns>
-      </returns>
     </member>
     <member name="T:Lokad.Maybe`1">
       <summary>
@@ -2020,7 +2132,7 @@
       <summary>
             Helper class for creating fluent APIs
             </summary>
-      <typeparam name="TSyntaxTarget">underlying type</typeparam>
+      <typeparam name="TTarget">underlying type</typeparam>
     </member>
     <member name="M:Lokad.Syntax`1.#ctor(`0)">
       <summary>
@@ -3580,6 +3692,20 @@
       <param name="message">The message.</param>
       <param name="args">The arguments of the format string.</param>
       <returns>new exception instance</returns>
+    </member>
+    <member name="M:Lokad.Errors.NotSupported(System.String,System.Object[])">
+      <summary>
+            Creates new instance of <see cref="T:System.NotSupportedException" /></summary>
+      <param name="message">The message.</param>
+      <param name="args">The arguments of the format string.</param>
+      <returns>new exception instance</returns>
+    </member>
+    <member name="M:Lokad.Errors.Inner(System.Reflection.TargetInvocationException)">
+      <summary>
+            Returns inner exception, while preserving the stack trace
+            </summary>
+      <param name="e">The target invocation exception to unwrap.</param>
+      <returns>inner exception</returns>
     </member>
     <member name="T:Lokad.ExtendIDictionary">
       <summary>
@@ -6353,6 +6479,25 @@
             </summary>
       <param name="logName">Name of the log.</param>
     </member>
+    <member name="T:Lokad.ExtendISupportSyntaxForLogging">
+      <summary>
+            Extends logging syntax
+            </summary>
+    </member>
+    <member name="M:Lokad.ExtendISupportSyntaxForLogging.LogToTrace``1(``0)">
+      <summary>
+            Registers the <see cref="T:Lokad.Diagnostics.TraceLog" /></summary>
+      <typeparam name="TModule">The type of the module.</typeparam>
+      <param name="module">The module.</param>
+      <returns>same module for the inlining</returns>
+    </member>
+    <member name="M:Lokad.ExtendISupportSyntaxForLogging.LogToNull``1(``0)">
+      <summary>
+            Registers the <see cref="T:Lokad.Diagnostics.NullLog" /></summary>
+      <typeparam name="TModule">The type of the module.</typeparam>
+      <param name="module">The module.</param>
+      <returns>same module for the inlining</returns>
+    </member>
     <member name="T:Lokad.ILogExtensions">
       <summary>
             Helper extensions for any class that implements <see cref="T:Lokad.ILog" /></summary>
@@ -6572,17 +6717,76 @@
             <see cref="M:System.String.Format(System.String,System.Object[])" /></param>
       <param name="args">Arguments</param>
     </member>
-    <member name="T:Lokad.ILogProviderExtensions">
+    <member name="T:Lokad.ExtendILogProvider">
       <summary>
             Extension methods for the <see cref="T:Lokad.INamedProvider`1" />
             of <see cref="T:Lokad.ILog" /></summary>
     </member>
-    <member name="M:Lokad.ILogProviderExtensions.CreateLog``1(Lokad.INamedProvider{Lokad.ILog})">
+    <member name="M:Lokad.ExtendILogProvider.CreateLog``1(Lokad.INamedProvider{Lokad.ILog})">
       <summary>
             Creates new log using the type as name.
             </summary>
       <typeparam name="T">
       </typeparam>
+    </member>
+    <member name="M:Lokad.ExtendILogProvider.LogForType``1(Lokad.ILogProvider)">
+      <summary>
+            Creates new log with using <see cref="P:System.Type.FullName" /> for the name.
+            </summary>
+      <typeparam name="T">type to use for naming</typeparam>
+      <param name="logProvider">The log provider.</param>
+      <returns>new instance of the log</returns>
+    </member>
+    <member name="M:Lokad.ExtendILogProvider.LogForType(Lokad.ILogProvider,System.Object)">
+      <summary>
+            Creates new log with using <see cref="P:System.Type.FullName" /> for the name.
+            </summary>
+      <param name="logProvider">The log provider.</param>
+      <param name="instance">The instance to retrieve type for naming from.</param>
+      <returns>new instance of the log</returns>
+    </member>
+    <member name="M:Lokad.ExtendILogProvider.LogForName``1(Lokad.ILogProvider)">
+      <summary>
+            Creates new log with named with class name.
+            </summary>
+      <typeparam name="T">type to use for naming</typeparam>
+      <param name="logProvider">The log provider.</param>
+      <returns>new instance of the log</returns>
+    </member>
+    <member name="M:Lokad.ExtendILogProvider.LogForName(Lokad.ILogProvider,System.Object)">
+      <summary>
+            Creates new log with named with the class name.
+            </summary>
+      <param name="logProvider">The log provider.</param>
+      <param name="instance">The instance to retrieve type for naming from.</param>
+      <returns>new instance of the log</returns>
+    </member>
+    <member name="M:Lokad.ExtendILogProvider.LogForNamespace``1(Lokad.ILogProvider)">
+      <summary>
+            Creates new log with using <see cref="P:System.Type.Namespace" /> for the name.
+            </summary>
+      <typeparam name="T">type to use for naming</typeparam>
+      <param name="logProvider">The log provider.</param>
+      <returns>new instance of the log</returns>
+    </member>
+    <member name="M:Lokad.ExtendILogProvider.LogForNamespace(Lokad.ILogProvider,System.Object)">
+      <summary>
+            Creates new log with using <see cref="P:System.Type.Namespace" /> for the name.
+            </summary>
+      <param name="logProvider">The log provider.</param>
+      <param name="instance">The instance to retrieve type for naming from.</param>
+      <returns>new instance of the log</returns>
+    </member>
+    <member name="T:Lokad.ISupportSyntaxForLogging">
+      <summary>
+            Syntax extensions for Logging configurations
+            </summary>
+    </member>
+    <member name="M:Lokad.ISupportSyntaxForLogging.RegisterLogProvider(Lokad.ILogProvider)">
+      <summary>
+            Registers the specified log provider instance as singleton.
+            </summary>
+      <param name="provider">The provider.</param>
     </member>
     <member name="T:Lokad.LogLevel">
       <summary>
