@@ -10,19 +10,22 @@ using Autofac;
 using Lokad.Cqrs.Domain.Build;
 using Lokad.Cqrs.Queue;
 using Lokad.Cqrs.Transport;
-using Lokad.Diagnostics;
-using Microsoft.WindowsAzure;
+using Lokad.Quality;
 
 namespace Lokad.Cqrs
 {
 	/// <summary>
 	/// Configures management environment for the Lokad.CQRS
 	/// </summary>
-	public sealed class CloudManagerBuilder : Syntax
+	[UsedImplicitly]
+	public sealed class CloudManagerBuilder : Syntax, ISyntax<ContainerBuilder>
 	{
 		readonly ContainerBuilder _builder = new ContainerBuilder();
 
 		public AutofacBuilderForLogging Logging { get { return new AutofacBuilderForLogging(_builder);}}
+		public AutofacBuilderForAzure Azure { get { return new AutofacBuilderForAzure(_builder);} }
+		public AutofacBuilderForSerialization Serialization { get { return new AutofacBuilderForSerialization(_builder);}}
+
 
 		public CloudManagerBuilder()
 		{
@@ -42,11 +45,14 @@ namespace Lokad.Cqrs
 			return this;
 		}
 
-		
-
 		public IContainer Build()
 		{
 			return _builder.Build();
+		}
+
+		public ContainerBuilder Target
+		{
+			get { return _builder; }
 		}
 	}
 }

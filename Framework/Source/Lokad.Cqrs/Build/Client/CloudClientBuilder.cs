@@ -56,23 +56,23 @@ namespace Lokad.Cqrs
 			get { return _builder; }
 		}
 
-		public CloudClientBuilder LoggingIs(Action<ISupportSyntaxForLogging> configure)
-		{
-			configure(Logging);
-			return this;
-		}
+		//public CloudClientBuilder LoggingIs(Action<ISupportSyntaxForLogging> configure)
+		//{
+		//    configure(Logging);
+		//    return this;
+		//}
 
-		public CloudClientBuilder SerializationIs(Action<AutofacBuilderForSerialization> configure)
-		{
-			configure(Serialization);
-			return this;
-		}
+		//public CloudClientBuilder SerializationIs(Action<AutofacBuilderForSerialization> configure)
+		//{
+		//    configure(Serialization);
+		//    return this;
+		//}
 
-		public CloudClientBuilder AzureIs(Action<AutofacBuilderForAzure> configure)
-		{
-			configure(Azure);
-			return this;
-		}
+		//public CloudClientBuilder AzureIs(Action<AutofacBuilderForAzure> configure)
+		//{
+		//    configure(Azure);
+		//    return this;
+		//}
 
 		/// <summary>
 		/// Configures the message domain for the instance of <see cref="ICloudEngineHost"/>.

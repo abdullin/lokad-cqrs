@@ -162,13 +162,30 @@ namespace Lokad.Cqrs.Consume.Build
 		/// Additional configuration to log the exceptions to BLOB.
 		/// </summary>
 		/// <param name="config">The config.</param>
-		/// <returns></returns>
+		/// <returns>same module for inlining</returns>
 		public HandleMessagesModule LogExceptionsToBlob(Action<ConfigureBlobSavingOnException> config)
 		{
 			var configurer = new ConfigureBlobSavingOnException();
 			config(configurer);
 			ApplyToTransport(configurer.Apply);
 			return this;
+		}
+		/// <summary>
+		/// Additional configuration to log the exceptions to BLOB.
+		/// </summary>
+		/// <param name="containerName">Name of the container.</param>
+		/// <param name="delegates">The delegates.</param>
+		/// <returns>same module for inlining</returns>
+		public HandleMessagesModule LogExceptionsToBlob(string containerName, params PrintMessageErrorDelegate[] delegates)
+		{
+			return LogExceptionsToBlob(x =>
+				{
+					x.ContainerName = containerName;
+					foreach (var append in delegates)
+					{
+						x.WithTextAppender(append);
+					}
+				});
 		}
 
 		/// <summary>
