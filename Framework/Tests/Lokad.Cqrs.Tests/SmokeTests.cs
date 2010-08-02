@@ -81,13 +81,13 @@ namespace CloudBus.Tests
 			public void Consume(Bye message)
 			{
 				Trace.WriteLine("Bye length: " + message.Word.Length);
-				Trace.WriteLine("Message total: " + MessageContext.Current.Header.GetTotalLength());
+				Trace.WriteLine("Message total: " + MessageContext.CurrentReference.Header.GetTotalLength());
 			}
 
 			public void Consume(Hello message)
 			{
 				Trace.WriteLine("Hello length: " + message.Word.Length);
-				Trace.WriteLine("Message total: " + MessageContext.Current.Header.GetTotalLength());
+				Trace.WriteLine("Message total: " + MessageContext.CurrentReference.Header.GetTotalLength());
 			}
 		}
 

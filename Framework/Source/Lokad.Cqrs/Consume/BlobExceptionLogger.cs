@@ -34,7 +34,7 @@ namespace Lokad.Cqrs.Consume
 			// get identity of the message or just unknown string
 			var identity = message.Attributes
 				.GetAttributeString(MessageAttributeTypeContract.Identity)
-				.GetValue("unknown");
+				.GetValue(() => Guid.Empty.ToString());
 
 			// get creation time of message, falling back to current date
 			var date = message.Attributes
@@ -54,9 +54,17 @@ namespace Lokad.Cqrs.Consume
 				writer.WriteLine();
 				RenderException(exception, writer);
 			}
+			// we might have multiple errors for this message
 
-			var fileName = date.ToString("yyyy-MM-dd-HH-mm-ss") + "-" + identity + ".txt";
-			_container.GetBlobReference(fileName.ToLowerInvariant()).UploadText(builder.ToString());
+			var landingTime = (SystemUtil.UtcNow - date).TotalSeconds.Round(0);
+
+			// error for Lokad.CQRS message would be in format:
+			// 2010-02-08-13-58-7b19df43-344c-4488-91ae-960d8a843318-0000127.txt
+			// Sending time     Message identity                     error time as seconds since the creation
+
+
+			var fileName = string.Format("{0:yyyy-MM-dd-HH-mm}-{1}-{2:0000000}.txt", date, identity, landingTime);
+			_container.GetBlobReference(fileName.ToLowerInvariant());
 		}
 
 		void RenderDelegates(UnpackedMessage message, StringWriter writer, Exception exception)
@@ -77,33 +85,37 @@ namespace Lokad.Cqrs.Consume
 			}
 		}
 
-		//static void RenderContent(UnpackedMessage message, StringBuilder builder)
-		//{
-		//    builder.AppendLine("Content").AppendLine("=======");
-		//    builder.AppendLine(message.ContractType.Name);
-		//    try
-		//    {
-		//        builder.AppendLine(JsonConvert.SerializeObject(message.Content, Formatting.Indented));
-		//    }
-		//    catch (Exception ex)
-		//    {
-		//        builder.AppendLine(ex.ToString());
-		//    }
-		//}
-
 		static void RenderException(Exception ex, TextWriter writer)
 		{
-			writer.WriteLine("Exception");
-			writer.WriteLine("=========");
-			writer.WriteLine("Type: {0}", ex.GetType().FullName);
-			writer.WriteLine("Message: {0}", ex.Message);
-			writer.WriteLine("Source: {0}", ex.Source);
-			writer.WriteLine("TargetSite: {0}", ex.TargetSite);
+			writer.WriteLine("Exception Detail");
+			writer.WriteLine("================");
+			while (true)
+			{
+				RenderExceptionBody(writer, ex);
+
+				if (null == ex.InnerException)
+					return;
+
+				writer.WriteLine();
+				writer.WriteLine("Inner Exception");
+				writer.WriteLine("---------------");
+				ex = ex.InnerException;
+			}
+		}
+
+		static void RenderExceptionBody(TextWriter writer, Exception ex)
+		{
+			writer.WriteLine("Type:        {0}", ex.GetType().FullName);
+			writer.WriteLine("Message:     {0}", ex.Message);
+			writer.WriteLine("Source:      {0}", ex.Source);
+			writer.WriteLine("Recorded:    {0}", SystemUtil.UtcNow.ToString("yyyy-MM-dd-HH-mm-ss-ffff"));
+			writer.WriteLine("TargetSite:  {0}", ex.TargetSite);
 			foreach (DictionaryEntry entry in ex.Data)
 			{
 				writer.WriteLine("{0}: {1}", entry.Key, entry.Value);
 			}
-			writer.WriteLine("StackTrace: {0}", ex.StackTrace);
+			writer.WriteLine("StackTrace:");
+			writer.WriteLine(ex.StackTrace);
 		}
 	}
 
