@@ -163,7 +163,7 @@ namespace Lokad.Cqrs.Transport
 			}
 			finally
 			{
-				MessageContext.OverrideContext(null);
+				MessageContext.ClearContext();
 			}
 			return false;
 		}
