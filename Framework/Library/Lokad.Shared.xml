@@ -648,23 +648,17 @@
       <summary>
             Syntax extensions for <see cref="T:Lokad.Serialization.ISupportSyntaxForSerialization" /></summary>
     </member>
-    <member name="M:Lokad.ExtendISupportSyntaxForSerialization.UseBinaryFormatter``1(``0)">
+    <member name="M:Lokad.ExtendISupportSyntaxForSerialization.UseBinaryFormatter(Lokad.Serialization.ISupportSyntaxForSerialization)">
       <summary>
             Uses the binary formatter.
             </summary>
-      <typeparam name="TModule">The type of the module.</typeparam>
-      <param name="module">The module.</param>
-      <returns>
-      </returns>
+      <param name="module">The module to extend.</param>
     </member>
-    <member name="M:Lokad.ExtendISupportSyntaxForSerialization.UseDataContractSerializer``1(``0)">
+    <member name="M:Lokad.ExtendISupportSyntaxForSerialization.UseDataContractSerializer(Lokad.Serialization.ISupportSyntaxForSerialization)">
       <summary>
             Uses the data contract serializer.
             </summary>
-      <typeparam name="TModule">The type of the module.</typeparam>
-      <param name="module">The module.</param>
-      <returns>
-      </returns>
+      <param name="module">The module to extend.</param>
     </member>
     <member name="T:Lokad.Serialization.IKnowSerializationTypes">
       <summary>
