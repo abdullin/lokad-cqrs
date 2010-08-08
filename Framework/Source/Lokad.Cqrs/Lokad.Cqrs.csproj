@@ -67,6 +67,17 @@
     <Compile Include="Consume\BlobExceptionLogger.cs" />
     <Compile Include="Consume\Build\ConfigureBlobSavingOnException.cs" />
     <Compile Include="Consume\Build\ConfigureNotificationOnException.cs" />
+    <Compile Include="Storage\BlobStorageContainer.cs" />
+    <Compile Include="Storage\BlobStorageItem.cs" />
+    <Compile Include="Storage\IStorageContainer.cs" />
+    <Compile Include="Storage\ReaderDelegate.cs" />
+    <Compile Include="Storage\StorageCondition.cs" />
+    <Compile Include="Storage\StorageConditionType.cs" />
+    <Compile Include="Storage\StorageContainerNotFoundException.cs" />
+    <Compile Include="Storage\StorageErrors.cs" />
+    <Compile Include="Storage\StorageItemNotFoundException.cs" />
+    <Compile Include="Storage\StorageItemProperties.cs" />
+    <Compile Include="Views\ViewStorage.cs" />
     <Compile Include="Lmf\MessageContext.cs" />
     <Compile Include="Build\NullEngineProfiler.cs" />
     <Compile Include="Build\SimpleMessageProfiler.cs" />
@@ -140,6 +151,7 @@
     <Compile Include="Design\IEngineProcess.cs" />
     <Compile Include="Queue\IQueueManager.cs" />
     <Compile Include="Queue\SubQueueType.cs" />
+    <Compile Include="Storage\IStorageItem.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
