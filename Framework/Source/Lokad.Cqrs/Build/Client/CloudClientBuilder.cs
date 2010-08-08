@@ -51,7 +51,7 @@ namespace Lokad.Cqrs
 			get { return new AutofacBuilderForAzure(_builder); }
 		}
 
-		ContainerBuilder ISyntax<ContainerBuilder>.Target
+		public ContainerBuilder Target
 		{
 			get { return _builder; }
 		}
