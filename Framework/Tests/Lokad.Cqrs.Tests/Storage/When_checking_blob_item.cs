@@ -1,25 +1,33 @@
-﻿using System;
-using System.IO;
+﻿#region (c) 2010 Lokad Open Source - New BSD License 
+
+// Copyright (c) Lokad 2010, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
+using System;
 using Lokad.Cqrs;
+using Lokad.Testing;
 using NUnit.Framework;
 
 // ReSharper disable InconsistentNaming
+
 namespace CloudBus.Tests.Storage
 {
 	[TestFixture]
-	public sealed class When_checking_existence_of_blob_item : StorageItemFixture
+	public sealed class When_checking_of_blob_item : StorageItemFixture
 	{
 		[Test]
 		public void Missing_container_returns_false()
 		{
-			Assert.IsFalse(TestItem.Exists());
+			TestItem.GetInfo().ShouldFail();
 		}
 
 		[Test]
 		public void Missing_item_returns_false()
 		{
 			TestContainer.Create();
-			Assert.IsFalse(TestItem.Exists());
+			TestItem.GetInfo().ShouldFail();
 		}
 
 		[Test]
@@ -27,7 +35,7 @@ namespace CloudBus.Tests.Storage
 		{
 			TestContainer.Create();
 			Write(TestItem, Guid.Empty);
-			Assert.IsFalse(TestItem.Exists(StorageCondition.IfMatch("none")));
+			TestItem.GetInfo(StorageCondition.IfMatch("mismatch")).ShouldFail();
 		}
 
 		[Test]
@@ -35,7 +43,7 @@ namespace CloudBus.Tests.Storage
 		{
 			TestContainer.Create();
 			Write(TestItem, Guid.Empty);
-			Assert.IsTrue(TestItem.Exists());
+			TestItem.GetInfo().ShouldPass();
 		}
 
 		[Test]
@@ -43,10 +51,7 @@ namespace CloudBus.Tests.Storage
 		{
 			TestContainer.Create();
 			Write(TestItem, Guid.Empty);
-			Assert.IsTrue(TestItem.Exists(StorageCondition.IfNoneMatch("never")));
-
+			TestItem.GetInfo(StorageCondition.IfNoneMatch("never")).ShouldPass();
 		}
 	}
-
-
 }

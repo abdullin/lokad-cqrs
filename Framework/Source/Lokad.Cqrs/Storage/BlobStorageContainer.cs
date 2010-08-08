@@ -28,6 +28,9 @@ namespace Lokad.Cqrs
 		public IStorageContainer Create()
 		{
 			_directory.Container.CreateIfNotExist();
+			
+
+
 			return this;
 		}
 

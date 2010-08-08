@@ -76,7 +76,7 @@
     <Compile Include="Storage\StorageContainerNotFoundException.cs" />
     <Compile Include="Storage\StorageErrors.cs" />
     <Compile Include="Storage\StorageItemNotFoundException.cs" />
-    <Compile Include="Storage\StorageItemProperties.cs" />
+    <Compile Include="Storage\StorageItemInfo.cs" />
     <Compile Include="Views\ViewStorage.cs" />
     <Compile Include="Lmf\MessageContext.cs" />
     <Compile Include="Build\NullEngineProfiler.cs" />

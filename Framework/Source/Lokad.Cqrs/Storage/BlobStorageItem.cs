@@ -50,9 +50,9 @@ namespace Lokad.Cqrs
 			}
 		}
 
-		StorageItemProperties Map(BlobProperties props)
+		StorageItemInfo Map(BlobProperties props)
 		{
-			return new StorageItemProperties(props.LastModifiedUtc, props.ETag);
+			return new StorageItemInfo(props.LastModifiedUtc, props.ETag);
 		}
 
 		
@@ -61,9 +61,20 @@ namespace Lokad.Cqrs
 		{
 			try
 			{
-				using (var stream = _blob.OpenWrite(Map(condition)))
+				var options = Map(condition);
+
+				
+				
+				//using (var stream = _blob.OpenWrite(options))
+				//{
+				//    writer(stream);
+				//}
+
+				using (var memory = new MemoryStream())
 				{
-					writer(stream);
+					writer(memory);
+					
+					_blob.UploadByteArray(memory.ToArray(), options);
 				}
 			}
 			catch (StorageClientException ex)
@@ -88,10 +99,25 @@ namespace Lokad.Cqrs
 				var options = Map(condition);
 				// since access is lazy, we must fail and return empty condition
 				// when condition is not met.
-				using (var stream = _blob.OpenRead(options))
+
+				var buffer = _blob.DownloadByteArray(options);
+				using (var stream = new MemoryStream(buffer))
 				{
-					reader(Map(_blob.Properties), stream);
+					var properties = Map(_blob.Properties);
+					reader(properties, stream);
 				}
+				
+
+				//using (var stream = _blob.OpenRead(options))
+				//{
+				//    // we need to start pumping in order to get the properties pulled
+				//    stream.ReadByte();
+				//    stream.Seek(0, SeekOrigin.Begin);
+
+				//    Enforce.That(_blob.Properties.LastModifiedUtc != DateTime.MinValue);
+				//    var properties = Map(_blob.Properties);
+				//    reader(properties, stream);
+				//}
 			}
 			catch (StorageClientException e)
 			{
@@ -104,6 +130,16 @@ namespace Lokad.Cqrs
 						throw StorageErrors.ItemNotFound(this, e);
 					case StorageErrorCode.ConditionFailed:
 						throw StorageErrors.ConditionFailed(this, condition, e);
+					case StorageErrorCode.BadRequest:
+						switch (e.StatusCode)
+						{
+							// for some reason Azure Storage happens to get here as well
+							case HttpStatusCode.PreconditionFailed:
+							case HttpStatusCode.NotModified:
+								throw StorageErrors.ConditionFailed(this, condition, e);
+							default:
+								throw;
+						}
 					default:
 						throw;
 				}
@@ -132,12 +168,12 @@ namespace Lokad.Cqrs
 			}
 		}
 
-		public bool Exists(StorageCondition condition)
+		public Maybe<StorageItemInfo> GetInfo(StorageCondition condition)
 		{
 			try
 			{
 				_blob.FetchAttributes(Map(condition));
-				return true;
+				return Map(_blob.Properties);
 			}
 			catch (StorageClientException e)
 			{
@@ -147,15 +183,16 @@ namespace Lokad.Cqrs
 					case StorageErrorCode.ResourceNotFound:
 					case StorageErrorCode.BlobNotFound:
 					case StorageErrorCode.ConditionFailed:
-						return false;
+						return Maybe<StorageItemInfo>.Empty;
 					case StorageErrorCode.BadRequest:
 						switch (e.StatusCode)
 						{
-							case HttpStatusCode.PreconditionFailed:
-								return false;
-						}
-						break;
 
+							case HttpStatusCode.PreconditionFailed:
+								return Maybe<StorageItemInfo>.Empty;
+							default:
+								throw;
+						}
 				}
 				throw;
 			}

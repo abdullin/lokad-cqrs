@@ -56,12 +56,12 @@ namespace Lokad.Cqrs.Views
 			var item = MapTypeAndIdentity(type, identity);
 
 			object source = null;
-			StorageItemProperties properties = null;
+			StorageItemInfo info = null;
 
 			item.ReadInto((props, stream) =>
 				{
 					source = _serializer.Deserialize(stream, type);
-					properties = props;
+					info = props;
 				});
 
 			if (null == source)
@@ -70,7 +70,7 @@ namespace Lokad.Cqrs.Views
 			patch(source);
 
 
-			var match = StorageCondition.IfMatch(properties.ETag);
+			var match = StorageCondition.IfMatch(info.ETag);
 
 			// if we fail condition, then this means, that
 			// there was a concurrency problem

@@ -2,12 +2,12 @@
 
 namespace Lokad.Cqrs
 {
-	public sealed class StorageItemProperties
+	public sealed class StorageItemInfo
 	{
 		public DateTime LastModifiedUtc { get; private set; }
 		public string ETag { get; private set; }
 
-		public StorageItemProperties(DateTime lastModifiedUtc, string eTag)
+		public StorageItemInfo(DateTime lastModifiedUtc, string eTag)
 		{
 			LastModifiedUtc = lastModifiedUtc;
 			ETag = eTag;

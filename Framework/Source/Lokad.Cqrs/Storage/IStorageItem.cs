@@ -18,12 +18,15 @@ namespace Lokad.Cqrs
 		void ReadInto(ReaderDelegate reader, StorageCondition condition = default(StorageCondition));
 
 		void Delete(StorageCondition condition = default(StorageCondition));
-		bool Exists(StorageCondition condition = default(StorageCondition));
+		Maybe<StorageItemInfo> GetInfo(StorageCondition condition = default(StorageCondition));
 
 		/// <summary>
 		/// Copies to.
 		/// </summary>
 		/// <param name="sourceItem">The target.</param>
+		/// <param name="condition">The condition.</param>
+		/// <param name="copySourceCondition">The copy source condition.</param>
+		/// <returns></returns>
 		/// <exception cref="StorageItemNotFoundException">when source storage is not found</exception>
 		IStorageItem CopyFrom(IStorageItem sourceItem, 
 			StorageCondition condition = default(StorageCondition),

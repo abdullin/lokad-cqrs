@@ -7,11 +7,11 @@ namespace Lokad.Cqrs
 	public struct StorageCondition
 	{
 		readonly string _etag;
-		readonly DateTime _lastModifiedUtc;
+		readonly DateTime? _lastModifiedUtc;
 
 		public StorageConditionType Type { get; private set; }
 		public Maybe<string> ETag { get { return _etag ?? Maybe<string>.Empty;} }
-		public Maybe<DateTime> LastModifiedUtc { get { return _lastModifiedUtc == DateTime.MinValue ? Maybe<DateTime>.Empty : _lastModifiedUtc; } }
+		public Maybe<DateTime> LastModifiedUtc { get { return _lastModifiedUtc ?? Maybe<DateTime>.Empty; } }
 		
 
 		public StorageCondition(StorageConditionType type, string eTag) : this()
@@ -27,7 +27,7 @@ namespace Lokad.Cqrs
 			: this()
 		{
 			Enforce.Argument(() => type, Is.NotDefault);
-			Enforce.Argument(() => lastModifiedUtc, Is.NotDefault);
+			//Enforce.Argument(() => lastModifiedUtc, Is.NotDefault);
 
 			Type = type;
 			_lastModifiedUtc = lastModifiedUtc;
@@ -35,6 +35,11 @@ namespace Lokad.Cqrs
 
 
 
+		/// <summary>
+		/// <see cref="StorageConditionType.IfMatch"/>
+		/// </summary>
+		/// <param name="tag">The tag to use in constructing this condition.</param>
+		/// <returns>new storage condition</returns>
 		public static StorageCondition IfMatch(string tag)
 		{
 			return new StorageCondition(StorageConditionType.IfMatch, tag);
@@ -43,6 +48,11 @@ namespace Lokad.Cqrs
 		public static StorageCondition IfModifiedSince(DateTime lastModifiedUtc)
 		{
 			return new StorageCondition(StorageConditionType.IfModifiedSince, lastModifiedUtc);
+		}
+
+		public static StorageCondition IfUnmodifiedSince(DateTime lastModifiedUtc)
+		{
+			return new StorageCondition(StorageConditionType.IfUnmodifiedSince, lastModifiedUtc);
 		}
 
 		public static StorageCondition IfNoneMatch(string tag)
