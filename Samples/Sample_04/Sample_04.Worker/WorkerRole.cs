@@ -27,20 +27,20 @@ namespace Sample_04.Worker
 
 			var builder = new CloudEngineBuilder();
 
+			// let's use Protocol Buffers!
+			builder.Serialization.UseProtocolBuffers();
+
 			// this tells the server about the domain
-			builder.Domain(d =>
+			builder.DomainIs(d =>
 				{
-					// let's use Protocol Buffers!
-					d.UseProtocolBuffers();
 					d.InCurrentAssembly();
 					d.WithDefaultInterfaces();
 				});
 
-
 			// we'll handle all messages incoming to this queue
-			builder.HandleMessages(mc =>
+			builder.AddMessageHandler(mc =>
 				{
-					mc.ListenTo("sample-04");
+					mc.ListenToQueue("sample-04");
 					mc.WithSingleConsumer();
 					// let's record failures to the specified blob 
 					// container using the pretty printer
@@ -70,7 +70,7 @@ namespace Sample_04.Worker
 
 
 			// when we send message - default it to this queue as well
-			builder.SendMessages(m => m.DefaultToQueue("sample-04"));
+			builder.AddMessageClient(m => m.DefaultToQueue("sample-04"));
 
 			return builder.Build();
 		}

@@ -20,22 +20,23 @@ namespace Sample_01.Worker
 			// for more detail about this sample see:
 			// http://code.google.com/p/lokad-cqrs/wiki/GuidanceSeries
 
-			return new CloudEngineBuilder()
-				// this tells the server about the domain
-				.Domain(d =>
-					{
-						d.InCurrentAssembly();
-						d.WithDefaultInterfaces();
-					})
-				// we'll handle all messages incoming to this queue
-				.HandleMessages(mc =>
-					{
-						mc.ListenTo("sample-01");
-						mc.WithSingleConsumer();
-					})
-				// when we send message - default it to this queue as well
-				.SendMessages(m => m.DefaultToQueue("sample-01"))
-				.Build();
+			var builder = new CloudEngineBuilder();
+
+			builder.DomainIs(d =>
+				{
+					d.InCurrentAssembly();
+					d.WithDefaultInterfaces();
+				});
+			
+			builder.AddMessageHandler(mc =>
+				{
+					mc.ListenToQueue("sample-01");
+					mc.WithSingleConsumer();
+				});
+
+			builder.AddMessageClient(m => m.DefaultToQueue("sample-01"));
+
+			return builder.Build();
 		}
 
 		public override bool OnStart()

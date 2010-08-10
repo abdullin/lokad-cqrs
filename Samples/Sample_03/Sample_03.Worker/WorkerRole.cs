@@ -29,25 +29,29 @@ namespace Sample_03.Worker
 			// and replace System.Data.SQLite.DLL with  System.Data.SQLite.x86.DLL from the same folder.
 
 
-			return new CloudEngineBuilder()
-				// this tells the server about the domain
-				.Domain(d =>
-					{
-						d.WithDefaultInterfaces();
-						d.InCurrentAssembly();
-					})
-				// we'll handle all messages incoming to this queue
-				.HandleMessages(mc =>
-					{
-						mc.ListenTo("sample-03");
-						mc.WithMultipleConsumers();
-					})
-				.WithNHibernate(m => m.WithConfiguration("MyDbFile", BuildNHibernateConfig))
-				// create IMessageClient that will send to this queue by default
-				.SendMessages(m => m.DefaultToQueue("sample-03"))
-				// enable and auto-wire scheduled tasks feature
-				.RunTasks(m => { m.WithDefaultInterfaces().InCurrentAssembly(); })
-				.Build();
+				var builder = new CloudEngineBuilder();
+
+			// this tells the server about the domain
+			builder.DomainIs(d =>
+				{
+					d.WithDefaultInterfaces();
+					d.InCurrentAssembly();
+				});
+
+			// we'll handle all messages incoming to this queue
+			builder.AddMessageHandler(mc =>
+				{
+					mc.ListenToQueue("sample-03");
+					mc.WithMultipleConsumers();
+				});
+
+			builder.WithNHibernate(m => m.WithConfiguration("MyDbFile", BuildNHibernateConfig));
+
+			builder.AddMessageClient(m => m.DefaultToQueue("sample-03"));
+
+			builder.AddScheduler(m => m.WithDefaultInterfaces().InCurrentAssembly());
+
+			return builder.Build();
 		}
 
 		static Configuration BuildNHibernateConfig(string fileName)
