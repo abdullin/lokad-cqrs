@@ -6,33 +6,32 @@
 #endregion
 
 using System;
-using Lokad.Cqrs;
 using Lokad.Cqrs.Storage;
 using Lokad.Testing;
 using NUnit.Framework;
 
 // ReSharper disable InconsistentNaming
 
-namespace CloudBus.Tests.Storage
+namespace Lokad.Cqrs.Tests.Storage
 {
-	[TestFixture]
-	public sealed class When_checking_of_blob_item : StorageItemFixture
+	public abstract class When_checking_item_in<TStorage> : StorageItemFixture<TStorage>
+		where TStorage : ITestStorage, new()
 	{
 		[Test]
-		public void Missing_container_returns_false()
+		public void Missing_container_throws_container()
 		{
-			TestItem.GetInfo().ShouldFail();
+			ExpectContainerNotFound(() => TestItem.GetInfo());
 		}
 
 		[Test]
-		public void Missing_item_returns_false()
+		public void Missing_item_returns_empty()
 		{
 			TestContainer.Create();
 			TestItem.GetInfo().ShouldFail();
 		}
 
 		[Test]
-		public void Failed_condition_returns_false_for_valid_item()
+		public void Valid_item_and_failed_IfMatch_returns_empty()
 		{
 			TestContainer.Create();
 			Write(TestItem, Guid.Empty);
@@ -40,7 +39,16 @@ namespace CloudBus.Tests.Storage
 		}
 
 		[Test]
-		public void Returns_true_for_valid_item()
+		public void Valid_item_and_valid_IfMatch_wild_returns_info()
+		{
+
+			TestContainer.Create();
+			Write(TestItem, Guid.Empty);
+			TestItem.GetInfo(StorageCondition.IfMatch("*")).ShouldPass();
+		}
+
+		[Test]
+		public void Valid_item_returns_info()
 		{
 			TestContainer.Create();
 			Write(TestItem, Guid.Empty);
@@ -48,7 +56,7 @@ namespace CloudBus.Tests.Storage
 		}
 
 		[Test]
-		public void Returns_true_for_valid_item_and_condition()
+		public void Valid_item_and_valid_IfNoneMatch_returns_info()
 		{
 			TestContainer.Create();
 			Write(TestItem, Guid.Empty);

@@ -2,10 +2,9 @@
 using NUnit.Framework;
 
 // ReSharper disable InconsistentNaming
-namespace CloudBus.Tests.Storage
+namespace Lokad.Cqrs.Tests.Storage
 {
-	[TestFixture]
-	public sealed class When_copying_blob_to_blob : StorageItemFixture
+	public abstract class When_copying_items_in<T> : StorageItemFixture<T> where T : ITestStorage, new()
 	{
 		[Test]
 		public void Test()

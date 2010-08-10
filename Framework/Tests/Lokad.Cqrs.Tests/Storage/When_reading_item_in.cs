@@ -6,17 +6,15 @@
 #endregion
 
 using System;
-using Lokad;
-using Lokad.Cqrs;
 using Lokad.Cqrs.Storage;
 using NUnit.Framework;
 
 // ReSharper disable InconsistentNaming
 
-namespace CloudBus.Tests.Storage
+namespace Lokad.Cqrs.Tests.Storage
 {
-	[TestFixture]
-	public sealed class When_reading_blob_item : StorageItemFixture
+	public abstract class When_reading_item_in<TStorage> : 
+		StorageItemFixture<TStorage> where TStorage : ITestStorage, new()
 	{
 		[Test]
 		public void Missing_container_throws_container_not_found()
@@ -33,7 +31,7 @@ namespace CloudBus.Tests.Storage
 		}
 
 		[Test]
-		public void Valid_item_and_failed_match_throws_condition_failed()
+		public void Valid_item_and_failed_IfMatch_throws_condition_failed()
 		{
 			TestContainer.Create();
 			Write(TestItem, Guid.Empty);
@@ -42,15 +40,15 @@ namespace CloudBus.Tests.Storage
 		}
 
 		[Test]
-		public void Valid_item_and_failed_unmodified_throws_condition_failed()
+		public void Valid_item_and_failed_IfUnmodifiedSince_throws_condition_failed()
 		{
 			TestContainer.Create();
 			Write(TestItem, Guid.Empty);
 			ExpectConditionFailed(() => TryToRead(TestItem, StorageCondition.IfUnmodifiedSince(DateTime.MinValue)));
 		}
 
-		[Test] //Ignore("Seems to be problem in Azure, GET is executed instead of not-modified")
-		public void Valid_item_and_failed_modified_throw_condition()
+		[Test]
+		public void Valid_item_and_failed_IfModifiedSince_throw_condition()
 		{
 			TestContainer.Create();
 			Write(TestItem, Guid.Empty);
@@ -61,54 +59,54 @@ namespace CloudBus.Tests.Storage
 		}
 
 
-		[Test] //, Ignore("Seems to be problem in Azure, returns precondition failure instead")
-		public void Missing_container_and_match_throw_container_not_found()
+		[Test]
+		public void Missing_container_and_IfMatch_throw_container_not_found()
 		{
 			ExpectContainerNotFound(() => TryToRead(TestItem, StorageCondition.IfMatch("mismatch")));
 		}
 
 		[Test]
-		public void Missing_container_and_nonematch_throw_condition_failed()
+		public void Missing_container_and_IfNoneMatch_throw_condition_failed()
 		{
 			ExpectContainerNotFound(() => TryToRead(TestItem, StorageCondition.IfNoneMatch("mismatch")));
 		}
 
 		[Test]
-		public void Missing_container_and_unmodified_throw_container_not_found()
+		public void Missing_container_and_IfUnmodifiedSince_throw_container_not_found()
 		{
 			ExpectContainerNotFound(() => TryToRead(TestItem, StorageCondition.IfUnmodifiedSince(DateTime.MinValue)));
 		}
 
 		[Test]
-		public void Missing_container_and_modified_throw_container_not_found()
+		public void Missing_container_and_IfModifiedSince_throw_container_not_found()
 		{
 			ExpectContainerNotFound(() => TryToRead(TestItem, StorageCondition.IfModifiedSince(DateTime.MinValue)));
 		}
 
 
 		[Test]
-		public void Missing_item_and_unmodified_throw_item_not_found()
+		public void Missing_item_and_IfUnmodifiedSince_throw_item_not_found()
 		{
 			TestContainer.Create();
 			ExpectItemNotFound(() => TryToRead(TestItem, StorageCondition.IfUnmodifiedSince(DateTime.MinValue)));
 		}
 
 		[Test]
-		public void Missing_item_and_nonematch_throw_item_not_found()
+		public void Missing_item_and_IfNoneMatch_throw_item_not_found()
 		{
 			TestContainer.Create();
 			ExpectItemNotFound(() => TryToRead(TestItem, StorageCondition.IfNoneMatch("mismatch")));
 		}
 
-		[Test] //Ignore("Seems to be problem in Azure, returns precondition failure instead")
-		public void Missing_item_and_match_throw_item_not_found()
+		[Test]
+		public void Missing_item_and_IfMatch_throw_item_not_found()
 		{
 			TestContainer.Create();
 			ExpectItemNotFound(() => TryToRead(TestItem, StorageCondition.IfMatch("mismatch")));
 		}
 
 		[Test]
-		public void Valid_item_and_valid_nonematch_return()
+		public void Valid_item_and_valid_IfNoneMatch_exact_return()
 		{
 			TestContainer.Create();
 			var g = Guid.NewGuid();
@@ -118,7 +116,7 @@ namespace CloudBus.Tests.Storage
 		}
 
 		[Test]
-		public void Valid_item_and_valid_match_return()
+		public void Valid_item_and_valid_IfMatch_exact_return()
 		{
 			TestContainer.Create();
 			var g = Guid.NewGuid();
@@ -130,7 +128,17 @@ namespace CloudBus.Tests.Storage
 		}
 
 		[Test]
-		public void Valid_item_and_valid_unmodified_return()
+		public void Valid_item_and_valid_match_wild_return()
+		{
+			TestContainer.Create();
+			var g = Guid.NewGuid();
+
+			Write(TestItem, g);
+			ShouldHaveGuid(TestItem, g, StorageCondition.IfMatch("*"));
+		}
+
+		[Test]
+		public void Valid_item_and_valid_IfUnmodifiedSince_return()
 		{
 			TestContainer.Create();
 			var g = Guid.NewGuid();
@@ -141,13 +149,13 @@ namespace CloudBus.Tests.Storage
 
 
 		[Test]
-		public void Valid_item_and_valid_modified_return()
+		public void Valid_item_and_valid_IfModifiedSince_return()
 		{
 			TestContainer.Create();
 			var g = Guid.NewGuid();
 			Write(TestItem, g);
 			var tag = TestItem.GetInfo().Value.LastModifiedUtc;
-			ShouldHaveGuid(TestItem, g, StorageCondition.IfUnmodifiedSince(tag.AddDays(-1)));
+			ShouldHaveGuid(TestItem, g, StorageCondition.IfModifiedSince(tag.AddDays(-1)));
 		}
 
 		[Test]

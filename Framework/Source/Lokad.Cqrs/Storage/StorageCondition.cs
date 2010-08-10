@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
+using System.Text.RegularExpressions;
 using Lokad.Rules;
 
 namespace Lokad.Cqrs.Storage
@@ -72,6 +74,35 @@ namespace Lokad.Cqrs.Storage
 				case StorageConditionType.IfMatch:
 				case StorageConditionType.IfNoneMatch:
 					return string.Format(CultureInfo.InvariantCulture, "{0} '{1}'", Type, _etag);
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+		}
+
+		public bool Satisfy(params LocalStorageInfo[] info)
+		{
+			// currently we have only a single match condition
+			switch (Type)
+			{
+				case StorageConditionType.None:
+					// ???
+					return true;
+				case StorageConditionType.IfUnmodifiedSince:
+					var j = LastModifiedUtc.Value;
+					return !info.Any(i => i.LastModifiedUtc > j);
+				case StorageConditionType.IfMatch:
+					if (_etag == "*")
+						return info.Any();
+					var value = ETag.Value;
+					return info.Any(s => s.ETag == value);
+				case StorageConditionType.IfModifiedSince:
+					var k = LastModifiedUtc.Value;
+					return info.Any(i => i.LastModifiedUtc > k);
+				case StorageConditionType.IfNoneMatch:
+					if (_etag == "*")
+						return !info.Any();
+					var x = ETag.Value;
+					return !info.Any(s => s.ETag == x);
 				default:
 					throw new ArgumentOutOfRangeException();
 			}

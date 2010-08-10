@@ -150,8 +150,8 @@ namespace Lokad.Cqrs.Storage
 		{
 			try
 			{
-				_blob.Delete(Map(condition));
-
+				var options = Map(condition);
+				_blob.Delete(options);
 			}
 			catch (StorageClientException ex)
 			{

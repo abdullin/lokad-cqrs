@@ -69,9 +69,14 @@
     <Compile Include="Consume\Build\ConfigureNotificationOnException.cs" />
     <Compile Include="Storage\BlobStorageContainer.cs" />
     <Compile Include="Storage\BlobStorageItem.cs" />
+    <Compile Include="Storage\FileStorageItem.cs" />
+    <Compile Include="Storage\FileStorageContainer.cs" />
     <Compile Include="Storage\IStorageContainer.cs" />
+    <Compile Include="Storage\LocalStorageInfo.cs" />
     <Compile Include="Storage\ReaderDelegate.cs" />
+    <Compile Include="Storage\StorageBaseException.cs" />
     <Compile Include="Storage\StorageCondition.cs" />
+    <Compile Include="Storage\StorageConditionFailedException.cs" />
     <Compile Include="Storage\StorageConditionType.cs" />
     <Compile Include="Storage\StorageContainerNotFoundException.cs" />
     <Compile Include="Storage\StorageErrors.cs" />

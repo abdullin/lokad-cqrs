@@ -6,22 +6,19 @@
 #endregion
 
 using System;
-using Lokad.Cqrs;
 using Lokad.Cqrs.Storage;
-using Lokad.Diagnostics;
-using Microsoft.WindowsAzure;
-using Microsoft.WindowsAzure.StorageClient;
 using NUnit.Framework;
 using NUnit.Framework.SyntaxHelpers;
 
-namespace CloudBus.Tests.Storage
+namespace Lokad.Cqrs.Tests.Storage
 {
-	[TestFixture]
-	public abstract class StorageItemFixture
+	public abstract class StorageItemFixture<TStorage>
+		where TStorage : ITestStorage, new()
 	{
-		protected void Expect<TEx>(Action action) where TEx : StorageBaseException
+		readonly ITestStorage _factory = new TStorage();
+
+		static void Expect<TEx>(Action action) where TEx : StorageBaseException
 		{
-			// for some reason NUNit exception attribs do not work with Resharpr
 			try
 			{
 				action();
@@ -30,24 +27,16 @@ namespace CloudBus.Tests.Storage
 			catch (TEx)
 			{
 			}
-			//catch(Exception ex)
-			//{
-			//    var message = string.Format("Expected exception '{0}' but got '{1}", typeof (TEx).Name, ex.GetType().Name);
-			//    throw new AssertionException(message, ex);
-			//}
 		}
 
-		protected IStorageContainer GetContainer(string path)
+
+		IStorageContainer GetContainer(string path)
 		{
-			//var client = CloudStorageAccountStorageClientExtensions.CreateCloudBlobClient(CloudStorageAccount.DevelopmentStorageAccount);
-			//var uri = "http://ipv4.fiddler:10000/devstoreaccount1";
-			//var credentials = CloudStorageAccount.DevelopmentStorageAccount.Credentials;
-			var client = CloudStorageAccount.DevelopmentStorageAccount.CreateCloudBlobClient();
-			return new BlobStorageContainer(client.GetBlobDirectoryReference(path), NullLog.Instance);
+			return _factory.GetContainer(path);
 		}
 
-		protected IStorageContainer TestContainer { get; set; }
-		protected IStorageItem TestItem { get; set; }
+		protected IStorageContainer TestContainer { get; private set; }
+		protected IStorageItem TestItem { get; private set; }
 
 		[SetUp]
 		public void SetUp()
@@ -59,7 +48,9 @@ namespace CloudBus.Tests.Storage
 		[TearDown]
 		public void TearDown()
 		{
+			
 			TestContainer.Delete();
+			
 		}
 
 		protected IStorageItem GetItem(string path)
@@ -68,17 +59,17 @@ namespace CloudBus.Tests.Storage
 		}
 
 
-		public void ExpectContainerNotFound(Action action)
+		protected void ExpectContainerNotFound(Action action)
 		{
 			Expect<StorageContainerNotFoundException>(action);
 		}
 
-		public void ExpectItemNotFound(Action action)
+		protected void ExpectItemNotFound(Action action)
 		{
 			Expect<StorageItemNotFoundException>(action);
 		}
 
-		public void ExpectConditionFailed(Action action)
+		protected void ExpectConditionFailed(Action action)
 		{
 			Expect<StorageConditionFailedException>(action);
 		}
@@ -92,12 +83,11 @@ namespace CloudBus.Tests.Storage
 		protected void TryToRead(IStorageItem item, StorageCondition condition = default(StorageCondition))
 		{
 			item.ReadInto((props, stream) => stream.Read(new byte[1], 0, 1), condition);
-			Assert.Fail("Should not get here");
 		}
 
 		protected void ShouldHaveGuid(IStorageItem storageItem, Guid g, StorageCondition condition = default(StorageCondition))
 		{
-			bool set = false;
+			var set = false;
 
 			storageItem.ReadInto((properties, stream) =>
 				{

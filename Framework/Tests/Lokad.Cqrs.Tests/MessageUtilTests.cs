@@ -8,7 +8,7 @@
 using NUnit.Framework;
 using ProtoBuf;
 
-namespace CloudBus.Tests
+namespace Lokad.Cqrs.Tests
 {
 	[TestFixture]
 	public sealed class MessageUtilTests

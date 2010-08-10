@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Lokad.Cqrs.Domain;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 
-namespace CloudBus.Tests
+namespace Lokad.Cqrs.Tests
 {
 	[TestFixture]
 	public sealed class DomainTests
