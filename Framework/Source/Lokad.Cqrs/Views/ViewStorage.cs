@@ -6,6 +6,7 @@
 #endregion
 
 using System;
+using System.Runtime.Serialization;
 using Lokad.Cqrs.Storage;
 using Lokad.Quality;
 using Lokad.Serialization;
@@ -75,7 +76,15 @@ namespace Lokad.Cqrs.Views
 
 			// if we fail condition, then this means, that
 			// there was a concurrency problem
-			item.Write(stream => _serializer.Serialize(source, stream), match);
+			try
+			{
+				item.Write(stream => _serializer.Serialize(source, stream), match);
+			}
+			catch (StorageConditionFailedException ex)
+			{
+				var msg = string.Format("Record was modified concurrently: '{0}'; Id: '{1}'. Please, retry.", type, identity);
+				throw new OptimisticConcurrencyException(msg, ex);
+			}
 		}
 
 
@@ -88,6 +97,58 @@ namespace Lokad.Cqrs.Views
 		{
 			var storage = MapTypeAndIdentity(type, identity);
 			storage.Write(stream => _serializer.Serialize(item,stream));
+		}
+	}
+
+	[Serializable]
+	public class OptimisticConcurrencyException : Exception
+	{
+		//
+		// For guidelines regarding the creation of new exception types, see
+		//    http://msdn.microsoft.com/library/default.asp?url=/library/en-us/cpgenref/html/cpconerrorraisinghandlingguidelines.asp
+		// and
+		//    http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dncscol/html/csharp07192001.asp
+		//
+
+		public OptimisticConcurrencyException()
+		{
+		}
+
+		public OptimisticConcurrencyException(string message) : base(message)
+		{
+		}
+
+		public OptimisticConcurrencyException(string message, Exception inner) : base(message, inner)
+		{
+		}
+
+		protected OptimisticConcurrencyException(
+			SerializationInfo info,
+			StreamingContext context) : base(info, context)
+		{
+		}
+	}
+
+	public static class ExtendIViewStorage
+	{
+		public static void Write<T>(this IWriteState store, string identity, T item)
+		{
+			store.Write(typeof(T), identity, item);
+		}
+
+		public static Maybe<T> Load<T>(this IReadState store, string identity)
+		{
+			return store.Load(typeof (T), identity).Convert(o => (T) o);
+		}
+
+		public static void Patch<T>(this IWriteState store, string identity, Action<T> patch)
+		{
+			store.Patch(typeof (T), identity, obj => patch((T) obj));
+		}
+
+		public static void Delete<T>(this IWriteState store, string identity)
+		{
+			store.Delete(typeof(T), identity);
 		}
 	}
 }

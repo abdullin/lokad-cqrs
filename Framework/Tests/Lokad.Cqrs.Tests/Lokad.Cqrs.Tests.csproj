@@ -65,6 +65,7 @@
     <Compile Include="Storage\When_deleting_item_in.cs" />
     <Compile Include="Storage\When_writing_item_in.cs" />
     <Compile Include="Storage\When_reading_item_in.cs" />
+    <Compile Include="Views\ViewStorageTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Source\Lokad.Cqrs\Lokad.Cqrs.csproj">
@@ -72,9 +73,7 @@
       <Name>Lokad.Cqrs</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Views\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
