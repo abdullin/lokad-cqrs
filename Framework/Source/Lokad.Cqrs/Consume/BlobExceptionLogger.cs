@@ -64,7 +64,8 @@ namespace Lokad.Cqrs.Consume
 
 
 			var fileName = string.Format("{0:yyyy-MM-dd-HH-mm}-{1}-{2:0000000}.txt", date, identity, landingTime);
-			_container.GetBlobReference(fileName.ToLowerInvariant());
+			var blob = _container.GetBlobReference(fileName.ToLowerInvariant());
+			blob.UploadText(builder.ToString());
 		}
 
 		void RenderDelegates(UnpackedMessage message, StringWriter writer, Exception exception)
