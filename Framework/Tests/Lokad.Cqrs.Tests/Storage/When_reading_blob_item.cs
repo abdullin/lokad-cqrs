@@ -6,11 +6,10 @@
 #endregion
 
 using System;
-using System.IO;
 using Lokad;
 using Lokad.Cqrs;
+using Lokad.Cqrs.Storage;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 
 // ReSharper disable InconsistentNaming
 
@@ -31,7 +30,6 @@ namespace CloudBus.Tests.Storage
 			TestContainer.Create();
 
 			ExpectItemNotFound(() => TryToRead(TestItem));
-			
 		}
 
 		[Test]
@@ -51,7 +49,7 @@ namespace CloudBus.Tests.Storage
 			ExpectConditionFailed(() => TryToRead(TestItem, StorageCondition.IfUnmodifiedSince(DateTime.MinValue)));
 		}
 
-		[Test]//Ignore("Seems to be problem in Azure, GET is executed instead of not-modified")
+		[Test] //Ignore("Seems to be problem in Azure, GET is executed instead of not-modified")
 		public void Valid_item_and_failed_modified_throw_condition()
 		{
 			TestContainer.Create();
@@ -63,7 +61,7 @@ namespace CloudBus.Tests.Storage
 		}
 
 
-		[Test]//, Ignore("Seems to be problem in Azure, returns precondition failure instead")
+		[Test] //, Ignore("Seems to be problem in Azure, returns precondition failure instead")
 		public void Missing_container_and_match_throw_container_not_found()
 		{
 			ExpectContainerNotFound(() => TryToRead(TestItem, StorageCondition.IfMatch("mismatch")));
@@ -102,7 +100,7 @@ namespace CloudBus.Tests.Storage
 			ExpectItemNotFound(() => TryToRead(TestItem, StorageCondition.IfNoneMatch("mismatch")));
 		}
 
-		[Test]//Ignore("Seems to be problem in Azure, returns precondition failure instead")
+		[Test] //Ignore("Seems to be problem in Azure, returns precondition failure instead")
 		public void Missing_item_and_match_throw_item_not_found()
 		{
 			TestContainer.Create();

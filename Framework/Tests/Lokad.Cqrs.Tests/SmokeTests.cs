@@ -39,7 +39,7 @@ namespace CloudBus.Tests
 
 			engine.AddMessageHandler(x =>
 				{
-					x.ListenTo("test-hi", "test-bye");
+					x.ListenToQueue("test-hi", "test-bye");
 					x.WithMultipleConsumers();
 				});
 

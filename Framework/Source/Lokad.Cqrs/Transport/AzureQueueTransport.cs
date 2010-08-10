@@ -179,7 +179,19 @@ namespace Lokad.Cqrs.Transport
 
 		void MessageHandlingProblem(UnpackedMessage message, Exception ex)
 		{
-			MessageHandlerFailed(message, ex);
+			// notify all subscribers
+			foreach (Action<UnpackedMessage, Exception> @delegate in MessageHandlerFailed.GetInvocationList())
+			{
+				try
+				{
+					@delegate(message, ex);
+				}
+				catch (Exception handleEx)
+				{
+					_log.WarnFormat(handleEx, "Failed to handle message processing failure");
+				}
+			}
+
 			// do nothing. Message will show up in the queue with the increased enqueue count.
 		}
 

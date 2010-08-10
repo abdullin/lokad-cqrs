@@ -1,6 +1,6 @@
 ﻿using Microsoft.WindowsAzure.StorageClient;
 
-namespace Lokad.Cqrs
+namespace Lokad.Cqrs.Storage
 {
 	public sealed class BlobStorageContainer : IStorageContainer
 	{

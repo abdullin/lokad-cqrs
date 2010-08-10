@@ -2,7 +2,7 @@
 using System.Globalization;
 using Microsoft.WindowsAzure.StorageClient;
 
-namespace Lokad.Cqrs
+namespace Lokad.Cqrs.Storage
 {
 	public static class StorageErrors
 	{

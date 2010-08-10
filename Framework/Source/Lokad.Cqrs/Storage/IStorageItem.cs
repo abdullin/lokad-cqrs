@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Lokad.Cqrs
+namespace Lokad.Cqrs.Storage
 {
 	public interface IStorageItem
 	{

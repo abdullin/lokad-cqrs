@@ -1,7 +1,6 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 
-namespace Lokad.Cqrs
+namespace Lokad.Cqrs.Storage
 {
 	public delegate void ReaderDelegate(StorageItemInfo props, Stream designationStream);
 }

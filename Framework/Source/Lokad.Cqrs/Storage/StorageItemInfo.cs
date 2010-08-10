@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Lokad.Cqrs
+namespace Lokad.Cqrs.Storage
 {
 	public sealed class StorageItemInfo
 	{

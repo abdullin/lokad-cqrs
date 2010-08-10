@@ -2,7 +2,7 @@
 using System.Globalization;
 using Lokad.Rules;
 
-namespace Lokad.Cqrs
+namespace Lokad.Cqrs.Storage
 {
 	public struct StorageCondition
 	{

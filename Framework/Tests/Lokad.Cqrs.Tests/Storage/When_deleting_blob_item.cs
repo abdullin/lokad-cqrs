@@ -8,6 +8,7 @@
 using System;
 using System.IO;
 using Lokad.Cqrs;
+using Lokad.Cqrs.Storage;
 using NUnit.Framework;
 
 // ReSharper disable InconsistentNaming

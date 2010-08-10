@@ -7,6 +7,7 @@
 
 using System;
 using Lokad.Cqrs;
+using Lokad.Cqrs.Storage;
 using Lokad.Diagnostics;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;

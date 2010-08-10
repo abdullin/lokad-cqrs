@@ -1,4 +1,4 @@
-﻿namespace Lokad.Cqrs
+﻿namespace Lokad.Cqrs.Storage
 {
 	public interface IStorageContainer
 	{
