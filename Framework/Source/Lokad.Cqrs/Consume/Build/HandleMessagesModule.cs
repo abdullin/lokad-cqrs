@@ -35,7 +35,7 @@ namespace Lokad.Cqrs.Consume.Build
 			SleepWhenNoMessages = AzureQueuePolicy.BuildDecayPolicy(1.Seconds());
 
 			LogName = "Messages";
-			ListenTo("azure-messages");
+			ListenToQueue("azure-messages");
 
 			WithSingleConsumer();
 		}
@@ -206,7 +206,7 @@ namespace Lokad.Cqrs.Consume.Build
 		/// </summary>
 		/// <param name="queueNames">The queue names to listen to.</param>
 		/// <returns>same module instance for chaining fluent configurations</returns>
-		public HandleMessagesModule ListenTo(params string[] queueNames)
+		public HandleMessagesModule ListenToQueue(params string[] queueNames)
 		{
 			_queueNames = queueNames.ToSet();
 			return this;
