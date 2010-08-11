@@ -1,5 +1,11 @@
-﻿using System;
-using System.Globalization;
+﻿#region (c) 2010 Lokad Open Source - New BSD License 
+
+// Copyright (c) Lokad 2010, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
+using System;
 using System.IO;
 
 namespace Lokad.Cqrs.Storage
@@ -20,12 +26,12 @@ namespace Lokad.Cqrs.Storage
 				.Convert(s => condition.Satisfy(s), () => condition.Satisfy());
 		}
 
-	
+
 		//bool ExistingFileMathes()
 
 		public void Write(Action<Stream> writer, StorageCondition condition)
 		{
-			_file.Refresh();
+			Refresh();
 
 			ThrowIfContainerNotFound();
 			ThrowIfConditionFailed(condition);
@@ -38,7 +44,7 @@ namespace Lokad.Cqrs.Storage
 
 		public void ReadInto(ReaderDelegate reader, StorageCondition condition)
 		{
-			_file.Refresh();
+			Refresh();
 
 			ThrowIfContainerNotFound();
 			ThrowIfItemNotFound();
@@ -65,7 +71,7 @@ namespace Lokad.Cqrs.Storage
 
 		public void Delete(StorageCondition condition)
 		{
-			_file.Refresh();
+			Refresh();
 
 			ThrowIfContainerNotFound();
 
@@ -75,8 +81,7 @@ namespace Lokad.Cqrs.Storage
 
 		public Maybe<StorageItemInfo> GetInfo(StorageCondition condition)
 		{
-			_file.Refresh();
-
+			Refresh();
 			ThrowIfContainerNotFound();
 
 			if (_file.Exists && Satisfy(condition))
@@ -89,8 +94,9 @@ namespace Lokad.Cqrs.Storage
 			if (!_file.Exists)
 				return Maybe<StorageItemInfo>.Empty;
 
+			// yes, that's not full hashing, but for now we don't care
 			var lastWriteTimeUtc = _file.LastWriteTimeUtc;
-			var tag = lastWriteTimeUtc.ToString("R", CultureInfo.InvariantCulture);
+			var tag = string.Format("{0}-{1}", lastWriteTimeUtc.Ticks, _file.Length);
 
 			return new StorageItemInfo(lastWriteTimeUtc, tag);
 		}
@@ -101,11 +107,11 @@ namespace Lokad.Cqrs.Storage
 
 			if (item != null)
 			{
-				_file.Refresh();
+				Refresh();
 				ThrowIfContainerNotFound();
 				ThrowIfConditionFailed(condition);
 
-				item._file.Refresh();
+				item.Refresh();
 				item.ThrowIfContainerNotFound();
 				item.ThrowIfItemNotFound();
 				item.ThrowIfConditionFailed(copySourceCondition);
@@ -115,10 +121,16 @@ namespace Lokad.Cqrs.Storage
 			else
 			{
 				int bufferSize = 64.Kb();
-				Write(targetStream => sourceItem.ReadInto((props, stream) => stream.PumpTo(targetStream, bufferSize), copySourceCondition), condition);
-
+				Write(
+					targetStream =>
+						sourceItem.ReadInto((props, stream) => stream.PumpTo(targetStream, bufferSize), copySourceCondition), condition);
 			}
 			return this;
+		}
+
+		void Refresh()
+		{
+			_file.Refresh();
 		}
 
 		void ThrowIfContainerNotFound()

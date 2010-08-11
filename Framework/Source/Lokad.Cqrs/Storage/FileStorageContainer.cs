@@ -38,12 +38,14 @@ namespace Lokad.Cqrs.Storage
 
 		public void Delete()
 		{
+			_root.Refresh();
 			if (_root.Exists)
 				_root.Delete(true);
 		}
 
 		public bool Exists()
 		{
+			_root.Refresh();
 			return _root.Exists;
 		}
 
