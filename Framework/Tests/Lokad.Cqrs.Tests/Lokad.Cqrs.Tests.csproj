@@ -65,7 +65,7 @@
     <Compile Include="Storage\When_deleting_item_in.cs" />
     <Compile Include="Storage\When_writing_item_in.cs" />
     <Compile Include="Storage\When_reading_item_in.cs" />
-    <Compile Include="Views\ViewStorageTests.cs" />
+    <Compile Include="Views\EntityStorageTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Source\Lokad.Cqrs\Lokad.Cqrs.csproj">

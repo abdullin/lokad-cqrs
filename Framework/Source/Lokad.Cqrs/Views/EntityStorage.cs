@@ -6,7 +6,6 @@
 #endregion
 
 using System;
-using System.Runtime.Serialization;
 using Lokad.Cqrs.Storage;
 using Lokad.Quality;
 using Lokad.Serialization;
@@ -14,20 +13,20 @@ using Lokad.Serialization;
 namespace Lokad.Cqrs.Views
 {
 	[UsedImplicitly]
-	public sealed class ViewStorage : IStateStore
+	public sealed class EntityStorage : IReadEntity, IWriteEntity
 	{
 		readonly IStorageContainer _container;
 		readonly IDataSerializer _serializer;
 		readonly IDataContractMapper _mapper;
 
-		public ViewStorage(IStorageContainer container, IDataSerializer serializer, IDataContractMapper mapper)
+		public EntityStorage(IStorageContainer container, IDataSerializer serializer, IDataContractMapper mapper)
 		{
 			_container = container;
 			_serializer = serializer;
 			_mapper = mapper;
 		}
 
-		IStorageItem MapTypeAndIdentity(Type type, string identity)
+		IStorageItem MapTypeAndIdentity(Type type, object identity)
 		{
 			var value = _mapper
 				.GetContractNameByType(type)
@@ -38,7 +37,7 @@ namespace Lokad.Cqrs.Views
 			return _container.GetItem(name);
 		}
 
-		public Maybe<object> Load(Type type, string identity)
+		public Maybe<object> Load(Type type, object identity)
 		{
 			var storage = MapTypeAndIdentity(type, identity);
 			try
@@ -53,7 +52,7 @@ namespace Lokad.Cqrs.Views
 			}
 		}
 
-		public void Patch(Type type, string identity, Action<object> patch)
+		public void Patch(Type type, object identity, Action<object> patch)
 		{
 			var item = MapTypeAndIdentity(type, identity);
 
@@ -88,67 +87,15 @@ namespace Lokad.Cqrs.Views
 		}
 
 
-		public void Delete(Type type, string identity)
+		public void Delete(Type type, object identity)
 		{
 			MapTypeAndIdentity(type, identity).Delete();
 		}
 
-		public void Write(Type type, string identity, object item)
+		public void Write(Type type, object identity, object item)
 		{
 			var storage = MapTypeAndIdentity(type, identity);
-			storage.Write(stream => _serializer.Serialize(item,stream));
-		}
-	}
-
-	[Serializable]
-	public class OptimisticConcurrencyException : Exception
-	{
-		//
-		// For guidelines regarding the creation of new exception types, see
-		//    http://msdn.microsoft.com/library/default.asp?url=/library/en-us/cpgenref/html/cpconerrorraisinghandlingguidelines.asp
-		// and
-		//    http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dncscol/html/csharp07192001.asp
-		//
-
-		public OptimisticConcurrencyException()
-		{
-		}
-
-		public OptimisticConcurrencyException(string message) : base(message)
-		{
-		}
-
-		public OptimisticConcurrencyException(string message, Exception inner) : base(message, inner)
-		{
-		}
-
-		protected OptimisticConcurrencyException(
-			SerializationInfo info,
-			StreamingContext context) : base(info, context)
-		{
-		}
-	}
-
-	public static class ExtendIViewStorage
-	{
-		public static void Write<T>(this IWriteState store, string identity, T item)
-		{
-			store.Write(typeof(T), identity, item);
-		}
-
-		public static Maybe<T> Load<T>(this IReadState store, string identity)
-		{
-			return store.Load(typeof (T), identity).Convert(o => (T) o);
-		}
-
-		public static void Patch<T>(this IWriteState store, string identity, Action<T> patch)
-		{
-			store.Patch(typeof (T), identity, obj => patch((T) obj));
-		}
-
-		public static void Delete<T>(this IWriteState store, string identity)
-		{
-			store.Delete(typeof(T), identity);
+			storage.Write(stream => _serializer.Serialize(item, stream));
 		}
 	}
 }

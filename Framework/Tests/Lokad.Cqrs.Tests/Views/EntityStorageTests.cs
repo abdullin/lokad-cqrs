@@ -16,7 +16,7 @@ using ProtoBuf;
 namespace Lokad.Cqrs.Tests.Views
 {
 	[TestFixture]
-	public sealed class ViewStorageTests
+	public sealed class EntityStorageTests
 	{
 		// ReSharper disable InconsistentNaming
 
@@ -27,18 +27,18 @@ namespace Lokad.Cqrs.Tests.Views
 			public string Name { get; set; }
 		}
 
-		IReadState Query { get; set; }
-		IWriteState Publish { get; set; }
+		IReadEntity Read { get; set; }
+		IWriteEntity Write { get; set; }
 		IStorageContainer Container { get; set; }
 
-		public ViewStorageTests()
+		public EntityStorageTests()
 		{
 			var serializer = new ProtoBufMessageSerializer(new[] {typeof (UserView)});
-			Container = new BlobStorage().GetContainer("views");
+			Container = new FileStorage().GetContainer("views");
 
-			var views = new ViewStorage(Container, serializer, serializer);
-			Query = views;
-			Publish = views;
+			var views = new EntityStorage(Container, serializer, serializer);
+			Read = views;
+			Write = views;
 		}
 
 		[SetUp]
@@ -57,19 +57,35 @@ namespace Lokad.Cqrs.Tests.Views
 		[Test]
 		public void Test()
 		{
-			Publish.Write("1", new UserView
+			// TODO: add volatile rollbacks?
+
+			Write.Write("1", new UserView
 				{
 					Name = "John"
 				});
 
-			Publish.Patch<UserView>("1", v =>
+			Write.Patch<UserView>("1", v =>
 				{
 					v.Name = v.Name + " Doe";
 				});
 
-			Query.Load<UserView>("1").ShouldPassCheck(v => v.Name == "John Doe");
-			Publish.Delete<UserView>("1");
-			Query.Load<UserView>("1").ShouldFail();
+			Read.Load<UserView>("1").ShouldPassCheck(v => v.Name == "John Doe");
+			Write.Delete<UserView>("1");
+			Read.Load<UserView>("1").ShouldFail();
+		}
+
+		[Test, ExpectedException(typeof(OptimisticConcurrencyException))]
+		public void Concurrency()
+		{
+			Write.Write("1", new UserView { Name = "John" });
+
+			Write.Patch<UserView>("1", v =>
+			{
+				SystemUtil.Sleep(1.Seconds());
+				Write.Write("1", new UserView { Name = "John" });
+
+				v.Name = v.Name + " Doe";
+			});
 		}
 	}
 }
