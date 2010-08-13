@@ -6,10 +6,14 @@
 #endregion
 
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Lokad.Cqrs
 {
-	public interface IEngineProcess : IStartable, IDisposable
+	public interface IEngineProcess : IDisposable
 	{
+		void Initialize();
+		Task Start(CancellationToken token);
 	}
 }

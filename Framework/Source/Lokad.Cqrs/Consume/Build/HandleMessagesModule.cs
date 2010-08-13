@@ -212,7 +212,7 @@ namespace Lokad.Cqrs.Consume.Build
 			return this;
 		}
 
-		IStartable ConfigureComponent(IComponentContext context)
+		IEngineProcess ConfigureComponent(IComponentContext context)
 		{
 			var log = context.Resolve<ILogProvider>().CreateLog<HandleMessagesModule>();
 

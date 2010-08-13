@@ -6,17 +6,16 @@
 #endregion
 
 using System;
-using Lokad.Cqrs.Queue;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Lokad.Cqrs
 {
 	public interface IMessageTransport : IDisposable
 	{
-		int ThreadCount { get; }
-		void Start();
+		void Initialize();
 
-		event Action Started;
-		event Action Stopped;
+		Task[] Start(CancellationToken token);
 		event Func<UnpackedMessage, bool> MessageReceived;
 		event Action<UnpackedMessage, Exception> MessageHandlerFailed;
 	}

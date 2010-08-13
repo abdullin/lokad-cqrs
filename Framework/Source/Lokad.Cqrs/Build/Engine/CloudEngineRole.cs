@@ -1,41 +1,45 @@
-﻿using System;
+﻿#region (c) 2010 Lokad Open Source - New BSD License 
+
+// Copyright (c) Lokad 2010, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
+using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.WindowsAzure.ServiceRuntime;
 
 namespace Lokad.Cqrs
 {
 	public abstract class CloudEngineRole : RoleEntryPoint
 	{
-		ICloudEngineHost _host;
-		volatile bool _shouldStop;
-
 		/// <summary>
 		/// Implement in the inheriting class to configure the bus host.
 		/// </summary>
 		/// <returns></returns>
 		protected abstract ICloudEngineHost BuildHost();
 
-		protected event Action<ICloudEngineHost> WhenEngineStarts = host => { }; 
+		protected event Action<ICloudEngineHost> WhenEngineStarts = host => { };
 
-		public override void Run()
-		{
-			_host.Start();
+		ICloudEngineHost _host;
+		readonly CancellationTokenSource _source = new CancellationTokenSource();
 
-			WhenEngineStarts(_host);
-
-			while (false == _shouldStop)
-			{
-				Thread.Sleep(1000);
-			}
-		}
+		Task _task;
 
 		public override bool OnStart()
 		{
-			var onStart = base.OnStart();
+			// this is actually azure initialization;
 			_host = BuildHost();
 			_host.Initialize();
+			return base.OnStart();
+		}
 
-			return onStart;
+		public override void Run()
+		{
+			_task = _host.Start(_source.Token);
+			WhenEngineStarts(_host);
+			_source.Token.WaitHandle.WaitOne();
 		}
 
 		public string InstanceName
@@ -50,8 +54,10 @@ namespace Lokad.Cqrs
 
 		public override void OnStop()
 		{
-			_host.Stop();
-			_shouldStop = true;
+			_source.Cancel(true);
+
+			_task.Wait(10.Seconds());
+			_host.Dispose();
 
 			base.OnStop();
 		}

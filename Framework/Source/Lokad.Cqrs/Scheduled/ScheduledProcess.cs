@@ -9,6 +9,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Transactions;
 using Lokad.Quality;
 
@@ -27,16 +28,14 @@ namespace Lokad.Cqrs.Scheduled
 		readonly ScheduledState[] _tasks;
 		readonly IsolationLevel _isolationLevel;
 		readonly IScheduledTaskDispatcher _dispatcher;
-		Thread[] _controlThreads = new Thread[0];
-		bool _haveStarted;
-		volatile bool _shouldContinue;
 
+		readonly CancellationTokenSource _disposal = new CancellationTokenSource();
 
 		public ScheduledProcess(
 			ILogProvider provider,
 			ScheduledTaskInfo[] commands,
-			ScheduledConfig config, 
-			IEngineProfiler profiler, 
+			ScheduledConfig config,
+			IEngineProfiler profiler,
 			IScheduledTaskDispatcher dispatcher)
 		{
 			_log = provider.CreateLog<ScheduledProcess>();
@@ -52,41 +51,38 @@ namespace Lokad.Cqrs.Scheduled
 
 		public void Dispose()
 		{
-			_shouldContinue = false;
-
-			if (_haveStarted)
-				return;
+			_disposal.Cancel(true);
+			_disposal.Dispose();
 		}
 
-		public void StartUp()
+		public void Initialize()
 		{
-			_shouldContinue = true;
-			_controlThreads = new[]
-				{
-					new Thread(MainMethod)
-						{
-							Name = "Task",
-							IsBackground = true
-						},
-				};
-			_log.DebugFormat("Starting {0} tasks in {1} threads", _tasks.Length, _controlThreads.Length);
-
-			foreach (var thread in _controlThreads)
-			{
-				thread.Start();
-			}
-			
-			_haveStarted = true;
 		}
+
 
 		internal event ChainProcessedDelegate ChainProcessed = (states, e) => { };
 		internal event Action<Exception> ExceptionEncountered = ex => { };
 
-		void MainMethod()
+		readonly ManualResetEventSlim _stopped = new ManualResetEventSlim(false);
+
+		public Task Start(CancellationToken outer)
 		{
-			while (_shouldContinue)
+			return Task.Factory.StartNew(() =>
+				{
+					_stopped.Reset();
+					using (var source = CancellationTokenSource.CreateLinkedTokenSource(outer, _disposal.Token))
+					{
+						RunTillCancelled(source.Token);
+					}
+				}, outer).ContinueWith(t => _stopped.Reset());
+		}
+
+		void RunTillCancelled(CancellationToken token)
+		{
+			while (!token.IsCancellationRequested)
 			{
-				bool executed = false;
+				var executed = false;
+
 				foreach (var command in _tasks)
 				{
 					// do we need to run this command now?
@@ -94,29 +90,34 @@ namespace Lokad.Cqrs.Scheduled
 					{
 						_log.DebugFormat("Executing {0}", command.Name);
 						executed = true;
-						RunCommand(command);
+						RunCommand(command, token);
 					}
 				}
 
 				ChainProcessed(_tasks, executed);
-				SleepWhileCan(executed ? _sleepBetweenCommands : _sleepOnEmptyChain);
+				token.WaitHandle.WaitOne(executed ? _sleepBetweenCommands : _sleepOnEmptyChain);
 			}
+		}
+
+		public bool WaitOne(TimeSpan timeout)
+		{
+			return _stopped.Wait(timeout);
 		}
 
 		TransactionOptions GetTransactionOptions()
 		{
 			return new TransactionOptions
-			{
-				IsolationLevel = Transaction.Current == null ? _isolationLevel : Transaction.Current.IsolationLevel,
-				Timeout = Debugger.IsAttached ? 45.Minutes() : 0.Minutes(),
-			};
+				{
+					IsolationLevel = Transaction.Current == null ? _isolationLevel : Transaction.Current.IsolationLevel,
+					Timeout = Debugger.IsAttached ? 45.Minutes() : 0.Minutes(),
+				};
 		}
 
-		void RunCommandTillItFinishes(ScheduledState state)
+		void RunCommandTillItFinishes(ScheduledState state, CancellationToken token)
 		{
 			using (_profiler.TrackContext(state.Name))
 			{
-				while (_shouldContinue)
+				while (!token.IsCancellationRequested)
 				{
 					var transactionOptions = GetTransactionOptions();
 					TimeSpan result;
@@ -139,37 +140,11 @@ namespace Lokad.Cqrs.Scheduled
 		}
 
 
-		void SleepWhileCan(TimeSpan span)
-		{
-			var seconds = span.TotalSeconds;
-			var wholeSeconds = (int) Math.Floor(seconds);
-
-			for (int i = 0; i < wholeSeconds; i++)
-			{
-				if (false == _shouldContinue)
-				{
-					return;
-				}
-				SystemUtil.Sleep(1.Seconds());
-			}
-			var reminder = seconds - wholeSeconds;
-
-			if (false == _shouldContinue)
-			{
-				return;
-			}
-
-			if (reminder > 0)
-			{
-				SystemUtil.Sleep(reminder.Seconds());
-			}
-		}
-
-		void RunCommand(ScheduledState state)
+		void RunCommand(ScheduledState state, CancellationToken token)
 		{
 			try
 			{
-				RunCommandTillItFinishes(state);
+				RunCommandTillItFinishes(state, token);
 			}
 			catch (Exception ex)
 			{

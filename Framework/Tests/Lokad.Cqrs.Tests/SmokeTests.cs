@@ -8,6 +8,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization;
+using System.Threading;
 using Lokad.Cqrs.Default;
 using NUnit.Framework;
 using ProtoBuf;
@@ -21,8 +22,7 @@ namespace Lokad.Cqrs.Tests
 
 		#region Setup/Teardown
 
-		[SetUp]
-		public void SetUp()
+		ICloudEngineHost BuildHost()
 		{
 			var engine = new CloudEngineBuilder();
 			
@@ -52,12 +52,12 @@ namespace Lokad.Cqrs.Tests
 			engine.AddMessageClient(x => x.DefaultToQueue("test-in"));
 
 
-			Host = engine.Build();
+			return engine.Build();
 		}
 
 		#endregion
 
-		ICloudEngineHost Host { get; set; }
+		
 
 
 		[DataContract]
@@ -92,16 +92,24 @@ namespace Lokad.Cqrs.Tests
 		[Test]
 		public void Test()
 		{
-			Host.Initialize();
-			Host.Start();
-			var client = Host.Resolve<IMessageClient>();
+			using (var cts = new CancellationTokenSource())
+			using (var host = BuildHost())
+			{
+				host.Initialize();
+				var task = host.Start(cts.Token);
 
-			client.Send(new Hello {Word = "World"});
-			client.Send(new Hello {Word = Rand.String.NextText(6000, 6000)});
-			client.Send(new Bye {Word = "Earth"});
+				var client = host.Resolve<IMessageClient>();
 
-			SystemUtil.Sleep(50.Seconds());
-			Host.Stop();
+				client.Send(new Hello { Word = "World" });
+				client.Send(new Hello { Word = Rand.String.NextText(6000, 6000) });
+				client.Send(new Bye { Word = "Earth" });
+
+				
+				SystemUtil.Sleep(10.Seconds());
+				cts.Cancel(true);
+
+				task.Wait(5.Seconds());
+			}
 		}
 
 		[Test]
