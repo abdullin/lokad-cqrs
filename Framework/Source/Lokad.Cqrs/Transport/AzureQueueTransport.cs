@@ -69,8 +69,12 @@ namespace Lokad.Cqrs.Transport
 		public Task[] Start(CancellationToken token)
 		{
 			_log.DebugFormat("Starting transport for {0}", _queueNames.Join(";"));
-			token.Register(() => _log.DebugFormat("Stopping transport for {0}", _queueNames.Join(";")));
-			return Range.Array(_degreeOfParallelism, n => Task.Factory.StartNew(() => ReceiveMessages(token), token));
+
+			var tasks = Range.Array(_degreeOfParallelism, n => Task.Factory.StartNew(() => ReceiveMessages(token), token));
+
+
+
+			return tasks;
 		}
 
 

@@ -5,14 +5,13 @@
 
 #endregion
 
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using Lokad.Quality;
-using System.Linq;
 
 namespace Lokad.Cqrs
 {
@@ -30,7 +29,7 @@ namespace Lokad.Cqrs
 		{
 			_container = container;
 			_serverProcesses = serverProcesses;
-			_log = provider.CreateLog<DefaultCloudEngineHost>();
+			_log = provider.LogForName(this);
 		}
 
 		public Task Start(CancellationToken token)

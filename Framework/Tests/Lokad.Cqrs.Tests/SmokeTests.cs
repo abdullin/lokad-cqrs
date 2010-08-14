@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Threading;
+using System.Threading.Tasks;
 using Lokad.Cqrs.Default;
 using NUnit.Framework;
 using ProtoBuf;
@@ -92,11 +93,10 @@ namespace Lokad.Cqrs.Tests
 		[Test]
 		public void Test()
 		{
-			using (var cts = new CancellationTokenSource())
+			
 			using (var host = BuildHost())
 			{
 				host.Initialize();
-				var task = host.Start(cts.Token);
 
 				var client = host.Resolve<IMessageClient>();
 
@@ -104,11 +104,22 @@ namespace Lokad.Cqrs.Tests
 				client.Send(new Hello { Word = Rand.String.NextText(6000, 6000) });
 				client.Send(new Bye { Word = "Earth" });
 
-				
-				SystemUtil.Sleep(10.Seconds());
-				cts.Cancel(true);
+				using (var cts = new CancellationTokenSource())
+				{
+					var task = host.Start(cts.Token);
+					SystemUtil.Sleep(10.Seconds());
+					cts.Cancel(true);
+					task.Wait(5.Seconds());
+				}
+				// second run
+				using (var cts = new CancellationTokenSource())
+				{
+					var task = host.Start(cts.Token);
+					SystemUtil.Sleep(2.Seconds());
+					cts.Cancel(true);
+					task.Wait(5.Seconds());
+				}
 
-				task.Wait(5.Seconds());
 			}
 		}
 
