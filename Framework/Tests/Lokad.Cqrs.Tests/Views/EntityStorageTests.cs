@@ -58,8 +58,7 @@ namespace Lokad.Cqrs.Tests.Views
 		public void Test()
 		{
 			// TODO: add volatile rollbacks?
-
-			Writer.Upsert("1", new UserView
+			Writer.AddOrUpdate("1", new UserView
 				{
 					Name = "John"
 				});
@@ -77,13 +76,13 @@ namespace Lokad.Cqrs.Tests.Views
 		[Test, ExpectedException(typeof(OptimisticConcurrencyException))]
 		public void Concurrency()
 		{
-			
-			Writer.Upsert("1", new UserView { Name = "John" });
+
+			Writer.AddOrUpdate("1", new UserView { Name = "John" });
 
 			Writer.Update<UserView>("1", v =>
 			{
 				SystemUtil.Sleep(1.Seconds());
-				Writer.Upsert("1", new UserView { Name = "John" });
+				Writer.AddOrUpdate("1", new UserView { Name = "John" });
 				v.Name = v.Name + " Doe";
 			});
 		}
