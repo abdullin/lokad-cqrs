@@ -5,6 +5,9 @@
 
 #endregion
 
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Lokad.Cqrs.Queue;
 using Lokad.Quality;
 
@@ -31,17 +34,25 @@ namespace Lokad.Cqrs.PubSub
 
 		public void Dispose()
 		{
-			_log.DebugFormat("Stopping pub/sub for {0}", _transport.ToString());
-			_transport.Dispose();
 			_transport.MessageReceived -= TransportOnMessageReceived;
+			_transport.Dispose();
 		}
 
-		public void StartUp()
+		public void Initialize()
+		{
+			_transport.MessageReceived += TransportOnMessageReceived;
+			_transport.Initialize();
+		}
+
+		public Task Start(CancellationToken token)
 		{
 			_log.DebugFormat("Starting pub/sub for {0}", _transport.ToString());
-			_transport.MessageReceived += TransportOnMessageReceived;
-			_transport.Start();
+			var tasks = _transport.Start(token);
+			// started
+			return Task.Factory
+				.ContinueWhenAll(tasks, t => _log.DebugFormat("Stopped pub/sub for {0}", _transport.ToString()));
 		}
+		
 
 		bool Manage(object message)
 		{

@@ -5,13 +5,16 @@
 
 #endregion
 
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
 namespace Lokad.Cqrs
 {
-	public interface ICloudEngineHost
+	public interface ICloudEngineHost : IDisposable
 	{
-		void Start();
+		Task Start(CancellationToken token);
 		void Initialize();
-		void Stop();
 		TService Resolve<TService>();
 	}
 }

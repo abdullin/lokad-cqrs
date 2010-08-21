@@ -5,7 +5,9 @@
 
 #endregion
 
-using Lokad.Cqrs.Queue;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Lokad.Quality;
 
 namespace Lokad.Cqrs.Consume
@@ -24,18 +26,25 @@ namespace Lokad.Cqrs.Consume
 			_log = provider.CreateLog<ConsumingProcess>();
 		}
 
-		public void Dispose()
+		public void Initialize()
 		{
-			_log.DebugFormat("Stopping consumption for {0}", _transport.ToString());
-			_transport.Dispose();
-			_transport.MessageReceived -= TransportOnMessageRecieved;
+			_transport.MessageReceived += TransportOnMessageRecieved;
+			_transport.Initialize();
 		}
 
-		public void StartUp()
+		public void Dispose()
 		{
-			_log.DebugFormat("Starting consumption for {0}", _transport.ToString());
-			_transport.MessageReceived += TransportOnMessageRecieved;
-			_transport.Start();
+			_transport.MessageReceived -= TransportOnMessageRecieved;
+			_transport.Dispose();
+		}
+
+		public Task Start(CancellationToken token)
+		{
+			_log.DebugFormat("Starting consumer for {0}", _transport.ToString());
+			var tasks = _transport.Start(token);
+			// started
+			return Task.Factory
+				.ContinueWhenAll(tasks, t => _log.DebugFormat("Stopped consumer for {0}", _transport.ToString()));
 		}
 
 		bool TransportOnMessageRecieved(UnpackedMessage arg)

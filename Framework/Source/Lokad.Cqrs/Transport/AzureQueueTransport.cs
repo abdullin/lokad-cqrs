@@ -9,6 +9,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Transactions;
 using Lokad.Cqrs.Queue;
 using Lokad.Quality;
@@ -25,13 +26,8 @@ namespace Lokad.Cqrs.Transport
 		readonly IEngineProfiler _profiler;
 		readonly string[] _queueNames;
 		readonly IReadMessageQueue[] _queues;
-		readonly int _threadCount;
+		readonly int _degreeOfParallelism;
 		readonly Func<uint, TimeSpan> _threadSleepInterval;
-		readonly Thread[] _threads;
-
-		bool _haveStarted;
-		volatile bool _shouldContinue;
-
 		public AzureQueueTransport(
 			AzureQueueTransportConfig config,
 			ILogProvider logProvider,
@@ -45,68 +41,40 @@ namespace Lokad.Cqrs.Transport
 			_queueNames = config.QueueNames;
 			_isolationLevel = config.IsolationLevel;
 			_log = logProvider.Get(typeof (AzureQueueTransport).Name + "." + config.LogName);
-			_threadCount = config.ThreadCount;
 			_threadSleepInterval = config.SleepWhenNoMessages;
-
-			_threads = new Thread[config.ThreadCount];
+			_degreeOfParallelism = config.DegreeOfParallelism;
+			
 			_queues = new IReadMessageQueue[_queueNames.Length];
 		}
 
-		public event Action Started = () => { };
-		public event Action Stopped = () => { };
 		public event Func<UnpackedMessage, bool> MessageReceived = m => false;
 		public event Action<UnpackedMessage, Exception> MessageHandlerFailed = (message, exception) => { };
 		
 		public void Dispose()
 		{
-			_shouldContinue = false;
-			_log.DebugFormat("Stopping transport for {0}", _queueNames.Join(";"));
-
-
-			//DisposeQueueManager();
-
-			if (!_haveStarted)
-				return;
-
-			foreach (var thread in _threads)
-			{
-				thread.Join();
-			}
-
-			Stopped();
+			_disposal.Dispose();
 		}
 
-		public int ThreadCount
+		public void Initialize()
 		{
-			get { return _threadCount; }
-		}
-
-		public void Start()
-		{
-			_shouldContinue = true;
-
-			_log.DebugFormat("Starting {0} threads to handle messages on {1}",
-				_threadCount,
-				_queueNames.Select(q => q.ToString()).Join("; "));
-
 			for (int i = 0; i < _queueNames.Length; i++)
 			{
 				_queues[i] = _factory.GetReadQueue(_queueNames[i]);
 			}
 
+		}
 
-			for (var i = 0; i < _threadCount; i++)
-			{
-				_threads[i] = new Thread(ReceiveMessage)
-					{
-						Name = "Thread #" + i,
-						IsBackground = true
-					};
-				_threads[i].Start();
-			}
-			_haveStarted = true;
+		readonly CancellationTokenSource _disposal = new CancellationTokenSource();
 
-			Started();
+		public Task[] Start(CancellationToken token)
+		{
+			_log.DebugFormat("Starting transport for {0}", _queueNames.Join(";"));
+
+			var tasks = Range.Array(_degreeOfParallelism, n => Task.Factory.StartNew(() => ReceiveMessages(token), token));
+
+
+
+			return tasks;
 		}
 
 
@@ -195,56 +163,47 @@ namespace Lokad.Cqrs.Transport
 			// do nothing. Message will show up in the queue with the increased enqueue count.
 		}
 
-		void FinalizeSuccess(IReadMessageQueue queue, UnpackedMessage message, TransactionScope tx)
+		static void FinalizeSuccess(IReadMessageQueue queue, UnpackedMessage message, TransactionScope tx)
 		{
 			queue.AckMessage(message);
 			tx.Complete();
 		}
 
-		public void ReceiveMessage()
+		void ReceiveMessages(CancellationToken outer)
 		{
-			//var thisThreadSleeps = _threadSleepInterval + Rand.Next(200).Milliseconds();
-			uint idleFor = 0;
-			while (_shouldContinue)
-			{
-				bool threadsWorked = false;
-				foreach (var messageQueue in _queues)
-				{
-					if (_shouldContinue == false)
-						return;
+			
+			uint beenIdleFor = 0;
 
-					// selector policy goes here
-					if (ProcessQueueForMessage(messageQueue) == QueueProcessingResult.MoreWork)
+			using (var source = CancellationTokenSource.CreateLinkedTokenSource(_disposal.Token, outer))
+			{
+				var token = source.Token;
+
+				while (!token.IsCancellationRequested)
+				{
+					var messageFound = false;
+					foreach (var messageQueue in _queues)
 					{
-						threadsWorked = true;
+						if (token.IsCancellationRequested)
+							return;
+
+						// selector policy goes here
+						if (ProcessQueueForMessage(messageQueue) == QueueProcessingResult.MoreWork)
+						{
+							messageFound = true;
+						}
+					}
+
+					if (messageFound)
+					{
+						beenIdleFor = 0;
+					}
+					else
+					{
+						beenIdleFor += 1;
+						var sleepInterval = _threadSleepInterval(beenIdleFor);
+						token.WaitHandle.WaitOne(sleepInterval);
 					}
 				}
-
-				if (threadsWorked)
-				{
-					idleFor = 0;
-				}
-				else
-				{
-					idleFor += 1;
-					SleepFor(_threadSleepInterval(idleFor));
-				}
-			}
-		}
-
-		void SleepFor(TimeSpan span)
-		{
-			var secondsToSleep = span;
-			var precision = 0.1.Seconds();
-
-			while ((_shouldContinue) && (secondsToSleep >= precision))
-			{
-				SystemUtil.Sleep(precision);
-				secondsToSleep -= precision;
-			}
-			if ((_shouldContinue) && (secondsToSleep > TimeSpan.Zero))
-			{
-				SystemUtil.Sleep(secondsToSleep);
 			}
 		}
 
@@ -300,7 +259,7 @@ namespace Lokad.Cqrs.Transport
 
 		public override string ToString()
 		{
-			return string.Format("Queue x {1} ({0})", _queueNames.Join(", "), ThreadCount);
+			return string.Format("Queue x {1} ({0})", _queueNames.Join(", "), _degreeOfParallelism);
 		}
 
 		enum QueueProcessingResult

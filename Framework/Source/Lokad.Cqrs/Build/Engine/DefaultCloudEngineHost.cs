@@ -5,53 +5,50 @@
 
 #endregion
 
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 using Autofac;
 using Lokad.Quality;
 
 namespace Lokad.Cqrs
 {
 	[UsedImplicitly]
-	public sealed class DefaultCloudEngineHost : ICloudEngineHost, IDisposable
+	public sealed class DefaultCloudEngineHost : ICloudEngineHost
 	{
 		readonly IContainer _container;
 		readonly ILog _log;
-		readonly IEnumerable<IStartable> _serverProcesses;
-
-		volatile bool _disposed;
+		readonly IEnumerable<IEngineProcess> _serverProcesses;
 
 		public DefaultCloudEngineHost(
 			IContainer container,
 			ILogProvider provider,
-			IEnumerable<IStartable> serverProcesses)
+			IEnumerable<IEngineProcess> serverProcesses)
 		{
 			_container = container;
 			_serverProcesses = serverProcesses;
-			_log = provider.CreateLog<DefaultCloudEngineHost>();
+			_log = provider.LogForName(this);
 		}
 
-		public void Start()
+		public Task Start(CancellationToken token)
 		{
 			_log.Info("Starting host");
 
-			foreach (var thread in _serverProcesses)
-			{
-				thread.StartUp();
-			}
+			var tasks = _serverProcesses.ToArray(p => p.Start(token));
+
+			return Task.Factory.ContinueWhenAll(tasks, t => _log.Info("Stopped host"));
 		}
 
 		public void Initialize()
 		{
 			_log.Info("Initializing host");
-		}
 
-		public void Stop()
-		{
-			_disposed = true;
-			_log.Info("Stopping host");
-			_container.Dispose();
+			foreach (var process in _serverProcesses)
+			{
+				process.Initialize();
+			}
 		}
 
 		public TService Resolve<TService>()
@@ -68,10 +65,7 @@ namespace Lokad.Cqrs
 
 		public void Dispose()
 		{
-			if (!_disposed)
-				return;
-			_disposed = true;
-				_container.Dispose();
+			_container.Dispose();
 		}
 	}
 }
