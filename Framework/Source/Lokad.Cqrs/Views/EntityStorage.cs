@@ -13,7 +13,7 @@ using Lokad.Serialization;
 namespace Lokad.Cqrs.Views
 {
 	[UsedImplicitly]
-	public sealed class EntityStorage : IReadEntity, IWriteEntity
+	public sealed class EntityStorage : IEntityReader, IEntityWriter
 	{
 		readonly IStorageContainer _container;
 		readonly IDataSerializer _serializer;
@@ -37,7 +37,15 @@ namespace Lokad.Cqrs.Views
 			return _container.GetItem(name);
 		}
 
-		public Maybe<object> Load(Type type, object identity)
+		
+
+		public void Write(Type type, object identity, object item)
+		{
+			var storage = MapTypeAndIdentity(type, identity);
+			storage.Write(stream => _serializer.Serialize(item, stream));
+		}
+
+		public Maybe<object> Read(Type type, object identity)
 		{
 			var storage = MapTypeAndIdentity(type, identity);
 			try
@@ -52,50 +60,51 @@ namespace Lokad.Cqrs.Views
 			}
 		}
 
-		public void Patch(Type type, object identity, Action<object> patch)
+		public void AddOrUpdate(Type type, object key, AddEntityDelegate addEntityDelegate, UpdateEntityDelegate updateEntityDelegate)
 		{
-			var item = MapTypeAndIdentity(type, identity);
+			var item = MapTypeAndIdentity(type, key);
 
 			object source = null;
-			StorageItemInfo info = null;
+			var condition = StorageCondition.None;
 
-			item.ReadInto((props, stream) =>
-				{
-					source = _serializer.Deserialize(stream, type);
-					info = props;
-				});
+			try
+			{
+
+				item.ReadInto((props, stream) =>
+					{
+						source = _serializer.Deserialize(stream, type);
+						condition = StorageCondition.IfMatch(props.ETag);
+					});
+			}
+			catch (StorageItemNotFoundException)
+			{
+			}
 
 			if (null == source)
-				return; // there's nothing to patch
-
-			patch(source);
-
-
-			var match = StorageCondition.IfMatch(info.ETag);
+			{
+				source = addEntityDelegate(key);
+			}
+			else
+			{
+				updateEntityDelegate(key, source);
+			}
 
 			// if we fail condition, then this means, that
 			// there was a concurrency problem
 			try
 			{
-				item.Write(stream => _serializer.Serialize(source, stream), match);
+				item.Write(stream => _serializer.Serialize(source, stream), condition);
 			}
 			catch (StorageConditionFailedException ex)
 			{
-				var msg = string.Format("Record was modified concurrently: '{0}'; Id: '{1}'. Please, retry.", type, identity);
+				var msg = string.Format("Record was modified concurrently: '{0}'; Id: '{1}'. Please, retry.", type, key);
 				throw new OptimisticConcurrencyException(msg, ex);
 			}
 		}
 
-
-		public void Delete(Type type, object identity)
+		public void Remove(Type type, object key)
 		{
-			MapTypeAndIdentity(type, identity).Delete();
-		}
-
-		public void Write(Type type, object identity, object item)
-		{
-			var storage = MapTypeAndIdentity(type, identity);
-			storage.Write(stream => _serializer.Serialize(item, stream));
+			MapTypeAndIdentity(type, key).Delete();
 		}
 	}
 }

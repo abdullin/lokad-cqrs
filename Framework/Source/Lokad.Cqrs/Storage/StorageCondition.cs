@@ -35,6 +35,7 @@ namespace Lokad.Cqrs.Storage
 			_lastModifiedUtc = lastModifiedUtc;
 		}
 
+		public static StorageCondition None = default(StorageCondition);
 
 
 		/// <summary>

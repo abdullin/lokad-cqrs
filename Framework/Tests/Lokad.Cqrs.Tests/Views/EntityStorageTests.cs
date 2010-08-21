@@ -27,8 +27,8 @@ namespace Lokad.Cqrs.Tests.Views
 			public string Name { get; set; }
 		}
 
-		IReadEntity Read { get; set; }
-		IWriteEntity Write { get; set; }
+		IEntityReader Reader { get; set; }
+		IEntityWriter Writer { get; set; }
 		IStorageContainer Container { get; set; }
 
 		public EntityStorageTests()
@@ -37,8 +37,8 @@ namespace Lokad.Cqrs.Tests.Views
 			Container = new FileStorage().GetContainer("views");
 
 			var views = new EntityStorage(Container, serializer, serializer);
-			Read = views;
-			Write = views;
+			Reader = views;
+			Writer = views;
 		}
 
 		[SetUp]
@@ -59,31 +59,31 @@ namespace Lokad.Cqrs.Tests.Views
 		{
 			// TODO: add volatile rollbacks?
 
-			Write.Write("1", new UserView
+			Writer.Upsert("1", new UserView
 				{
 					Name = "John"
 				});
 
-			Write.Patch<UserView>("1", v =>
+			Writer.Update<UserView>("1", v =>
 				{
 					v.Name = v.Name + " Doe";
 				});
 
-			Read.Load<UserView>("1").ShouldPassCheck(v => v.Name == "John Doe");
-			Write.Delete<UserView>("1");
-			Read.Load<UserView>("1").ShouldFail();
+			Reader.Read<UserView>("1").ShouldPassCheck(v => v.Name == "John Doe");
+			Writer.Remove<UserView>("1");
+			Reader.Read<UserView>("1").ShouldFail();
 		}
 
 		[Test, ExpectedException(typeof(OptimisticConcurrencyException))]
 		public void Concurrency()
 		{
-			Write.Write("1", new UserView { Name = "John" });
+			
+			Writer.Upsert("1", new UserView { Name = "John" });
 
-			Write.Patch<UserView>("1", v =>
+			Writer.Update<UserView>("1", v =>
 			{
 				SystemUtil.Sleep(1.Seconds());
-				Write.Write("1", new UserView { Name = "John" });
-
+				Writer.Upsert("1", new UserView { Name = "John" });
 				v.Name = v.Name + " Doe";
 			});
 		}
