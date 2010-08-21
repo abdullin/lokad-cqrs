@@ -49,7 +49,7 @@ namespace Lokad.Cqrs.Tests.Storage
 		public void TearDown()
 		{
 			
-			TestContainer.Delete();
+			TestContainer.Remove();
 			
 		}
 

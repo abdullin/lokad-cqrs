@@ -1,4 +1,11 @@
-﻿using System;
+﻿#region (c) 2010 Lokad Open Source - New BSD License 
+
+// Copyright (c) Lokad 2010, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
+using System;
 using System.IO;
 using System.Net;
 using Microsoft.WindowsAzure.StorageClient;
@@ -14,48 +21,6 @@ namespace Lokad.Cqrs.Storage
 			_blob = blob;
 		}
 
-		static BlobRequestOptions Map(StorageCondition condition, StorageCondition copySourceAccessCondition = default(StorageCondition))
-		{
-			if ((condition.Type == StorageConditionType.None) && (copySourceAccessCondition.Type == StorageConditionType.None))
-				return null;
-
-			return new BlobRequestOptions()
-				{
-					AccessCondition = MapCondition(condition),
-					CopySourceAccessCondition = MapCondition(copySourceAccessCondition)
-				};
-		}
-
-		static AccessCondition MapCondition(StorageCondition condition)
-		{
-			switch (condition.Type)
-			{
-				case StorageConditionType.None:
-					return AccessCondition.None;
-				case StorageConditionType.IfUnmodifiedSince:
-					var d1 = condition.LastModifiedUtc.ExposeException("'LastModifiedUtc' should be present.");
-					return AccessCondition.IfNotModifiedSince(d1);
-				case StorageConditionType.IfMatch:
-					var x = condition.ETag.ExposeException("'ETag' should be present");
-					return AccessCondition.IfMatch(x);
-				case StorageConditionType.IfModifiedSince:
-					var utc = condition.LastModifiedUtc.ExposeException("'LastModifiedUtc' should be present.");
-					return AccessCondition.IfModifiedSince(utc);
-				case StorageConditionType.IfNoneMatch:
-					var etag = condition.ETag.ExposeException("'ETag' should be present");
-					return AccessCondition.IfNoneMatch(etag);
-					
-				default:
-					throw new ArgumentOutOfRangeException();
-			}
-		}
-
-		StorageItemInfo Map(BlobProperties props)
-		{
-			return new StorageItemInfo(props.LastModifiedUtc, props.ETag);
-		}
-
-		
 
 		public void Write(Action<Stream> writer, StorageCondition condition)
 		{
@@ -63,8 +28,7 @@ namespace Lokad.Cqrs.Storage
 			{
 				var options = Map(condition);
 
-				
-				
+
 				//using (var stream = _blob.OpenWrite(options))
 				//{
 				//    writer(stream);
@@ -73,7 +37,7 @@ namespace Lokad.Cqrs.Storage
 				using (var memory = new MemoryStream())
 				{
 					writer(memory);
-					
+
 					_blob.UploadByteArray(memory.ToArray(), options);
 				}
 			}
@@ -97,8 +61,6 @@ namespace Lokad.Cqrs.Storage
 			try
 			{
 				var options = Map(condition);
-				// since access is lazy, we must fail and return empty condition
-				// when condition is not met.
 
 				var buffer = _blob.DownloadByteArray(options);
 				using (var stream = new MemoryStream(buffer))
@@ -106,8 +68,9 @@ namespace Lokad.Cqrs.Storage
 					var properties = Map(_blob.Properties);
 					reader(properties, stream);
 				}
-				
 
+				// since access is lazy, we must fail and return empty condition
+				// when condition is not met.
 				//using (var stream = _blob.OpenRead(options))
 				//{
 				//    // we need to start pumping in order to get the properties pulled
@@ -133,7 +96,7 @@ namespace Lokad.Cqrs.Storage
 					case StorageErrorCode.BadRequest:
 						switch (e.StatusCode)
 						{
-							// for some reason Azure Storage happens to get here as well
+								// for some reason Azure Storage happens to get here as well
 							case HttpStatusCode.PreconditionFailed:
 							case HttpStatusCode.NotModified:
 								throw StorageErrors.ConditionFailed(this, condition, e);
@@ -146,7 +109,7 @@ namespace Lokad.Cqrs.Storage
 			}
 		}
 
-		public void Delete(StorageCondition condition)
+		public void Remove(StorageCondition condition)
 		{
 			try
 			{
@@ -187,7 +150,6 @@ namespace Lokad.Cqrs.Storage
 					case StorageErrorCode.BadRequest:
 						switch (e.StatusCode)
 						{
-
 							case HttpStatusCode.PreconditionFailed:
 								return Maybe<StorageItemInfo>.Empty;
 							default:
@@ -198,7 +160,7 @@ namespace Lokad.Cqrs.Storage
 			}
 		}
 
-		public IStorageItem CopyFrom(IStorageItem sourceItem, 
+		public void CopyFrom(IStorageItem sourceItem,
 			StorageCondition condition,
 			StorageCondition copySourceCondition)
 		{
@@ -225,15 +187,57 @@ namespace Lokad.Cqrs.Storage
 			{
 				// based on the default write block size of BLOB
 				const int bufferSize = 0x400000;
-				Write(targetStream => sourceItem.ReadInto((props, stream) => stream.PumpTo(targetStream, bufferSize), copySourceCondition), condition);
-				
+				Write(
+					targetStream =>
+						sourceItem.ReadInto((props, stream) => stream.PumpTo(targetStream, bufferSize), copySourceCondition), condition);
 			}
-			return this;
 		}
 
 		public string FullPath
 		{
 			get { return _blob.Uri.ToString(); }
+		}
+
+		static BlobRequestOptions Map(StorageCondition condition,
+			StorageCondition copySourceAccessCondition = default(StorageCondition))
+		{
+			if ((condition.Type == StorageConditionType.None) && (copySourceAccessCondition.Type == StorageConditionType.None))
+				return null;
+
+			return new BlobRequestOptions
+				{
+					AccessCondition = MapCondition(condition),
+					CopySourceAccessCondition = MapCondition(copySourceAccessCondition)
+				};
+		}
+
+		static AccessCondition MapCondition(StorageCondition condition)
+		{
+			switch (condition.Type)
+			{
+				case StorageConditionType.None:
+					return AccessCondition.None;
+				case StorageConditionType.IfUnmodifiedSince:
+					var d1 = condition.LastModifiedUtc.ExposeException("'LastModifiedUtc' should be present.");
+					return AccessCondition.IfNotModifiedSince(d1);
+				case StorageConditionType.IfMatch:
+					var x = condition.ETag.ExposeException("'ETag' should be present");
+					return AccessCondition.IfMatch(x);
+				case StorageConditionType.IfModifiedSince:
+					var utc = condition.LastModifiedUtc.ExposeException("'LastModifiedUtc' should be present.");
+					return AccessCondition.IfModifiedSince(utc);
+				case StorageConditionType.IfNoneMatch:
+					var etag = condition.ETag.ExposeException("'ETag' should be present");
+					return AccessCondition.IfNoneMatch(etag);
+
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+		}
+
+		static StorageItemInfo Map(BlobProperties props)
+		{
+			return new StorageItemInfo(props.LastModifiedUtc, props.ETag);
 		}
 	}
 }

@@ -36,7 +36,7 @@ namespace Lokad.Cqrs.Storage
 			return this;
 		}
 
-		public void Delete()
+		public void Remove()
 		{
 			_root.Refresh();
 			if (_root.Exists)

@@ -34,7 +34,7 @@ namespace Lokad.Cqrs.Storage
 			return this;
 		}
 
-		public void Delete()
+		public void Remove()
 		{
 			try
 			{

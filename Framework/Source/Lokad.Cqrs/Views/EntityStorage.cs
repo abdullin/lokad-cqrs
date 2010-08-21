@@ -104,7 +104,7 @@ namespace Lokad.Cqrs.Views
 
 		public void Remove(Type type, object key)
 		{
-			MapTypeAndIdentity(type, key).Delete();
+			MapTypeAndIdentity(type, key).Remove();
 		}
 	}
 }

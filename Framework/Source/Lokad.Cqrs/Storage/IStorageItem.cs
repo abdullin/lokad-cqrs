@@ -17,7 +17,7 @@ namespace Lokad.Cqrs.Storage
 		/// <exception cref="StorageContainerNotFoundException">if the container for the item does not exist</exception>
 		void ReadInto(ReaderDelegate reader, StorageCondition condition = default(StorageCondition));
 
-		void Delete(StorageCondition condition = default(StorageCondition));
+		void Remove(StorageCondition condition = default(StorageCondition));
 		Maybe<StorageItemInfo> GetInfo(StorageCondition condition = default(StorageCondition));
 
 		/// <summary>
@@ -28,7 +28,7 @@ namespace Lokad.Cqrs.Storage
 		/// <param name="copySourceCondition">The copy source condition.</param>
 		/// <returns></returns>
 		/// <exception cref="StorageItemNotFoundException">when source storage is not found</exception>
-		IStorageItem CopyFrom(IStorageItem sourceItem, 
+		void CopyFrom(IStorageItem sourceItem, 
 			StorageCondition condition = default(StorageCondition),
 			StorageCondition copySourceCondition = default(StorageCondition));
 		string FullPath { get; }

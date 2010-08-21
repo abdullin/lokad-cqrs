@@ -13,21 +13,21 @@ namespace Lokad.Cqrs.Tests.Storage
 		[Test]
 		public void Missing_container_throws_container_not_found()
 		{
-			ExpectContainerNotFound(() => TestItem.Delete());
+			ExpectContainerNotFound(() => TestItem.Remove());
 		}
 
 		[Test]
 		public void Missing_item_works()
 		{
 			TestContainer.Create();
-			TestItem.Delete();
+			TestItem.Remove();
 		}
 
 		[Test]
 		public void Missing_item_and_failed_IfMatch_work()
 		{
 			TestContainer.Create();
-			TestItem.Delete(StorageCondition.IfMatch("some"));
+			TestItem.Remove(StorageCondition.IfMatch("some"));
 		}
 
 		[Test]
@@ -35,7 +35,7 @@ namespace Lokad.Cqrs.Tests.Storage
 		{
 			TestContainer.Create();
 			Write(TestItem, Guid.Empty);
-			TestItem.Delete(StorageCondition.IfMatch("random"));
+			TestItem.Remove(StorageCondition.IfMatch("random"));
 			TestItem.GetInfo().ShouldPass();
 		}
 
@@ -44,7 +44,7 @@ namespace Lokad.Cqrs.Tests.Storage
 		{
 			TestContainer.Create();
 			Write(TestItem, Guid.Empty);
-			TestItem.Delete(StorageCondition.IfMatch("*"));
+			TestItem.Remove(StorageCondition.IfMatch("*"));
 			TestItem.GetInfo().ShouldFail();
 		}
 
@@ -53,7 +53,7 @@ namespace Lokad.Cqrs.Tests.Storage
 		{
 			TestContainer.Create();
 			Write(TestItem, Guid.Empty);
-			TestItem.Delete(StorageCondition.IfNoneMatch("random"));
+			TestItem.Remove(StorageCondition.IfNoneMatch("random"));
 			TestItem.GetInfo().ShouldFail();
 		}
 	}

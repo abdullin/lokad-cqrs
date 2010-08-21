@@ -6,7 +6,7 @@
 		IStorageItem GetItem(string name);
 
 		IStorageContainer Create();
-		void Delete();
+		void Remove();
 		bool Exists();
 
 		string FullPath { get; }

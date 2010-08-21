@@ -69,7 +69,7 @@ namespace Lokad.Cqrs.Storage
 				throw StorageErrors.ItemNotFound(this);
 		}
 
-		public void Delete(StorageCondition condition)
+		public void Remove(StorageCondition condition)
 		{
 			Refresh();
 
@@ -101,7 +101,7 @@ namespace Lokad.Cqrs.Storage
 			return new StorageItemInfo(lastWriteTimeUtc, tag);
 		}
 
-		public IStorageItem CopyFrom(IStorageItem sourceItem, StorageCondition condition, StorageCondition copySourceCondition)
+		public void CopyFrom(IStorageItem sourceItem, StorageCondition condition, StorageCondition copySourceCondition)
 		{
 			var item = sourceItem as FileStorageItem;
 
@@ -120,12 +120,11 @@ namespace Lokad.Cqrs.Storage
 			}
 			else
 			{
-				int bufferSize = 64.Kb();
+				var bufferSize = 64.Kb();
 				Write(
 					targetStream =>
 						sourceItem.ReadInto((props, stream) => stream.PumpTo(targetStream, bufferSize), copySourceCondition), condition);
 			}
-			return this;
 		}
 
 		void Refresh()
