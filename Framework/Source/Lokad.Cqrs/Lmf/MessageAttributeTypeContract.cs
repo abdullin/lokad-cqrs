@@ -16,6 +16,7 @@
 		StorageReference = 11,
 		StorageContainer = 12,
 		ErrorText = 13,
-		Thread = 14
+		Thread = 14,
+		EntityIdentityString = 20
 	}
 }

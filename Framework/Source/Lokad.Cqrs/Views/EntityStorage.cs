@@ -60,7 +60,7 @@ namespace Lokad.Cqrs.Views
 			}
 		}
 
-		public void AddOrUpdate(Type type, object key, AddEntityDelegate addEntityDelegate, UpdateEntityDelegate updateEntityDelegate)
+		public void Write(Type type, object key, AddEntityDelegate addEntityDelegate, UpdateEntityDelegate updateEntityDelegate)
 		{
 			var item = MapTypeAndIdentity(type, key);
 
