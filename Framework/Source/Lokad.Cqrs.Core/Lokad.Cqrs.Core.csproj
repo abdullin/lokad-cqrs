@@ -40,6 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Consume\ConsumingProcess.cs" />
+    <Compile Include="Consume\IMessageDispatcher.cs" />
     <Compile Include="Default\IConsume.cs" />
     <Compile Include="Default\IConsumeMessage.cs" />
     <Compile Include="Default\IMessage.cs" />
@@ -59,6 +61,11 @@
     <Compile Include="IMessageProfiler.cs" />
     <Compile Include="IMessageTransport.cs" />
     <Compile Include="IProfileSettings.cs" />
+    <Compile Include="PubSub\InMemoryPublishSubscribeManager.cs" />
+    <Compile Include="PubSub\IPublishSubscribeManager.cs" />
+    <Compile Include="PubSub\PublishSubscribeProcess.cs" />
+    <Compile Include="PubSub\SubscribeDirectMessage.cs" />
+    <Compile Include="PubSub\SubscribeRegexMessage.cs" />
     <Compile Include="Shared\Filter.cs" />
     <Compile Include="Storage\EntityNotFoundException.cs" />
     <Compile Include="Storage\ExtendIEntityReader.cs" />
