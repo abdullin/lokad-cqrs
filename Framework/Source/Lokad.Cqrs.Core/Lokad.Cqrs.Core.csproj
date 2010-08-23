@@ -53,6 +53,12 @@
     <Compile Include="Directory\MessageInfo.cs" />
     <Compile Include="Directory\MessageMapping.cs" />
     <Compile Include="Directory\MessageReflectionUtil.cs" />
+    <Compile Include="IEngineProcess.cs" />
+    <Compile Include="IEngineProfiler.cs" />
+    <Compile Include="IMessageClient.cs" />
+    <Compile Include="IMessageProfiler.cs" />
+    <Compile Include="IMessageTransport.cs" />
+    <Compile Include="IProfileSettings.cs" />
     <Compile Include="Shared\Filter.cs" />
     <Compile Include="Storage\EntityNotFoundException.cs" />
     <Compile Include="Storage\ExtendIEntityReader.cs" />
