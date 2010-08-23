@@ -12,7 +12,7 @@ using Lokad.Quality;
 namespace Lokad.Cqrs
 {
 	[UsedImplicitly]
-	sealed class NullEngineProfiler : IEngineProfiler
+	public sealed class NullEngineProfiler : IEngineProfiler
 	{
 		public static readonly IEngineProfiler Instance = new NullEngineProfiler();
 

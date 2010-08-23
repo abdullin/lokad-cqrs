@@ -6,7 +6,7 @@
 #endregion
 
 using System;
-using Lokad.Cqrs.Storage;
+
 using Lokad.Quality;
 using Lokad.Serialization;
 

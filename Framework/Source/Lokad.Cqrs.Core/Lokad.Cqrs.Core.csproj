@@ -41,6 +41,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Build\ICloudEngineHost.cs" />
+    <Compile Include="Build\ICloudClient.cs" />
     <Compile Include="Consume\ConsumingProcess.cs" />
     <Compile Include="Consume\IMessageDispatcher.cs" />
     <Compile Include="Default\IConsume.cs" />
@@ -62,6 +64,7 @@
     <Compile Include="IMessageProfiler.cs" />
     <Compile Include="IMessageTransport.cs" />
     <Compile Include="IProfileSettings.cs" />
+    <Compile Include="Build\NullEngineProfiler.cs" />
     <Compile Include="PubSub\InMemoryPublishSubscribeManager.cs" />
     <Compile Include="PubSub\IPublishSubscribeManager.cs" />
     <Compile Include="PubSub\PublishSubscribeProcess.cs" />
@@ -76,6 +79,7 @@
     <Compile Include="Scheduled\ScheduledTaskInfo.cs" />
     <Compile Include="Shared\Filter.cs" />
     <Compile Include="Storage\EntityNotFoundException.cs" />
+    <Compile Include="Storage\EntityStorage.cs" />
     <Compile Include="Storage\ExtendIEntityReader.cs" />
     <Compile Include="Storage\ExtendIEntityWriter.cs" />
     <Compile Include="Storage\FileStorageContainer.cs" />
@@ -219,6 +223,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Shared\Monads\ResultResources.resx" />
     <EmbeddedResource Include="Shared\Rules\RuleResources.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Build\Engine\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
