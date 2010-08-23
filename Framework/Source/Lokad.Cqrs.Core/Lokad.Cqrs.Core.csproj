@@ -37,6 +37,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -66,6 +67,13 @@
     <Compile Include="PubSub\PublishSubscribeProcess.cs" />
     <Compile Include="PubSub\SubscribeDirectMessage.cs" />
     <Compile Include="PubSub\SubscribeRegexMessage.cs" />
+    <Compile Include="Scheduled\ExpressionTaskBuilder.cs" />
+    <Compile Include="Scheduled\IScheduledTaskBuilder.cs" />
+    <Compile Include="Scheduled\IScheduledTaskDispatcher.cs" />
+    <Compile Include="Scheduled\ScheduledConfig.cs" />
+    <Compile Include="Scheduled\ScheduledProcess.cs" />
+    <Compile Include="Scheduled\ScheduledState.cs" />
+    <Compile Include="Scheduled\ScheduledTaskInfo.cs" />
     <Compile Include="Shared\Filter.cs" />
     <Compile Include="Storage\EntityNotFoundException.cs" />
     <Compile Include="Storage\ExtendIEntityReader.cs" />

@@ -78,14 +78,7 @@
     <Compile Include="Sender\DefaultMessageClient.cs" />
     <Compile Include="Infrastructure\ExtendIComponentContext.cs" />
     <Compile Include="Scheduled\DefaultTaskDispatcher.cs" />
-    <Compile Include="Scheduled\ExpressionTaskBuilder.cs" />
-    <Compile Include="Scheduled\IScheduledTaskDispatcher.cs" />
-    <Compile Include="Scheduled\IScheduledTaskBuilder.cs" />
-    <Compile Include="Scheduled\ScheduledConfig.cs" />
-    <Compile Include="Scheduled\Build\ScheduledModule.cs" />
-    <Compile Include="Scheduled\ScheduledState.cs" />
-    <Compile Include="Scheduled\ScheduledProcess.cs" />
-    <Compile Include="Scheduled\ScheduledTaskInfo.cs" />
+    <Compile Include="Scheduled\ScheduledModule.cs" />
     <Compile Include="Sender\Build\SenderModule.cs" />
     <Compile Include="Build\Engine\DefaultCloudEngineHost.cs" />
     <Compile Include="Domain\DomainBuildModule.cs" />
