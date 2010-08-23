@@ -32,19 +32,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Lokad.Serialization">
-      <HintPath>..\..\Library\Lokad.Serialization.dll</HintPath>
-    </Reference>
-    <Reference Include="Lokad.Shared, Version=1.5.173.0, Culture=neutral, PublicKeyToken=43f0664b2b4db1fc, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Library\Lokad.Shared.dll</HintPath>
-    </Reference>
-    <Reference Include="Lokad.Stack">
-      <HintPath>..\..\Library\Lokad.Stack.dll</HintPath>
+    <Reference Include="Autofac">
+      <HintPath>..\..\Library\Autofac\Autofac.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.WindowsAzure.ServiceRuntime, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.WindowsAzure.StorageClient, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>False</Private>
+    </Reference>
+    <Reference Include="protobuf-net">
+      <HintPath>..\..\Library\ProtoBuf-net\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -68,6 +64,10 @@
     <Compile Include="Consume\BlobExceptionLogger.cs" />
     <Compile Include="Consume\Build\ConfigureBlobSavingOnException.cs" />
     <Compile Include="Consume\Build\ConfigureNotificationOnException.cs" />
+    <Compile Include="Serialization\AttributeHelper.cs" />
+    <Compile Include="Serialization\ExtendISupportSyntaxForSerialization.cs" />
+    <Compile Include="Serialization\ProtoBufMessageSerializer.cs" />
+    <Compile Include="Serialization\ProtoBufUtil.cs" />
     <Compile Include="Storage\BlobStorageContainer.cs" />
     <Compile Include="Storage\BlobStorageItem.cs" />
     <Compile Include="Views\EntityStorage.cs" />
@@ -145,7 +145,12 @@
     <Compile Include="Queue\IQueueManager.cs" />
     <Compile Include="Queue\SubQueueType.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Lokad.Cqrs.Core\Lokad.Cqrs.Core.csproj">
+      <Project>{CE441C5A-2DC1-4639-81ED-5B4CAC649BD9}</Project>
+      <Name>Lokad.Cqrs.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

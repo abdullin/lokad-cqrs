@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using Lokad.Quality;
 using Lokad.Reflection;
 
 namespace Lokad.Cqrs.Domain
@@ -17,9 +18,12 @@ namespace Lokad.Cqrs.Domain
 	static class MessageReflectionUtil
 	{
 		[DebuggerNonUserCode]
-		public static void InvokeConsume(object messageHandler, object messageInstance, string methodName)
+		public static void InvokeConsume([NotNull] object messageHandler, [NotNull] object messageInstance, [NotNull] string methodName)
 		{
-			Enforce.Arguments(() => messageHandler, () => messageInstance, () => methodName);
+			if (messageHandler == null) throw new ArgumentNullException("messageHandler");
+			if (messageInstance == null) throw new ArgumentNullException("messageInstance");
+			if (methodName == null) throw new ArgumentNullException("methodName");
+
 			try
 			{
 				var handlerType = messageHandler.GetType();

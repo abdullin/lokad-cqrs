@@ -6,6 +6,7 @@
 #endregion
 
 using System;
+using System.Threading;
 using Lokad.Cqrs.Storage;
 using NUnit.Framework;
 
@@ -54,7 +55,7 @@ namespace Lokad.Cqrs.Tests.Storage
 			Write(TestItem, Guid.Empty);
 			var info = TestItem.GetInfo().Value.LastModifiedUtc;
 
-			SystemUtil.Sleep(1.Seconds());
+			Thread.Sleep(1.Seconds());
 			ExpectConditionFailed(() => TryToRead(TestItem, StorageCondition.IfModifiedSince(info)));
 		}
 

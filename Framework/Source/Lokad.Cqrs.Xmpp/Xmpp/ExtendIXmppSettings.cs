@@ -5,16 +5,9 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Xml;
 using jabber.protocol.client;
-using Lokad.Settings;
 
 namespace Lokad.Cqrs.Xmpp
 {
-
-
-
-
-
-
 
 	//public static class Extend
 

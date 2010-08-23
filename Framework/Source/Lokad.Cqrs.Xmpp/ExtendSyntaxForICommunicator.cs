@@ -6,9 +6,7 @@
 #endregion
 
 using System;
-using Autofac;
-using Lokad.Cqrs.Xmpp;
-using Lokad.Messaging;
+
 
 namespace Lokad.Cqrs
 {

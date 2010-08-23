@@ -18,11 +18,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{C5183B3E
 		SharedKey.snk = SharedKey.snk
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lokad.Cqrs.Linker", "Source\Lokad.Cqrs.Linker\Lokad.Cqrs.Linker.csproj", "{F22669EA-5DF1-4D1D-A411-E3D906A989C2}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lokad.Cqrs.ProtoBuf.Tests", "Tests\Lokad.Cqrs.ProtoBuf.Tests\Lokad.Cqrs.ProtoBuf.Tests.csproj", "{B29FAA6C-F0DE-4683-A6E3-993A5030D45B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lokad.Cqrs.Xmpp", "Source\Lokad.Cqrs.Xmpp\Lokad.Cqrs.Xmpp.csproj", "{4DFC5C73-2435-40C9-BC2B-5BA3A22980F9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lokad.Cqrs.Core", "Source\Lokad.Cqrs.Core\Lokad.Cqrs.Core.csproj", "{CE441C5A-2DC1-4639-81ED-5B4CAC649BD9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -64,16 +64,6 @@ Global
 		{24DA9150-1C7E-45B3-8A75-EA529081237F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{24DA9150-1C7E-45B3-8A75-EA529081237F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{24DA9150-1C7E-45B3-8A75-EA529081237F}.Release|x86.ActiveCfg = Release|Any CPU
-		{F22669EA-5DF1-4D1D-A411-E3D906A989C2}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{F22669EA-5DF1-4D1D-A411-E3D906A989C2}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{F22669EA-5DF1-4D1D-A411-E3D906A989C2}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{F22669EA-5DF1-4D1D-A411-E3D906A989C2}.Debug|x86.ActiveCfg = Debug|x86
-		{F22669EA-5DF1-4D1D-A411-E3D906A989C2}.Debug|x86.Build.0 = Debug|x86
-		{F22669EA-5DF1-4D1D-A411-E3D906A989C2}.Release|Any CPU.ActiveCfg = Release|x86
-		{F22669EA-5DF1-4D1D-A411-E3D906A989C2}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{F22669EA-5DF1-4D1D-A411-E3D906A989C2}.Release|Mixed Platforms.Build.0 = Release|x86
-		{F22669EA-5DF1-4D1D-A411-E3D906A989C2}.Release|x86.ActiveCfg = Release|x86
-		{F22669EA-5DF1-4D1D-A411-E3D906A989C2}.Release|x86.Build.0 = Release|x86
 		{B29FAA6C-F0DE-4683-A6E3-993A5030D45B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B29FAA6C-F0DE-4683-A6E3-993A5030D45B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B29FAA6C-F0DE-4683-A6E3-993A5030D45B}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -94,6 +84,16 @@ Global
 		{4DFC5C73-2435-40C9-BC2B-5BA3A22980F9}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{4DFC5C73-2435-40C9-BC2B-5BA3A22980F9}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{4DFC5C73-2435-40C9-BC2B-5BA3A22980F9}.Release|x86.ActiveCfg = Release|Any CPU
+		{CE441C5A-2DC1-4639-81ED-5B4CAC649BD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE441C5A-2DC1-4639-81ED-5B4CAC649BD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE441C5A-2DC1-4639-81ED-5B4CAC649BD9}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{CE441C5A-2DC1-4639-81ED-5B4CAC649BD9}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{CE441C5A-2DC1-4639-81ED-5B4CAC649BD9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CE441C5A-2DC1-4639-81ED-5B4CAC649BD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE441C5A-2DC1-4639-81ED-5B4CAC649BD9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE441C5A-2DC1-4639-81ED-5B4CAC649BD9}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{CE441C5A-2DC1-4639-81ED-5B4CAC649BD9}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{CE441C5A-2DC1-4639-81ED-5B4CAC649BD9}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -101,8 +101,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{FD6C8202-F530-4C09-8889-28DC383965AA} = {CBB0EA40-FEC5-48D9-A04D-782440D9D693}
 		{24DA9150-1C7E-45B3-8A75-EA529081237F} = {CBB0EA40-FEC5-48D9-A04D-782440D9D693}
+		{CE441C5A-2DC1-4639-81ED-5B4CAC649BD9} = {CBB0EA40-FEC5-48D9-A04D-782440D9D693}
 		{FB8810A2-0888-4400-B7F4-1736A983A894} = {50854899-7A0C-4BC3-84F3-771D052DE41E}
-		{F22669EA-5DF1-4D1D-A411-E3D906A989C2} = {50854899-7A0C-4BC3-84F3-771D052DE41E}
 		{B29FAA6C-F0DE-4683-A6E3-993A5030D45B} = {50854899-7A0C-4BC3-84F3-771D052DE41E}
 		{4DFC5C73-2435-40C9-BC2B-5BA3A22980F9} = {50854899-7A0C-4BC3-84F3-771D052DE41E}
 	EndGlobalSection

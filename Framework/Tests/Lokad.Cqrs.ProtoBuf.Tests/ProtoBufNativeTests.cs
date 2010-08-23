@@ -11,6 +11,7 @@ using Lokad.Serialization;
 using NUnit.Framework;
 using ProtoBuf;
 
+
 namespace Lokad.Cqrs.ProtoBuf.Tests
 {
 	[TestFixture]
