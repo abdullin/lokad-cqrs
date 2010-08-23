@@ -1,4 +1,6 @@
-﻿using Microsoft.WindowsAzure.StorageClient;
+﻿using System;
+using Lokad.Quality;
+using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs.Storage
 {
@@ -13,15 +15,16 @@ namespace Lokad.Cqrs.Storage
 			_log = log;
 		}
 
-		public IStorageContainer GetContainer(string name)
+		public IStorageContainer GetContainer([NotNull] string name)
 		{
-			Enforce.ArgumentNotEmpty(() => name);
+			if (name == null) throw new ArgumentNullException("name");
+
 			return new BlobStorageContainer(_directory.GetSubdirectory(name), _log);
 		}
 
-		public IStorageItem GetItem(string name)
+		public IStorageItem GetItem([NotNull] string name)
 		{
-			Enforce.ArgumentNotEmpty(() => name);
+			if (name == null) throw new ArgumentNullException("name");
 			return new BlobStorageItem(_directory.GetBlobReference(name));
 		}
 

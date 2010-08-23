@@ -5,6 +5,7 @@
 
 #endregion
 
+using System.Threading;
 using Lokad.Cqrs.Storage;
 using Lokad.Cqrs.Tests.Storage;
 using Lokad.Cqrs.Views;
@@ -81,7 +82,7 @@ namespace Lokad.Cqrs.Tests.Views
 
 			Writer.Update<UserView>("1", v =>
 			{
-				SystemUtil.Sleep(1.Seconds());
+				Thread.Sleep(1.Seconds());
 				Writer.Update<UserView>("1", e => { e.Name = "Jonny"; });
 				v.Name = v.Name + " Doe";
 			});

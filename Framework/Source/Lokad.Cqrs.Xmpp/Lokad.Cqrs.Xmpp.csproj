@@ -10,8 +10,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Lokad.Cqrs</RootNamespace>
     <AssemblyName>Lokad.Cqrs.Xmpp</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,14 +32,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Autofac">
+      <HintPath>..\..\Library\Autofac\Autofac.dll</HintPath>
+    </Reference>
     <Reference Include="jabber-net">
       <HintPath>..\..\Library\jabber-net\jabber-net.dll</HintPath>
-    </Reference>
-    <Reference Include="Lokad.Shared">
-      <HintPath>..\..\Library\Lokad.Shared.dll</HintPath>
-    </Reference>
-    <Reference Include="Lokad.Stack">
-      <HintPath>..\..\Library\Lokad.Stack.dll</HintPath>
     </Reference>
     <Reference Include="netlib.Dns">
       <HintPath>..\..\Library\jabber-net\netlib.Dns.dll</HintPath>
@@ -60,6 +58,12 @@
     <Compile Include="Xmpp\XmppCommunicator.cs" />
     <Compile Include="Xmpp\XmppOptions.cs" />
     <Compile Include="Xmpp\XmppSettings.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Lokad.Cqrs.Core\Lokad.Cqrs.Core.csproj">
+      <Project>{CE441C5A-2DC1-4639-81ED-5B4CAC649BD9}</Project>
+      <Name>Lokad.Cqrs.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -106,7 +106,7 @@ namespace Lokad.Cqrs.Tests
 				using (var cts = new CancellationTokenSource())
 				{
 					var task = host.Start(cts.Token);
-					SystemUtil.Sleep(10.Seconds());
+					Thread.Sleep(10.Seconds());
 					cts.Cancel(true);
 					task.Wait(5.Seconds());
 				}
@@ -114,7 +114,7 @@ namespace Lokad.Cqrs.Tests
 				using (var cts = new CancellationTokenSource())
 				{
 					var task = host.Start(cts.Token);
-					SystemUtil.Sleep(2.Seconds());
+					Thread.Sleep(2.Seconds());
 					cts.Cancel(true);
 					task.Wait(5.Seconds());
 				}

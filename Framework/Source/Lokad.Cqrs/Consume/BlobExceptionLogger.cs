@@ -56,7 +56,7 @@ namespace Lokad.Cqrs.Consume
 			}
 			// we might have multiple errors for this message
 
-			var landingTime = (SystemUtil.UtcNow - date).TotalSeconds.Round(0);
+			var landingTime = (DateTime.UtcNow - date).TotalSeconds.Round(0);
 
 			// error for Lokad.CQRS message would be in format:
 			// 2010-02-08-13-58-7b19df43-344c-4488-91ae-960d8a843318-0000127.txt
@@ -109,7 +109,7 @@ namespace Lokad.Cqrs.Consume
 			writer.WriteLine("Type:        {0}", ex.GetType().FullName);
 			writer.WriteLine("Message:     {0}", ex.Message);
 			writer.WriteLine("Source:      {0}", ex.Source);
-			writer.WriteLine("Recorded:    {0}", SystemUtil.UtcNow.ToString("yyyy-MM-dd-HH-mm-ss-ffff"));
+			writer.WriteLine("Recorded:    {0}", DateTime.UtcNow.ToString("yyyy-MM-dd-HH-mm-ss-ffff"));
 			writer.WriteLine("TargetSite:  {0}", ex.TargetSite);
 			foreach (DictionaryEntry entry in ex.Data)
 			{

@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using Autofac;
 using Lokad.Quality;
 using Microsoft.WindowsAzure;
@@ -77,9 +78,10 @@ namespace Lokad.Cqrs
 		/// <returns>
 		/// same builder for inling multiple configuration statements
 		/// </returns>
-		public AutofacBuilderForAzure LoadStorageAccountFromSettings(string name)
+		public AutofacBuilderForAzure LoadStorageAccountFromSettings([NotNull] string name)
 		{
-			Enforce.ArgumentNotEmpty(() => name);
+			if (name == null) throw new ArgumentNullException("name");
+
 
 			_builder.Register(c =>
 				{
