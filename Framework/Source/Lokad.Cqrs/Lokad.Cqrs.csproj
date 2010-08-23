@@ -71,7 +71,6 @@
     <Compile Include="Storage\BlobStorageContainer.cs" />
     <Compile Include="Storage\BlobStorageItem.cs" />
     <Compile Include="Views\EntityStorage.cs" />
-    <Compile Include="Lmf\MessageContext.cs" />
     <Compile Include="Build\NullEngineProfiler.cs" />
     <Compile Include="Build\SimpleMessageProfiler.cs" />
     <Compile Include="Design\IMessageClient.cs" />
@@ -82,12 +81,6 @@
     <Compile Include="Design\IMessageProfiler.cs" />
     <Compile Include="Domain\MessageAssemblyScanner.cs" />
     <Compile Include="Domain\DomainAwareMessageProfiler.cs" />
-    <Compile Include="Lmf\MessageAttributeBuilder.cs" />
-    <Compile Include="Lmf\MessageAttributesContract.cs" />
-    <Compile Include="Lmf\MessageAttributeTypeContract.cs" />
-    <Compile Include="Lmf\MessageHeader.cs" />
-    <Compile Include="Lmf\MessagePrinter.cs" />
-    <Compile Include="Lmf\MessageUtil.cs" />
     <Compile Include="Queue\QueueErrors.cs" />
     <Compile Include="Sender\DefaultMessageClient.cs" />
     <Compile Include="Infrastructure\ExtendIComponentContext.cs" />
@@ -116,9 +109,6 @@
     <Compile Include="PubSub\Build\BuildPubSubModule.cs" />
     <Compile Include="Domain\MessageReflectionUtil.cs" />
     <Compile Include="PubSub\Build\SubscribeSyntax.cs" />
-    <Compile Include="Lmf\MessageAttributeContract.cs" />
-    <Compile Include="Queue\IRouteMessages.cs" />
-    <Compile Include="Queue\IWriteMessageQueue.cs" />
     <Compile Include="Consume\ConsumingProcess.cs" />
     <Compile Include="Consume\DispatchesSingleMessage.cs" />
     <Compile Include="Consume\IMessageDispatcher.cs" />
@@ -131,18 +121,13 @@
     <Compile Include="Transport\AzureQueuePolicy.cs" />
     <Compile Include="Transport\AzureQueueTransportConfig.cs" />
     <Compile Include="Design\IMessageTransport.cs" />
-    <Compile Include="Queue\IReadMessageQueue.cs" />
     <Compile Include="Queue\AzureMessageQueue.cs" />
     <Compile Include="Transport\AzureQueueTransport.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Queue\TransactionCommitDeletesMessage.cs" />
-    <Compile Include="Queue\GetMessageResult.cs" />
-    <Compile Include="Queue\GetMessageResultState.cs" />
-    <Compile Include="Lmf\UnpackedMessage.cs" />
     <Compile Include="Queue\TransactionCommitAddsMessage.cs" />
     <Compile Include="PubSub\PublishSubscribeProcess.cs" />
     <Compile Include="Design\IEngineProcess.cs" />
-    <Compile Include="Queue\IQueueManager.cs" />
     <Compile Include="Queue\SubQueueType.cs" />
   </ItemGroup>
   <ItemGroup>

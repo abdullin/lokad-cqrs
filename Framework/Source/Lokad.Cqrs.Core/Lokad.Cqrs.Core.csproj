@@ -31,9 +31,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="protobuf-net">
+      <HintPath>..\..\Library\ProtoBuf-net\protobuf-net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -51,7 +53,22 @@
     <Compile Include="IEntityWriter.cs" />
     <Compile Include="IStorageContainer.cs" />
     <Compile Include="IStorageItem.cs" />
+    <Compile Include="Lmf\MessageAttributeBuilder.cs" />
+    <Compile Include="Lmf\MessageAttributeContract.cs" />
+    <Compile Include="Lmf\MessageAttributesContract.cs" />
+    <Compile Include="Lmf\MessageAttributeTypeContract.cs" />
+    <Compile Include="Lmf\MessageContext.cs" />
+    <Compile Include="Lmf\MessageHeader.cs" />
+    <Compile Include="Lmf\MessagePrinter.cs" />
+    <Compile Include="Lmf\MessageUtil.cs" />
+    <Compile Include="Lmf\UnpackedMessage.cs" />
     <Compile Include="LocalStorageInfo.cs" />
+    <Compile Include="Queue\GetMessageResult.cs" />
+    <Compile Include="Queue\GetMessageResultState.cs" />
+    <Compile Include="Queue\IQueueManager.cs" />
+    <Compile Include="Queue\IReadMessageQueue.cs" />
+    <Compile Include="Queue\IRouteMessages.cs" />
+    <Compile Include="Queue\IWriteMessageQueue.cs" />
     <Compile Include="Serialization\ExtendISupportSyntaxForSerialization.cs" />
     <Compile Include="Shared\DisposableAction.cs" />
     <Compile Include="Shared\Enforce.cs" />
