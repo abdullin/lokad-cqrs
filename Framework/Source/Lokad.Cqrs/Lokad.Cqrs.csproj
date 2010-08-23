@@ -64,10 +64,6 @@
     <Compile Include="Consume\BlobExceptionLogger.cs" />
     <Compile Include="Consume\Build\ConfigureBlobSavingOnException.cs" />
     <Compile Include="Consume\Build\ConfigureNotificationOnException.cs" />
-    <Compile Include="Serialization\AttributeHelper.cs" />
-    <Compile Include="Serialization\ExtendISupportSyntaxForSerialization.cs" />
-    <Compile Include="Serialization\ProtoBufMessageSerializer.cs" />
-    <Compile Include="Serialization\ProtoBufUtil.cs" />
     <Compile Include="Storage\BlobStorageContainer.cs" />
     <Compile Include="Storage\BlobStorageItem.cs" />
     <Compile Include="Views\EntityStorage.cs" />

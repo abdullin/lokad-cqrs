@@ -69,7 +69,10 @@
     <Compile Include="Queue\IReadMessageQueue.cs" />
     <Compile Include="Queue\IRouteMessages.cs" />
     <Compile Include="Queue\IWriteMessageQueue.cs" />
+    <Compile Include="Serialization\AttributeHelper.cs" />
     <Compile Include="Serialization\ExtendISupportSyntaxForSerialization.cs" />
+    <Compile Include="Serialization\ProtoBufMessageSerializer.cs" />
+    <Compile Include="Serialization\ProtoBufUtil.cs" />
     <Compile Include="Shared\DisposableAction.cs" />
     <Compile Include="Shared\Enforce.cs" />
     <Compile Include="Shared\Extensions\ExtendArray.cs" />

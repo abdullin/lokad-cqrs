@@ -32,5 +32,17 @@ namespace Lokad
 		{
 			module.RegisterSerializer<DataContractMessageSerializer>();
 		}
+		/// <summary>
+		/// Uses the <see cref="ProtoBufMessageSerializer"/>.
+		/// </summary>
+		/// <typeparam name="TModule">The type of the module.</typeparam>
+		/// <param name="module">The module.</param>
+		/// <returns></returns>
+		public static TModule UseProtocolBuffers<TModule>(this TModule module)
+			where TModule : ISupportSyntaxForSerialization
+		{
+			module.RegisterSerializer<ProtoBufMessageSerializer>();
+			return module;
+		}
 	}
 }
