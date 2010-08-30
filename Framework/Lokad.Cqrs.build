@@ -43,7 +43,7 @@
     </CreateItem>
     <Copy SourceFiles="@(sharedFiles)" DestinationFolder="$(StackPath)" />
     
-    <CreateItem Include="**\bin\$(Configuration)\Microsoft*.dll;**\bin\$(Configuration)\System.*.dll;">
+    <CreateItem Include="**\bin\$(Configuration)\Microsoft*.dll">
       <Output ItemName="tempFiles" TaskParameter="Include"/>
     </CreateItem>
     <Copy SourceFiles="@(tempFiles)" DestinationFolder="$(TempPath)" />
@@ -64,7 +64,7 @@
 		<WriteLinesToFile Lines="@(mergeNHibernate)" File="$(StackPath)\Lokad.Cqrs.NHibernate.txt" />
 
 		<!--Feature: Lokad.Cqrs.Xmpp-->
-		<Exec Command='$(ILMerge) "$(RawPath)\Lokad.Cqrs.Xmpp.dll" "$(RawPath)\jabber-net.dll" "$(RawPath)\zlib.net.dll" "$(RawPath)\netlib.Dns.dll" /out:"$(StackPath)\Lokad.Cqrs.Xmpp.dll" /keyfile:SharedKey.snk /xmldocs=true /ver:$(Version) /attr:"$(RawPath)\Lokad.Cqrs.Xmpp.dll" /lib:"$(TempPath)"' />
+		<!--<Exec Command='$(ILMerge) "$(RawPath)\Lokad.Cqrs.Xmpp.dll" "$(RawPath)\jabber-net.dll" "$(RawPath)\zlib.net.dll" "$(RawPath)\netlib.Dns.dll" /out:"$(StackPath)\Lokad.Cqrs.Xmpp.dll" /keyfile:SharedKey.snk /xmldocs=true /ver:$(Version) /attr:"$(RawPath)\Lokad.Cqrs.Xmpp.dll" /lib:"$(TempPath)"' />-->
 	</Target>
 
 
