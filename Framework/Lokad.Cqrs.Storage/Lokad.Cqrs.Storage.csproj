@@ -5,14 +5,13 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{4DFC5C73-2435-40C9-BC2B-5BA3A22980F9}</ProjectGuid>
+    <ProjectGuid>{00CB3AB5-5BE9-432C-A589-0A7A436D5F8F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Lokad.Cqrs</RootNamespace>
-    <AssemblyName>Lokad.Cqrs.Xmpp</AssemblyName>
+    <RootNamespace>Lokad.Cqrs.Storage</RootNamespace>
+    <AssemblyName>Lokad.Cqrs.Storage</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -32,43 +31,37 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Autofac">
-      <HintPath>..\..\Library\Autofac\Autofac.dll</HintPath>
-    </Reference>
-    <Reference Include="jabber-net">
-      <HintPath>..\..\Library\jabber-net\jabber-net.dll</HintPath>
-    </Reference>
-    <Reference Include="netlib.Dns">
-      <HintPath>..\..\Library\jabber-net\netlib.Dns.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Reactive, Version=1.0.2617.104, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Xml" />
-    <Reference Include="zlib.net">
-      <HintPath>..\..\Library\jabber-net\zlib.net.dll</HintPath>
-    </Reference>
+    <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EntityNotFoundException.cs" />
+    <Compile Include="ExtendIEntityReader.cs" />
+    <Compile Include="ExtendIEntityWriter.cs" />
+    <Compile Include="FileStorageContainer.cs" />
+    <Compile Include="FileStorageItem.cs" />
+    <Compile Include="IEntityReader.cs" />
+    <Compile Include="IEntityWriter.cs" />
+    <Compile Include="IStorageContainer.cs" />
+    <Compile Include="IStorageItem.cs" />
+    <Compile Include="LocalStorageInfo.cs" />
+    <Compile Include="OptimisticConcurrencyException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Xmpp\ExtendIXmppSettings.cs" />
-    <Compile Include="Xmpp\XmppCommunicationModule.cs" />
-    <Compile Include="Xmpp\IXmppSettings.cs" />
-    <Compile Include="Xmpp\XmppCertificateValidationCallback.cs" />
-    <Compile Include="Xmpp\XmppCommunicator.cs" />
-    <Compile Include="Xmpp\XmppOptions.cs" />
-    <Compile Include="Xmpp\XmppSettings.cs" />
+    <Compile Include="ReaderDelegate.cs" />
+    <Compile Include="StorageBaseException.cs" />
+    <Compile Include="StorageCondition.cs" />
+    <Compile Include="StorageConditionFailedException.cs" />
+    <Compile Include="StorageConditionType.cs" />
+    <Compile Include="StorageContainerNotFoundException.cs" />
+    <Compile Include="StorageErrors.cs" />
+    <Compile Include="StorageItemInfo.cs" />
+    <Compile Include="StorageItemNotFoundException.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Lokad.Cqrs.Shared\Lokad.Cqrs.Shared.csproj">
+    <ProjectReference Include="..\Lokad.Cqrs.Shared\Lokad.Cqrs.Shared.csproj">
       <Project>{5B606929-E54C-4D73-AE8A-B742C9BE72E4}</Project>
       <Name>Lokad.Cqrs.Shared</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Lokad.Cqrs.Core\Lokad.Cqrs.Core.csproj">
-      <Project>{CE441C5A-2DC1-4639-81ED-5B4CAC649BD9}</Project>
-      <Name>Lokad.Cqrs.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

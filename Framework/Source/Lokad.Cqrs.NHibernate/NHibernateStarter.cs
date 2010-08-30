@@ -5,13 +5,16 @@
 
 #endregion
 
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Lokad.Quality;
 using NHibernate;
 
 namespace Lokad.Cqrs.NHibernate
 {
 	[UsedImplicitly]
-	public sealed class NHibernateStarter : IStartable
+	public sealed class NHibernateStarter : IEngineProcess
 	{
 		// is needed to initialize NHibernate on start.
 		readonly ISessionFactory _factory;
@@ -20,7 +23,7 @@ namespace Lokad.Cqrs.NHibernate
 		public NHibernateStarter(ISessionFactory factory, ILogProvider provider)
 		{
 			_factory = factory;
-			_log = provider.CreateLog<NHibernateStarter>();
+			_log = provider.LogForName<NHibernateStarter>();
 		}
 
 
@@ -28,9 +31,14 @@ namespace Lokad.Cqrs.NHibernate
 		{
 		}
 
-		public void StartUp()
+		public void Initialize()
 		{
 			_log.DebugFormat("NHibernate started: {0}", _factory.Statistics.StartTime);
+		}
+
+		public Task Start(CancellationToken token)
+		{
+			return Task.Factory.StartNew(() => { }, token);
 		}
 	}
 }

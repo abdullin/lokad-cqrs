@@ -30,28 +30,8 @@ namespace Lokad.Cqrs
 		readonly ContainerBuilder _builder = new ContainerBuilder();
 
 		public AutofacBuilderForLogging Logging { get { return new AutofacBuilderForLogging(_builder); } }
-		//public CloudEngineBuilder LoggingIs(Action<ISupportSyntaxForLogging> configure)
-		//{
-		//    configure(Logging);
-		//    return this;
-		//}
-
 		public AutofacBuilderForSerialization Serialization { get { return new AutofacBuilderForSerialization(_builder);} }
-		//public CloudEngineBuilder SerializationIs(Action<AutofacBuilderForSerialization> configure)
-		//{
-		//    configure(Serialization);
-		//    return this;
-		//}
-
 		public AutofacBuilderForAzure Azure { get { return new AutofacBuilderForAzure(_builder);}}
-		//public CloudEngineBuilder AzureIs(Action<AutofacBuilderForAzure> configure)
-		//{
-		//    configure(Azure);
-		//    return this;
-		//}
-
-		//public AutofacBuilderForDomain Domain { get { return new AutofacBuilderForDomain(_builder);}}
-
 
 		public CloudEngineBuilder()
 		{
@@ -70,7 +50,7 @@ namespace Lokad.Cqrs
 
 
 			// some defaults
-			_builder.RegisterType<DefaultCloudEngineHost>().As<ICloudEngineHost>().SingleInstance();
+			_builder.RegisterType<CloudEngineHost>().As<ICloudEngineHost>().SingleInstance();
 		}
 
 		/// <summary>

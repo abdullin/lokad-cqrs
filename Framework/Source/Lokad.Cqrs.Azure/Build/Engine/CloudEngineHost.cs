@@ -16,13 +16,13 @@ using Lokad.Quality;
 namespace Lokad.Cqrs
 {
 	[UsedImplicitly]
-	public sealed class DefaultCloudEngineHost : ICloudEngineHost
+	public sealed class CloudEngineHost : ICloudEngineHost
 	{
 		readonly IContainer _container;
 		readonly ILog _log;
 		readonly IEnumerable<IEngineProcess> _serverProcesses;
 
-		public DefaultCloudEngineHost(
+		public CloudEngineHost(
 			IContainer container,
 			ILogProvider provider,
 			IEnumerable<IEngineProcess> serverProcesses)

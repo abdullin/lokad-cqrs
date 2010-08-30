@@ -96,7 +96,7 @@ namespace Lokad.Cqrs.NHibernate
 		{
 			_builder.Register(c => c.Resolve<Configuration>().BuildSessionFactory()).SingleInstance();
 			_builder.Register(ComposeSession).InstancePerLifetimeScope();
-			_builder.RegisterType<NHibernateStarter>().As<IStartable>();
+			_builder.RegisterType<NHibernateStarter>().As<IEngineProcess>();
 			_builder.Update(componentRegistry);
 		}
 	}

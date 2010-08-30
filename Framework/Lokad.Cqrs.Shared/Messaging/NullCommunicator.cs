@@ -6,6 +6,9 @@
 
 #endregion
 
+using System;
+using System.Xml;
+using Lokad.Cqrs.Messaging;
 using Lokad.Quality;
 
 namespace Lokad.Messaging
@@ -33,6 +36,11 @@ namespace Lokad.Messaging
 		/// <param name="options">The options.</param>
 		public void Notify(string recipient, string body, CommunicationType options)
 		{
+		}
+
+		public IDisposable Subscribe(IObserver<ICommunicatorMessage> observer)
+		{
+			return null;
 		}
 	}
 }

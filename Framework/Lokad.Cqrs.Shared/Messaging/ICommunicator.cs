@@ -6,12 +6,16 @@
 
 #endregion
 
-namespace Lokad.Messaging
+using System;
+using System.Xml;
+using Lokad.Messaging;
+
+namespace Lokad.Cqrs.Messaging
 {
 	/// <summary>
 	/// Real-time notification interface
 	/// </summary>
-	public interface ICommunicator
+	public interface ICommunicator : IObservable<ICommunicatorMessage>
 	{
 		/// <summary>
 		/// Notifies the specified recipient (reliability is determined by the implementation.
@@ -20,5 +24,15 @@ namespace Lokad.Messaging
 		/// <param name="body">The body.</param>
 		/// <param name="options">The options.</param>
 		void Notify(string recipient, string body, CommunicationType options = CommunicationType.Chat);
+	}
+
+	public interface ICommunicatorMessage
+	{
+		string Subject { get; }
+		string Body { get; }
+		string Thread { get; }
+		string Sender { get; }
+
+		CommunicationType Type { get; }
 	}
 }

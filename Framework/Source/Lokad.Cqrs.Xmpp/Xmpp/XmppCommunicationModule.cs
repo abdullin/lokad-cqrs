@@ -8,11 +8,14 @@
 using Autofac;
 using Autofac.Core;
 using jabber;
+using Lokad.Cqrs.Messaging;
 using Lokad.Messaging;
+using Lokad.Quality;
 using Lokad.Settings;
 
 namespace Lokad.Cqrs.Xmpp
 {
+	[UsedImplicitly]
 	public sealed class XmppCommunicationModule : IModule
 	{
 		readonly ContainerBuilder _builder = new ContainerBuilder();
@@ -86,7 +89,7 @@ namespace Lokad.Cqrs.Xmpp
 
 			var builder = _builder.RegisterType<XmppCommunicator>()
 				.As<ICommunicator>()
-				.As<IStartable>()
+				.As<IEngineProcess>()
 				.SingleInstance();
 
 			_callback.Apply(c => builder.OnActivated(args => args.Instance.OnInvalidCertificate += c));

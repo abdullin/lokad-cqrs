@@ -1,0 +1,149 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{5B606929-E54C-4D73-AE8A-B742C9BE72E4}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Lokad.Cqrs</RootNamespace>
+    <AssemblyName>Lokad.Cqrs.Shared</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DisposableAction.cs" />
+    <Compile Include="Enforce.cs" />
+    <Compile Include="Errors.cs" />
+    <Compile Include="Extensions\ArrayExtensionsForLinq.cs" />
+    <Compile Include="Extensions\ExtendArray.cs" />
+    <Compile Include="Extensions\ExtendDouble.cs" />
+    <Compile Include="Extensions\ExtendICollection.cs" />
+    <Compile Include="Extensions\ExtendIDictionary.cs" />
+    <Compile Include="Extensions\ExtendIEnumerable.cs" />
+    <Compile Include="Extensions\ExtendInt32.cs" />
+    <Compile Include="Extensions\ExtendStream.cs" />
+    <Compile Include="Extensions\Indexer.cs" />
+    <Compile Include="Filter.cs" />
+    <Compile Include="GuidUtil.cs" />
+    <Compile Include="INamedProvider.cs" />
+    <Compile Include="IProvider.cs" />
+    <Compile Include="KeyInvalidException.cs" />
+    <Compile Include="Logging\DebugLog.cs" />
+    <Compile Include="Logging\ExtendILogProvider.cs" />
+    <Compile Include="Logging\ExtendISupportSyntaxForLogging.cs" />
+    <Compile Include="Logging\ILog.cs" />
+    <Compile Include="Logging\ILogExtensions.cs" />
+    <Compile Include="Logging\ILogProvider.cs" />
+    <Compile Include="Logging\ISupportSyntaxForLogging.cs" />
+    <Compile Include="Logging\LambdaLogProvider.cs" />
+    <Compile Include="Logging\LogLevel.cs" />
+    <Compile Include="Logging\NullLog.cs" />
+    <Compile Include="Logging\TraceLog.cs" />
+    <Compile Include="Messaging\CommunicationType.cs" />
+    <Compile Include="Messaging\ICommunicator.cs" />
+    <Compile Include="Messaging\NullCommunicator.cs" />
+    <Compile Include="Monads\Maybe.1.cs" />
+    <Compile Include="Monads\Maybe.cs" />
+    <Compile Include="Monads\MaybeParse.cs" />
+    <Compile Include="Monads\Result.1.cs" />
+    <Compile Include="Monads\Result.2.cs" />
+    <Compile Include="Monads\Result.cs" />
+    <Compile Include="Monads\ResultResources.Designer.cs" />
+    <Compile Include="NamedProvider.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Provider.cs" />
+    <Compile Include="Quality\AssertionConditionAttribute.cs" />
+    <Compile Include="Quality\AssertionConditionType.cs" />
+    <Compile Include="Quality\AssertionMethodAttribute.cs" />
+    <Compile Include="Quality\ImplicitUseFlags.cs" />
+    <Compile Include="Quality\InvokerParameterNameAttribute.cs" />
+    <Compile Include="Quality\MeansImplicitUseAttribute.cs" />
+    <Compile Include="Quality\NoCodeCoverageAttribute.cs" />
+    <Compile Include="Quality\NotNullAttribute.cs" />
+    <Compile Include="Quality\StringFormatMethodAttribute.cs" />
+    <Compile Include="Quality\UsedImplicitlyAttribute.cs" />
+    <Compile Include="Rand.cs" />
+    <Compile Include="Rand.String.cs" />
+    <Compile Include="Range.cs" />
+    <Compile Include="Reflection\Express.cs" />
+    <Compile Include="Reflection\ILHelper.cs" />
+    <Compile Include="Reflection\Reflect.cs" />
+    <Compile Include="Reflection\ReflectCache.cs" />
+    <Compile Include="Reflection\ReflectLambdaException.cs" />
+    <Compile Include="ResolutionException.cs" />
+    <Compile Include="Rules\Common\BufferIs.cs" />
+    <Compile Include="Rules\Common\DateIs.cs" />
+    <Compile Include="Rules\Common\DoubleIs.cs" />
+    <Compile Include="Rules\Common\Is.cs" />
+    <Compile Include="Rules\Common\MaybeIs.cs" />
+    <Compile Include="Rules\Common\StringIs.cs" />
+    <Compile Include="Rules\ExtendIScope.cs" />
+    <Compile Include="Rules\IScope.cs" />
+    <Compile Include="Rules\Rule.cs" />
+    <Compile Include="Rules\RuleException.cs" />
+    <Compile Include="Rules\RuleLevel.cs" />
+    <Compile Include="Rules\RuleMessage.cs" />
+    <Compile Include="Rules\RuleMessages.cs" />
+    <Compile Include="Rules\RuleResources.Designer.cs" />
+    <Compile Include="Rules\Scope.cs" />
+    <Compile Include="Rules\Scopes\DelayedScope.cs" />
+    <Compile Include="Rules\Scopes\ModifierScope.cs" />
+    <Compile Include="Rules\Scopes\ScopeFactory.cs" />
+    <Compile Include="Rules\Scopes\SimpleScope.cs" />
+    <Compile Include="Rules\Scopes\TrackScope.cs" />
+    <Compile Include="Settings\ISettingsKeyFilter.cs" />
+    <Compile Include="Settings\ISettingsProvider.cs" />
+    <Compile Include="Syntax\ISyntax.TTarget.cs" />
+    <Compile Include="Syntax\Syntax.cs" />
+    <Compile Include="Syntax\Syntax.TTarget.cs" />
+    <Compile Include="SystemUtil.cs" />
+    <Compile Include="Utils\ArrayUtil.cs" />
+    <Compile Include="Utils\BufferUtil.cs" />
+    <Compile Include="Utils\EnumComparer.cs" />
+    <Compile Include="Utils\EnumUtil.cs" />
+    <Compile Include="Utils\EnumUtil.TEnum.cs" />
+    <Compile Include="Utils\EnumUtil.TFromEnum.TToEnum.cs" />
+    <Compile Include="Utils\StringUtil.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Monads\ResultResources.resx" />
+    <EmbeddedResource Include="Rules\RuleResources.resx" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
