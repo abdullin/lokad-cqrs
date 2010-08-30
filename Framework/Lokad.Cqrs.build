@@ -7,7 +7,7 @@
     <Configuration Condition="$(Configuration)==''">Release</Configuration>
 		<NHibernateName>Lokad.Cqrs.NHibernate.dll</NHibernateName>
     <ILmerge>..\Resource\ILmerge\ILMerge.exe</ILmerge>
-    <StackPath>$(BuildPath)\Stack</StackPath>
+    <AzureStarterPath>$(BuildPath)\AzureStarter</AzureStarterPath>
     <TempPath>$(BuildPath)\Temp</TempPath>
     <RawPath>$(BuildPath)\Raw</RawPath>
     <TestPath>$(BuildPath)\Test</TestPath>
@@ -37,18 +37,11 @@
       <Output ItemName="rawFiles" TaskParameter="Include"/>
     </CreateItem>
     <Copy SourceFiles="@(rawFiles)" DestinationFolder="$(RawPath)" />
-
-    <CreateItem Include="Source\**\bin\$(Configuration)\*.*">
-      <Output ItemName="sharedFiles" TaskParameter="Include"/>
-    </CreateItem>
-    <Copy SourceFiles="@(sharedFiles)" DestinationFolder="$(StackPath)" />
     
     <CreateItem Include="**\bin\$(Configuration)\Microsoft*.dll">
       <Output ItemName="tempFiles" TaskParameter="Include"/>
     </CreateItem>
     <Copy SourceFiles="@(tempFiles)" DestinationFolder="$(TempPath)" />
-		
-		
 
     <!--All Tests-->
     <CreateItem Include="Tests\**\bin\$(Configuration)\*.*" Exclude="Tests\**\bin\$(Configuration)\*.xml;Tests\**\bin\$(Configuration)\*.pdb;">
@@ -57,12 +50,23 @@
     <Copy SourceFiles="@(testFiles)" DestinationFolder="$(TestPath)" />
   </Target>
 
-	<Target Name="merge-features" DependsOnTargets="copy">
+	<Target Name="build-azure-starter" DependsOnTargets="copy">
+		<CreateItem Include="Source\**\bin\$(Configuration)\Lokad.Cqrs.Shared.*">
+			<Output ItemName="sharedFiles" TaskParameter="Include"/>
+		</CreateItem>
+		<Copy SourceFiles="@(sharedFiles)" DestinationFolder="$(AzureStarterPath)" />
+		
+		<!--Lokad.Cqrs.AzureCore-->
+		<Exec Command='$(ILMerge) "$(RawPath)\Lokad.Cqrs.Core.dll" "$(RawPath)\protobuf-net.dll" "$(RawPath)\Autofac.dll" "$(RawPath)\Lokad.Cqrs.Shared.dll" /out:"$(AzureStarterPath)\Lokad.Cqrs.AzureStarter.dll" /keyfile:SharedKey.snk /xmldocs=true /ver:$(Version)  /lib:"$(TempPath)" /log:"$(AzureStarterPath)/merge.log"' />
+
+		<!-- "$(RawPath)\Lokad.Cqrs.Azure.dll"-->
+		<!-- /attr:"$(RawPath)\Lokad.Cqrs.Azure.dll" -->
+
 		<!--Feature: Lokad.Cqrs.NHibernate-->
 		<CreateItem Include="Library\NHibernate.Core\*.dll;Library\NHibernate.Linq\*.dll;$(RawPath)\Lokad.Cqrs.NHibernate.dll">
 			<Output ItemName="mergeNHibernate" TaskParameter="Include"/>
 		</CreateItem>
-		<Exec Command="$(ILMerge) @(mergeNHibernate->'&quot;%(FullPath)&quot;', ' ') /out:&quot;$(StackPath)/Lokad.Cqrs.NHibernate.dll&quot;  /xmldocs=true /attr:&quot;$(RawPath)\Lokad.Cqrs.NHibernate.dll&quot; /ver:$(Version) /keyfile:SharedKey.snk" />
+		<Exec Command="$(ILMerge) @(mergeNHibernate->'&quot;%(FullPath)&quot;', ' ') /out:&quot;$(AzureStarterPath)/Lokad.Cqrs.NHibernate.dll&quot;  /xmldocs=true /attr:&quot;$(RawPath)\Lokad.Cqrs.NHibernate.dll&quot; /ver:$(Version) /keyfile:SharedKey.snk" />
 		<WriteLinesToFile Lines="@(mergeNHibernate)" File="$(StackPath)\Lokad.Cqrs.NHibernate.txt" />
 
 		<!--Feature: Lokad.Cqrs.Xmpp-->
