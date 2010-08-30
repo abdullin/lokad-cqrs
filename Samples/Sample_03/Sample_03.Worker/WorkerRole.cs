@@ -14,6 +14,7 @@ using Lokad.Cqrs;
 using Microsoft.WindowsAzure.Diagnostics;
 using NHibernate.Cfg;
 using NHibernate.Tool.hbm2ddl;
+using Lokad;
 
 namespace Sample_03.Worker
 {
@@ -29,7 +30,8 @@ namespace Sample_03.Worker
 			// and replace System.Data.SQLite.DLL with  System.Data.SQLite.x86.DLL from the same folder.
 
 
-				var builder = new CloudEngineBuilder();
+			var builder = new CloudEngineBuilder();
+			builder.Serialization.UseDataContractSerializer();
 
 			// this tells the server about the domain
 			builder.DomainIs(d =>

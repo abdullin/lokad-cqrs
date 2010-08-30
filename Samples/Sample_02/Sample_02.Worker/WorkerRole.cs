@@ -9,6 +9,7 @@
 
 using Lokad.Cqrs;
 using Microsoft.WindowsAzure.Diagnostics;
+using Lokad;
 
 namespace Sample_02.Worker
 {
@@ -20,6 +21,7 @@ namespace Sample_02.Worker
 			// http://code.google.com/p/lokad-cqrs/wiki/GuidanceSeries
 
 			var builder = new CloudEngineBuilder();
+			builder.Serialization.UseDataContractSerializer();
 
 			// this tells the server about the domain
 			builder.DomainIs(d =>

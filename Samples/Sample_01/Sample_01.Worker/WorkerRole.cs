@@ -21,7 +21,7 @@ namespace Sample_01.Worker
 			// http://code.google.com/p/lokad-cqrs/wiki/GuidanceSeries
 
 			var builder = new CloudEngineBuilder();
-
+			builder.Serialization.UseDataContractSerializer();
 			builder.DomainIs(d =>
 				{
 					d.InCurrentAssembly();
