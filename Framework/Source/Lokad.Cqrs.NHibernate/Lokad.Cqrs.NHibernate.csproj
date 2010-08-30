@@ -51,7 +51,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Lokad.Cqrs.Shared\Lokad.Cqrs.Shared.csproj">
+    <ProjectReference Include="..\Lokad.Cqrs.Shared\Lokad.Cqrs.Shared.csproj">
       <Project>{5B606929-E54C-4D73-AE8A-B742C9BE72E4}</Project>
       <Name>Lokad.Cqrs.Shared</Name>
     </ProjectReference>

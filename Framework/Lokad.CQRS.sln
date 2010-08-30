@@ -24,11 +24,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lokad.Cqrs.Core", "Source\L
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lokad.Cqrs.Azure", "Source\Lokad.Cqrs.Azure\Lokad.Cqrs.Azure.csproj", "{FD6C8202-F530-4C09-8889-28DC383965AA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lokad.Cqrs.Storage", "Lokad.Cqrs.Storage\Lokad.Cqrs.Storage.csproj", "{00CB3AB5-5BE9-432C-A589-0A7A436D5F8F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lokad.Cqrs.Storage", "Source\Lokad.Cqrs.Storage\Lokad.Cqrs.Storage.csproj", "{00CB3AB5-5BE9-432C-A589-0A7A436D5F8F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{A0D52FD8-DA91-458C-AFD1-A29AF38AAC40}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lokad.Cqrs.Shared", "Lokad.Cqrs.Shared\Lokad.Cqrs.Shared.csproj", "{5B606929-E54C-4D73-AE8A-B742C9BE72E4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lokad.Cqrs.Shared", "Source\Lokad.Cqrs.Shared\Lokad.Cqrs.Shared.csproj", "{5B606929-E54C-4D73-AE8A-B742C9BE72E4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
