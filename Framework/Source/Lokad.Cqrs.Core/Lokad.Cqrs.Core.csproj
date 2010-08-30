@@ -47,10 +47,6 @@
     <Compile Include="Build\ICloudClient.cs" />
     <Compile Include="Consume\ConsumingProcess.cs" />
     <Compile Include="Consume\IMessageDispatcher.cs" />
-    <Compile Include="Default\IConsume.cs" />
-    <Compile Include="Default\IConsumeMessage.cs" />
-    <Compile Include="Default\IMessage.cs" />
-    <Compile Include="Default\IScheduledTask.cs" />
     <Compile Include="Directory\ConsumerInfo.cs" />
     <Compile Include="Directory\IMessageDirectory.cs" />
     <Compile Include="Directory\IMessageDirectoryBuilder.cs" />

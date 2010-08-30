@@ -5,7 +5,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastru
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Features", "Features", "{50854899-7A0C-4BC3-84F3-771D052DE41E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lokad.Cqrs.NHibernate", "Source\Lokad.Cqrs.NHibernate\Lokad.Cqrs.NHibernate.csproj", "{FB8810A2-0888-4400-B7F4-1736A983A894}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lokad.Cqrs.NHibernate", "Features\Lokad.Cqrs.NHibernate\Lokad.Cqrs.NHibernate.csproj", "{FB8810A2-0888-4400-B7F4-1736A983A894}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lokad.Cqrs.Tests", "Tests\Lokad.Cqrs.Tests\Lokad.Cqrs.Tests.csproj", "{24DA9150-1C7E-45B3-8A75-EA529081237F}"
 EndProject
@@ -18,7 +18,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{C5183B3E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lokad.Cqrs.ProtoBuf.Tests", "Tests\Lokad.Cqrs.ProtoBuf.Tests\Lokad.Cqrs.ProtoBuf.Tests.csproj", "{B29FAA6C-F0DE-4683-A6E3-993A5030D45B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lokad.Cqrs.Xmpp", "Source\Lokad.Cqrs.Xmpp\Lokad.Cqrs.Xmpp.csproj", "{4DFC5C73-2435-40C9-BC2B-5BA3A22980F9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lokad.Cqrs.Xmpp", "Features\Lokad.Cqrs.Xmpp\Lokad.Cqrs.Xmpp.csproj", "{4DFC5C73-2435-40C9-BC2B-5BA3A22980F9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lokad.Cqrs.Core", "Source\Lokad.Cqrs.Core\Lokad.Cqrs.Core.csproj", "{CE441C5A-2DC1-4639-81ED-5B4CAC649BD9}"
 EndProject

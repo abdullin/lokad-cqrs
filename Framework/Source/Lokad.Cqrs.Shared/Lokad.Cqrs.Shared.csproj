@@ -35,6 +35,10 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Default\IConsume.cs" />
+    <Compile Include="Default\IConsumeMessage.cs" />
+    <Compile Include="Default\IMessage.cs" />
+    <Compile Include="Default\IScheduledTask.cs" />
     <Compile Include="DisposableAction.cs" />
     <Compile Include="Enforce.cs" />
     <Compile Include="Errors.cs" />

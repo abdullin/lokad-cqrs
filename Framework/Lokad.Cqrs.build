@@ -33,12 +33,12 @@
     <MakeDir Directories="$(BuildPath);$(StackPath);$(TempPath)"/>
 
     <!--Library-->
-    <CreateItem Include="Source\**\bin\$(Configuration)\*.*;Library\*.*">
+    <CreateItem Include="Features\**\bin\$(Configuration)\*.*;Library\*.*;Source\**\bin\$(Configuration)\*.*">
       <Output ItemName="rawFiles" TaskParameter="Include"/>
     </CreateItem>
     <Copy SourceFiles="@(rawFiles)" DestinationFolder="$(RawPath)" />
 
-    <CreateItem Include="$(RawPath)\Lokad.Shared.*;$(RawPath)\Lokad.Serialization.*">
+    <CreateItem Include="Source\**\bin\$(Configuration)\*.*">
       <Output ItemName="sharedFiles" TaskParameter="Include"/>
     </CreateItem>
     <Copy SourceFiles="@(sharedFiles)" DestinationFolder="$(StackPath)" />
@@ -47,6 +47,8 @@
       <Output ItemName="tempFiles" TaskParameter="Include"/>
     </CreateItem>
     <Copy SourceFiles="@(tempFiles)" DestinationFolder="$(TempPath)" />
+		
+		
 
     <!--All Tests-->
     <CreateItem Include="Tests\**\bin\$(Configuration)\*.*" Exclude="Tests\**\bin\$(Configuration)\*.xml;Tests\**\bin\$(Configuration)\*.pdb;">
