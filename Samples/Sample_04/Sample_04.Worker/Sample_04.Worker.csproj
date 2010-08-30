@@ -10,10 +10,11 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Sample_04.Worker</RootNamespace>
     <AssemblyName>Sample_04.Worker</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <RoleType>Worker</RoleType>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -33,17 +34,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Lokad.Cqrs.Stack">
-      <HintPath>..\..\Library\Lokad.Cqrs.Stack.dll</HintPath>
-    </Reference>
-    <Reference Include="Lokad.Cqrs.Xmpp">
-      <HintPath>..\..\Library\Lokad.Cqrs.Xmpp.dll</HintPath>
-    </Reference>
-    <Reference Include="Lokad.Serialization">
-      <HintPath>..\..\Library\Lokad.Serialization.dll</HintPath>
-    </Reference>
-    <Reference Include="Lokad.Shared">
-      <HintPath>..\..\Library\Lokad.Shared.dll</HintPath>
+    <Reference Include="Lokad.Cqrs.AzureStarter.Core">
+      <HintPath>..\..\Library\Lokad.Cqrs.AzureStarter.Core.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.WindowsAzure.ServiceRuntime, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
       <SpecificVersion>False</SpecificVersion>
@@ -56,17 +48,15 @@
       <SpecificVersion>False</SpecificVersion>
       <Private>true</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json.Net20">
-      <HintPath>..\..\Library\Newtonsoft.Json.Net20.dll</HintPath>
+    <Reference Include="Newtonsoft.Json.Net20, Version=3.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Library\Newtonsoft.Json\Newtonsoft.Json.Net20.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Xml.Linq">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data.DataSetExtensions">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data" />

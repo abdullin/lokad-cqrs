@@ -10,10 +10,11 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Sample_03.Worker</RootNamespace>
     <AssemblyName>Sample_03.Worker</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <RoleType>Worker</RoleType>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -35,14 +36,11 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Lokad.Cqrs.NHibernate">
-      <HintPath>..\..\Library\Lokad.Cqrs.NHibernate.dll</HintPath>
+    <Reference Include="Lokad.Cqrs.AzureStarter.Core">
+      <HintPath>..\..\Library\Lokad.Cqrs.AzureStarter.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Lokad.Cqrs.Stack">
-      <HintPath>..\..\Library\Lokad.Cqrs.Stack.dll</HintPath>
-    </Reference>
-    <Reference Include="Lokad.Shared">
-      <HintPath>..\..\Library\Lokad.Shared.dll</HintPath>
+    <Reference Include="Lokad.Cqrs.AzureStarter.NHibernate">
+      <HintPath>..\..\Library\Lokad.Cqrs.AzureStarter.NHibernate.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.WindowsAzure.ServiceRuntime, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
       <SpecificVersion>False</SpecificVersion>
@@ -60,8 +58,9 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data" />
-    <Reference Include="System.Data.SQLite">
-      <HintPath>..\..\Library\System.Data.SQLite.DLL</HintPath>
+    <Reference Include="System.Data.SQLite, Version=1.0.66.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Library\SQLite\System.Data.SQLite.DLL</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
