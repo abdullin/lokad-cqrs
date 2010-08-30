@@ -9,6 +9,7 @@
 using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using Lokad.Cqrs;
 using Lokad.Quality;
 
 namespace Lokad.Serialization

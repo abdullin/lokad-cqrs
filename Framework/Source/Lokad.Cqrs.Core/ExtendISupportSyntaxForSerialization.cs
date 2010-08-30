@@ -8,7 +8,7 @@
 
 using Lokad.Serialization;
 
-namespace Lokad
+namespace Lokad.Cqrs
 {
 	/// <summary>
 	/// Syntax extensions for <see cref="ISupportSyntaxForSerialization"/>

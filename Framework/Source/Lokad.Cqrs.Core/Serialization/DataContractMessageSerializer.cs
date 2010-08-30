@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Xml;
+using Lokad.Cqrs;
 using Lokad.Quality;
 using System.Linq;
 

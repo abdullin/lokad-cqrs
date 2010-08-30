@@ -6,7 +6,7 @@
 
 #endregion
 
-namespace Lokad.Serialization
+namespace Lokad.Cqrs
 {
 	/// <summary>
 	/// Joins data serializer and contract mapper

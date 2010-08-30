@@ -88,18 +88,14 @@
     <Compile Include="Queue\IRouteMessages.cs" />
     <Compile Include="Queue\IWriteMessageQueue.cs" />
     <Compile Include="Serialization\AttributeHelper.cs" />
-    <Compile Include="Serialization\ExtendISupportSyntaxForSerialization.cs" />
+    <Compile Include="ExtendISupportSyntaxForSerialization.cs" />
     <Compile Include="Serialization\ProtoBufMessageSerializer.cs" />
     <Compile Include="Serialization\ProtoBufUtil.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Serialization\BinaryMessageSerializer.cs" />
     <Compile Include="Serialization\DataContractMessageSerializer.cs" />
     <Compile Include="Serialization\DataContractUtil.cs" />
-    <Compile Include="Serialization\IDataContractMapper.cs" />
-    <Compile Include="Serialization\IDataSerializer.cs" />
     <Compile Include="Serialization\IKnowSerializationTypes.cs" />
-    <Compile Include="Serialization\IMessageSerializer.cs" />
-    <Compile Include="Serialization\ISupportSyntaxForSerialization.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Build\Engine\" />

@@ -55,9 +55,13 @@
     <Compile Include="Filter.cs" />
     <Compile Include="GuidUtil.cs" />
     <Compile Include="INamedProvider.cs" />
+    <Compile Include="Infrastructure\IDataContractMapper.cs" />
+    <Compile Include="Infrastructure\IDataSerializer.cs" />
     <Compile Include="Infrastructure\IEngineProcess.cs" />
     <Compile Include="Infrastructure\IMessageClient.cs" />
+    <Compile Include="Infrastructure\IMessageSerializer.cs" />
     <Compile Include="Infrastructure\IProfileSettings.cs" />
+    <Compile Include="Infrastructure\ISupportSyntaxForSerialization.cs" />
     <Compile Include="IProvider.cs" />
     <Compile Include="KeyInvalidException.cs" />
     <Compile Include="Logging\DebugLog.cs" />

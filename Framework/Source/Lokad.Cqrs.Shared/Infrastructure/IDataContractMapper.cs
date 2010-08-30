@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Lokad.Serialization
+namespace Lokad.Cqrs
 {
 	/// <summary>
 	/// Class responsible for mapping types to contracts and vise-versa
