@@ -33,11 +33,6 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DisposableAction.cs" />
@@ -55,6 +50,9 @@
     <Compile Include="Filter.cs" />
     <Compile Include="GuidUtil.cs" />
     <Compile Include="INamedProvider.cs" />
+    <Compile Include="Infrastructure\IEngineProcess.cs" />
+    <Compile Include="Infrastructure\IMessageClient.cs" />
+    <Compile Include="Infrastructure\IProfileSettings.cs" />
     <Compile Include="IProvider.cs" />
     <Compile Include="KeyInvalidException.cs" />
     <Compile Include="Logging\DebugLog.cs" />

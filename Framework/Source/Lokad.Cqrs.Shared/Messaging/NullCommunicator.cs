@@ -7,7 +7,6 @@
 #endregion
 
 using System;
-using System.Xml;
 using Lokad.Cqrs.Messaging;
 using Lokad.Quality;
 

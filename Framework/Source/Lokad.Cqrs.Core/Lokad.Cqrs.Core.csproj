@@ -35,7 +35,9 @@
       <HintPath>..\..\Library\ProtoBuf-net\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Core" />
+    <Reference Include="System.Core">
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Xml" />
@@ -58,13 +60,10 @@
     <Compile Include="Directory\MessageInfo.cs" />
     <Compile Include="Directory\MessageMapping.cs" />
     <Compile Include="Directory\MessageReflectionUtil.cs" />
-    <Compile Include="IEngineProcess.cs" />
+    <Compile Include="Build\NullEngineProfiler.cs" />
     <Compile Include="IEngineProfiler.cs" />
-    <Compile Include="IMessageClient.cs" />
     <Compile Include="IMessageProfiler.cs" />
     <Compile Include="IMessageTransport.cs" />
-    <Compile Include="IProfileSettings.cs" />
-    <Compile Include="Build\NullEngineProfiler.cs" />
     <Compile Include="PubSub\InMemoryPublishSubscribeManager.cs" />
     <Compile Include="PubSub\IPublishSubscribeManager.cs" />
     <Compile Include="PubSub\PublishSubscribeProcess.cs" />
@@ -108,8 +107,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Build\Engine\" />
-    <Folder Include="Shared\" />
-    <Folder Include="Storage\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Lokad.Cqrs.Shared\Lokad.Cqrs.Shared.csproj">
