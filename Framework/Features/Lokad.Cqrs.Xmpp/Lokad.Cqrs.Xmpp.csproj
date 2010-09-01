@@ -43,7 +43,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Reactive, Version=1.0.2617.104, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="System.Reactive">
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Xml" />
@@ -66,6 +66,9 @@
       <Project>{5B606929-E54C-4D73-AE8A-B742C9BE72E4}</Project>
       <Name>Lokad.Cqrs.Shared</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="_ReadMe.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
