@@ -22,10 +22,26 @@ namespace Lokad.Cqrs
 		/// <returns>
 		/// same builder for inling multiple configuration statements
 		/// </returns>
+		/// <seealso cref="CloudStorageAccount.Parse"/>
 		[UsedImplicitly]
 		public AutofacBuilderForAzure UseStorageAccount(string accountString)
 		{
 			var account = CloudStorageAccount.Parse(accountString);
+			_builder.RegisterInstance(account);
+			DisableNagleForQueuesAndTables(account);
+			return this;
+		}
+
+		/// <summary>
+		/// Registers the specified storage account as default into the container
+		/// </summary>
+		/// <param name="account">The account.</param>
+		/// <returns>
+		/// same builder for inling multiple configuration statements
+		/// </returns>
+		[UsedImplicitly]
+		public AutofacBuilderForAzure UseStorageAccount(CloudStorageAccount account)
+		{
 			_builder.RegisterInstance(account);
 			DisableNagleForQueuesAndTables(account);
 			return this;
