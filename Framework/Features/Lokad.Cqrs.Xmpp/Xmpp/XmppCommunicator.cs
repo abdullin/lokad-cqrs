@@ -27,7 +27,7 @@ namespace Lokad.Cqrs.Xmpp
 		readonly ManualResetEventSlim _authPending = new ManualResetEventSlim(false);
 		readonly JabberClient _client;
 		readonly ILog _log;
-		readonly Subject<ICommunicatorMessage> _subject = new Subject<ICommunicatorMessage>();
+		//readonly Subject<ICommunicatorMessage> _subject = new Subject<ICommunicatorMessage>();
 
 		public XmppCommunicator(IXmppSettings settings, ILogProvider provider)
 		{
@@ -68,12 +68,11 @@ namespace Lokad.Cqrs.Xmpp
 
 		public IDisposable Subscribe(IObserver<ICommunicatorMessage> observer)
 		{
-			return _subject.Subscribe(observer);
+			throw new NotImplementedException();
 		}
 
 		public void Dispose()
 		{
-			_subject.OnCompleted();
 			_client.Dispose();
 		}
 
@@ -95,7 +94,8 @@ namespace Lokad.Cqrs.Xmpp
 
 		void ClientOnOnMessage(object sender, Message msg)
 		{
-			_subject.OnNext(new XmppMessageWrapper(msg));
+			throw new NotImplementedException();
+			//_subject.OnNext(new XmppMessageWrapper(msg));
 		}
 
 		void DebugLogSettings(IXmppSettings settings)
@@ -178,7 +178,7 @@ namespace Lokad.Cqrs.Xmpp
 
 		void ClientOnOnError(object sender, Exception exception)
 		{
-			_subject.OnError(exception);
+			throw new NotImplementedException();
 		}
 	}
 

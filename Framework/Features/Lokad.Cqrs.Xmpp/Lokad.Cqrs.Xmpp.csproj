@@ -43,9 +43,6 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Reactive">
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="zlib.net">
       <HintPath>..\..\Library\jabber-net\zlib.net.dll</HintPath>
