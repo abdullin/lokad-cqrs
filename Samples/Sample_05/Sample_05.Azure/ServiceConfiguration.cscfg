@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<ServiceConfiguration serviceName="Sample_05.Azure" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceConfiguration">
+  <Role name="Sample_05.Web">
+    <Instances count="1" />
+    <ConfigurationSettings>
+      <Setting name="DiagnosticsConnectionString" value="UseDevelopmentStorage=true" />
+    </ConfigurationSettings>
+  </Role>
+  <Role name="Sample_05.Worker">
+    <Instances count="1" />
+    <ConfigurationSettings>
+      <Setting name="DiagnosticsConnectionString" value="UseDevelopmentStorage=true" />
+    </ConfigurationSettings>
+  </Role>
+</ServiceConfiguration>
