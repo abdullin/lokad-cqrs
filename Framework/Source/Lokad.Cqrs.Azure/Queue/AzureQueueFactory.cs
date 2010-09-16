@@ -8,7 +8,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Lokad.Quality;
-using Lokad.Serialization;
 using Microsoft.WindowsAzure;
 
 namespace Lokad.Cqrs.Queue

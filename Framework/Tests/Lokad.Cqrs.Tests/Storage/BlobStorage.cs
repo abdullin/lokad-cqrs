@@ -29,7 +29,7 @@ namespace Lokad.Cqrs.Tests.Storage
 		public IStorageContainer GetContainer(string path)
 		{
 			//UseLocalFiddler();
-			return new BlobStorageContainer(_client.GetBlobDirectoryReference(path), NullLog.Instance);
+			return new BlobStorageContainer(_client.GetBlobDirectoryReference(path), NullLog.Provider);
 		}
 
 		[TestFixture]

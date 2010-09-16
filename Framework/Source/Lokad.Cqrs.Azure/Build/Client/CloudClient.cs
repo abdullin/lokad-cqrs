@@ -6,10 +6,9 @@
 #endregion
 
 using System;
-using System.Collections.Specialized;
 using System.Reflection;
+using System.Threading;
 using Autofac;
-using Lokad.Cqrs.Queue;
 using Lokad.Quality;
 
 namespace Lokad.Cqrs
@@ -17,21 +16,24 @@ namespace Lokad.Cqrs
 	[UsedImplicitly]
 	public class CloudClient : ICloudClient
 	{
-		readonly IQueueManager _manager;
+		readonly Lazy<IMessageClient> _client;
 		readonly IComponentContext _resolver;
 
-		readonly IWriteMessageQueue _writeMessageQueue;
-
-		public CloudClient(IQueueManager manager, string queueName, IComponentContext resolver)
+		public CloudClient(IComponentContext resolver)
 		{
-			_manager = manager;
 			_resolver = resolver;
-			_writeMessageQueue = _manager.GetWriteQueue(queueName);
+			_client = new Lazy<IMessageClient>(GetClient, LazyThreadSafetyMode.ExecutionAndPublication);
+		}
+
+		public CloudClient(IComponentContext resolver, IMessageClient client)
+		{
+			_resolver = resolver;
+			_client = new Lazy<IMessageClient>(() => client, true);
 		}
 
 		public void SendMessage(object message)
 		{
-			_writeMessageQueue.SendMessages(new[] {message}, parts => parts.AddSender("Client"));
+			_client.Value.Send(message);
 		}
 
 		public TService Resolve<TService>()
@@ -46,9 +48,17 @@ namespace Lokad.Cqrs
 			}
 		}
 
-		public void SendMessages(object[] messages, Action<MessageAttributeBuilder> headers)
+		IMessageClient GetClient()
 		{
-			_writeMessageQueue.SendMessages(messages, headers);
+			try
+			{
+				return _resolver.Resolve<IMessageClient>();
+			}
+			catch (Exception e)
+			{
+				throw new InvalidOperationException(
+					"Failed to resolve message client. Have you used Builder.AddMessageClient or Builder.BuildFor(name)?", e);
+			}
 		}
 	}
 }

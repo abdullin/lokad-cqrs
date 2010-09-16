@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Net;
 using Autofac;
+using Lokad.Cqrs.Storage;
 using Lokad.Quality;
 using Microsoft.WindowsAzure;
+using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs
 {
@@ -108,6 +110,27 @@ namespace Lokad.Cqrs
 					DisableNagleForQueuesAndTables(account);
 					return account;
 				}).SingleInstance();
+
+			return this;
+		}
+
+		/// <summary>
+		/// Creates the default storage container (<see cref="IStorageContainer"/>) pointing at the specified directory.
+		/// </summary>
+		/// <param name="blobDirectoryAddress">The BLOB directory address.</param>
+		/// <returns>
+		/// same builder for inling multiple configuration statements
+		/// </returns>
+		public AutofacBuilderForAzure DefaultStorageContainerIs(string blobDirectoryAddress)
+		{
+			_builder.Register(c =>
+				{
+					var account = c.Resolve<CloudStorageAccount>();
+					var provider = c.Resolve<ILogProvider>();
+					var directory = account.CreateCloudBlobClient().GetBlobDirectoryReference(blobDirectoryAddress);
+					
+					return new BlobStorageContainer(directory, provider).Create();
+				}).As<IStorageContainer>().SingleInstance();
 
 			return this;
 		}

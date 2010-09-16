@@ -9,6 +9,8 @@ using System;
 using Autofac;
 using Lokad.Cqrs.Domain.Build;
 using Lokad.Cqrs.Queue;
+using Lokad.Cqrs.Sender;
+using Lokad.Cqrs.Storage;
 using Lokad.Cqrs.Transport;
 using Lokad.Settings;
 
@@ -24,6 +26,7 @@ namespace Lokad.Cqrs
 		public CloudClientBuilder()
 		{
 			Azure.UseDevelopmentStorageAccount();
+			Azure.DefaultStorageContainerIs("cqrs-views");
 			Serialization.UseBinaryFormatter();
 			Logging.LogToTrace();
 
@@ -33,6 +36,7 @@ namespace Lokad.Cqrs
 			_builder.RegisterType<AzureQueueFactory>().As<IRouteMessages, IQueueManager>().SingleInstance();
 			_builder.RegisterType<AzureQueueTransport>().As<IMessageTransport>();
 			_builder.RegisterType<CloudClient>().SingleInstance();
+			_builder.RegisterType<EntityStorage>().As<IEntityReader>().SingleInstance();
 		}
 
 
@@ -75,6 +79,16 @@ namespace Lokad.Cqrs
 		//}
 
 		/// <summary>
+		/// Creates default message sender for the instance of <see cref="ICloudClient"/>
+		/// </summary>
+		/// <param name="config">configuration syntax.</param>
+		/// <returns>same builder for inling multiple configuration statements</returns>
+		public CloudClientBuilder AddMessageClient(Action<SenderModule> config)
+		{
+			return this.WithModule(config);
+		}
+
+		/// <summary>
 		/// Configures the message domain for the instance of <see cref="ICloudEngineHost"/>.
 		/// </summary>
 		/// <param name="config">configuration syntax.</param>
@@ -84,11 +98,18 @@ namespace Lokad.Cqrs
 			return this.WithModule(config);
 		}
 
-		public CloudClient BuildFor(string defaultQueue)
+		public CloudClient BuildFor(string queueName)
 		{
 			var container = _builder.Build();
-			return container.Resolve<CloudClient>(
-				TypedParameter.From(defaultQueue));
+
+			var queue = container.Resolve<IQueueManager>().GetWriteQueue(queueName);
+			IMessageClient client = new DefaultMessageClient(queue);
+			return container.Resolve<CloudClient>(TypedParameter.From(client));
+		}
+		
+		public CloudClient Build()
+		{
+			return _builder.Build().Resolve<CloudClient>();
 		}
 	}
 }

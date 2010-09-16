@@ -1,4 +1,11 @@
-﻿using System;
+﻿#region (c) 2010 Lokad Open Source - New BSD License 
+
+// Copyright (c) Lokad 2010, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
+using System;
 using Lokad.Quality;
 using Microsoft.WindowsAzure.StorageClient;
 
@@ -8,18 +15,20 @@ namespace Lokad.Cqrs.Storage
 	{
 		readonly CloudBlobDirectory _directory;
 		readonly ILog _log;
+		readonly ILogProvider _provider;
 
-		public BlobStorageContainer(CloudBlobDirectory directory, ILog log)
+		public BlobStorageContainer(CloudBlobDirectory directory, ILogProvider provider)
 		{
 			_directory = directory;
-			_log = log;
+			_provider = provider;
+			_log = provider.LogForName(this);
 		}
 
 		public IStorageContainer GetContainer([NotNull] string name)
 		{
 			if (name == null) throw new ArgumentNullException("name");
 
-			return new BlobStorageContainer(_directory.GetSubdirectory(name), _log);
+			return new BlobStorageContainer(_directory.GetSubdirectory(name), _provider);
 		}
 
 		public IStorageItem GetItem([NotNull] string name)
@@ -31,7 +40,6 @@ namespace Lokad.Cqrs.Storage
 		public IStorageContainer Create()
 		{
 			_directory.Container.CreateIfNotExist();
-			
 
 
 			return this;
