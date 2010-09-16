@@ -14,11 +14,11 @@ using System.Runtime.Serialization;
 
 namespace Lokad.Cqrs.Domain
 {
-	public sealed class MessageAssemblyScanner
+	public sealed class DomainAssemblyScanner
 	{
 		readonly HashSet<Assembly> _assemblies = new HashSet<Assembly>();
-		readonly Filter<Type> _consumerSelector = new Filter<Type>();
-		readonly Filter<Type> _messageSelector = new Filter<Type>();
+		readonly Filter<Type> _handlerSelector = new Filter<Type>();
+		readonly Filter<Type> _serializableSelector = new Filter<Type>();
 		MethodInfo _consumingMethod;
 		public bool IncludeSystemMessages { get; set; }
 
@@ -27,31 +27,37 @@ namespace Lokad.Cqrs.Domain
 			get { return _consumingMethod; }
 		}
 
-		public MessageAssemblyScanner WithAssemblyOf<T>()
+		public DomainAssemblyScanner WithAssemblyOf<T>()
 		{
 			_assemblies.Add(typeof (T).Assembly);
 			return this;
 		}
 
-		public MessageAssemblyScanner WithAssembly(Assembly assembly)
+		public DomainAssemblyScanner WithAssembly(Assembly assembly)
 		{
 			_assemblies.Add(assembly);
 			return this;
 		}
 
-		public MessageAssemblyScanner WhereMessages(Func<Type, bool> filter)
+		public DomainAssemblyScanner WhereMessages(Func<Type, bool> filter)
 		{
-			_messageSelector.Where(filter);
+			_serializableSelector.Where(filter);
 			return this;
 		}
 
-		public MessageAssemblyScanner WhereConsumers(Func<Type, Boolean> filter)
+		public DomainAssemblyScanner WhereEntities(Func<Type, bool> filter)
 		{
-			_consumerSelector.Where(filter);
+			_serializableSelector.Where(filter);
 			return this;
 		}
 
-		public MessageAssemblyScanner ConsumerMethodSample<THandler>(Expression<Action<THandler>> expression)
+		public DomainAssemblyScanner WhereConsumers(Func<Type, Boolean> filter)
+		{
+			_handlerSelector.Where(filter);
+			return this;
+		}
+
+		public DomainAssemblyScanner ConsumerMethodSample<THandler>(Expression<Action<THandler>> expression)
 		{
 			_consumingMethod = MessageReflectionUtil.ExpressConsumer(expression);
 			return this;
@@ -69,7 +75,7 @@ namespace Lokad.Cqrs.Domain
 		}
 
 
-		public MessageAssemblyScanner ConsumerInterfaceHas<TAttribute>()
+		public DomainAssemblyScanner ConsumerInterfaceHas<TAttribute>()
 			where TAttribute : Attribute
 		{
 			var methods = AppDomain
@@ -117,11 +123,11 @@ namespace Lokad.Cqrs.Domain
 				.SelectMany(a => a.GetExportedTypes())
 				.ToList();
 
-			var messageTypes = _messageSelector
+			var messageTypes = _serializableSelector
 				.Apply(types)
 				.ToArray();
 
-			var consumerTypes = _consumerSelector
+			var consumerTypes = _handlerSelector
 				.Apply(types)
 				.Where(t => !t.IsGenericType)
 				.ToArray();

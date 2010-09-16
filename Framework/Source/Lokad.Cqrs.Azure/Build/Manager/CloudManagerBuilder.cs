@@ -7,7 +7,7 @@
 
 using System;
 using Autofac;
-using Lokad.Cqrs.Domain.Build;
+using Lokad.Cqrs.Domain;
 using Lokad.Cqrs.Queue;
 using Lokad.Cqrs.Transport;
 using Lokad.Quality;

@@ -13,14 +13,14 @@ using Autofac.Core;
 using Lokad.Cqrs.Default;
 using Lokad.Serialization;
 
-namespace Lokad.Cqrs.Domain.Build
+namespace Lokad.Cqrs.Domain
 {
 	/// <summary>
 	/// Module for building CQRS domains.
 	/// </summary>
 	public class DomainBuildModule : IModule
 	{
-		readonly MessageAssemblyScanner _scanner = new MessageAssemblyScanner();
+		readonly DomainAssemblyScanner _scanner = new DomainAssemblyScanner();
 		readonly ContainerBuilder _builder;
 
 		/// <summary>
@@ -40,6 +40,7 @@ namespace Lokad.Cqrs.Domain.Build
 			ConsumerMethodSample<IConsume<IMessage>>(i => i.Consume(null));
 			WhereMessagesAre<IMessage>();
 			WhereConsumersAre<IConsumeMessage>();
+			WhereEntitiesAre<IEntity>();
 			return this;
 		}
 
@@ -68,6 +69,15 @@ namespace Lokad.Cqrs.Domain.Build
 					&& type.IsAbstract == false);
 			_scanner.WithAssemblyOf<TInterface>();
 
+			return this;
+		}
+
+		public DomainBuildModule WhereEntitiesAre<TInterface>()
+		{
+			_scanner.WhereEntities(type =>
+				typeof(TInterface).IsAssignableFrom(type)
+					&& type.IsAbstract == false);
+			_scanner.WithAssemblyOf<TInterface>();
 			return this;
 		}
 

@@ -13,4 +13,12 @@ namespace Lokad.Cqrs.Default
 	public interface IMessage
 	{
 	}
+
+	/// <summary>
+	/// Default CQRS entity
+	/// </summary>
+	public interface IEntity
+	{
+		
+	}
 }

@@ -8,7 +8,7 @@
 using System;
 using Autofac;
 using Lokad.Cqrs.Consume.Build;
-using Lokad.Cqrs.Domain.Build;
+using Lokad.Cqrs.Domain;
 using Lokad.Cqrs.PubSub.Build;
 using Lokad.Cqrs.Queue;
 using Lokad.Cqrs.Scheduled.Build;

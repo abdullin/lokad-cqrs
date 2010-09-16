@@ -85,7 +85,7 @@ namespace Lokad.Cqrs.Tests
 		[TestFixtureSetUp]
 		public void FixtureSetUp()
 		{
-			var scanner = new MessageAssemblyScanner
+			var scanner = new DomainAssemblyScanner
 				{
 					IncludeSystemMessages = true
 				};
