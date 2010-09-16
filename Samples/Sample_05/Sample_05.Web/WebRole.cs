@@ -12,9 +12,6 @@ namespace Sample_05.Web
 		public override bool OnStart()
 		{
 			DiagnosticMonitor.Start("DiagnosticsConnectionString");
-
-			// For information on handling configuration changes
-			// see the MSDN topic at http://go.microsoft.com/fwlink/?LinkId=166357.
 			RoleEnvironment.Changing += RoleEnvironmentChanging;
 
 			return base.OnStart();

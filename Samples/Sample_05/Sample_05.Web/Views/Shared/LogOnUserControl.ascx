@@ -1,14 +1,14 @@
 ﻿<%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl" %>
+<%@ Import Namespace="Sample_05.Web" %>
 <%
-    if (Request.IsAuthenticated) {
-%>
-        Welcome <b><%: Page.User.Identity.Name %></b>!
-        [ <%: Html.ActionLink("Log Off", "LogOff", "Account") %> ]
+    if (GlobalState.IsAuthenticated) {%>
+        Welcome <b><%= Html.Encode(GlobalState.Identity.UserName)%></b>!
+        [ <%= Html.ActionLink("Logout", "logout", "user") %> ]
 <%
     }
     else {
 %> 
-        [ <%: Html.ActionLink("Log On", "LogOn", "Account") %> ]
+        [ <%= Html.ActionLink("Login", "login", "user") %> ]
 <%
     }
 %>

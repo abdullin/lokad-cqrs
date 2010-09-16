@@ -25,6 +25,24 @@
             Default CQRS message interface for the domain setup
             </summary>
     </member>
+    <member name="T:Lokad.Cqrs.Default.IEntity">
+      <summary>
+            Default CQRS entity
+            </summary>
+    </member>
+    <member name="T:Lokad.Cqrs.Default.IScheduledTask">
+      <summary>
+            Default interface for use by the TaskScheduler feature
+            </summary>
+      <remarks>See http://code.google.com/p/lokad-cqrs/wiki/ScheduledTasks</remarks>
+    </member>
+    <member name="M:Lokad.Cqrs.Default.IScheduledTask.Execute">
+      <summary>
+            Executes some event that happens at the predefined moments of time.
+            Each worker instance will have an independent scheduler.
+            </summary>
+      <returns>Amount of time to sleep till the next run</returns>
+    </member>
     <member name="T:Lokad.DisposableAction">
       <summary>
             Class that allows action to be executed, when it is disposed
@@ -896,6 +914,60 @@
             </summary>
       <typeparam name="TValue">
       </typeparam>
+    </member>
+    <member name="T:Lokad.Cqrs.IDataContractMapper">
+      <summary>
+            Class responsible for mapping types to contracts and vise-versa
+            </summary>
+    </member>
+    <member name="M:Lokad.Cqrs.IDataContractMapper.GetContractNameByType(System.Type)">
+      <summary>
+            Gets the contract name by the type
+            </summary>
+      <param name="messageType">Type of the message.</param>
+      <returns>contract name (if found)</returns>
+    </member>
+    <member name="M:Lokad.Cqrs.IDataContractMapper.GetTypeByContractName(System.String)">
+      <summary>
+            Gets the type by contract name.
+            </summary>
+      <param name="contractName">Name of the contract.</param>
+      <returns>type that could be used for contract deserialization (if found)</returns>
+    </member>
+    <member name="T:Lokad.Cqrs.IDataSerializer">
+      <summary>
+            Generic data serializer interface.
+            </summary>
+    </member>
+    <member name="M:Lokad.Cqrs.IDataSerializer.Serialize(System.Object,System.IO.Stream)">
+      <summary>
+            Serializes the object to the specified stream
+            </summary>
+      <param name="instance">The instance.</param>
+      <param name="destinationStream">The destination stream.</param>
+    </member>
+    <member name="M:Lokad.Cqrs.IDataSerializer.Deserialize(System.IO.Stream,System.Type)">
+      <summary>
+            Deserializes the object from specified source stream.
+            </summary>
+      <param name="sourceStream">The source stream.</param>
+      <param name="type">The type of the object to deserialize.</param>
+      <returns>deserialized object</returns>
+    </member>
+    <member name="T:Lokad.Cqrs.IMessageSerializer">
+      <summary>
+            Joins data serializer and contract mapper
+            </summary>
+    </member>
+    <member name="T:Lokad.Cqrs.ISupportSyntaxForSerialization">
+      <summary>
+            Syntax support for .Serialization configurations.
+            </summary>
+    </member>
+    <member name="M:Lokad.Cqrs.ISupportSyntaxForSerialization.RegisterSerializer``1">
+      <summary>
+            Registers the specified data serializer as singleton implementing <see cref="T:Lokad.Cqrs.IMessageSerializer" />, <see cref="T:Lokad.Cqrs.IDataSerializer" /> and <see cref="T:Lokad.Cqrs.IDataContractMapper" />. It can import <see cref="!:IKnowSerializationTypes" /></summary>
+      <typeparam name="TSerializer">The type of the serializer.</typeparam>
     </member>
     <member name="T:Lokad.KeyInvalidException">
       <summary>
