@@ -86,9 +86,14 @@ namespace Lokad.Cqrs
 		{
 			var container = _builder.Build();
 
-			var queue = container.Resolve<IQueueManager>().GetWriteQueue(queueName);
-			IMessageClient client = new DefaultMessageClient(queue);
-			return container.Resolve<CloudClient>(TypedParameter.From(client));
+			var lazy = new Lazy<IMessageClient>(() =>
+				{
+					var queue = container.Resolve<IQueueManager>().GetWriteQueue(queueName);
+					return new DefaultMessageClient(queue);
+				},false);
+
+			
+			return container.Resolve<CloudClient>(TypedParameter.From(lazy));
 		}
 		
 		public CloudClient Build()

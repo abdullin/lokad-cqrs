@@ -25,10 +25,10 @@ namespace Lokad.Cqrs
 			_client = new Lazy<IMessageClient>(GetClient, LazyThreadSafetyMode.ExecutionAndPublication);
 		}
 
-		public CloudClient(IComponentContext resolver, IMessageClient client)
+		public CloudClient(IComponentContext resolver, Lazy<IMessageClient> client)
 		{
 			_resolver = resolver;
-			_client = new Lazy<IMessageClient>(() => client, true);
+			_client = client;
 		}
 
 		public void SendMessage(object message)
