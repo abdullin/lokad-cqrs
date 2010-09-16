@@ -30,11 +30,13 @@ namespace Lokad.Cqrs
 			Serialization.UseBinaryFormatter();
 			Logging.LogToTrace();
 
+			_builder.RegisterInstance(SimpleMessageProfiler.Instance);
+			_builder.RegisterInstance(NullEngineProfiler.Instance);
 
 			_builder.RegisterType<CloudSettingsProvider>().As<IProfileSettings, ISettingsProvider>().SingleInstance();
-			_builder.RegisterInstance(NullEngineProfiler.Instance);
 			_builder.RegisterType<AzureQueueFactory>().As<IRouteMessages, IQueueManager>().SingleInstance();
 			_builder.RegisterType<AzureQueueTransport>().As<IMessageTransport>();
+			_builder.RegisterType<CloudSettingsProvider>().As<IProfileSettings, ISettingsProvider>().SingleInstance();
 			_builder.RegisterType<CloudClient>().SingleInstance();
 			_builder.RegisterType<EntityStorage>().As<IEntityReader>().SingleInstance();
 		}
@@ -59,24 +61,6 @@ namespace Lokad.Cqrs
 		{
 			get { return _builder; }
 		}
-
-		//public CloudClientBuilder LoggingIs(Action<ISupportSyntaxForLogging> configure)
-		//{
-		//    configure(Logging);
-		//    return this;
-		//}
-
-		//public CloudClientBuilder SerializationIs(Action<AutofacBuilderForSerialization> configure)
-		//{
-		//    configure(Serialization);
-		//    return this;
-		//}
-
-		//public CloudClientBuilder AzureIs(Action<AutofacBuilderForAzure> configure)
-		//{
-		//    configure(Azure);
-		//    return this;
-		//}
 
 		/// <summary>
 		/// Creates default message sender for the instance of <see cref="ICloudClient"/>
