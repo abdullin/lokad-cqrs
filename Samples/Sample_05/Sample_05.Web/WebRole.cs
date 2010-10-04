@@ -14,6 +14,8 @@ namespace Sample_05.Web
 			DiagnosticMonitor.Start("DiagnosticsConnectionString");
 			RoleEnvironment.Changing += RoleEnvironmentChanging;
 
+			GlobalSetup.InitIfNeeded();
+
 			return base.OnStart();
 		}
 

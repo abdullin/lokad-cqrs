@@ -321,7 +321,7 @@
       <param name="args">The arguments of the format string.</param>
       <returns>new exception instance</returns>
     </member>
-    <member name="M:Lokad.Errors.Inner(System.Reflection.TargetInvocationException)">
+    <member name="M:Lokad.Errors.Inner(System.Exception)">
       <summary>
             Returns inner exception, while preserving the stack trace
             </summary>

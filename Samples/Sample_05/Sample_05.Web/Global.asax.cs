@@ -31,9 +31,7 @@ namespace Sample_05.Web
 
 		protected void Application_Start()
 		{
-			GlobalSetup.InitIfNeeded();
 			AreaRegistration.RegisterAllAreas();
-
 			RegisterRoutes(RouteTable.Routes);
 
 			if (RoleEnvironment.IsAvailable)
