@@ -52,7 +52,7 @@
     <Copy SourceFiles="@(testFiles)" DestinationFolder="$(TestPath)" />
   </Target>
 
-	<Target Name="build-azure-starter" DependsOnTargets="copy">
+	<Target Name="build-azure-starter" DependsOnTargets="clean;copy">
 		<MakeDir Directories="$(AzureStarterPath)"/>
 		<!--Lokad.Cqrs.AzureCore-->
 		<Exec Command='$(ILMerge) "$(RawPath)\Lokad.Cqrs.Shared.dll" "$(RawPath)\Lokad.Cqrs.Core.dll" "$(RawPath)\Lokad.Cqrs.Storage.dll" "$(RawPath)\Lokad.Cqrs.Azure.dll" "$(RawPath)\protobuf-net.dll" "$(RawPath)\Autofac.dll" /out:"$(AzureStarterPath)\Lokad.Cqrs.AzureStarter.Core.dll" /lib:"$(RawPath)" /log /keyfile:SharedKey.snk /xmldocs=true /ver:$(Version) /attr:"$(RawPath)\Lokad.Cqrs.Azure.dll" /targetplatform:v4,"$(TargetPlatform)" /lib:"$(TempPath)" /closed' />

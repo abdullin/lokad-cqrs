@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Lokad.Cqrs.Directory;
 using Lokad.Cqrs.Domain;
 using NUnit.Framework;
 

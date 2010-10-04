@@ -10,8 +10,8 @@ using Autofac;
 using Lokad.Cqrs.Domain;
 using Lokad.Cqrs.Queue;
 using Lokad.Cqrs.Sender;
-using Lokad.Cqrs.Storage;
 using Lokad.Cqrs.Transport;
+using Lokad.Quality;
 using Lokad.Settings;
 
 namespace Lokad.Cqrs
@@ -19,6 +19,7 @@ namespace Lokad.Cqrs
 	/// <summary>
 	/// Fluent API for creating and configuring <see cref="ICloudClient"/>
 	/// </summary>
+	[UsedImplicitly]
 	public sealed class CloudClientBuilder : ISyntax<ContainerBuilder>
 	{
 		readonly ContainerBuilder _builder = new ContainerBuilder();
@@ -38,7 +39,6 @@ namespace Lokad.Cqrs
 			_builder.RegisterType<AzureQueueTransport>().As<IMessageTransport>();
 			_builder.RegisterType<CloudSettingsProvider>().As<IProfileSettings, ISettingsProvider>().SingleInstance();
 			_builder.RegisterType<CloudClient>().SingleInstance();
-			_builder.RegisterType<EntityStorage>().As<IEntityReader>().SingleInstance();
 		}
 
 
@@ -73,11 +73,21 @@ namespace Lokad.Cqrs
 		}
 
 		/// <summary>
-		/// Configures the message domain for the instance of <see cref="ICloudEngineHost"/>.
+		/// Configures the message domain for the instance of <see cref="ICloudClient"/>.
 		/// </summary>
 		/// <param name="config">configuration syntax.</param>
 		/// <returns>same builder for inling multiple configuration statements</returns>
 		public CloudClientBuilder Domain(Action<DomainBuildModule> config)
+		{
+			return this.WithModule(config);
+		}
+
+		/// <summary>
+		/// Configures the view mappings for the instance of <see cref="ICloudClient"/>
+		/// </summary>
+		/// <param name="config">configuration syntax.</param>
+		/// <returns>same builder for inling multiple configuration statements</returns>
+		public CloudClientBuilder Views(Action<ViewBuildModule> config)
 		{
 			return this.WithModule(config);
 		}

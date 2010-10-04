@@ -11,8 +11,9 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.Serialization;
+using Lokad.Cqrs.Domain;
 
-namespace Lokad.Cqrs.Domain
+namespace Lokad.Cqrs.Directory
 {
 	public sealed class DomainAssemblyScanner
 	{
@@ -40,12 +41,6 @@ namespace Lokad.Cqrs.Domain
 		}
 
 		public DomainAssemblyScanner WhereMessages(Func<Type, bool> filter)
-		{
-			_serializableSelector.Where(filter);
-			return this;
-		}
-
-		public DomainAssemblyScanner WhereEntities(Func<Type, bool> filter)
 		{
 			_serializableSelector.Where(filter);
 			return this;

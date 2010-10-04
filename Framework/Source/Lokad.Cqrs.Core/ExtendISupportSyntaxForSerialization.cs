@@ -6,6 +6,7 @@
 
 #endregion
 
+using Lokad.Cqrs.Serialization;
 using Lokad.Serialization;
 
 namespace Lokad.Cqrs

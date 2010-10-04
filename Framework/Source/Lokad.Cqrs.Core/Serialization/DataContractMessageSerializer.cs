@@ -53,7 +53,8 @@ namespace Lokad.Serialization
 		/// Initializes a new instance of the <see cref="DataContractMessageSerializer"/> class.
 		/// </summary>
 		/// <param name="know">The know.</param>
-		public DataContractMessageSerializer(IKnowSerializationTypes know) : this(know.GetKnownTypes().ToSet())
+		public DataContractMessageSerializer(IEnumerable<IKnowSerializationTypes> know)
+			: this(know.SelectMany(t => t.GetKnownTypes()).ToSet())
 		{
 		}
 
