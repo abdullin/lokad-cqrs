@@ -60,6 +60,12 @@ namespace Sample_05.Contracts
 		
 	}
 
+	public interface IHandle<in TCommand> : IConsumeMessage
+		where TCommand : IDomainCommand
+	{
+		void Handle(TCommand command);
+	}
+
 
 	[ProtoContract]
 	public sealed class RegisterUserCommand : IDomainCommand

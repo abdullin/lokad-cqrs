@@ -38,24 +38,6 @@
 	<%}%>
 </div>
 <div id="right">
-    <h3>Big Picture</h3>
-    <p>Salecast is a client app delivering sales forecasts. In order to use
-    Salecast, you need a <a href="http://app.lokad.com/">Lokad Account</a>. 
-    After opening your Lokad Account, you will receive the Forecasting API key
-    in your registration email.</p>
 
-    <h3>Why two registrations?</h3>
-    <p>The forecasting technology of Lokad can be used for many purposes.
-    Your Lokad account keeps track of your overal forecasts consumption, 
-    while Salescast is strictly specialized on importing sales data
-    and delivering sales forecast reports.
-    </p>
-
-    <h3>How much does it cost?</h3>
-    <p>Salecast itself is provided free of charge, yet, Salescast relies on the
-    Forecasting Service of Lokad to build its reports. Basically, Lokad has a
-    pay-as-you pricing for each forecast you consume. See our 
-    <a href="http://www.lokad.com/pricing.ashx">pricing page</a> for more 
-    details.</p>
 </div>
 </asp:Content>
