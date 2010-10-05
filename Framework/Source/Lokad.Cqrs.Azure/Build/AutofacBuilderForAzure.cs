@@ -1,4 +1,11 @@
-﻿using System;
+﻿#region (c) 2010 Lokad Open Source - New BSD License 
+
+// Copyright (c) Lokad 2010, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
+using System;
 using System.Net;
 using Autofac;
 using Lokad.Cqrs.Storage;
@@ -15,6 +22,7 @@ namespace Lokad.Cqrs
 		public AutofacBuilderForAzure(ContainerBuilder builder)
 		{
 			_builder = builder;
+			
 		}
 
 		/// <summary>
@@ -31,6 +39,7 @@ namespace Lokad.Cqrs
 			var account = CloudStorageAccount.Parse(accountString);
 			_builder.RegisterInstance(account);
 			DisableNagleForQueuesAndTables(account);
+			RegisterLocals();
 			return this;
 		}
 
@@ -46,6 +55,7 @@ namespace Lokad.Cqrs
 		{
 			_builder.RegisterInstance(account);
 			DisableNagleForQueuesAndTables(account);
+			RegisterLocals();
 			return this;
 		}
 
@@ -53,7 +63,6 @@ namespace Lokad.Cqrs
 		/// <summary>
 		/// Uses storage account defined in the string.
 		/// </summary>
-		
 		/// <returns>
 		/// same builder for inling multiple configuration statements
 		/// </returns>
@@ -64,6 +73,7 @@ namespace Lokad.Cqrs
 			var account = new CloudStorageAccount(credentials, useHttps);
 			_builder.RegisterInstance(account);
 			DisableNagleForQueuesAndTables(account);
+			RegisterLocals();
 			return this;
 		}
 
@@ -86,6 +96,7 @@ namespace Lokad.Cqrs
 		public AutofacBuilderForAzure UseDevelopmentStorageAccount()
 		{
 			_builder.RegisterInstance(CloudStorageAccount.DevelopmentStorageAccount);
+			RegisterLocals();
 			return this;
 		}
 
@@ -111,28 +122,15 @@ namespace Lokad.Cqrs
 					return account;
 				}).SingleInstance();
 
+			RegisterLocals();
+
 			return this;
 		}
 
-		/// <summary>
-		/// Creates the default storage container (<see cref="IStorageContainer"/>) pointing at the specified directory.
-		/// </summary>
-		/// <param name="blobDirectoryAddress">The BLOB directory address.</param>
-		/// <returns>
-		/// same builder for inling multiple configuration statements
-		/// </returns>
-		public AutofacBuilderForAzure DefaultStorageContainerIs(string blobDirectoryAddress)
+		void RegisterLocals()
 		{
-			_builder.Register(c =>
-				{
-					var account = c.Resolve<CloudStorageAccount>();
-					var provider = c.Resolve<ILogProvider>();
-					var directory = account.CreateCloudBlobClient().GetBlobDirectoryReference(blobDirectoryAddress);
-					
-					return new BlobStorageContainer(directory, provider).Create();
-				}).As<IStorageContainer>().SingleInstance();
-
-			return this;
+			_builder.RegisterType<BlobStorageRoot>().SingleInstance().As<IStorageRoot>();
+			_builder.Register(c => c.Resolve<CloudStorageAccount>().CreateCloudBlobClient());
 		}
 	}
 }

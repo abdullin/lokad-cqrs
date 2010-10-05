@@ -96,6 +96,7 @@
     <Compile Include="Serialization\DataContractMessageSerializer.cs" />
     <Compile Include="Serialization\DataContractUtil.cs" />
     <Compile Include="Serialization\IKnowSerializationTypes.cs" />
+    <Compile Include="Views\ViewAssemblyScanner.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Build\Engine\" />

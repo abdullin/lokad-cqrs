@@ -41,12 +41,9 @@
     <Compile Include="ExtendIEntityWriter.cs" />
     <Compile Include="FileStorageContainer.cs" />
     <Compile Include="FileStorageItem.cs" />
-    <Compile Include="IEntityReader.cs" />
-    <Compile Include="IEntityWriter.cs" />
     <Compile Include="IStorageContainer.cs" />
     <Compile Include="IStorageItem.cs" />
     <Compile Include="LocalStorageInfo.cs" />
-    <Compile Include="OptimisticConcurrencyException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReaderDelegate.cs" />
     <Compile Include="StorageBaseException.cs" />

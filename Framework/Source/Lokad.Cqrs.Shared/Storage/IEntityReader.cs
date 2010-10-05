@@ -8,7 +8,7 @@
 
 using System;
 
-namespace Lokad.Cqrs
+namespace Lokad.Cqrs.Storage
 {
 	/// <summary>
 	/// Handles read-side operations for the entity storage

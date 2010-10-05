@@ -1,9 +1,16 @@
-﻿using System;
+﻿#region (c) 2010 Lokad Open Source - New BSD License 
+
+// Copyright (c) Lokad 2010, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Lokad.Cqrs.Domain
+namespace Lokad.Cqrs.Views
 {
 	public sealed class ViewAssemblyScanner
 	{
@@ -12,7 +19,7 @@ namespace Lokad.Cqrs.Domain
 
 		public ViewAssemblyScanner WithAssemblyOf<T>()
 		{
-			_assemblies.Add(typeof(T).Assembly);
+			_assemblies.Add(typeof (T).Assembly);
 			return this;
 		}
 

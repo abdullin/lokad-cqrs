@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection;
 using Autofac;
 using Autofac.Core;
@@ -8,20 +7,58 @@ using Lokad.Cqrs.Storage;
 using Lokad.Serialization;
 using System.Linq;
 
-namespace Lokad.Cqrs.Domain
+namespace Lokad.Cqrs.Views
 {
+
+	public enum ViewModuleRole
+	{
+		Writer, Reader
+	}
 	public class ViewBuildModule : IModule
 	{
+		readonly ViewModuleRole _role;
 		readonly ContainerBuilder _builder = new ContainerBuilder();
 		readonly ViewAssemblyScanner _scanner = new ViewAssemblyScanner();
+
+		public string ViewContainer { get; set; }
+
+		
+
+		public ViewBuildModule(ViewModuleRole role)
+		{
+			_role = role;
+			ViewContainer = "cqrs-views";
+		}
 
 		public void Configure(IComponentRegistry componentRegistry)
 		{
 			var mappings = _scanner.Build();
-			_builder.RegisterInstance(new FixedTypeDiscovery(mappings.ToArray())).As<IKnowSerializationTypes>();
-			_builder.RegisterType<EntityStorage>().As<IEntityReader, IEntityWriter>().SingleInstance();
+			var discovery = new FixedTypeDiscovery(mappings.ToArray());
+			_builder.RegisterInstance(discovery).As<IKnowSerializationTypes>();
+			
+			// configure view reader/writer based on the role
+			switch (_role)
+			{
+				case ViewModuleRole.Writer:
+					_builder.Register(c => new ViewWriter(ComposeStorage(c, ViewContainer))).SingleInstance();
+					break;
+				case ViewModuleRole.Reader:
+					_builder.Register(c => new ViewReader(ComposeStorage(c, ViewContainer))).SingleInstance();
+					break;
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
 
 			_builder.Update(componentRegistry);
+		}
+
+		EntityStorage ComposeStorage(IComponentContext c, string containerName)
+		{
+			var root = c.Resolve<IStorageRoot>();
+			var container = root.GetContainer(containerName).Create();
+			var serializer = c.Resolve<IDataSerializer>();
+			var mapper = c.Resolve<IDataContractMapper>();
+			return new EntityStorage(container, serializer, mapper);
 		}
 
 		/// <summary>
@@ -106,21 +143,5 @@ namespace Lokad.Cqrs.Domain
 			return this;
 		}
 
-	}
-
-
-	public sealed class FixedTypeDiscovery : IKnowSerializationTypes
-	{
-		readonly Type[] _types;
-
-		public FixedTypeDiscovery(Type[] types)
-		{
-			_types = types;
-		}
-
-		public IEnumerable<Type> GetKnownTypes()
-		{
-			return _types;
-		}
 	}
 }

@@ -11,6 +11,23 @@ using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs.Storage
 {
+	public sealed class BlobStorageRoot : IStorageRoot
+	{
+		readonly CloudBlobClient _client;
+		readonly ILogProvider _provider;
+
+		public BlobStorageRoot(CloudBlobClient client, ILogProvider provider)
+		{
+			_client = client;
+			_provider = provider;
+		}
+
+		public IStorageContainer GetContainer(string name)
+		{
+			return new BlobStorageContainer(_client.GetBlobDirectoryReference(name), _provider);
+		}
+	}
+
 	public sealed class BlobStorageContainer : IStorageContainer
 	{
 		readonly CloudBlobDirectory _directory;

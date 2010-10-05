@@ -66,8 +66,8 @@
     <Compile Include="Consume\ConfigureNotificationOnException.cs" />
     <Compile Include="Consume\DispatchesMultipleMessagesToSharedScope.cs" />
     <Compile Include="Consume\DispatchesSingleMessage.cs" />
-    <Compile Include="Domain\ViewBuildModule.cs" />
-    <Compile Include="Views\ViewAssemblyScanner.cs" />
+    <Compile Include="Views\FixedTypeDiscovery.cs" />
+    <Compile Include="Views\ViewBuildModule.cs" />
     <Compile Include="Storage\BlobStorageContainer.cs" />
     <Compile Include="Storage\BlobStorageItem.cs" />
     <Compile Include="Build\SimpleMessageProfiler.cs" />

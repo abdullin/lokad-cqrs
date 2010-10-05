@@ -1,4 +1,4 @@
-﻿namespace Lokad.Cqrs
+﻿namespace Lokad.Cqrs.Storage
 {
 	public interface IStorageContainer
 	{
@@ -10,5 +10,10 @@
 		bool Exists();
 
 		string FullPath { get; }
+	}
+
+	public interface IStorageRoot
+	{
+		IStorageContainer GetContainer(string name);
 	}
 }

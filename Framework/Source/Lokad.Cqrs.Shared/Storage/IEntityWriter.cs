@@ -1,4 +1,5 @@
 ﻿using System;
+using Lokad.Cqrs.Storage;
 
 namespace Lokad.Cqrs
 {
@@ -34,4 +35,41 @@ namespace Lokad.Cqrs
 		/// <param name="key">The identity.</param>
 		void Remove(Type type, object key);
 	}
+
+	public sealed class ViewWriter : IEntityWriter
+	{
+		readonly IEntityWriter _writer;
+
+		public ViewWriter(IEntityWriter writer)
+		{
+			_writer = writer;
+		}
+
+		public void Write(Type type, object key, AddEntityDelegate addEntityDelegate, UpdateEntityDelegate updateEntityDelegate)
+		{
+			_writer.Write(type, key, addEntityDelegate, updateEntityDelegate);
+		}
+
+		public void Remove(Type type, object key)
+		{
+			_writer.Remove(type, key);
+		}
+	}
+
+	public sealed class ViewReader : IEntityReader
+	{
+		IEntityReader _reader;
+
+		public ViewReader(IEntityReader reader)
+		{
+			_reader = reader;
+		}
+
+		public Maybe<object> Read(Type type, object identity)
+		{
+			return _reader.Read(type, identity);
+		}
+	}
+
+	
 }

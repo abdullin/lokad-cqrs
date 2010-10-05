@@ -10,7 +10,9 @@ using Autofac;
 using Lokad.Cqrs.Domain;
 using Lokad.Cqrs.Queue;
 using Lokad.Cqrs.Sender;
+using Lokad.Cqrs.Storage;
 using Lokad.Cqrs.Transport;
+using Lokad.Cqrs.Views;
 using Lokad.Quality;
 using Lokad.Settings;
 
@@ -27,7 +29,6 @@ namespace Lokad.Cqrs
 		public CloudClientBuilder()
 		{
 			Azure.UseDevelopmentStorageAccount();
-			Azure.DefaultStorageContainerIs("cqrs-views");
 			Serialization.UseBinaryFormatter();
 			Logging.LogToTrace();
 
@@ -83,13 +84,16 @@ namespace Lokad.Cqrs
 		}
 
 		/// <summary>
-		/// Configures the view mappings for the instance of <see cref="ICloudClient"/>
+		/// Configures the view mappings for the instance of <see cref="ICloudClient"/> and provides <see cref="IReadViews"/> component
 		/// </summary>
 		/// <param name="config">configuration syntax.</param>
 		/// <returns>same builder for inling multiple configuration statements</returns>
 		public CloudClientBuilder Views(Action<ViewBuildModule> config)
 		{
-			return this.WithModule(config);
+			var module = new ViewBuildModule(ViewModuleRole.Reader);
+			config(module);
+			Target.RegisterModule(module);
+			return this;
 		}
 
 		public CloudClient BuildFor(string queueName)

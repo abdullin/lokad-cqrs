@@ -129,6 +129,9 @@
     <Compile Include="Rules\Scopes\TrackScope.cs" />
     <Compile Include="Settings\ISettingsKeyFilter.cs" />
     <Compile Include="Settings\ISettingsProvider.cs" />
+    <Compile Include="Storage\IEntityReader.cs" />
+    <Compile Include="Storage\IEntityWriter.cs" />
+    <Compile Include="Storage\OptimisticConcurrencyException.cs" />
     <Compile Include="Syntax\ISyntax.TTarget.cs" />
     <Compile Include="Syntax\Syntax.cs" />
     <Compile Include="Syntax\Syntax.TTarget.cs" />
