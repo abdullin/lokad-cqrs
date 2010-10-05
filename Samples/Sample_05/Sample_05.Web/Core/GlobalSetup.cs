@@ -16,12 +16,12 @@ namespace Sample_05.Web
 	{
 		internal static readonly ICloudClient Client;
 		
-		internal static readonly IEntityReader Views;
+		internal static readonly ViewReader Views;
 
 		static GlobalSetup()
 		{
 			Client = Build();
-			Views = Client.Resolve<IEntityReader>();
+			Views = Client.Resolve<ViewReader>();
 		}
 
 		public static ICloudClient Build()
@@ -38,10 +38,11 @@ namespace Sample_05.Web
 				{
 					x.WithDefaultInterfaces();
 					x.InAssemblyOf<LoginView>();
+					x.ViewContainer = "sample-05-views";
 				});
 			
 			builder.Azure.LoadStorageAccountFromSettings("StorageConnectionString");
-			builder.Azure.DefaultStorageContainerIs("sample-05-views");
+			
 			
 
 			builder.AddMessageClient(sm => sm.DefaultToQueue("sample-05-queue"));

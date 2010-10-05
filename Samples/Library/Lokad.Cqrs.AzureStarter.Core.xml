@@ -3991,6 +3991,83 @@
             	new settings provider that had been filtered
             </returns>
     </member>
+    <member name="T:Lokad.Cqrs.Storage.IEntityReader">
+      <summary>
+            Handles read-side operations for the entity storage
+            </summary>
+    </member>
+    <member name="M:Lokad.Cqrs.Storage.IEntityReader.Read(System.Type,System.Object)">
+      <summary>
+            Retrieves the specified entity from the store, if it is found.
+            Underlying storage could be event, cloud blob or whatever
+            </summary>
+      <param name="type">The type of the state (needed to deserialize).</param>
+      <param name="identity">The identity.</param>
+      <returns>loaded entity (if found)</returns>
+    </member>
+    <member name="T:Lokad.Cqrs.AddEntityDelegate">
+      <summary>
+            The function used to generate a value for an absent key
+            </summary>
+    </member>
+    <member name="T:Lokad.Cqrs.UpdateEntityDelegate">
+      <summary>
+            The function used to generate a new value for an existing key based on the key's existing value
+            </summary>
+    </member>
+    <member name="T:Lokad.Cqrs.IEntityWriter">
+      <summary>
+            Handles write operations for the state storage
+            </summary>
+    </member>
+    <member name="M:Lokad.Cqrs.IEntityWriter.Write(System.Type,System.Object,Lokad.Cqrs.AddEntityDelegate,Lokad.Cqrs.UpdateEntityDelegate)">
+      <summary>
+            Updates an entity if the key already exists or creates a new entity otherwise.
+            </summary>
+      <param name="type">The type of the entity to patch.</param>
+      <param name="key">The identity of the entity to patch.</param>
+      <param name="addEntityDelegate">The function used to generate an entity for an absent key.</param>
+      <param name="updateEntityDelegate">The function used to generate a new entity for an existing key based on the existing entity.</param>
+      <exception cref="T:Lokad.Cqrs.OptimisticConcurrencyException">when updated entity had been changed concurrently</exception>
+    </member>
+    <member name="M:Lokad.Cqrs.IEntityWriter.Remove(System.Type,System.Object)">
+      <summary>
+            Deletes the specified entity, given it's type and key
+            </summary>
+      <param name="type">The type.</param>
+      <param name="key">The identity.</param>
+    </member>
+    <member name="T:Lokad.Cqrs.OptimisticConcurrencyException">
+      <summary>
+            Exception thrown, when patched entity has been edited in the process
+            </summary>
+    </member>
+    <member name="M:Lokad.Cqrs.OptimisticConcurrencyException.#ctor(System.String)">
+      <summary>
+            Initializes a new instance of the <see cref="T:Lokad.Cqrs.OptimisticConcurrencyException" /> class.
+            </summary>
+      <param name="message">The message.</param>
+    </member>
+    <member name="M:Lokad.Cqrs.OptimisticConcurrencyException.#ctor(System.String,System.Exception)">
+      <summary>
+            Initializes a new instance of the <see cref="T:Lokad.Cqrs.OptimisticConcurrencyException" /> class.
+            </summary>
+      <param name="message">The message.</param>
+      <param name="inner">The inner.</param>
+    </member>
+    <member name="M:Lokad.Cqrs.OptimisticConcurrencyException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+      <summary>
+            Initializes a new instance of the <see cref="T:Lokad.Cqrs.OptimisticConcurrencyException" /> class.
+            </summary>
+      <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
+      <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
+      <exception cref="T:System.ArgumentNullException">
+            The <paramref name="info" /> parameter is null.
+            </exception>
+      <exception cref="T:System.Runtime.Serialization.SerializationException">
+            The class name is null or <see cref="P:System.Exception.HResult" /> is zero (0).
+            </exception>
+    </member>
     <member name="T:Lokad.ISyntax`1">
       <summary>
             Interface for implementing decoupled configuration extensions. It hides

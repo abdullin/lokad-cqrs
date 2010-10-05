@@ -27,6 +27,18 @@ namespace Sample_05.Contracts
 		[ProtoMember(4)]
 		public string LoginIdentity { get; private set; }
 
+		public void Init(Guid userId, string username, string email, string identity)
+		{
+			UserId = userId;
+			Username = username;
+			Email = email;
+			LoginIdentity = identity;
+		}
+
+
+
+		
+
 		public static string CalculateSHA1(string text)
 		{
 			byte[] buffer = Encoding.Unicode.GetBytes(text);
@@ -43,27 +55,21 @@ namespace Sample_05.Contracts
 	public class UserView : IEntity
 	{
 		[ProtoMember(1)]
-		public Guid UserId { get; private set; }
+		public Guid UserId { get; set; }
 		[ProtoMember(2)]
-		public string Username { get; private set; }
+		public string Username { get; set; }
 		[ProtoMember(3)]
-		public string Email { get; private set; }
+		public string Email { get; set; }
 		[ProtoMember(4)]
-		public string LoginIdentity { get; private set; }
+		public string LoginIdentity { get; set; }
 		[ProtoMember(5)]
-		public string RegistrationToken { get; private set; }
+		public string RegistrationToken { get; set; }
 	}
 	
 
 	public interface IDomainCommand : IMessage
 	{
 		
-	}
-
-	public interface IHandle<in TCommand> : IConsumeMessage
-		where TCommand : IDomainCommand
-	{
-		void Handle(TCommand command);
 	}
 
 

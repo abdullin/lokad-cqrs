@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Lokad.Cqrs.AzureStarter.Core">
+      <HintPath>..\..\Library\Lokad.Cqrs.AzureStarter.Core.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.WindowsAzure.ServiceRuntime, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
@@ -66,6 +69,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Sample_05.Contracts\Sample_05.Contracts.csproj">
+      <Project>{18892247-0FCF-4EA0-ABB5-75F219B603FF}</Project>
+      <Name>Sample_05.Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Sample_05.Domain\Sample_05.Domain.csproj">
+      <Project>{B5339FB9-0798-4E7E-9F87-5579EECBE0F8}</Project>
+      <Name>Sample_05.Domain</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

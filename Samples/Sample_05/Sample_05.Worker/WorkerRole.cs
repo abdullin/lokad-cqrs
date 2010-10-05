@@ -1,28 +1,69 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿#region Copyright (c) 2009-2010 LOKAD SAS. All rights reserved.
+
+// Copyright (c) 2009-2010 LOKAD SAS. All rights reserved.
+// You must not remove this notice, or any other, from this software.
+// This document is the property of LOKAD SAS and must not be disclosed.
+
+#endregion
+
 using System.Linq;
 using System.Net;
-using System.Threading;
-using Microsoft.WindowsAzure;
+using Lokad.Cqrs;
 using Microsoft.WindowsAzure.Diagnostics;
 using Microsoft.WindowsAzure.ServiceRuntime;
-using Microsoft.WindowsAzure.StorageClient;
+using Sample_05.Contracts;
+using Sample_05.Domain;
 
 namespace Sample_05.Worker
 {
-	public class WorkerRole : RoleEntryPoint
+	public class WorkerRole : CloudEngineRole
 	{
-		public override void Run()
+		protected override ICloudEngineHost BuildHost()
 		{
-			// This is a sample worker implementation. Replace with your logic.
-			Trace.WriteLine("Sample_05.Worker entry point called", "Information");
+			// for more detail about this sample see:
+			// http://code.google.com/p/lokad-cqrs/wiki/GuidanceSeries
 
-			while (true)
-			{
-				Thread.Sleep(10000);
-				Trace.WriteLine("Working", "Information");
-			}
+			var builder = new CloudEngineBuilder();
+
+			// let's use Protocol Buffers!
+			builder.Serialization.UseProtocolBuffers();
+
+			// this tells the server about the domain
+			builder.DomainIs(x =>
+				{
+					x.WithDefaultInterfaces();
+					x.InAssemblyOf<RegisterUserCommand>();
+					x.InAssemblyOf<RegisterUser>();
+
+				});
+
+			builder.Views(x =>
+				{
+					x.WithDefaultInterfaces();
+					x.InAssemblyOf<LoginView>();
+					x.ViewContainer = "sample-05-views";
+				});
+			builder.Azure.LoadStorageAccountFromSettings("StorageConnectionString");
+			builder.AddMessageClient(sm => sm.DefaultToQueue("sample-05-queue"));
+
+
+			// we'll handle all messages incoming to this queue
+			builder.AddMessageHandler(x =>
+				{
+					x.ListenToQueue("sample-05-queue");
+					x.WithSingleConsumer();
+					// let's record failures to the specified blob 
+					// container using the pretty printer
+					x.LogExceptionsToBlob(c => { c.ContainerName = "sample-05-errors"; });
+
+					// set XmppRecipient in your config and enable this
+					// to send notifications to the specified Jabber
+					//
+					// mc.LogExceptionsToCommunicator(c => { c.ConfigKeyForRecipient = "XmppRecipient"; });
+				});
+
+
+			return builder.Build();
 		}
 
 		public override bool OnStart()
@@ -31,15 +72,12 @@ namespace Sample_05.Worker
 			ServicePointManager.DefaultConnectionLimit = 12;
 
 			DiagnosticMonitor.Start("DiagnosticsConnectionString");
-
-			// For information on handling configuration changes
-			// see the MSDN topic at http://go.microsoft.com/fwlink/?LinkId=166357.
 			RoleEnvironment.Changing += RoleEnvironmentChanging;
 
 			return base.OnStart();
 		}
 
-		private void RoleEnvironmentChanging(object sender, RoleEnvironmentChangingEventArgs e)
+		void RoleEnvironmentChanging(object sender, RoleEnvironmentChangingEventArgs e)
 		{
 			// If a configuration setting is changing
 			if (e.Changes.Any(change => change is RoleEnvironmentConfigurationSettingChange))
