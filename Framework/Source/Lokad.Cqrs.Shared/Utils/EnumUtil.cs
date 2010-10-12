@@ -7,6 +7,7 @@
 #endregion
 
 using System;
+using Lokad.Quality;
 
 namespace Lokad
 {
@@ -22,9 +23,10 @@ namespace Lokad
 		/// <param name="value">The value.</param>
 		/// <returns>Parsed enum</returns>
 		/// <exception cref="ArgumentNullException">If <paramref name="value"/> is null</exception>
-		public static TEnum Parse<TEnum>(string value) where TEnum : struct, IComparable
+		public static TEnum Parse<TEnum>([NotNull] string value) where TEnum : struct, IComparable
 		{
-			return (TEnum) Enum.Parse(typeof (TEnum), value, true);
+			if (value == null) throw new ArgumentNullException("value");
+			return Parse<TEnum>(value, true);
 		}
 
 		/// <summary>
@@ -35,9 +37,18 @@ namespace Lokad
 		/// <param name="ignoreCase">if set to <c>true</c> [ignore case].</param>
 		/// <returns>Parsed enum</returns>
 		/// <exception cref="ArgumentNullException">If <paramref name="value"/> is null</exception>
-		public static TEnum Parse<TEnum>(string value, bool ignoreCase) where TEnum : struct
+		public static TEnum Parse<TEnum>([NotNull] string value, bool ignoreCase) where TEnum : struct, IComparable
 		{
-			return (TEnum)Enum.Parse(typeof(TEnum), value, ignoreCase);
+			if (value == null) throw new ArgumentNullException("value");
+
+			var dict = ignoreCase ? EnumUtil<TEnum>.IgnoreCaseDict : EnumUtil<TEnum>.CaseDict;
+
+			TEnum @enum;
+			if (!dict.TryGetValue(value, out @enum))
+			{
+				throw new ArgumentException(string.Format("Can't find enum for '{0}'", value));
+			}
+			return @enum;
 		}
 
 		/// <summary>
