@@ -8,7 +8,7 @@
 
 using System;
 
-namespace Lokad.Quality
+namespace Lokad
 {
 	/// <summary>
 	/// Indicates that the marked symbol is used implicitly (ex. reflection, external library), 

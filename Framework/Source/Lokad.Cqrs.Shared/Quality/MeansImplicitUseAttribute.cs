@@ -8,7 +8,7 @@
 
 using System;
 
-namespace Lokad.Quality
+namespace Lokad
 {
 	/// <summary>
 	/// Should be used on attributes and causes ReSharper to not mark symbols marked with such attributes as unused (as well as by other usage inspections)

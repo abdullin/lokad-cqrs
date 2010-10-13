@@ -9,7 +9,6 @@
 using System;
 using System.Globalization;
 using System.Reflection;
-using Lokad.Quality;
 using Lokad.Reflection;
 
 namespace Lokad

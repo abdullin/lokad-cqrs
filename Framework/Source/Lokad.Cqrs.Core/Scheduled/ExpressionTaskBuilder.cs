@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Lokad.Reflection;
+using ExtendIEnumerable = Lokad.ExtendIEnumerable;
 
 namespace Lokad.Cqrs.Scheduled
 {
@@ -54,12 +55,11 @@ namespace Lokad.Cqrs.Scheduled
 
 		public IEnumerable<ScheduledTaskInfo> BuildTasks()
 		{
-			var scheduledTaskInfos = _assemblies
-				.SelectMany(a => a.GetTypes())
-				.Where(t => !t.IsAbstract)
-				.Where(t => typeof (TTask).IsAssignableFrom(t))
-				.Where(_taskFilter.BuildFilter())
-				.ToArray(t => new ScheduledTaskInfo(Naming(t), t, _info));
+			var scheduledTaskInfos = ExtendIEnumerable.ToArray<Type, ScheduledTaskInfo>(_assemblies
+					.SelectMany(a => a.GetTypes())
+					.Where(t => !t.IsAbstract)
+					.Where(t => typeof (TTask).IsAssignableFrom(t))
+					.Where(_taskFilter.BuildFilter()), t => new ScheduledTaskInfo(Naming(t), t, _info));
 
 			if (scheduledTaskInfos.Length == 0 && !_allowEmptyBuilder)
 			{

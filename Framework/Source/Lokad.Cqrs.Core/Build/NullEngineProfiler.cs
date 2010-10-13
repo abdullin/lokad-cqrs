@@ -7,7 +7,6 @@
 
 using System;
 using Lokad.Cqrs.Queue;
-using Lokad.Quality;
 
 namespace Lokad.Cqrs
 {

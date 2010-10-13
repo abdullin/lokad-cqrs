@@ -8,7 +8,6 @@
 using System;
 using System.IO;
 using Autofac;
-using Lokad.Cqrs.Messaging;
 using Lokad.Messaging;
 using Lokad.Settings;
 

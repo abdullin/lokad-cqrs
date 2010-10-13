@@ -6,7 +6,7 @@
 
 #endregion
 
-namespace System.Linq
+namespace Lokad
 {
 	/// <summary>
 	/// Indexing wrapper that contains value and its integral position.

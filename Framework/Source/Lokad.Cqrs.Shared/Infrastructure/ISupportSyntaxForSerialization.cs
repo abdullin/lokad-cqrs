@@ -6,7 +6,7 @@
 
 #endregion
 
-namespace Lokad.Cqrs
+namespace Lokad
 {
 	/// <summary>
 	/// Syntax support for .Serialization configurations.

@@ -6,12 +6,12 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Transactions;
 using Autofac;
-using Lokad.Cqrs.Default;
+using Lokad.Default;
 
 namespace Lokad.Cqrs.Scheduled.Build
 {

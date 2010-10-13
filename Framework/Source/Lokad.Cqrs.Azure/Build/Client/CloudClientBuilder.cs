@@ -13,7 +13,6 @@ using Lokad.Cqrs.Sender;
 using Lokad.Cqrs.Storage;
 using Lokad.Cqrs.Transport;
 using Lokad.Cqrs.Views;
-using Lokad.Quality;
 using Lokad.Settings;
 
 namespace Lokad.Cqrs

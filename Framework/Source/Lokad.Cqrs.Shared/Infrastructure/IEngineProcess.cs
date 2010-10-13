@@ -9,7 +9,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Lokad.Cqrs
+namespace Lokad
 {
 	public interface IEngineProcess : IDisposable
 	{

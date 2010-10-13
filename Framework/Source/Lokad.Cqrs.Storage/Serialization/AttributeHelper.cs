@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using ExtendIEnumerable = Lokad.ExtendIEnumerable;
 
 namespace Lokad.Serialization
 {
@@ -15,9 +16,8 @@ namespace Lokad.Serialization
 		public Maybe<string> GetString<TAttribute>(Func<TAttribute, string> retriever)
 			where TAttribute : Attribute
 		{
-			var v = _attributes
-				.OfType<TAttribute>()
-				.FirstOrEmpty()
+			var v = ExtendIEnumerable.FirstOrEmpty<TAttribute>(_attributes
+					.OfType<TAttribute>())
 				.Convert(retriever, "");
 
 			if (string.IsNullOrEmpty(v))

@@ -15,9 +15,7 @@ using System.Xml;
 using jabber;
 using jabber.client;
 using jabber.protocol.client;
-using Lokad.Cqrs.Messaging;
 using Lokad.Messaging;
-using Lokad.Quality;
 
 namespace Lokad.Cqrs.Xmpp
 {

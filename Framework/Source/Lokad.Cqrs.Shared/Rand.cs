@@ -8,7 +8,6 @@
 
 using System;
 using System.Linq;
-using Lokad.Quality;
 
 namespace Lokad
 {

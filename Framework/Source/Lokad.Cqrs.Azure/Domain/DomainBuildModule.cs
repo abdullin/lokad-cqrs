@@ -10,8 +10,8 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Autofac;
 using Autofac.Core;
-using Lokad.Cqrs.Default;
 using Lokad.Cqrs.Directory;
+using Lokad.Default;
 using Lokad.Serialization;
 
 namespace Lokad.Cqrs.Domain

@@ -8,7 +8,6 @@
 
 using System;
 using System.Runtime.Serialization;
-using Lokad.Quality;
 
 namespace Lokad
 {

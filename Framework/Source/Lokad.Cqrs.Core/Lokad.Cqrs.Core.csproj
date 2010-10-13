@@ -60,6 +60,15 @@
     <Compile Include="IEngineProfiler.cs" />
     <Compile Include="IMessageProfiler.cs" />
     <Compile Include="IMessageTransport.cs" />
+    <Compile Include="Lmf\MessageAttributeBuilder.cs" />
+    <Compile Include="Lmf\MessageAttributeContract.cs" />
+    <Compile Include="Lmf\MessageAttributesContract.cs" />
+    <Compile Include="Lmf\MessageAttributeTypeContract.cs" />
+    <Compile Include="Lmf\MessageContext.cs" />
+    <Compile Include="Lmf\MessageHeader.cs" />
+    <Compile Include="Lmf\MessagePrinter.cs" />
+    <Compile Include="Lmf\MessageUtil.cs" />
+    <Compile Include="Lmf\UnpackedMessage.cs" />
     <Compile Include="PubSub\InMemoryPublishSubscribeManager.cs" />
     <Compile Include="PubSub\IPublishSubscribeManager.cs" />
     <Compile Include="PubSub\PublishSubscribeProcess.cs" />
@@ -72,30 +81,13 @@
     <Compile Include="Scheduled\ScheduledProcess.cs" />
     <Compile Include="Scheduled\ScheduledState.cs" />
     <Compile Include="Scheduled\ScheduledTaskInfo.cs" />
-    <Compile Include="Lmf\MessageAttributeBuilder.cs" />
-    <Compile Include="Lmf\MessageAttributeContract.cs" />
-    <Compile Include="Lmf\MessageAttributesContract.cs" />
-    <Compile Include="Lmf\MessageAttributeTypeContract.cs" />
-    <Compile Include="Lmf\MessageContext.cs" />
-    <Compile Include="Lmf\MessageHeader.cs" />
-    <Compile Include="Lmf\MessagePrinter.cs" />
-    <Compile Include="Lmf\MessageUtil.cs" />
-    <Compile Include="Lmf\UnpackedMessage.cs" />
     <Compile Include="Queue\GetMessageResult.cs" />
     <Compile Include="Queue\GetMessageResultState.cs" />
     <Compile Include="Queue\IQueueManager.cs" />
     <Compile Include="Queue\IReadMessageQueue.cs" />
     <Compile Include="Queue\IRouteMessages.cs" />
     <Compile Include="Queue\IWriteMessageQueue.cs" />
-    <Compile Include="Serialization\AttributeHelper.cs" />
-    <Compile Include="ExtendISupportSyntaxForSerialization.cs" />
-    <Compile Include="Serialization\ProtoBufMessageSerializer.cs" />
-    <Compile Include="Serialization\ProtoBufUtil.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Serialization\BinaryMessageSerializer.cs" />
-    <Compile Include="Serialization\DataContractMessageSerializer.cs" />
-    <Compile Include="Serialization\DataContractUtil.cs" />
-    <Compile Include="Serialization\IKnowSerializationTypes.cs" />
     <Compile Include="Views\ViewAssemblyScanner.cs" />
   </ItemGroup>
   <ItemGroup>

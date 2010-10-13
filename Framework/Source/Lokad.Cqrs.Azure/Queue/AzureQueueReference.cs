@@ -7,6 +7,7 @@
 
 using System;
 using System.Linq;
+using ExtendIEnumerable = Lokad.ExtendIEnumerable;
 
 namespace Lokad.Cqrs.Queue
 {
@@ -27,7 +28,7 @@ namespace Lokad.Cqrs.Queue
 		public static AzureQueueReference FromUri(Uri uri)
 		{
 			var segments = uri.Segments;
-			var @join = segments.Take(segments.Length - 1).Join("");
+			var @join = ExtendIEnumerable.Join(segments.Take(segments.Length - 1), "");
 			var endpoint = new Uri(uri, @join.TrimEnd('/'));
 			return new AzureQueueReference(endpoint, segments.Last());
 		}

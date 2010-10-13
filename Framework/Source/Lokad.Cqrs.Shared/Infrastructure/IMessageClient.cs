@@ -6,7 +6,7 @@
 #endregion
 
 
-namespace Lokad.Cqrs
+namespace Lokad
 {
 	public interface IMessageClient
 	{

@@ -1,5 +1,4 @@
 ﻿using Lokad.Cqrs.Storage;
-using Lokad.Diagnostics;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
 using NUnit.Framework;

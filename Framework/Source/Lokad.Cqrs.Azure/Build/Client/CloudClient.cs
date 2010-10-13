@@ -9,7 +9,6 @@ using System;
 using System.Reflection;
 using System.Threading;
 using Autofac;
-using Lokad.Quality;
 
 namespace Lokad.Cqrs
 {

@@ -9,7 +9,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Lokad.Serialization
+namespace Lokad
 {
 	/// <summary>
 	/// Provides collection of known serialization types (for prebuilt serializers)

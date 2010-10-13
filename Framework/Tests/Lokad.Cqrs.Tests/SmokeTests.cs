@@ -9,7 +9,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Threading;
-using Lokad.Cqrs.Default;
+using Lokad.Default;
 using NUnit.Framework;
 using ProtoBuf;
 

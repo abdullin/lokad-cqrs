@@ -7,12 +7,10 @@
 
 using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
 using Lokad.Cqrs.Queue;
-using Lokad.Quality;
 
 namespace Lokad.Cqrs.Transport
 {

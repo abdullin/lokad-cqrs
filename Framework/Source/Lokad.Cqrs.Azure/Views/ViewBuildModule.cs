@@ -1,11 +1,11 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using Autofac;
 using Autofac.Core;
-using Lokad.Cqrs.Default;
 using Lokad.Cqrs.Storage;
+using Lokad.Default;
 using Lokad.Serialization;
-using System.Linq;
 
 namespace Lokad.Cqrs.Views
 {

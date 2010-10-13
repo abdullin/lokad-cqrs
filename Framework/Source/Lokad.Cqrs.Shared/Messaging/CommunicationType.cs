@@ -6,8 +6,6 @@
 
 #endregion
 
-using Lokad.Cqrs.Messaging;
-
 namespace Lokad.Messaging
 {
 	/// <summary>

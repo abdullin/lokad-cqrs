@@ -7,7 +7,6 @@
 #endregion
 
 using System;
-using Lokad.Quality;
 
 namespace Lokad
 {
@@ -288,7 +287,7 @@ namespace Lokad
 
 
 		/// <summary>
-		/// Performs an implicit conversion from <see cref="System.String"/> to <see cref="Lokad.Result&lt;T&gt;"/>.
+		/// Performs an implicit conversion from <see cref="System.String"/> to <see cref="Result{T}"/>.
 		/// </summary>
 		/// <param name="error">The error.</param>
 		/// <returns>The result of the conversion.</returns>

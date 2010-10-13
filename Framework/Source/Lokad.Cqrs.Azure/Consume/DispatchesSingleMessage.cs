@@ -9,8 +9,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Autofac;
+using Lokad.Cqrs.Directory;
 using Lokad.Cqrs.Domain;
 using Lokad.Cqrs.Queue;
+using ExtendIEnumerable = Lokad.ExtendIEnumerable;
 
 namespace Lokad.Cqrs.Consume
 {
@@ -30,8 +32,7 @@ namespace Lokad.Cqrs.Consume
 		static void ThrowIfCommandHasMultipleConsumers(IEnumerable<MessageInfo> commands)
 		{
 			var multipleConsumers = commands
-				.Where(c => c.AllConsumers.Length > 1)
-				.ToArray(c => c.MessageType.FullName);
+				.Where(c => c.AllConsumers.Length > 1).ToArray(c => c.MessageType.FullName);
 
 			if (multipleConsumers.Any())
 			{

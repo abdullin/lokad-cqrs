@@ -6,7 +6,7 @@
 
 #endregion
 
-namespace Lokad.Quality
+namespace Lokad
 {
 	/// <summary>
 	/// Specifies assertion type. If the assertion method argument satisifes the condition, then the execution continues. 

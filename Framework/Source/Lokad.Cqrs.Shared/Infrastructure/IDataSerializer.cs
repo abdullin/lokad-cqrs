@@ -9,7 +9,7 @@
 using System;
 using System.IO;
 
-namespace Lokad.Cqrs
+namespace Lokad
 {
 	/// <summary>
 	/// Generic data serializer interface.

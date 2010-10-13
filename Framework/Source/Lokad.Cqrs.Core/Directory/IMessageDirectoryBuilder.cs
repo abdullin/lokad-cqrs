@@ -6,6 +6,7 @@
 #endregion
 
 using System;
+using Lokad.Cqrs.Directory;
 
 namespace Lokad.Cqrs.Domain
 {

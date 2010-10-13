@@ -9,11 +9,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Xml;
 using Lokad.Cqrs;
-using Lokad.Quality;
-using System.Linq;
+using ExtendIEnumerable = Lokad.ExtendIEnumerable;
 
 namespace Lokad.Serialization
 {
@@ -54,7 +54,7 @@ namespace Lokad.Serialization
 		/// </summary>
 		/// <param name="know">The know.</param>
 		public DataContractMessageSerializer(IEnumerable<IKnowSerializationTypes> know)
-			: this(know.SelectMany(t => t.GetKnownTypes()).ToSet())
+			: this(ExtendIEnumerable.ToSet<Type>(know.SelectMany(t => t.GetKnownTypes())))
 		{
 		}
 

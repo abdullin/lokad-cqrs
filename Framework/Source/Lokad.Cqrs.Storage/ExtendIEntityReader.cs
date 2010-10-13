@@ -7,7 +7,6 @@
 #endregion
 
 using Lokad.Cqrs.Storage;
-using Lokad.Quality;
 
 namespace Lokad.Cqrs
 {

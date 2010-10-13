@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace Lokad.Cqrs
+namespace Lokad
 {
 	/// <summary>
 	/// Exception thrown, when patched entity has been edited in the process

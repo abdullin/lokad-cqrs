@@ -6,7 +6,6 @@
 #endregion
 
 using System.Configuration;
-using Lokad.Quality;
 using Lokad.Settings;
 using Microsoft.WindowsAzure.ServiceRuntime;
 

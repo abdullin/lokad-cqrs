@@ -9,10 +9,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Serialization;
-using Lokad.Quality;
 using System.Linq;
+using System.Runtime.Serialization;
 using Lokad.Serialization;
+using ExtendIEnumerable = Lokad.ExtendIEnumerable;
 
 namespace Lokad.Cqrs.Serialization
 {
@@ -44,7 +44,7 @@ namespace Lokad.Cqrs.Serialization
 		/// </summary>
 		/// <param name="types">The types.</param>
 		[UsedImplicitly]
-		public ProtoBufMessageSerializer(IEnumerable<IKnowSerializationTypes> types) : this (types.SelectMany(t => t.GetKnownTypes()).ToSet())
+		public ProtoBufMessageSerializer(IEnumerable<IKnowSerializationTypes> types) : this (ExtendIEnumerable.ToSet<Type>(types.SelectMany(t => t.GetKnownTypes())))
 		{
 		}
 

@@ -9,7 +9,6 @@ using System;
 using System.Net;
 using Autofac;
 using Lokad.Cqrs.Storage;
-using Lokad.Quality;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
 

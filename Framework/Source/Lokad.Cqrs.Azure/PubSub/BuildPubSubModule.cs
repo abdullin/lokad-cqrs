@@ -6,8 +6,8 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
 using System.Transactions;
 using Autofac;
 using Lokad.Cqrs.Transport;
@@ -91,7 +91,7 @@ namespace Lokad.Cqrs.PubSub.Build
 			var transport = context.Resolve<IMessageTransport>(TypedParameter.From(transportConfig));
 			var consumer = context.Resolve<PublishSubscribeProcess>(TypedParameter.From(transport));
 
-			log.DebugFormat("Use {0} threads to listen to {1}", NumberOfThreads, queueNames.Join("; "));
+			log.DebugFormat("Use {0} threads to listen to {1}", NumberOfThreads, ExtendIEnumerable.Join(queueNames, "; "));
 			return consumer;
 		}
 

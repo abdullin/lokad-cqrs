@@ -7,7 +7,7 @@
 
 using System;
 
-namespace Lokad.Cqrs.Default
+namespace Lokad.Default
 {
 	/// <summary>
 	/// Default interface for use by the TaskScheduler feature

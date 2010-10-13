@@ -7,9 +7,8 @@
 #endregion
 
 using System;
-using Lokad.Quality;
 
-namespace Lokad.Diagnostics
+namespace Lokad
 {
 	/// <summary>
 	/// <see cref="ILog"/> that does not do anything

@@ -74,16 +74,16 @@
 	</Target>
 
   <Target Name="build-azure-bus" DependsOnTargets="clean;copy">
+    <!--Unchanged-->
     <MakeDir Directories="$(AzureBusPath)" />
     <CreateItem Include="$(RawPath)\Lokad.Cqrs.Shared.*;$(RawPath)\protobuf-net.*;$(RawPath)\Autofac.*">
       <Output ItemName="libraries" TaskParameter="Include"/>
     </CreateItem>
     <Copy SourceFiles="@(libraries)" DestinationFolder="$(AzureBusPath)" />
+    <!--Lokad.Cqrs.Bus.Core-->
+    <!--Lokad.Cqrs.AzureCore-->
+    <Exec Command='$(ILMerge) "$(RawPath)\Lokad.Cqrs.Core.dll" "$(RawPath)\Lokad.Cqrs.Storage.dll" "$(RawPath)\Lokad.Cqrs.Azure.dll" "$(RawPath)\protobuf-net.dll" "$(RawPath)\Autofac.dll" /out:"$(AzureStarterPath)\Lokad.Cqrs.AzureStarter.Core.dll" /lib:"$(RawPath)" /log /keyfile:SharedKey.snk /xmldocs=true /ver:$(Version) /attr:"$(RawPath)\Lokad.Cqrs.Azure.dll" /targetplatform:v4,"$(TargetPlatform)" /lib:"$(TempPath)" /closed' />
     
-    
-    <!--Lokad.Cqrs.Bus.Azure-->
-    <Exec Command='$(ILMerge) "$(RawPath)\Lokad.Cqrs.Shared.dll" "$(RawPath)\Lokad.Cqrs.Core.dll" "$(RawPath)\Lokad.Cqrs.Storage.dll" "$(RawPath)\Lokad.Cqrs.Azure.dll" /out:"$(AzureBusPath)\Lokad.Cqrs.Bus.Azure.dll" /lib:"$(RawPath)" /log /keyfile:SharedKey.snk /xmldocs=true /ver:$(Version) /attr:"$(RawPath)\Lokad.Cqrs.Azure.dll" /targetplatform:v4,"$(TargetPlatform)" /lib:"$(TempPath)" /closed' />
-
 
     <!--Feature: Lokad.Cqrs.Bus.NHibernate-->
     <CreateItem Include="Library\NHibernate.Core\*.dll;Library\NHibernate.Linq\*.dll;$(RawPath)\Lokad.Cqrs.NHibernate.dll">

@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using Autofac;
+using Lokad.Cqrs.Directory;
 using Lokad.Cqrs.Domain;
 using Lokad.Cqrs.Queue;
 

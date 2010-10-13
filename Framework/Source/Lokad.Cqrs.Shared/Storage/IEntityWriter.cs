@@ -1,7 +1,6 @@
 ﻿using System;
-using Lokad.Cqrs.Storage;
 
-namespace Lokad.Cqrs
+namespace Lokad
 {
 	/// <summary>
 	/// The function used to generate a value for an absent key

@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
-using Lokad.Quality;
 
 namespace Lokad.Rules
 {

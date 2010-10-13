@@ -8,7 +8,7 @@
 
 using System;
 
-namespace Lokad.Quality
+namespace Lokad
 {
 	/// <summary>
 	/// Indicates that the marked method is assertion method, i.e. it halts control flow if one of the conditions is satisfied. 

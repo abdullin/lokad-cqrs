@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using ExtendIEnumerable = Lokad.ExtendIEnumerable;
 
 namespace Lokad.Serialization
 {
@@ -21,7 +22,7 @@ namespace Lokad.Serialization
 
 			if (failures.Any())
 			{
-				var list = failures.Select(f => f.FullName).Join(Environment.NewLine);
+				var list = ExtendIEnumerable.Join(failures.Select(f => f.FullName), Environment.NewLine);
 
 				throw new InvalidOperationException(
 					"All messages must be marked with the DataContract attribute in order to be used with DCS: " + list);

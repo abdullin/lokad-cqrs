@@ -7,8 +7,8 @@
 
 using System;
 using System.Collections.Generic;
+using Lokad.Cqrs.Directory;
 using Lokad.Cqrs.Queue;
-using Lokad.Quality;
 using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs.Domain

@@ -8,7 +8,6 @@
 
 using System;
 using System.Linq.Expressions;
-using Lokad.Quality;
 using NUnit.Framework;
 
 namespace Lokad.Testing

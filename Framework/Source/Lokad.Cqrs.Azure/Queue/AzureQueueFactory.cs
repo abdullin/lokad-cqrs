@@ -6,8 +6,6 @@
 #endregion
 
 using System.Collections.Generic;
-using System.Linq;
-using Lokad.Quality;
 using Microsoft.WindowsAzure;
 
 namespace Lokad.Cqrs.Queue
