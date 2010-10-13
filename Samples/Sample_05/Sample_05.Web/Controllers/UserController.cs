@@ -1,4 +1,12 @@
-﻿using System;
+﻿#region Copyright (c) 2010 Lokad. New BSD License
+
+// Copyright (c) Lokad 2010 SAS 
+// Company: http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD licence
+
+#endregion
+
+using System;
 using System.Linq;
 using System.Web.Mvc;
 using DotNetOpenAuth.Messaging;
@@ -15,7 +23,7 @@ namespace Sample_05.Web.Controllers
 	public class UserController : Controller
 	{
 		const string OpenIdFormKey = "openId";
-		
+
 		static readonly OpenIdRelyingParty OpenId = new OpenIdRelyingParty();
 
 		[UsedImplicitly]
@@ -201,7 +209,7 @@ namespace Sample_05.Web.Controllers
 
 		static void SetNullStringsAsEmpty<T>(T item)
 		{
-			foreach (var info in typeof(T).GetProperties().Where(p => p.PropertyType == typeof(string)))
+			foreach (var info in typeof (T).GetProperties().Where(p => p.PropertyType == typeof (string)))
 			{
 				if (info.GetValue(item, null) == null)
 				{
@@ -266,6 +274,4 @@ namespace Sample_05.Web.Controllers
 			return View();
 		}
 	}
-
-
 }

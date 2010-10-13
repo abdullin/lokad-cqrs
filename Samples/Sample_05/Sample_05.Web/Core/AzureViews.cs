@@ -1,8 +1,8 @@
-﻿#region Copyright (c) 2009-2010 LOKAD SAS. All rights reserved.
+﻿#region Copyright (c) 2010 Lokad. New BSD License
 
-// Copyright (c) 2009-2010 LOKAD SAS. All rights reserved.
-// You must not remove this notice, or any other, from this software.
-// This document is the property of LOKAD SAS and must not be disclosed.
+// Copyright (c) Lokad 2010 SAS 
+// Company: http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD licence
 
 #endregion
 

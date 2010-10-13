@@ -1,12 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿#region Copyright (c) 2010 Lokad. New BSD License
+
+// Copyright (c) Lokad 2010 SAS 
+// Company: http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD licence
+
+#endregion
+
+using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using Lokad;
-
 using Microsoft.WindowsAzure.Diagnostics;
 using Microsoft.WindowsAzure.ServiceRuntime;
 
@@ -24,7 +29,7 @@ namespace Sample_05.Web
 			routes.MapRoute(
 				"Default", // Route name
 				"{controller}/{action}/{id}", // URL with parameters
-				new { controller = "user", action = "index", id = "" } // Parameter defaults
+				new {controller = "user", action = "index", id = ""} // Parameter defaults
 				);
 		}
 
@@ -37,9 +42,9 @@ namespace Sample_05.Web
 			if (RoleEnvironment.IsAvailable)
 			{
 				Trace.Listeners.Add(new DiagnosticMonitorTraceListener
-				{
-					Name = "AzureDiagnostics"
-				});
+					{
+						Name = "AzureDiagnostics"
+					});
 			}
 		}
 

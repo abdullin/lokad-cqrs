@@ -1,4 +1,12 @@
-﻿using System;
+﻿#region Copyright (c) 2010 Lokad. New BSD License
+
+// Copyright (c) Lokad 2010 SAS 
+// Company: http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD licence
+
+#endregion
+
+using System;
 using System.Security.Principal;
 using System.Web;
 using System.Web.Caching;
@@ -10,10 +18,8 @@ namespace Sample_05.Web
 {
 	public static class GlobalAuth
 	{
-
 		public static Maybe<SessionIdentity> AuthenticateOpenId(string identity)
 		{
-			
 			return AzureViews
 				.Get<LoginView>(LoginView.CalculateSHA1(identity))
 				.Convert(uv => new SessionIdentity(new AuthInfo(uv.UserId), uv.Username));
@@ -44,6 +50,7 @@ namespace Sample_05.Web
 				.Apply(p => context.User = p)
 				.Handle(() => context.User = CreateAnonymous());
 		}
+
 		static IPrincipal CreateAnonymous()
 		{
 			// implementation is anonymous when name is empty
@@ -82,9 +89,9 @@ namespace Sample_05.Web
 			try
 			{
 				return AuthInfo.Parse(formsUserName)
-					.Combine(i => AzureViews.Get<LoginView>(i.UserId).Convert(uv => new SessionIdentity(new AuthInfo(uv.UserId), uv.Username)))
+					.Combine(
+						i => AzureViews.Get<LoginView>(i.UserId).Convert(uv => new SessionIdentity(new AuthInfo(uv.UserId), uv.Username)))
 					.Convert(sid => new AuthPrincipal(sid));
-
 			}
 			catch (KeyInvalidException)
 			{

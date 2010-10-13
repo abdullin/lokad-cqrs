@@ -1,11 +1,19 @@
-﻿using System;
+﻿#region Copyright (c) 2010 Lokad. New BSD License
+
+// Copyright (c) Lokad 2010 SAS 
+// Company: http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD licence
+
+#endregion
+
+using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.Serialization;
 using Lokad;
 using Lokad.Default;
 using NHibernate;
 using NHibernate.Linq;
-using System.Linq;
 
 namespace Sample_03.Worker
 {
@@ -27,7 +35,7 @@ namespace Sample_03.Worker
 			_session.Save(account);
 
 			// add initial balance of 0 to account
-			var balanceEntity = new BalanceEntity()
+			var balanceEntity = new BalanceEntity
 				{
 					Change = 0,
 					Total = 0,
@@ -36,13 +44,14 @@ namespace Sample_03.Worker
 				};
 
 			_session.Save(balanceEntity);
-			
+
 			Trace.WriteLine("Created account " + account.Id.ToReadable());
 			_client.Send(new AddSomeBonusMessage(account.Id));
 			// sleep till the next run
 			return 10.Seconds();
 		}
 	}
+
 	[DataContract]
 	public sealed class AddSomeBonusMessage : IMessage
 	{
@@ -97,14 +106,14 @@ namespace Sample_03.Worker
 			if (balance.Total > 50)
 			{
 				Trace.WriteLine(string.Format(
-					"ENOUGH. Account {0} has too much money: {1}", 
-					message.AccountId.ToReadable(), 
+					"ENOUGH. Account {0} has too much money: {1}",
+					message.AccountId.ToReadable(),
 					balance.Total));
 				return;
 			}
 
 			var total = balance.Total + 10;
-			var bonus = new BalanceEntity()
+			var bonus = new BalanceEntity
 				{
 					Account = balance.Account,
 					Change = 10,

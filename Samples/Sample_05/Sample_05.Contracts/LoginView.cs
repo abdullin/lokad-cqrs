@@ -1,8 +1,8 @@
-﻿#region Copyright (c) 2009-2010 LOKAD SAS. All rights reserved.
+﻿#region Copyright (c) 2010 Lokad. New BSD License
 
-// Copyright (c) 2009-2010 LOKAD SAS. All rights reserved.
-// You must not remove this notice, or any other, from this software.
-// This document is the property of LOKAD SAS and must not be disclosed.
+// Copyright (c) Lokad 2010 SAS 
+// Company: http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD licence
 
 #endregion
 
@@ -19,10 +19,13 @@ namespace Sample_05.Contracts
 	{
 		[ProtoMember(1)]
 		public Guid UserId { get; private set; }
+
 		[ProtoMember(2)]
 		public string Username { get; private set; }
+
 		[ProtoMember(3)]
 		public string Email { get; private set; }
+
 		[ProtoMember(4)]
 		public string LoginIdentity { get; private set; }
 
@@ -35,14 +38,11 @@ namespace Sample_05.Contracts
 		}
 
 
-
-		
-
 		public static string CalculateSHA1(string text)
 		{
 			byte[] buffer = Encoding.Unicode.GetBytes(text);
 			var cryptoTransformSha1 =
-			new SHA1CryptoServiceProvider();
+				new SHA1CryptoServiceProvider();
 			string hash = BitConverter.ToString(
 				cryptoTransformSha1.ComputeHash(buffer)).Replace("-", "");
 

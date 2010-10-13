@@ -1,7 +1,12 @@
-using System;
-using System.Collections.Generic;
+#region Copyright (c) 2010 Lokad. New BSD License
+
+// Copyright (c) Lokad 2010 SAS 
+// Company: http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD licence
+
+#endregion
+
 using System.Linq;
-using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.Diagnostics;
 using Microsoft.WindowsAzure.ServiceRuntime;
 
@@ -19,7 +24,7 @@ namespace Sample_05.Web
 			return base.OnStart();
 		}
 
-		private void RoleEnvironmentChanging(object sender, RoleEnvironmentChangingEventArgs e)
+		void RoleEnvironmentChanging(object sender, RoleEnvironmentChangingEventArgs e)
 		{
 			// If a configuration setting is changing
 			if (e.Changes.Any(change => change is RoleEnvironmentConfigurationSettingChange))
