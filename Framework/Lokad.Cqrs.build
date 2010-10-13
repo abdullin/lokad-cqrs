@@ -84,10 +84,8 @@
     <!--Lokad.Cqrs.Bus.Core-->
     <Exec Command='$(ILMerge) "$(RawPath)\Lokad.Cqrs.Shared.dll" "$(RawPath)\Lokad.Cqrs.Core.dll" "$(RawPath)\Lokad.Cqrs.Storage.dll" "$(RawPath)\protobuf-net.dll" /out:"$(AzureBusPath)\Lokad.Cqrs.Bus.Core.dll" /lib:"$(RawPath)" /log /keyfile:SharedKey.snk /xmldocs=true /ver:$(Version) /attr:"$(RawPath)\Lokad.Cqrs.Core.dll" /targetplatform:v4,"$(TargetPlatform)" /lib:"$(TempPath)" /closed' />
 
+    <Exec Command='$(ILMerge) "$(RawPath)\Lokad.Cqrs.Azure.dll" /out:"$(AzureBusPath)\Lokad.Cqrs.Bus.Azure.dll" /lib:"$(RawPath)" /log /keyfile:SharedKey.snk /xmldocs=true /ver:$(Version) /attr:"$(RawPath)\Lokad.Cqrs.Azure.dll" /targetplatform:v4,"$(TargetPlatform)" /lib:"$(TempPath)"' />
 
-    <Copy SourceFiles='$(RawPath)\Lokad.Cqrs.Azure.dll' DestinationFiles='$(AzureBusPath)\Lokad.Cqrs.Bus.Azure.dll' />
-    <Copy SourceFiles='$(RawPath)\Lokad.Cqrs.Azure.pdb' DestinationFiles='$(AzureBusPath)\Lokad.Cqrs.Bus.Azure.pdb' />
-    <Copy SourceFiles='$(RawPath)\Lokad.Cqrs.Azure.xml' DestinationFiles='$(AzureBusPath)\Lokad.Cqrs.Bus.Azure.xml' />
     <Exec Command='$(Linked) "$(AzureBusPath)\Lokad.Cqrs.Bus.Azure.dll" "$(RawPath)\Lokad.Cqrs.Shared.dll" "$(AzureBusPath)\Lokad.Cqrs.Bus.Core.dll" "$(AzureBusPath)\Lokad.Cqrs.Bus.Azure.dll"'  />
     <Exec Command='$(Linked) "$(AzureBusPath)\Lokad.Cqrs.Bus.Azure.dll" "$(RawPath)\protobuf-net.dll" "$(AzureBusPath)\Lokad.Cqrs.Bus.Core.dll" "$(AzureBusPath)\Lokad.Cqrs.Bus.Azure.dll"'  />
     <Exec Command='$(Linked) "$(AzureBusPath)\Lokad.Cqrs.Bus.Azure.dll" "$(RawPath)\Lokad.Cqrs.Storage.dll" "$(AzureBusPath)\Lokad.Cqrs.Bus.Core.dll" "$(AzureBusPath)\Lokad.Cqrs.Bus.Azure.dll"'  />
