@@ -16,7 +16,6 @@ using Lokad.Cqrs.Sender;
 using Lokad.Cqrs.Transport;
 using Lokad.Cqrs.Views;
 using Lokad.Messaging;
-using Lokad.Settings;
 
 namespace Lokad.Cqrs
 {
@@ -46,7 +45,7 @@ namespace Lokad.Cqrs
 			Azure.UseDevelopmentStorageAccount();
 			_builder.RegisterType<AzureQueueFactory>().As<IRouteMessages, IQueueManager>().SingleInstance();
 			_builder.RegisterType<AzureQueueTransport>().As<IMessageTransport>();
-			_builder.RegisterType<CloudSettingsProvider>().As<IProfileSettings, ISettingsProvider>().SingleInstance();
+			_builder.RegisterType<CloudSettingsProvider>().As<ISettingsProvider>().SingleInstance();
 
 
 			// some defaults

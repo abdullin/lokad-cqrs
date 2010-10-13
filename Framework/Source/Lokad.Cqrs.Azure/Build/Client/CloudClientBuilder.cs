@@ -13,7 +13,6 @@ using Lokad.Cqrs.Sender;
 using Lokad.Cqrs.Storage;
 using Lokad.Cqrs.Transport;
 using Lokad.Cqrs.Views;
-using Lokad.Settings;
 
 namespace Lokad.Cqrs
 {
@@ -34,10 +33,10 @@ namespace Lokad.Cqrs
 			_builder.RegisterInstance(SimpleMessageProfiler.Instance);
 			_builder.RegisterInstance(NullEngineProfiler.Instance);
 
-			_builder.RegisterType<CloudSettingsProvider>().As<IProfileSettings, ISettingsProvider>().SingleInstance();
+			_builder.RegisterType<CloudSettingsProvider>().As<ISettingsProvider>().SingleInstance();
 			_builder.RegisterType<AzureQueueFactory>().As<IRouteMessages, IQueueManager>().SingleInstance();
 			_builder.RegisterType<AzureQueueTransport>().As<IMessageTransport>();
-			_builder.RegisterType<CloudSettingsProvider>().As<IProfileSettings, ISettingsProvider>().SingleInstance();
+			_builder.RegisterType<CloudSettingsProvider>().As<ISettingsProvider>().SingleInstance();
 			_builder.RegisterType<CloudClient>().SingleInstance();
 		}
 

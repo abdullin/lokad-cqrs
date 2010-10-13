@@ -113,8 +113,8 @@ namespace Lokad.Cqrs
 
 			_builder.Register(c =>
 				{
-					var value = c.Resolve<IProfileSettings>()
-						.GetString(name)
+					var value = c.Resolve<ISettingsProvider>()
+						.GetValue(name)
 						.ExposeException("Failed to load account from '{0}'", name);
 					var account = CloudStorageAccount.Parse(value);
 					DisableNagleForQueuesAndTables(account);

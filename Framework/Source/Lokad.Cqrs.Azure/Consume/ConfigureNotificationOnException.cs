@@ -6,12 +6,10 @@
 #endregion
 
 using System;
-using System.IO;
 using Autofac;
 using Lokad.Messaging;
-using Lokad.Settings;
 
-namespace Lokad.Cqrs.Consume.Build
+namespace Lokad.Cqrs.Consume
 {
 	public sealed class ConfigureNotificationOnException
 	{

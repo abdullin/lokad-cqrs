@@ -9,7 +9,6 @@ using Autofac;
 using Autofac.Core;
 using jabber;
 using Lokad.Messaging;
-using Lokad.Settings;
 
 namespace Lokad.Cqrs.Xmpp
 {
