@@ -6,7 +6,7 @@
 #endregion
 
 using System.IO;
-using Lokad.Quality;
+using Lokad.Cqrs.Storage;
 
 namespace Lokad.Cqrs
 {

@@ -8,7 +8,7 @@
 
 using System;
 
-namespace Lokad.Quality
+namespace Lokad
 {
 	/// <summary>
 	/// Indicates that the value of marked element could never be <c>null</c>

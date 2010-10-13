@@ -114,7 +114,7 @@ namespace Lokad.Rules
 		/// <returns>new validator instance</returns>
 		public static Rule<string> Without(params char[] illegalCharacters)
 		{
-			var joined = illegalCharacters.Select(c => "'" + c + "'").Join(", ");
+			var joined = ExtendIEnumerable.Join(illegalCharacters.Select(c => "'" + c + "'"), ", ");
 			return (s, scope) =>
 				{
 					if (s.IndexOfAny(illegalCharacters) >= 0)

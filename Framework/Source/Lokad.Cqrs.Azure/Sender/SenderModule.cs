@@ -9,7 +9,7 @@ using System;
 using Autofac;
 using Lokad.Cqrs.Queue;
 
-namespace Lokad.Cqrs.Sender.Build
+namespace Lokad.Cqrs.Sender
 {
 	public sealed class SenderModule : Module
 	{

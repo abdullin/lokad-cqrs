@@ -7,15 +7,15 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Transactions;
 using Autofac;
 using Autofac.Core;
+using Lokad.Cqrs.Directory;
 using Lokad.Cqrs.Domain;
 using Lokad.Cqrs.Transport;
 using Lokad.Messaging;
-using Lokad.Quality;
 using Microsoft.WindowsAzure;
+using System.Linq;
 
 namespace Lokad.Cqrs.Consume.Build
 {
@@ -248,7 +248,7 @@ namespace Lokad.Cqrs.Consume.Build
 
 
 
-			log.DebugFormat("Use {0} threads to listen to {1}", NumberOfThreads, queueNames.Join("; "));
+			log.DebugFormat("Use {0} threads to listen to {1}", NumberOfThreads, ExtendIEnumerable.Join(queueNames, "; "));
 			return consumer;
 		}
 
@@ -258,14 +258,14 @@ namespace Lokad.Cqrs.Consume.Build
 			{
 				foreach (var info in directory.Messages)
 				{
-					log.DebugFormat("{0} : {1}", info.MessageType.Name, info.AllConsumers.Select(c => c.FullName).Join("; "));
+					log.DebugFormat("{0} : {1}", info.MessageType.Name, ExtendIEnumerable.Join(info.AllConsumers.Select(c => c.FullName), "; "));
 				}
 			}
 			if (DebugPrintsConsumerTree)
 			{
 				foreach (var info in directory.Consumers)
 				{
-					log.DebugFormat("{0} : {1}", info.ConsumerType.FullName, info.MessageTypes.Select(c => c.Name).Join("; "));
+					log.DebugFormat("{0} : {1}", info.ConsumerType.FullName, ExtendIEnumerable.Join(info.MessageTypes.Select(c => c.Name), "; "));
 				}
 			}
 		}

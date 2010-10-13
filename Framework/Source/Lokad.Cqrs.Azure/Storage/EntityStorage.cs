@@ -7,10 +7,7 @@
 
 using System;
 
-using Lokad.Quality;
-using Lokad.Serialization;
-
-namespace Lokad.Cqrs.Views
+namespace Lokad.Cqrs.Storage
 {
 	[UsedImplicitly]
 	public sealed class EntityStorage : IEntityReader, IEntityWriter

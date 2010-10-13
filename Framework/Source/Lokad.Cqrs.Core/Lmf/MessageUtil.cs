@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Lokad.Serialization;
 using ProtoBuf;
 
-
-namespace Lokad.Cqrs
+namespace Lokad.Cqrs.Lmf
 {
 	public static class MessageUtil
 	{

@@ -1,0 +1,6 @@
+<Configuration>
+  <NamespaceFolders>
+    <SkipFolder>F4F7A005-3166-43B7-AC63-C14630198CDB/d:Core/d:AuthAndSessions</SkipFolder>
+    <SkipFolder>F4F7A005-3166-43B7-AC63-C14630198CDB/d:Core</SkipFolder>
+  </NamespaceFolders>
+</Configuration>

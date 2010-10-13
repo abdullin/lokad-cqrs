@@ -10,7 +10,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Lokad.Quality;
 using Lokad.Reflection;
 
 namespace Lokad.Cqrs.Domain

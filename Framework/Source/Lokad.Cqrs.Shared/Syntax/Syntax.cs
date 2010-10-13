@@ -8,7 +8,6 @@
 
 using System;
 using System.ComponentModel;
-using Lokad.Quality;
 
 namespace Lokad
 {

@@ -7,7 +7,6 @@
 #endregion
 
 using System;
-using Lokad.Quality;
 
 namespace Lokad
 {

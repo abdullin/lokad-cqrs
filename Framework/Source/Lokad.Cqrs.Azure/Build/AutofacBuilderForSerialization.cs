@@ -1,4 +1,7 @@
-﻿using Autofac;
+﻿using System;
+using Autofac;
+using Autofac.Core;
+using Lokad.Cqrs.Storage;
 using Lokad.Serialization;
 
 namespace Lokad.Cqrs

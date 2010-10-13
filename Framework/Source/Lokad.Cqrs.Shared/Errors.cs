@@ -9,7 +9,6 @@
 using System;
 using System.Globalization;
 using System.Reflection;
-using Lokad.Quality;
 using Lokad.Reflection;
 
 namespace Lokad
@@ -153,7 +152,7 @@ namespace Lokad
 		/// <param name="e">The target invocation exception to unwrap.</param>
 		/// <returns>inner exception</returns>
 		[NotNull, UsedImplicitly]
-		public static Exception Inner([NotNull] TargetInvocationException e)
+		public static Exception Inner([NotNull] Exception e)
 		{
 			if (e == null) throw new ArgumentNullException("e");
 			InternalPreserveStackTraceMethod.Invoke(e.InnerException, new object[0]);

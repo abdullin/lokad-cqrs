@@ -1,5 +1,14 @@
 <Configuration>
   <NamespaceFolders>
+    <SkipFolder>5B606929-E54C-4D73-AE8A-B742C9BE72E4/d:Extensions</SkipFolder>
     <SkipFolder>5B606929-E54C-4D73-AE8A-B742C9BE72E4/d:Infrastructure</SkipFolder>
+    <SkipFolder>5B606929-E54C-4D73-AE8A-B742C9BE72E4/d:Logging</SkipFolder>
+    <SkipFolder>5B606929-E54C-4D73-AE8A-B742C9BE72E4/d:Monads</SkipFolder>
+    <SkipFolder>5B606929-E54C-4D73-AE8A-B742C9BE72E4/d:Quality</SkipFolder>
+    <SkipFolder>5B606929-E54C-4D73-AE8A-B742C9BE72E4/d:Rules/d:Common</SkipFolder>
+    <SkipFolder>5B606929-E54C-4D73-AE8A-B742C9BE72E4/d:Rules/d:Scopes</SkipFolder>
+    <SkipFolder>5B606929-E54C-4D73-AE8A-B742C9BE72E4/d:Storage</SkipFolder>
+    <SkipFolder>5B606929-E54C-4D73-AE8A-B742C9BE72E4/d:Syntax</SkipFolder>
+    <SkipFolder>5B606929-E54C-4D73-AE8A-B742C9BE72E4/d:Utils</SkipFolder>
   </NamespaceFolders>
 </Configuration>

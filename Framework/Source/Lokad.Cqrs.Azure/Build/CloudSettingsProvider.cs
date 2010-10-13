@@ -5,15 +5,18 @@
 
 #endregion
 
+using System;
+using System.Collections.Generic;
 using System.Configuration;
-using Lokad.Quality;
-using Lokad.Settings;
 using Microsoft.WindowsAzure.ServiceRuntime;
 
 namespace Lokad.Cqrs
 {
+	/// <summary>
+	/// Settings provider built on top of the Windows Azure
+	/// </summary>
 	[UsedImplicitly]
-	public sealed class CloudSettingsProvider : IProfileSettings, ISettingsProvider
+	public sealed class CloudSettingsProvider : ISettingsProvider
 	{
 		static readonly bool HasCloudEnvironment;
 
@@ -55,11 +58,30 @@ namespace Lokad.Cqrs
 		{
 			return GetString(name);
 		}
+	}
 
-		ISettingsProvider ISettingsProvider.Filtered(ISettingsKeyFilter acceptor)
+	/// <summary>
+	/// Settings provider based on a simple dictionary
+	/// </summary>
+	public sealed class DictionarySettingsProvider : ISettingsProvider
+	{
+		readonly IDictionary<string, string> _dictionary;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="DictionarySettingsProvider"/> class.
+		/// </summary>
+		/// <param name="dictionary">The dictionary.</param>
+		public DictionarySettingsProvider([NotNull] IDictionary<string, string> dictionary)
 		{
-			// no filtering
-			return this;
+			if (dictionary == null) throw new ArgumentNullException("dictionary");
+			_dictionary = dictionary;
+		}
+
+		Maybe<string> ISettingsProvider.GetValue([NotNull] string name)
+		{
+			if (name == null) throw new ArgumentNullException("name");
+
+			return _dictionary.GetValue(name);
 		}
 	}
 }

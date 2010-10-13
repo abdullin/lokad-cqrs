@@ -5,12 +5,20 @@
 
 #endregion
 
-namespace Lokad.Cqrs.Default
+namespace Lokad.Default
 {
 	/// <summary>
 	/// Default CQRS message interface for the domain setup
 	/// </summary>
 	public interface IMessage
 	{
+	}
+
+	/// <summary>
+	/// Default CQRS entity
+	/// </summary>
+	public interface IEntity
+	{
+		
 	}
 }

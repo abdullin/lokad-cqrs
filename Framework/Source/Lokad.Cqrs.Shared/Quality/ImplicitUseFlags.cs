@@ -8,7 +8,7 @@
 
 using System;
 
-namespace Lokad.Quality
+namespace Lokad
 {
 	/// <summary>
 	/// Used by <see cref="MeansImplicitUseAttribute"/>

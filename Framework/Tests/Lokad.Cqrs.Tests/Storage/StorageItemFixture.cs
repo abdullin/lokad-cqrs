@@ -10,6 +10,7 @@ using Lokad.Cqrs.Storage;
 using NUnit.Framework;
 using NUnit.Framework.SyntaxHelpers;
 
+
 namespace Lokad.Cqrs.Tests.Storage
 {
 	public abstract class StorageItemFixture<TStorage>

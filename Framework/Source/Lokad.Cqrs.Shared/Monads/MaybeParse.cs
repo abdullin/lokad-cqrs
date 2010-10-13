@@ -27,7 +27,7 @@ namespace Lokad
 		/// <returns>
 		/// 	either enum or an empty result
 		/// </returns>
-		public static Maybe<TEnum> Enum<TEnum>(string value) where TEnum : struct
+		public static Maybe<TEnum> Enum<TEnum>(string value) where TEnum : struct, IComparable
 		{
 			return Enum<TEnum>(value, true);
 		}
@@ -48,7 +48,7 @@ namespace Lokad
 		/// <returns>
 		/// 	either enum or an empty result
 		/// </returns>
-		public static Maybe<TEnum> Enum<TEnum>(string value, bool ignoreCase) where TEnum : struct
+		public static Maybe<TEnum> Enum<TEnum>(string value, bool ignoreCase) where TEnum : struct, IComparable
 		{
 			if (string.IsNullOrEmpty(value))
 				return Maybe<TEnum>.Empty;

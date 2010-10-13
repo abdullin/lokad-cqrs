@@ -6,7 +6,6 @@
 #endregion
 
 using System;
-using Lokad.Quality;
 using ProtoBuf;
 
 namespace Lokad.Cqrs

@@ -5,9 +5,9 @@
 
 #endregion
 
-using Lokad.Serialization;
+using Lokad.Cqrs.Domain;
 
-namespace Lokad.Cqrs.Domain
+namespace Lokad.Cqrs.Directory
 {
 	public interface IMessageDirectory : IKnowSerializationTypes
 	{

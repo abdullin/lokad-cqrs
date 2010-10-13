@@ -8,7 +8,7 @@
 
 using System;
 
-namespace Lokad.Quality
+namespace Lokad
 {
 	/// <summary>
 	/// Indicates that marked method builds string by format pattern and (optional) arguments. 

@@ -6,9 +6,9 @@
 #endregion
 
 using System.Threading;
+using Lokad.Cqrs.Serialization;
 using Lokad.Cqrs.Storage;
 using Lokad.Cqrs.Tests.Storage;
-using Lokad.Cqrs.Views;
 using Lokad.Serialization;
 using Lokad.Testing;
 using NUnit.Framework;

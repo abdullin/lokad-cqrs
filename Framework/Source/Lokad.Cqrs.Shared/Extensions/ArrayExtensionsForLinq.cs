@@ -6,7 +6,9 @@
 
 #endregion
 
-namespace System.Linq
+using System;
+
+namespace Lokad
 {
 	/// <summary>
 	/// Array extensions that belong to the LINQ namespace

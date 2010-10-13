@@ -6,7 +6,7 @@
 #endregion
 
 using System;
-using Lokad.Quality;
+using Lokad.Cqrs.Serialization;
 using Lokad.Serialization;
 using NUnit.Framework;
 using ProtoBuf;

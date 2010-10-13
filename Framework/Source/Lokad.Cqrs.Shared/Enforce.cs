@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using Lokad.Quality;
 using Lokad.Reflection;
 using Lokad.Rules;
 

@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+
 using System.Runtime.Serialization;
-using System.Text;
-using System.Xml.Serialization;
-using Lokad.Quality;
-using Lokad.Serialization;
+using Lokad.Cqrs.Serialization;
+
 
 // ReSharper disable InconsistentNaming
 

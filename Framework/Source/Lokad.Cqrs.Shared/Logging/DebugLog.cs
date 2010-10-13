@@ -10,9 +10,8 @@
 
 using System;
 using System.Diagnostics;
-using Lokad.Quality;
 
-namespace Lokad.Diagnostics
+namespace Lokad
 {
 	/// <summary>
 	/// Simple <see cref="ILog"/> that writes to the <see cref="Trace.Listeners"/>, if the

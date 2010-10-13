@@ -7,16 +7,19 @@
 
 using System;
 using Autofac;
-using Lokad.Cqrs.Domain.Build;
+using Lokad.Cqrs.Domain;
 using Lokad.Cqrs.Queue;
+using Lokad.Cqrs.Sender;
+using Lokad.Cqrs.Storage;
 using Lokad.Cqrs.Transport;
-using Lokad.Settings;
+using Lokad.Cqrs.Views;
 
 namespace Lokad.Cqrs
 {
 	/// <summary>
 	/// Fluent API for creating and configuring <see cref="ICloudClient"/>
 	/// </summary>
+	[UsedImplicitly]
 	public sealed class CloudClientBuilder : ISyntax<ContainerBuilder>
 	{
 		readonly ContainerBuilder _builder = new ContainerBuilder();
@@ -27,11 +30,13 @@ namespace Lokad.Cqrs
 			Serialization.UseBinaryFormatter();
 			Logging.LogToTrace();
 
-
-			_builder.RegisterType<CloudSettingsProvider>().As<IProfileSettings, ISettingsProvider>().SingleInstance();
+			_builder.RegisterInstance(SimpleMessageProfiler.Instance);
 			_builder.RegisterInstance(NullEngineProfiler.Instance);
+
+			_builder.RegisterType<CloudSettingsProvider>().As<ISettingsProvider>().SingleInstance();
 			_builder.RegisterType<AzureQueueFactory>().As<IRouteMessages, IQueueManager>().SingleInstance();
 			_builder.RegisterType<AzureQueueTransport>().As<IMessageTransport>();
+			_builder.RegisterType<CloudSettingsProvider>().As<ISettingsProvider>().SingleInstance();
 			_builder.RegisterType<CloudClient>().SingleInstance();
 		}
 
@@ -56,26 +61,18 @@ namespace Lokad.Cqrs
 			get { return _builder; }
 		}
 
-		//public CloudClientBuilder LoggingIs(Action<ISupportSyntaxForLogging> configure)
-		//{
-		//    configure(Logging);
-		//    return this;
-		//}
-
-		//public CloudClientBuilder SerializationIs(Action<AutofacBuilderForSerialization> configure)
-		//{
-		//    configure(Serialization);
-		//    return this;
-		//}
-
-		//public CloudClientBuilder AzureIs(Action<AutofacBuilderForAzure> configure)
-		//{
-		//    configure(Azure);
-		//    return this;
-		//}
+		/// <summary>
+		/// Creates default message sender for the instance of <see cref="ICloudClient"/>
+		/// </summary>
+		/// <param name="config">configuration syntax.</param>
+		/// <returns>same builder for inling multiple configuration statements</returns>
+		public CloudClientBuilder AddMessageClient(Action<SenderModule> config)
+		{
+			return this.WithModule(config);
+		}
 
 		/// <summary>
-		/// Configures the message domain for the instance of <see cref="ICloudEngineHost"/>.
+		/// Configures the message domain for the instance of <see cref="ICloudClient"/>.
 		/// </summary>
 		/// <param name="config">configuration syntax.</param>
 		/// <returns>same builder for inling multiple configuration statements</returns>
@@ -84,11 +81,36 @@ namespace Lokad.Cqrs
 			return this.WithModule(config);
 		}
 
-		public CloudClient BuildFor(string defaultQueue)
+		/// <summary>
+		/// Configures the view mappings for the instance of <see cref="ICloudClient"/> and provides <see cref="IReadViews"/> component
+		/// </summary>
+		/// <param name="config">configuration syntax.</param>
+		/// <returns>same builder for inling multiple configuration statements</returns>
+		public CloudClientBuilder Views(Action<ViewBuildModule> config)
+		{
+			var module = new ViewBuildModule(ViewModuleRole.Reader);
+			config(module);
+			Target.RegisterModule(module);
+			return this;
+		}
+
+		public CloudClient BuildFor(string queueName)
 		{
 			var container = _builder.Build();
-			return container.Resolve<CloudClient>(
-				TypedParameter.From(defaultQueue));
+
+			var lazy = new Lazy<IMessageClient>(() =>
+				{
+					var queue = container.Resolve<IQueueManager>().GetWriteQueue(queueName);
+					return new DefaultMessageClient(queue);
+				},false);
+
+			
+			return container.Resolve<CloudClient>(TypedParameter.From(lazy));
+		}
+		
+		public CloudClient Build()
+		{
+			return _builder.Build().Resolve<CloudClient>();
 		}
 	}
 }

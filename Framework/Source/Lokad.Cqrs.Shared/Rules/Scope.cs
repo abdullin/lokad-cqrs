@@ -9,8 +9,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq.Expressions;
 using System.Text;
-using Lokad.Quality;
 
 namespace Lokad.Rules
 {
@@ -308,4 +308,6 @@ namespace Lokad.Rules
 			return new SimpleScope(scopeName, (path, level, message) => log.AppendFormat(format, path, level, message));
 		}
 	}
+
+	
 }

@@ -1,7 +1,8 @@
 ﻿using System;
-using System.Linq;
+using Lokad.Cqrs.Directory;
 using Lokad.Cqrs.Domain;
 using NUnit.Framework;
+using System.Linq;
 
 namespace Lokad.Cqrs.Tests
 {
@@ -85,7 +86,7 @@ namespace Lokad.Cqrs.Tests
 		[TestFixtureSetUp]
 		public void FixtureSetUp()
 		{
-			var scanner = new MessageAssemblyScanner
+			var scanner = new DomainAssemblyScanner
 				{
 					IncludeSystemMessages = true
 				};

@@ -6,11 +6,11 @@
 
 #endregion
 
+using System;
 using System.Collections.Generic;
-using Lokad;
-using Lokad.Quality;
+using System.Linq;
 
-namespace System.Linq
+namespace Lokad
 {
 	/// <summary>
 	/// Helper methods for the <see cref="IEnumerable{T}"/>

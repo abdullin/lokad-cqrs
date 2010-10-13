@@ -6,9 +6,6 @@
 
 #endregion
 
-using Lokad.Diagnostics;
-using Lokad.Quality;
-
 namespace Lokad
 {
 	/// <summary>

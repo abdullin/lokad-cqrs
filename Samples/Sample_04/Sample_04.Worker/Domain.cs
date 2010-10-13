@@ -1,9 +1,8 @@
-﻿#region (c) 2010 Lokad Open Source - New BSD License 
+﻿#region Copyright (c) 2010 Lokad. New BSD License
 
-// Copyright (c) Lokad 2010, http://www.lokad.com
-// This code is released as Open Source under the terms of the New BSD Licence
-// 
-// Lokad.CQRS for Windows Azure: http://code.google.com/p/lokad-cqrs/
+// Copyright (c) Lokad 2010 SAS 
+// Company: http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD licence
 
 #endregion
 
@@ -11,9 +10,7 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using Lokad;
-using Lokad.Cqrs;
-using Lokad.Cqrs.Default;
-using Lokad.Quality;
+using Lokad.Default;
 using ProtoBuf;
 
 namespace Sample_04.Worker

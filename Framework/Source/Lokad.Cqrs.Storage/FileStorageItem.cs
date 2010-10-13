@@ -120,7 +120,7 @@ namespace Lokad.Cqrs
 			}
 			else
 			{
-				var bufferSize = 64.Kb();
+				const int bufferSize = 64 * 1024;
 				Write(
 					targetStream =>
 						sourceItem.ReadInto((props, stream) => stream.PumpTo(targetStream, bufferSize), copySourceCondition), condition);

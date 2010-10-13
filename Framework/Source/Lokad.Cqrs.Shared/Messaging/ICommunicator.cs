@@ -7,9 +7,8 @@
 #endregion
 
 using System;
-using Lokad.Messaging;
 
-namespace Lokad.Cqrs.Messaging
+namespace Lokad.Messaging
 {
 	/// <summary>
 	/// Real-time notification interface

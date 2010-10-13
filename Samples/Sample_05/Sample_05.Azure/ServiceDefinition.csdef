@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ServiceDefinition name="Sample_05.Azure" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition">
+  <WorkerRole name="Sample_05.Worker">
+    <ConfigurationSettings>
+      <Setting name="DiagnosticsConnectionString" />
+      <Setting name="StorageConnectionString" />
+    </ConfigurationSettings>
+  </WorkerRole>
+  <WebRole name="Sample_05.Web">
+    <InputEndpoints>
+      <InputEndpoint name="HttpIn" protocol="http" port="80" />
+    </InputEndpoints>
+    <ConfigurationSettings>
+      <Setting name="DiagnosticsConnectionString" />
+      <Setting name="StorageConnectionString" />
+    </ConfigurationSettings>
+  </WebRole>
+</ServiceDefinition>

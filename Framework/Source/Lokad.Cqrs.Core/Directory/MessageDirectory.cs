@@ -6,8 +6,10 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
+using Lokad.Cqrs.Directory;
+using ExtendIEnumerable = Lokad.ExtendIEnumerable;
 
 namespace Lokad.Cqrs.Domain
 {
@@ -25,9 +27,8 @@ namespace Lokad.Cqrs.Domain
 			_consumers = consumers;
 			_messages = messages;
 
-			_knownTypes = messages
-				.Where(m => false == m.MessageType.IsAbstract)
-				.ToArray(m => m.MessageType);
+			_knownTypes = ExtendIEnumerable.ToArray<MessageInfo, Type>(messages
+					.Where(m => false == m.MessageType.IsAbstract), m => m.MessageType);
 		}
 
 		public ConsumerInfo[] Consumers

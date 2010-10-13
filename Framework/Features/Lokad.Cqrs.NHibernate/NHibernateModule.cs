@@ -8,7 +8,6 @@
 using System;
 using Autofac;
 using Autofac.Core;
-using Lokad.Settings;
 using NHibernate;
 using NHibernate.Bytecode;
 using NHibernate.ByteCode.Castle;

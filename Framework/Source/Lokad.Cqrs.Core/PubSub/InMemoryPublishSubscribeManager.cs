@@ -8,7 +8,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Lokad.Quality;
+using ExtendIEnumerable = Lokad.ExtendIEnumerable;
 
 namespace Lokad.Cqrs.PubSub
 {
@@ -88,9 +88,8 @@ namespace Lokad.Cqrs.PubSub
 				.Select(s => (DirectSubscription) s.Value)
 				.ToLookup(l => l.Topic, l => l.Subscriber);
 
-			_regexLookup = _subscriptions
-				.Where(s => s.Value is RegexSubscription)
-				.ToArray(s => (RegexSubscription) s.Value);
+			_regexLookup = ExtendIEnumerable.ToArray<KeyValuePair<string, object>, RegexSubscription>(_subscriptions
+					.Where(s => s.Value is RegexSubscription), s => (RegexSubscription) s.Value);
 		}
 
 		sealed class DirectSubscription

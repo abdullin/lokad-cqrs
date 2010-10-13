@@ -1,5 +1,4 @@
-﻿using Lokad.Quality;
-using ProtoBuf;
+﻿using ProtoBuf;
 
 namespace Lokad.Cqrs
 {

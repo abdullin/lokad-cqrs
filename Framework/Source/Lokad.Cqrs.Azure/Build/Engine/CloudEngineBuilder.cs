@@ -8,14 +8,14 @@
 using System;
 using Autofac;
 using Lokad.Cqrs.Consume.Build;
-using Lokad.Cqrs.Domain.Build;
+using Lokad.Cqrs.Domain;
 using Lokad.Cqrs.PubSub.Build;
 using Lokad.Cqrs.Queue;
 using Lokad.Cqrs.Scheduled.Build;
-using Lokad.Cqrs.Sender.Build;
+using Lokad.Cqrs.Sender;
 using Lokad.Cqrs.Transport;
+using Lokad.Cqrs.Views;
 using Lokad.Messaging;
-using Lokad.Settings;
 
 namespace Lokad.Cqrs
 {
@@ -25,7 +25,6 @@ namespace Lokad.Cqrs
 	/// Fluent API for creating and configuring <see cref="ICloudEngineHost"/>
 	/// </summary>
 	public class CloudEngineBuilder : Syntax, ISyntax<ContainerBuilder>
-		
 	{
 		readonly ContainerBuilder _builder = new ContainerBuilder();
 
@@ -46,7 +45,7 @@ namespace Lokad.Cqrs
 			Azure.UseDevelopmentStorageAccount();
 			_builder.RegisterType<AzureQueueFactory>().As<IRouteMessages, IQueueManager>().SingleInstance();
 			_builder.RegisterType<AzureQueueTransport>().As<IMessageTransport>();
-			_builder.RegisterType<CloudSettingsProvider>().As<IProfileSettings, ISettingsProvider>().SingleInstance();
+			_builder.RegisterType<CloudSettingsProvider>().As<ISettingsProvider>().SingleInstance();
 
 
 			// some defaults
@@ -101,6 +100,19 @@ namespace Lokad.Cqrs
 		public CloudEngineBuilder AddMessageClient(Action<SenderModule> config)
 		{
 			return this.WithModule(config);
+		}
+
+		/// <summary>
+		/// Configures the view mappings for the instance of <see cref="ICloudEngineHost"/> and provides <see cref="IWriteViews"/>
+		/// </summary>
+		/// <param name="config">configuration syntax.</param>
+		/// <returns>same builder for inling multiple configuration statements</returns>
+		public CloudEngineBuilder Views(Action<ViewBuildModule> config)
+		{
+			var module = new ViewBuildModule(ViewModuleRole.Writer);
+			config(module);
+			Target.RegisterModule(module);
+			return this;
 		}
 
 		/// <summary>

@@ -9,7 +9,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Lokad.Cqrs.Queue;
-using Lokad.Quality;
 
 namespace Lokad.Cqrs.PubSub
 {

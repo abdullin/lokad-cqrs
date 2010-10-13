@@ -30,6 +30,12 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>..\..\SharedKey.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="protobuf-net">
       <HintPath>..\..\Library\ProtoBuf-net\protobuf-net.dll</HintPath>
@@ -50,7 +56,7 @@
     <Compile Include="Directory\ConsumerInfo.cs" />
     <Compile Include="Directory\IMessageDirectory.cs" />
     <Compile Include="Directory\IMessageDirectoryBuilder.cs" />
-    <Compile Include="Directory\MessageAssemblyScanner.cs" />
+    <Compile Include="Directory\DomainAssemblyScanner.cs" />
     <Compile Include="Directory\MessageDirectory.cs" />
     <Compile Include="Directory\MessageDirectoryBuilder.cs" />
     <Compile Include="Directory\MessageInfo.cs" />
@@ -60,6 +66,15 @@
     <Compile Include="IEngineProfiler.cs" />
     <Compile Include="IMessageProfiler.cs" />
     <Compile Include="IMessageTransport.cs" />
+    <Compile Include="Lmf\MessageAttributeBuilder.cs" />
+    <Compile Include="Lmf\MessageAttributeContract.cs" />
+    <Compile Include="Lmf\MessageAttributesContract.cs" />
+    <Compile Include="Lmf\MessageAttributeTypeContract.cs" />
+    <Compile Include="Lmf\MessageContext.cs" />
+    <Compile Include="Lmf\MessageHeader.cs" />
+    <Compile Include="Lmf\MessagePrinter.cs" />
+    <Compile Include="Lmf\MessageUtil.cs" />
+    <Compile Include="Lmf\UnpackedMessage.cs" />
     <Compile Include="PubSub\InMemoryPublishSubscribeManager.cs" />
     <Compile Include="PubSub\IPublishSubscribeManager.cs" />
     <Compile Include="PubSub\PublishSubscribeProcess.cs" />
@@ -72,30 +87,14 @@
     <Compile Include="Scheduled\ScheduledProcess.cs" />
     <Compile Include="Scheduled\ScheduledState.cs" />
     <Compile Include="Scheduled\ScheduledTaskInfo.cs" />
-    <Compile Include="Lmf\MessageAttributeBuilder.cs" />
-    <Compile Include="Lmf\MessageAttributeContract.cs" />
-    <Compile Include="Lmf\MessageAttributesContract.cs" />
-    <Compile Include="Lmf\MessageAttributeTypeContract.cs" />
-    <Compile Include="Lmf\MessageContext.cs" />
-    <Compile Include="Lmf\MessageHeader.cs" />
-    <Compile Include="Lmf\MessagePrinter.cs" />
-    <Compile Include="Lmf\MessageUtil.cs" />
-    <Compile Include="Lmf\UnpackedMessage.cs" />
     <Compile Include="Queue\GetMessageResult.cs" />
     <Compile Include="Queue\GetMessageResultState.cs" />
     <Compile Include="Queue\IQueueManager.cs" />
     <Compile Include="Queue\IReadMessageQueue.cs" />
     <Compile Include="Queue\IRouteMessages.cs" />
     <Compile Include="Queue\IWriteMessageQueue.cs" />
-    <Compile Include="Serialization\AttributeHelper.cs" />
-    <Compile Include="ExtendISupportSyntaxForSerialization.cs" />
-    <Compile Include="Serialization\ProtoBufMessageSerializer.cs" />
-    <Compile Include="Serialization\ProtoBufUtil.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Serialization\BinaryMessageSerializer.cs" />
-    <Compile Include="Serialization\DataContractMessageSerializer.cs" />
-    <Compile Include="Serialization\DataContractUtil.cs" />
-    <Compile Include="Serialization\IKnowSerializationTypes.cs" />
+    <Compile Include="Views\ViewAssemblyScanner.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Build\Engine\" />
@@ -105,6 +104,11 @@
       <Project>{5B606929-E54C-4D73-AE8A-B742C9BE72E4}</Project>
       <Name>Lokad.Cqrs.Shared</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\SharedKey.snk">
+      <Link>SharedKey.snk</Link>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

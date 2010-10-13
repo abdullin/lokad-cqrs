@@ -8,10 +8,11 @@
     <ProjectGuid>{5B606929-E54C-4D73-AE8A-B742C9BE72E4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Lokad.Cqrs</RootNamespace>
+    <RootNamespace>Lokad</RootNamespace>
     <AssemblyName>Lokad.Cqrs.Shared</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,6 +32,12 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\Lokad.Cqrs.Shared.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>..\..\SharedKey.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -54,13 +61,13 @@
     <Compile Include="Extensions\Indexer.cs" />
     <Compile Include="Filter.cs" />
     <Compile Include="GuidUtil.cs" />
+    <Compile Include="IKnowSerializationTypes.cs" />
     <Compile Include="INamedProvider.cs" />
     <Compile Include="Infrastructure\IDataContractMapper.cs" />
     <Compile Include="Infrastructure\IDataSerializer.cs" />
     <Compile Include="Infrastructure\IEngineProcess.cs" />
     <Compile Include="Infrastructure\IMessageClient.cs" />
     <Compile Include="Infrastructure\IMessageSerializer.cs" />
-    <Compile Include="Infrastructure\IProfileSettings.cs" />
     <Compile Include="Infrastructure\ISupportSyntaxForSerialization.cs" />
     <Compile Include="IProvider.cs" />
     <Compile Include="KeyInvalidException.cs" />
@@ -127,8 +134,10 @@
     <Compile Include="Rules\Scopes\ScopeFactory.cs" />
     <Compile Include="Rules\Scopes\SimpleScope.cs" />
     <Compile Include="Rules\Scopes\TrackScope.cs" />
-    <Compile Include="Settings\ISettingsKeyFilter.cs" />
-    <Compile Include="Settings\ISettingsProvider.cs" />
+    <Compile Include="ISettingsProvider.cs" />
+    <Compile Include="Storage\IEntityReader.cs" />
+    <Compile Include="Storage\IEntityWriter.cs" />
+    <Compile Include="Storage\OptimisticConcurrencyException.cs" />
     <Compile Include="Syntax\ISyntax.TTarget.cs" />
     <Compile Include="Syntax\Syntax.cs" />
     <Compile Include="Syntax\Syntax.TTarget.cs" />
@@ -145,6 +154,12 @@
     <EmbeddedResource Include="Monads\ResultResources.resx" />
     <EmbeddedResource Include="Rules\RuleResources.resx" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\SharedKey.snk">
+      <Link>SharedKey.snk</Link>
+    </None>
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

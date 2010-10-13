@@ -8,7 +8,6 @@
 
 using System;
 using System.Globalization;
-using Lokad.Quality;
 
 namespace Lokad.Rules
 {

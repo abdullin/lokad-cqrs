@@ -10,17 +10,18 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Autofac;
 using Autofac.Core;
-using Lokad.Cqrs.Default;
+using Lokad.Cqrs.Directory;
+using Lokad.Default;
 using Lokad.Serialization;
 
-namespace Lokad.Cqrs.Domain.Build
+namespace Lokad.Cqrs.Domain
 {
 	/// <summary>
 	/// Module for building CQRS domains.
 	/// </summary>
 	public class DomainBuildModule : IModule
 	{
-		readonly MessageAssemblyScanner _scanner = new MessageAssemblyScanner();
+		readonly DomainAssemblyScanner _scanner = new DomainAssemblyScanner();
 		readonly ContainerBuilder _builder;
 
 		/// <summary>
@@ -40,6 +41,7 @@ namespace Lokad.Cqrs.Domain.Build
 			ConsumerMethodSample<IConsume<IMessage>>(i => i.Consume(null));
 			WhereMessagesAre<IMessage>();
 			WhereConsumersAre<IConsumeMessage>();
+			
 			return this;
 		}
 
@@ -70,6 +72,8 @@ namespace Lokad.Cqrs.Domain.Build
 
 			return this;
 		}
+
+		
 
 		/// <summary>
 		/// <para>Specifies custom rule for finding message consumers - where they derive from the provided interface. </para>
@@ -109,7 +113,7 @@ namespace Lokad.Cqrs.Domain.Build
 		}
 
 		/// <summary>
-		/// Scans assemblies of the specified type for message mappings
+		/// Includes assemblies of the specified types into the discovery process
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <returns>same module instance for chaining fluent configurations</returns>
@@ -120,7 +124,7 @@ namespace Lokad.Cqrs.Domain.Build
 		}
 
 		/// <summary>
-		/// Scans assemblies of the specified types for message mappings
+		/// Includes assemblies of the specified types into the discovery process
 		/// </summary>
 		/// <typeparam name="T1"></typeparam>
 		/// <typeparam name="T2"></typeparam>
@@ -135,7 +139,7 @@ namespace Lokad.Cqrs.Domain.Build
 		}
 
 		/// <summary>
-		/// Scans assemblies of the specified types for message mappings
+		/// Includes assemblies of the specified types into the discovery process
 		/// </summary>
 		/// <typeparam name="T1"></typeparam>
 		/// <typeparam name="T2"></typeparam>
@@ -148,17 +152,18 @@ namespace Lokad.Cqrs.Domain.Build
 			_scanner.WithAssemblyOf<T1>();
 			_scanner.WithAssemblyOf<T2>();
 			_scanner.WithAssemblyOf<T3>();
-
+			
 			return this;
 		}
 
 		/// <summary>
-		/// Scans current assembly for the message mappings
+		/// Includes the current assembly in the discovery
 		/// </summary>
 		/// same module instance for chaining fluent configurations
 		public DomainBuildModule InCurrentAssembly()
 		{
 			_scanner.WithAssembly(Assembly.GetCallingAssembly());
+			
 			return this;
 		}
 
