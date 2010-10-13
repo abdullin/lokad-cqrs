@@ -11,9 +11,7 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using Lokad;
-using Lokad.Cqrs;
-using Lokad.Cqrs.Default;
-using Lokad.Quality;
+using Lokad.Default;
 using ProtoBuf;
 
 namespace Sample_04.Worker

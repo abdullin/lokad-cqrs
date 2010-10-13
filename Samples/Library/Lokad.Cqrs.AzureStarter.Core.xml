@@ -4,39 +4,39 @@
     <name>Lokad.Cqrs.AzureStarter.Core</name>
   </assembly>
   <members>
-    <member name="T:Lokad.Cqrs.Default.IConsumeMessage">
+    <member name="T:Lokad.Default.IConsumeMessage">
       <summary>
             Default CQRS interface for interface-base domain setup
             </summary>
     </member>
-    <member name="T:Lokad.Cqrs.Default.IConsume`1">
+    <member name="T:Lokad.Default.IConsume`1">
       <summary>
             Default CQRS interface for interface-base domain setup
             </summary>
     </member>
-    <member name="M:Lokad.Cqrs.Default.IConsume`1.Consume(`0)">
+    <member name="M:Lokad.Default.IConsume`1.Consume(`0)">
       <summary>
             Consumes the specified message.
             </summary>
       <param name="message">The message.</param>
     </member>
-    <member name="T:Lokad.Cqrs.Default.IMessage">
+    <member name="T:Lokad.Default.IMessage">
       <summary>
             Default CQRS message interface for the domain setup
             </summary>
     </member>
-    <member name="T:Lokad.Cqrs.Default.IEntity">
+    <member name="T:Lokad.Default.IEntity">
       <summary>
             Default CQRS entity
             </summary>
     </member>
-    <member name="T:Lokad.Cqrs.Default.IScheduledTask">
+    <member name="T:Lokad.Default.IScheduledTask">
       <summary>
             Default interface for use by the TaskScheduler feature
             </summary>
       <remarks>See http://code.google.com/p/lokad-cqrs/wiki/ScheduledTasks</remarks>
     </member>
-    <member name="M:Lokad.Cqrs.Default.IScheduledTask.Execute">
+    <member name="M:Lokad.Default.IScheduledTask.Execute">
       <summary>
             Executes some event that happens at the predefined moments of time.
             Each worker instance will have an independent scheduler.
@@ -328,12 +328,12 @@
       <param name="e">The target invocation exception to unwrap.</param>
       <returns>inner exception</returns>
     </member>
-    <member name="T:System.Linq.ArrayExtensionsForLinq">
+    <member name="T:Lokad.ArrayExtensionsForLinq">
       <summary>
             Array extensions that belong to the LINQ namespace
             </summary>
     </member>
-    <member name="M:System.Linq.ArrayExtensionsForLinq.Append``1(``0[],``0[])">
+    <member name="M:Lokad.ArrayExtensionsForLinq.Append``1(``0[],``0[])">
       <summary>
             Joins arrays together
             </summary>
@@ -504,11 +504,11 @@
       <param name="key">The key.</param>
       <returns>value from the dictionary</returns>
     </member>
-    <member name="T:System.Linq.ExtendIEnumerable">
+    <member name="T:Lokad.ExtendIEnumerable">
       <summary>
             Helper methods for the <see cref="T:System.Collections.Generic.IEnumerable`1" /></summary>
     </member>
-    <member name="M:System.Linq.ExtendIEnumerable.ForEach``1(System.Collections.Generic.IEnumerable{``0},System.Action{``0})">
+    <member name="M:Lokad.ExtendIEnumerable.ForEach``1(System.Collections.Generic.IEnumerable{``0},System.Action{``0})">
       <summary>
             Performs the specified <see cref="T:System.Action`1" /> against every element of <see cref="T:System.Collections.Generic.IEnumerable`1" /></summary>
       <typeparam name="T">
@@ -517,7 +517,7 @@
       <param name="action">Action to perform</param>
       <exception cref="T:System.ArgumentNullException">When any parameter is null</exception>
     </member>
-    <member name="M:System.Linq.ExtendIEnumerable.ForEach``1(System.Collections.Generic.IEnumerable{``0},System.Action{``0,System.Int32})">
+    <member name="M:Lokad.ExtendIEnumerable.ForEach``1(System.Collections.Generic.IEnumerable{``0},System.Action{``0,System.Int32})">
       <summary>
             Performs the specified <see cref="T:System.Action`1" /> against every element of <see cref="T:System.Collections.Generic.IEnumerable`1" /></summary>
       <typeparam name="T">
@@ -526,7 +526,7 @@
       <param name="action">Action to perform; second parameter represents the index</param>
       <exception cref="T:System.ArgumentNullException">When any parameter is null</exception>
     </member>
-    <member name="M:System.Linq.ExtendIEnumerable.Apply``1(System.Collections.Generic.IEnumerable{``0},System.Action{``0})">
+    <member name="M:Lokad.ExtendIEnumerable.Apply``1(System.Collections.Generic.IEnumerable{``0},System.Action{``0})">
       <summary>
             Applies the specified action to the target <paramref name="enumerable" />.
             </summary>
@@ -537,7 +537,7 @@
       <returns>enumerator</returns>
       <exception cref="T:System.ArgumentNullException">when one of the values is null</exception>
     </member>
-    <member name="M:System.Linq.ExtendIEnumerable.Apply``1(System.Collections.Generic.IEnumerable{``0},System.Action{``0,System.Int32})">
+    <member name="M:Lokad.ExtendIEnumerable.Apply``1(System.Collections.Generic.IEnumerable{``0},System.Action{``0,System.Int32})">
       <summary>
             Applies the specified action to the target <paramref name="enumerable" />.
             </summary>
@@ -548,7 +548,7 @@
       <returns>enumerator</returns>
       <exception cref="T:System.ArgumentNullException">when one of the values is null</exception>
     </member>
-    <member name="M:System.Linq.ExtendIEnumerable.Exists``1(System.Collections.Generic.IEnumerable{``0},System.Predicate{``0})">
+    <member name="M:Lokad.ExtendIEnumerable.Exists``1(System.Collections.Generic.IEnumerable{``0},System.Predicate{``0})">
       <summary>
             Returns <em>True</em> as soon as the first member of <paramref name="enumerable" />
             mathes <paramref name="predicate" /></summary>
@@ -558,7 +558,7 @@
       <returns>true if the <paramref name="enumerable" /> contains any elements
             matching <paramref name="predicate" /></returns>
     </member>
-    <member name="M:System.Linq.ExtendIEnumerable.Exists``1(System.Collections.Generic.IEnumerable{``0})">
+    <member name="M:Lokad.ExtendIEnumerable.Exists``1(System.Collections.Generic.IEnumerable{``0})">
       <summary>
             Checks if the provided enumerable has anything
             </summary>
@@ -566,7 +566,7 @@
       <param name="enumerable">The enumerable.</param>
       <returns>true if the sequence contains any elements</returns>
     </member>
-    <member name="M:System.Linq.ExtendIEnumerable.Append``1(System.Collections.Generic.IEnumerable{``0},``0[])">
+    <member name="M:Lokad.ExtendIEnumerable.Append``1(System.Collections.Generic.IEnumerable{``0},``0[])">
       <summary>
             Appends the <paramref name="items" /> to the <paramref name="enumerable" />.
             </summary>
@@ -575,7 +575,7 @@
       <param name="items">The item.</param>
       <returns>new sequence</returns>
     </member>
-    <member name="M:System.Linq.ExtendIEnumerable.Append``1(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``0})">
+    <member name="M:Lokad.ExtendIEnumerable.Append``1(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``0})">
       <summary>
             Appends the specified <paramref name="range" /> to the <paramref name="enumerable" />.
             </summary>
@@ -584,7 +584,7 @@
       <param name="range">The range.</param>
       <returns>new enumerator instance</returns>
     </member>
-    <member name="M:System.Linq.ExtendIEnumerable.Prepend``1(System.Collections.Generic.IEnumerable{``0},``0[])">
+    <member name="M:Lokad.ExtendIEnumerable.Prepend``1(System.Collections.Generic.IEnumerable{``0},``0[])">
       <summary>
             Prepends the specified <paramref name="enumerable" /> with the <paramref name="items" />.
             </summary>
@@ -593,7 +593,7 @@
       <param name="items">The item.</param>
       <returns>new enumerator instance</returns>
     </member>
-    <member name="M:System.Linq.ExtendIEnumerable.ToSet``1(System.Collections.Generic.IEnumerable{``0})">
+    <member name="M:Lokad.ExtendIEnumerable.ToSet``1(System.Collections.Generic.IEnumerable{``0})">
       <summary>
             Converts the enumerable to <see cref="T:System.Collections.Generic.HashSet`1" /></summary>
       <typeparam name="T">
@@ -601,7 +601,7 @@
       <param name="enumerable">The enumerable.</param>
       <returns>hashset instance</returns>
     </member>
-    <member name="M:System.Linq.ExtendIEnumerable.ToSet``2(System.Collections.Generic.IEnumerable{``1},System.Func{``1,``0})">
+    <member name="M:Lokad.ExtendIEnumerable.ToSet``2(System.Collections.Generic.IEnumerable{``1},System.Func{``1,``0})">
       <summary>
             Converts the enumerable to <see cref="T:System.Collections.Generic.HashSet`1" /></summary>
       <typeparam name="TKey">The type of the key.</typeparam>
@@ -610,7 +610,7 @@
       <param name="selector">The selector.</param>
       <returns>hashset instance</returns>
     </member>
-    <member name="M:System.Linq.ExtendIEnumerable.Min``1(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IComparer{``0})">
+    <member name="M:Lokad.ExtendIEnumerable.Min``1(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IComparer{``0})">
       <summary>
             Returns the minimum value in a generic sequence, using the provided comparer
             </summary>
@@ -619,7 +619,7 @@
       <param name="comparer">The comparer.</param>
       <returns>Maximum value</returns>
     </member>
-    <member name="M:System.Linq.ExtendIEnumerable.Max``1(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IComparer{``0})">
+    <member name="M:Lokad.ExtendIEnumerable.Max``1(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IComparer{``0})">
       <summary>
             Returns the maximum value in a generic sequence using the provided comparer.
             </summary>
@@ -628,7 +628,7 @@
       <param name="comparer">The comparer.</param>
       <returns>Maximum value</returns>
     </member>
-    <member name="M:System.Linq.ExtendIEnumerable.Join(System.Collections.Generic.IEnumerable{System.String},System.String)">
+    <member name="M:Lokad.ExtendIEnumerable.Join(System.Collections.Generic.IEnumerable{System.String},System.String)">
       <summary>
             Concatenates a specified separator between each element of a specified <paramref name="strings" />, 
             yielding a single concatenated string.
@@ -637,7 +637,7 @@
       <param name="separator">The separator.</param>
       <returns>concatenated string</returns>
     </member>
-    <member name="M:System.Linq.ExtendIEnumerable.Slice``1(System.Collections.Generic.IEnumerable{``0},System.Int32,System.Func{``0,System.Int32},System.Int32)">
+    <member name="M:Lokad.ExtendIEnumerable.Slice``1(System.Collections.Generic.IEnumerable{``0},System.Int32,System.Func{``0,System.Int32},System.Int32)">
       <summary>
         <para>Performs lazy splitting of the provided collection into collections of <paramref name="sliceLength" />.</para>
         <para>Each collection will have total <em>weight</em> equal or less than <paramref name="maxSliceWeight" /></para>
@@ -649,7 +649,7 @@
       <param name="maxSliceWeight">The max item weight.</param>
       <returns>enumerator over the results</returns>
     </member>
-    <member name="M:System.Linq.ExtendIEnumerable.Slice``1(System.Collections.Generic.IEnumerable{``0},System.Int32)">
+    <member name="M:Lokad.ExtendIEnumerable.Slice``1(System.Collections.Generic.IEnumerable{``0},System.Int32)">
       <summary>
             Performs lazy splitting of the provided collection into collections of <paramref name="sliceLength" /></summary>
       <typeparam name="TItem">The type of the item.</typeparam>
@@ -657,7 +657,7 @@
       <param name="sliceLength">Maximum length of the slice.</param>
       <returns>lazy enumerator of the collection of arrays</returns>
     </member>
-    <member name="M:System.Linq.ExtendIEnumerable.ToJaggedArray``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.IEnumerable{``0}})">
+    <member name="M:Lokad.ExtendIEnumerable.ToJaggedArray``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.IEnumerable{``0}})">
       <summary>
             Converts collection of collections to jagged array
             </summary>
@@ -665,7 +665,7 @@
       <param name="collection">The collection.</param>
       <returns>jagged array</returns>
     </member>
-    <member name="M:System.Linq.ExtendIEnumerable.ToArray``2(System.Collections.Generic.IEnumerable{``0},System.Func{``0,``1})">
+    <member name="M:Lokad.ExtendIEnumerable.ToArray``2(System.Collections.Generic.IEnumerable{``0},System.Func{``0,``1})">
       <summary>
             Shorthand extension method for converting enumerables into the arrays
             </summary>
@@ -675,7 +675,7 @@
       <param name="converter">The converter.</param>
       <returns>target array instance</returns>
     </member>
-    <member name="M:System.Linq.ExtendIEnumerable.ToArray``2(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.Int32,``1})">
+    <member name="M:Lokad.ExtendIEnumerable.ToArray``2(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.Int32,``1})">
       <summary>
             Shorthand extension method for converting enumerables into the arrays
             </summary>
@@ -685,7 +685,7 @@
       <param name="converter">The converter, where the second parameter is an index of item being converted.</param>
       <returns>target array instance</returns>
     </member>
-    <member name="M:System.Linq.ExtendIEnumerable.FirstOrEmpty``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.Boolean})">
+    <member name="M:Lokad.ExtendIEnumerable.FirstOrEmpty``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.Boolean})">
       <summary>
             Retrieves first value from the <paramref name="sequence" /></summary>
       <typeparam name="TSource">The type of the source sequence.</typeparam>
@@ -693,14 +693,14 @@
       <param name="predicate">The predicate.</param>
       <returns>first value</returns>
     </member>
-    <member name="M:System.Linq.ExtendIEnumerable.FirstOrEmpty``1(System.Collections.Generic.IEnumerable{``0})">
+    <member name="M:Lokad.ExtendIEnumerable.FirstOrEmpty``1(System.Collections.Generic.IEnumerable{``0})">
       <summary>
             Retrieves first value from the <paramref name="sequence" /></summary>
       <typeparam name="TSource">The type of the source sequence.</typeparam>
       <param name="sequence">The source.</param>
       <returns>first value or empty result, if it is not found</returns>
     </member>
-    <member name="M:System.Linq.ExtendIEnumerable.ToIndexed``1(System.Collections.Generic.IEnumerable{``0})">
+    <member name="M:Lokad.ExtendIEnumerable.ToIndexed``1(System.Collections.Generic.IEnumerable{``0})">
       <summary>
             Applies the integral indexer to the sequence in a lazy manner
             </summary>
@@ -709,7 +709,7 @@
       <returns>indexed sequence</returns>
       <exception cref="T:System.ArgumentNullException"> if <paramref name="source" /> is null</exception>
     </member>
-    <member name="M:System.Linq.ExtendIEnumerable.ToIndexDictionary``1(System.Collections.Generic.IEnumerable{``0})">
+    <member name="M:Lokad.ExtendIEnumerable.ToIndexDictionary``1(System.Collections.Generic.IEnumerable{``0})">
       <summary>
             Enumerates and returns a mapping that associated the items with their respective
             indices (positions) within the enumeration.
@@ -725,7 +725,7 @@
             </para>
       </remarks>
     </member>
-    <member name="M:System.Linq.ExtendIEnumerable.SelectValues``1(System.Collections.Generic.IEnumerable{Lokad.Maybe{``0}})">
+    <member name="M:Lokad.ExtendIEnumerable.SelectValues``1(System.Collections.Generic.IEnumerable{Lokad.Maybe{``0}})">
       <summary>
             Selects the values from a sequence of optionals.
             </summary>
@@ -843,26 +843,26 @@
       <param name="buffer">The buffer.</param>
       <returns>total amount of bytes copied</returns>
     </member>
-    <member name="T:System.Linq.Indexer`1">
+    <member name="T:Lokad.Indexer`1">
       <summary>
             Indexing wrapper that contains value and its integral position.
             </summary>
       <typeparam name="TSource">type of the underlying item</typeparam>
     </member>
-    <member name="P:System.Linq.Indexer`1.Index">
+    <member name="P:Lokad.Indexer`1.Index">
       <summary>
             Gets the integral position of the item.
             </summary>
       <value>The integral position of the item.</value>
     </member>
-    <member name="P:System.Linq.Indexer`1.IsFirst">
+    <member name="P:Lokad.Indexer`1.IsFirst">
       <summary>
             Gets a value indicating whether this instance is first.
             </summary>
       <value>
         <c>true</c> if this instance is first; otherwise, <c>false</c>.</value>
     </member>
-    <member name="P:System.Linq.Indexer`1.Value">
+    <member name="P:Lokad.Indexer`1.Value">
       <summary>
             Gets the value.
             </summary>
@@ -884,6 +884,18 @@
             Creates GUIDs that have same uniqueness as COMB, but are string-sortable
             </summary>
       <returns>String-sortable GUID</returns>
+    </member>
+    <member name="T:Lokad.IKnowSerializationTypes">
+      <summary>
+            Provides collection of known serialization types (for prebuilt serializers)
+            </summary>
+    </member>
+    <member name="M:Lokad.IKnowSerializationTypes.GetKnownTypes">
+      <summary>
+            Gets the known serialization types.
+            </summary>
+      <returns>
+      </returns>
     </member>
     <member name="T:Lokad.IProvider`2">
       <summary>
@@ -915,38 +927,38 @@
       <typeparam name="TValue">
       </typeparam>
     </member>
-    <member name="T:Lokad.Cqrs.IDataContractMapper">
+    <member name="T:Lokad.IDataContractMapper">
       <summary>
             Class responsible for mapping types to contracts and vise-versa
             </summary>
     </member>
-    <member name="M:Lokad.Cqrs.IDataContractMapper.GetContractNameByType(System.Type)">
+    <member name="M:Lokad.IDataContractMapper.GetContractNameByType(System.Type)">
       <summary>
             Gets the contract name by the type
             </summary>
       <param name="messageType">Type of the message.</param>
       <returns>contract name (if found)</returns>
     </member>
-    <member name="M:Lokad.Cqrs.IDataContractMapper.GetTypeByContractName(System.String)">
+    <member name="M:Lokad.IDataContractMapper.GetTypeByContractName(System.String)">
       <summary>
             Gets the type by contract name.
             </summary>
       <param name="contractName">Name of the contract.</param>
       <returns>type that could be used for contract deserialization (if found)</returns>
     </member>
-    <member name="T:Lokad.Cqrs.IDataSerializer">
+    <member name="T:Lokad.IDataSerializer">
       <summary>
             Generic data serializer interface.
             </summary>
     </member>
-    <member name="M:Lokad.Cqrs.IDataSerializer.Serialize(System.Object,System.IO.Stream)">
+    <member name="M:Lokad.IDataSerializer.Serialize(System.Object,System.IO.Stream)">
       <summary>
             Serializes the object to the specified stream
             </summary>
       <param name="instance">The instance.</param>
       <param name="destinationStream">The destination stream.</param>
     </member>
-    <member name="M:Lokad.Cqrs.IDataSerializer.Deserialize(System.IO.Stream,System.Type)">
+    <member name="M:Lokad.IDataSerializer.Deserialize(System.IO.Stream,System.Type)">
       <summary>
             Deserializes the object from specified source stream.
             </summary>
@@ -954,19 +966,19 @@
       <param name="type">The type of the object to deserialize.</param>
       <returns>deserialized object</returns>
     </member>
-    <member name="T:Lokad.Cqrs.IMessageSerializer">
+    <member name="T:Lokad.IMessageSerializer">
       <summary>
             Joins data serializer and contract mapper
             </summary>
     </member>
-    <member name="T:Lokad.Cqrs.ISupportSyntaxForSerialization">
+    <member name="T:Lokad.ISupportSyntaxForSerialization">
       <summary>
             Syntax support for .Serialization configurations.
             </summary>
     </member>
-    <member name="M:Lokad.Cqrs.ISupportSyntaxForSerialization.RegisterSerializer``1">
+    <member name="M:Lokad.ISupportSyntaxForSerialization.RegisterSerializer``1">
       <summary>
-            Registers the specified data serializer as singleton implementing <see cref="T:Lokad.Cqrs.IMessageSerializer" />, <see cref="T:Lokad.Cqrs.IDataSerializer" /> and <see cref="T:Lokad.Cqrs.IDataContractMapper" />. It can import <see cref="!:IKnowSerializationTypes" /></summary>
+            Registers the specified data serializer as singleton implementing <see cref="T:Lokad.IMessageSerializer" />, <see cref="T:Lokad.IDataSerializer" /> and <see cref="T:Lokad.IDataContractMapper" />. It can import <see cref="T:Lokad.IKnowSerializationTypes" /></summary>
       <typeparam name="TSerializer">The type of the serializer.</typeparam>
     </member>
     <member name="T:Lokad.KeyInvalidException">
@@ -1035,23 +1047,23 @@
         <c>true</c> if the specified level is logged; otherwise, <c>false</c>.
             </returns>
     </member>
-    <member name="T:Lokad.Diagnostics.DebugLog">
+    <member name="T:Lokad.DebugLog">
       <summary>
             Simple <see cref="T:Lokad.ILog" /> that writes to the <see cref="P:System.Diagnostics.Trace.Listeners" />, if the
             <em>DEBUG</em> symbol is defined
             </summary>
       <remarks>Use Logging stack, if more flexibility is needed</remarks>
     </member>
-    <member name="F:Lokad.Diagnostics.DebugLog.Instance">
+    <member name="F:Lokad.DebugLog.Instance">
       <summary>  Singleton instance </summary>
     </member>
-    <member name="F:Lokad.Diagnostics.DebugLog.Provider">
+    <member name="F:Lokad.DebugLog.Provider">
       <summary>
-            Named provider for the <see cref="T:Lokad.Diagnostics.DebugLog" /></summary>
+            Named provider for the <see cref="T:Lokad.DebugLog" /></summary>
     </member>
-    <member name="M:Lokad.Diagnostics.DebugLog.#ctor(System.String)">
+    <member name="M:Lokad.DebugLog.#ctor(System.String)">
       <summary>
-            Initializes a new instance of the <see cref="T:Lokad.Diagnostics.DebugLog" /> class.
+            Initializes a new instance of the <see cref="T:Lokad.DebugLog" /> class.
             </summary>
       <param name="logName">Name of the log.</param>
     </member>
@@ -1122,14 +1134,14 @@
     </member>
     <member name="M:Lokad.ExtendISupportSyntaxForLogging.LogToTrace``1(``0)">
       <summary>
-            Registers the <see cref="T:Lokad.Diagnostics.TraceLog" /></summary>
+            Registers the <see cref="T:Lokad.TraceLog" /></summary>
       <typeparam name="TModule">The type of the module.</typeparam>
       <param name="module">The module.</param>
       <returns>same module for the inlining</returns>
     </member>
     <member name="M:Lokad.ExtendISupportSyntaxForLogging.LogToNull``1(``0)">
       <summary>
-            Registers the <see cref="T:Lokad.Diagnostics.NullLog" /></summary>
+            Registers the <see cref="T:Lokad.NullLog" /></summary>
       <typeparam name="TModule">The type of the module.</typeparam>
       <param name="module">The module.</param>
       <returns>same module for the inlining</returns>
@@ -1408,40 +1420,40 @@
     <member name="F:Lokad.LogLevel.Min">
       <summary> Smallest logging level</summary>
     </member>
-    <member name="T:Lokad.Diagnostics.NullLog">
+    <member name="T:Lokad.NullLog">
       <summary>
         <see cref="T:Lokad.ILog" /> that does not do anything
             </summary>
     </member>
-    <member name="F:Lokad.Diagnostics.NullLog.Instance">
+    <member name="F:Lokad.NullLog.Instance">
       <summary>
             Singleton instance of the <see cref="T:Lokad.ILog" /></summary>
     </member>
-    <member name="F:Lokad.Diagnostics.NullLog.Provider">
+    <member name="F:Lokad.NullLog.Provider">
       <summary>
-            Named provider for the <see cref="T:Lokad.Diagnostics.NullLog" /></summary>
+            Named provider for the <see cref="T:Lokad.NullLog" /></summary>
     </member>
-    <member name="T:Lokad.Diagnostics.TraceLog">
+    <member name="T:Lokad.TraceLog">
       <summary>
             Simple <see cref="T:Lokad.ILog" /> that writes to the <see cref="P:System.Diagnostics.Trace.Listeners" /></summary>
       <remarks>Use Logging stack, if more flexibility is needed</remarks>
     </member>
-    <member name="F:Lokad.Diagnostics.TraceLog.Instance">
+    <member name="F:Lokad.TraceLog.Instance">
       <summary>  Singleton instance </summary>
     </member>
-    <member name="F:Lokad.Diagnostics.TraceLog.Provider">
+    <member name="F:Lokad.TraceLog.Provider">
       <summary>
-            Named provider for the <see cref="T:Lokad.Diagnostics.TraceLog" /></summary>
+            Named provider for the <see cref="T:Lokad.TraceLog" /></summary>
     </member>
-    <member name="M:Lokad.Diagnostics.TraceLog.#ctor(System.String)">
+    <member name="M:Lokad.TraceLog.#ctor(System.String)">
       <summary>
-            Initializes a new instance of the <see cref="T:Lokad.Diagnostics.TraceLog" /> class.
+            Initializes a new instance of the <see cref="T:Lokad.TraceLog" /> class.
             </summary>
       <param name="logName">Name of the log.</param>
     </member>
     <member name="T:Lokad.Messaging.CommunicationType">
       <summary>
-            Message types for the <see cref="T:Lokad.Cqrs.Messaging.ICommunicator" /></summary>
+            Message types for the <see cref="T:Lokad.Messaging.ICommunicator" /></summary>
     </member>
     <member name="F:Lokad.Messaging.CommunicationType.Normal">
       <summary>
@@ -1463,12 +1475,12 @@
       <summary>
       </summary>
     </member>
-    <member name="T:Lokad.Cqrs.Messaging.ICommunicator">
+    <member name="T:Lokad.Messaging.ICommunicator">
       <summary>
             Real-time notification interface
             </summary>
     </member>
-    <member name="M:Lokad.Cqrs.Messaging.ICommunicator.Notify(System.String,System.String,Lokad.Messaging.CommunicationType)">
+    <member name="M:Lokad.Messaging.ICommunicator.Notify(System.String,System.String,Lokad.Messaging.CommunicationType)">
       <summary>
             Notifies the specified recipient (reliability is determined by the implementation.
             </summary>
@@ -1483,7 +1495,7 @@
     </member>
     <member name="F:Lokad.Messaging.NullCommunicator.Instance">
       <summary>
-            Singleton instance of the <see cref="T:Lokad.Cqrs.Messaging.ICommunicator" /></summary>
+            Singleton instance of the <see cref="T:Lokad.Messaging.ICommunicator" /></summary>
     </member>
     <member name="M:Lokad.Messaging.NullCommunicator.Notify(System.String,System.String,Lokad.Messaging.CommunicationType)">
       <summary>
@@ -2401,119 +2413,119 @@
       <param name="func">The function that is the provider.</param>
       <returns>new provider instance</returns>
     </member>
-    <member name="T:Lokad.Quality.AssertionConditionAttribute">
+    <member name="T:Lokad.AssertionConditionAttribute">
       <summary>
             Indicates the condition parameter of the assertion method. 
-            The method itself should be marked by <see cref="T:Lokad.Quality.AssertionMethodAttribute" /> attribute.
+            The method itself should be marked by <see cref="T:Lokad.AssertionMethodAttribute" /> attribute.
             The mandatory argument of the attribute is the assertion type.
             </summary>
-      <seealso cref="T:Lokad.Quality.AssertionConditionType" />
+      <seealso cref="T:Lokad.AssertionConditionType" />
       <remarks>This attribute helps R# in code analysis</remarks>
     </member>
-    <member name="M:Lokad.Quality.AssertionConditionAttribute.#ctor(Lokad.Quality.AssertionConditionType)">
+    <member name="M:Lokad.AssertionConditionAttribute.#ctor(Lokad.AssertionConditionType)">
       <summary>
             Initializes new instance of AssertionConditionAttribute
             </summary>
       <param name="conditionType">Specifies condition type</param>
     </member>
-    <member name="P:Lokad.Quality.AssertionConditionAttribute.ConditionType">
+    <member name="P:Lokad.AssertionConditionAttribute.ConditionType">
       <summary>
             Gets condition type
             </summary>
     </member>
-    <member name="T:Lokad.Quality.AssertionConditionType">
+    <member name="T:Lokad.AssertionConditionType">
       <summary>
             Specifies assertion type. If the assertion method argument satisifes the condition, then the execution continues. 
             Otherwise, execution is assumed to be halted
             </summary>
     </member>
-    <member name="F:Lokad.Quality.AssertionConditionType.IS_TRUE">
+    <member name="F:Lokad.AssertionConditionType.IS_TRUE">
       <summary>
             Indicates that the marked parameter should be evaluated to true
             </summary>
     </member>
-    <member name="F:Lokad.Quality.AssertionConditionType.IS_FALSE">
+    <member name="F:Lokad.AssertionConditionType.IS_FALSE">
       <summary>
             Indicates that the marked parameter should be evaluated to false
             </summary>
     </member>
-    <member name="F:Lokad.Quality.AssertionConditionType.IS_NULL">
+    <member name="F:Lokad.AssertionConditionType.IS_NULL">
       <summary>
             Indicates that the marked parameter should be evaluated to null value
             </summary>
     </member>
-    <member name="F:Lokad.Quality.AssertionConditionType.IS_NOT_NULL">
+    <member name="F:Lokad.AssertionConditionType.IS_NOT_NULL">
       <summary>
             Indicates that the marked parameter should be evaluated to not null value
             </summary>
     </member>
-    <member name="T:Lokad.Quality.AssertionMethodAttribute">
+    <member name="T:Lokad.AssertionMethodAttribute">
       <summary>
             Indicates that the marked method is assertion method, i.e. it halts control flow if one of the conditions is satisfied. 
-            To set the condition, mark one of the parameters with <see cref="T:Lokad.Quality.AssertionConditionAttribute" /> attribute
+            To set the condition, mark one of the parameters with <see cref="T:Lokad.AssertionConditionAttribute" /> attribute
             </summary>
-      <seealso cref="T:Lokad.Quality.AssertionConditionAttribute" />
+      <seealso cref="T:Lokad.AssertionConditionAttribute" />
       <remarks>This attribute helps R# in code analysis</remarks>
     </member>
-    <member name="T:Lokad.Quality.ImplicitUseFlags">
+    <member name="T:Lokad.ImplicitUseFlags">
       <summary>
-            Used by <see cref="T:Lokad.Quality.MeansImplicitUseAttribute" /></summary>
+            Used by <see cref="T:Lokad.MeansImplicitUseAttribute" /></summary>
     </member>
-    <member name="F:Lokad.Quality.ImplicitUseFlags.STANDARD">
+    <member name="F:Lokad.ImplicitUseFlags.STANDARD">
       <summary>
             Standard
             </summary>
     </member>
-    <member name="F:Lokad.Quality.ImplicitUseFlags.ALL_MEMBERS_USED">
+    <member name="F:Lokad.ImplicitUseFlags.ALL_MEMBERS_USED">
       <summary>
             All members used
             </summary>
     </member>
-    <member name="T:Lokad.Quality.InvokerParameterNameAttribute">
+    <member name="T:Lokad.InvokerParameterNameAttribute">
       <summary>
             Indicates that the function argument should be string literal and match one  of the parameters of the caller function.
             For example, <see cref="T:System.ArgumentNullException" /> has such parameter.
             </summary>
       <remarks>This attribute helps R# in code analysis</remarks>
     </member>
-    <member name="T:Lokad.Quality.MeansImplicitUseAttribute">
+    <member name="T:Lokad.MeansImplicitUseAttribute">
       <summary>
             Should be used on attributes and causes ReSharper to not mark symbols marked with such attributes as unused (as well as by other usage inspections)
             </summary>
       <remarks>This attribute helps R# in code analysis</remarks>
     </member>
-    <member name="M:Lokad.Quality.MeansImplicitUseAttribute.#ctor">
+    <member name="M:Lokad.MeansImplicitUseAttribute.#ctor">
       <summary>
-            Initializes a new instance of the <see cref="T:Lokad.Quality.MeansImplicitUseAttribute" /> class with <see cref="F:Lokad.Quality.ImplicitUseFlags.STANDARD" />.
+            Initializes a new instance of the <see cref="T:Lokad.MeansImplicitUseAttribute" /> class with <see cref="F:Lokad.ImplicitUseFlags.STANDARD" />.
             </summary>
     </member>
-    <member name="M:Lokad.Quality.MeansImplicitUseAttribute.#ctor(Lokad.Quality.ImplicitUseFlags)">
+    <member name="M:Lokad.MeansImplicitUseAttribute.#ctor(Lokad.ImplicitUseFlags)">
       <summary>
-            Initializes a new instance of the <see cref="T:Lokad.Quality.MeansImplicitUseAttribute" /> class.
+            Initializes a new instance of the <see cref="T:Lokad.MeansImplicitUseAttribute" /> class.
             </summary>
       <param name="flags">The flags.</param>
     </member>
-    <member name="P:Lokad.Quality.MeansImplicitUseAttribute.Flags">
+    <member name="P:Lokad.MeansImplicitUseAttribute.Flags">
       <summary>
             Gets the flags.
             </summary>
       <value>The flags.</value>
     </member>
-    <member name="T:Lokad.Quality.NoCodeCoverageAttribute">
+    <member name="T:Lokad.NoCodeCoverageAttribute">
       <summary>
             Attribute used to inform code coverage tool to ignore marked code block
             </summary>
     </member>
-    <member name="P:Lokad.Quality.NoCodeCoverageAttribute.Justification">
+    <member name="P:Lokad.NoCodeCoverageAttribute.Justification">
       <summary> Gets or sets the justification for removing 
             the member from the unit test code coverage. </summary>
       <value>The justification.</value>
     </member>
-    <member name="T:Lokad.Quality.NotNullAttribute">
+    <member name="T:Lokad.NotNullAttribute">
       <summary>
             Indicates that the value of marked element could never be <c>null</c></summary>
     </member>
-    <member name="T:Lokad.Quality.StringFormatMethodAttribute">
+    <member name="T:Lokad.StringFormatMethodAttribute">
       <summary>
             Indicates that marked method builds string by format pattern and (optional) arguments. 
             Parameter, which contains format string, should be given in constructor.
@@ -2523,18 +2535,18 @@
             This attribute helps R# in code analysis
             </remarks>
     </member>
-    <member name="M:Lokad.Quality.StringFormatMethodAttribute.#ctor(System.String)">
+    <member name="M:Lokad.StringFormatMethodAttribute.#ctor(System.String)">
       <summary>
             Initializes new instance of StringFormatMethodAttribute
             </summary>
       <param name="formatParameterName">Specifies which parameter of an annotated method should be treated as format-string</param>
     </member>
-    <member name="P:Lokad.Quality.StringFormatMethodAttribute.FormatParameterName">
+    <member name="P:Lokad.StringFormatMethodAttribute.FormatParameterName">
       <summary>
             Gets format parameter name
             </summary>
     </member>
-    <member name="T:Lokad.Quality.UsedImplicitlyAttribute">
+    <member name="T:Lokad.UsedImplicitlyAttribute">
       <summary>
             Indicates that the marked symbol is used implicitly (ex. reflection, external library), 
             so this symbol will not be marked as unused (as well as by other usage inspections)
@@ -3955,25 +3967,12 @@
             Initializes a new instance of the <see cref="T:Lokad.Rules.TrackScope" /> class.
             </summary>
     </member>
-    <member name="T:Lokad.Settings.ISettingsKeyFilter">
-      <summary>
-            	Implements filtering interface for the
-            	<see cref="T:Lokad.Settings.ISettingsProvider" /></summary>
-    </member>
-    <member name="M:Lokad.Settings.ISettingsKeyFilter.Filter(System.String)">
-      <summary>
-            	Filters the path, either accepting it (and optionally altering)
-            	or by returning empty result
-            </summary>
-      <param name="keyPath">The key path.</param>
-      <returns>filtered key path</returns>
-    </member>
-    <member name="T:Lokad.Settings.ISettingsProvider">
+    <member name="T:Lokad.ISettingsProvider">
       <summary>
             	Simple settings reader
             </summary>
     </member>
-    <member name="M:Lokad.Settings.ISettingsProvider.GetValue(System.String)">
+    <member name="M:Lokad.ISettingsProvider.GetValue(System.String)">
       <summary>
             	Gets the value, using the given key name.
             </summary>
@@ -3982,21 +3981,23 @@
             	value for the specified key name, or empty result
             </returns>
     </member>
-    <member name="M:Lokad.Settings.ISettingsProvider.Filtered(Lokad.Settings.ISettingsKeyFilter)">
+    <member name="T:Lokad.DictionarySettingsProvider">
       <summary>
-            	Creates new provider that contains only values filtered by the acceptor
+            Settings provider based on a simple dictionary
             </summary>
-      <param name="acceptor">The acceptor.</param>
-      <returns>
-            	new settings provider that had been filtered
-            </returns>
     </member>
-    <member name="T:Lokad.Cqrs.Storage.IEntityReader">
+    <member name="M:Lokad.DictionarySettingsProvider.#ctor(System.Collections.Generic.IDictionary{System.String,System.String})">
+      <summary>
+            Initializes a new instance of the <see cref="T:Lokad.DictionarySettingsProvider" /> class.
+            </summary>
+      <param name="dictionary">The dictionary.</param>
+    </member>
+    <member name="T:Lokad.IEntityReader">
       <summary>
             Handles read-side operations for the entity storage
             </summary>
     </member>
-    <member name="M:Lokad.Cqrs.Storage.IEntityReader.Read(System.Type,System.Object)">
+    <member name="M:Lokad.IEntityReader.Read(System.Type,System.Object)">
       <summary>
             Retrieves the specified entity from the store, if it is found.
             Underlying storage could be event, cloud blob or whatever
@@ -4005,22 +4006,22 @@
       <param name="identity">The identity.</param>
       <returns>loaded entity (if found)</returns>
     </member>
-    <member name="T:Lokad.Cqrs.AddEntityDelegate">
+    <member name="T:Lokad.AddEntityDelegate">
       <summary>
             The function used to generate a value for an absent key
             </summary>
     </member>
-    <member name="T:Lokad.Cqrs.UpdateEntityDelegate">
+    <member name="T:Lokad.UpdateEntityDelegate">
       <summary>
             The function used to generate a new value for an existing key based on the key's existing value
             </summary>
     </member>
-    <member name="T:Lokad.Cqrs.IEntityWriter">
+    <member name="T:Lokad.IEntityWriter">
       <summary>
             Handles write operations for the state storage
             </summary>
     </member>
-    <member name="M:Lokad.Cqrs.IEntityWriter.Write(System.Type,System.Object,Lokad.Cqrs.AddEntityDelegate,Lokad.Cqrs.UpdateEntityDelegate)">
+    <member name="M:Lokad.IEntityWriter.Write(System.Type,System.Object,Lokad.AddEntityDelegate,Lokad.UpdateEntityDelegate)">
       <summary>
             Updates an entity if the key already exists or creates a new entity otherwise.
             </summary>
@@ -4028,36 +4029,36 @@
       <param name="key">The identity of the entity to patch.</param>
       <param name="addEntityDelegate">The function used to generate an entity for an absent key.</param>
       <param name="updateEntityDelegate">The function used to generate a new entity for an existing key based on the existing entity.</param>
-      <exception cref="T:Lokad.Cqrs.OptimisticConcurrencyException">when updated entity had been changed concurrently</exception>
+      <exception cref="T:Lokad.OptimisticConcurrencyException">when updated entity had been changed concurrently</exception>
     </member>
-    <member name="M:Lokad.Cqrs.IEntityWriter.Remove(System.Type,System.Object)">
+    <member name="M:Lokad.IEntityWriter.Remove(System.Type,System.Object)">
       <summary>
             Deletes the specified entity, given it's type and key
             </summary>
       <param name="type">The type.</param>
       <param name="key">The identity.</param>
     </member>
-    <member name="T:Lokad.Cqrs.OptimisticConcurrencyException">
+    <member name="T:Lokad.OptimisticConcurrencyException">
       <summary>
             Exception thrown, when patched entity has been edited in the process
             </summary>
     </member>
-    <member name="M:Lokad.Cqrs.OptimisticConcurrencyException.#ctor(System.String)">
+    <member name="M:Lokad.OptimisticConcurrencyException.#ctor(System.String)">
       <summary>
-            Initializes a new instance of the <see cref="T:Lokad.Cqrs.OptimisticConcurrencyException" /> class.
+            Initializes a new instance of the <see cref="T:Lokad.OptimisticConcurrencyException" /> class.
             </summary>
       <param name="message">The message.</param>
     </member>
-    <member name="M:Lokad.Cqrs.OptimisticConcurrencyException.#ctor(System.String,System.Exception)">
+    <member name="M:Lokad.OptimisticConcurrencyException.#ctor(System.String,System.Exception)">
       <summary>
-            Initializes a new instance of the <see cref="T:Lokad.Cqrs.OptimisticConcurrencyException" /> class.
+            Initializes a new instance of the <see cref="T:Lokad.OptimisticConcurrencyException" /> class.
             </summary>
       <param name="message">The message.</param>
       <param name="inner">The inner.</param>
     </member>
-    <member name="M:Lokad.Cqrs.OptimisticConcurrencyException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+    <member name="M:Lokad.OptimisticConcurrencyException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
       <summary>
-            Initializes a new instance of the <see cref="T:Lokad.Cqrs.OptimisticConcurrencyException" /> class.
+            Initializes a new instance of the <see cref="T:Lokad.OptimisticConcurrencyException" /> class.
             </summary>
       <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
       <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
@@ -4456,6 +4457,426 @@
             Converts "Class.SomeName" to "Class - Some Name"
             </summary>
     </member>
+    <member name="M:Lokad.Cqrs.AutofacBuilderForAzure.UseStorageAccount(System.String)">
+      <summary>
+            Uses development storage account defined in the string.
+            </summary>
+      <param name="accountString">The account string.</param>
+      <returns>
+            same builder for inling multiple configuration statements
+            </returns>
+      <seealso cref="M:Microsoft.WindowsAzure.CloudStorageAccount.Parse(System.String)" />
+    </member>
+    <member name="M:Lokad.Cqrs.AutofacBuilderForAzure.UseStorageAccount(Microsoft.WindowsAzure.CloudStorageAccount)">
+      <summary>
+            Registers the specified storage account as default into the container
+            </summary>
+      <param name="account">The account.</param>
+      <returns>
+            same builder for inling multiple configuration statements
+            </returns>
+    </member>
+    <member name="M:Lokad.Cqrs.AutofacBuilderForAzure.UseStorageAccount(System.String,System.String,System.Boolean)">
+      <summary>
+            Uses storage account defined in the string.
+            </summary>
+      <returns>
+            same builder for inling multiple configuration statements
+            </returns>
+    </member>
+    <member name="M:Lokad.Cqrs.AutofacBuilderForAzure.UseDevelopmentStorageAccount">
+      <summary>
+            Uses default Development storage account for Windows Azure
+            </summary>
+      <returns>
+            same builder for inling multiple configuration statements
+            </returns>
+      <remarks>This option is enabled by default</remarks>
+    </member>
+    <member name="M:Lokad.Cqrs.AutofacBuilderForAzure.LoadStorageAccountFromSettings(System.String)">
+      <summary>
+            Uses development storage account defined in the configuration setting.
+            </summary>
+      <param name="name">The name of the configuration value to look up.</param>
+      <returns>
+            same builder for inling multiple configuration statements
+            </returns>
+    </member>
+    <member name="M:Lokad.Cqrs.BuilderExtensions.WithAction``1(``0,System.Action{Autofac.ContainerBuilder})">
+      <summary>
+            Applies configuration action to the builder
+            </summary>
+      <typeparam name="TSyntax">The type of the syntax.</typeparam>
+      <param name="builder">The builder to extend.</param>
+      <param name="configuration">The configuration.</param>
+      <returns>same builder for inling multiple configuration statements</returns>
+    </member>
+    <member name="M:Lokad.Cqrs.BuilderExtensions.WithModule``2(``0,System.Action{``1})">
+      <summary>
+            Applies module configuration to the builder
+            </summary>
+      <typeparam name="TSyntax">The type of the syntax.</typeparam>
+      <typeparam name="TModule">The type of the module.</typeparam>
+      <param name="builder">The builder to extend.</param>
+      <param name="config">The configuration.</param>
+      <returns>same builder for inling multiple configuration statements</returns>
+    </member>
+    <member name="M:Lokad.Cqrs.BuilderExtensions.WithModule``1(``0,Autofac.Core.IModule)">
+      <summary>
+            Applies module to the builder
+            </summary>
+      <typeparam name="TSyntax">The type of the syntax.</typeparam>
+      <param name="builder">The builder to extend.</param>
+      <param name="module">The module to apply.</param>
+      <returns>same builder for inling multiple configuration statements</returns>
+    </member>
+    <member name="T:Lokad.Cqrs.CloudClientBuilder">
+      <summary>
+            Fluent API for creating and configuring <see cref="T:Lokad.Cqrs.ICloudClient" /></summary>
+    </member>
+    <member name="M:Lokad.Cqrs.CloudClientBuilder.AddMessageClient(System.Action{Lokad.Cqrs.Sender.SenderModule})">
+      <summary>
+            Creates default message sender for the instance of <see cref="T:Lokad.Cqrs.ICloudClient" /></summary>
+      <param name="config">configuration syntax.</param>
+      <returns>same builder for inling multiple configuration statements</returns>
+    </member>
+    <member name="M:Lokad.Cqrs.CloudClientBuilder.Domain(System.Action{Lokad.Cqrs.Domain.DomainBuildModule})">
+      <summary>
+            Configures the message domain for the instance of <see cref="T:Lokad.Cqrs.ICloudClient" />.
+            </summary>
+      <param name="config">configuration syntax.</param>
+      <returns>same builder for inling multiple configuration statements</returns>
+    </member>
+    <member name="M:Lokad.Cqrs.CloudClientBuilder.Views(System.Action{Lokad.Cqrs.Views.ViewBuildModule})">
+      <summary>
+            Configures the view mappings for the instance of <see cref="T:Lokad.Cqrs.ICloudClient" /> and provides <see cref="!:IReadViews" /> component
+            </summary>
+      <param name="config">configuration syntax.</param>
+      <returns>same builder for inling multiple configuration statements</returns>
+    </member>
+    <member name="T:Lokad.Cqrs.CloudSettingsProvider">
+      <summary>
+            Settings provider built on top of the Windows Azure
+            </summary>
+    </member>
+    <member name="T:Lokad.Cqrs.DictionarySettingsProvider">
+      <summary>
+            Settings provider based on a simple dictionary
+            </summary>
+    </member>
+    <member name="M:Lokad.Cqrs.DictionarySettingsProvider.#ctor(System.Collections.Generic.IDictionary{System.String,System.String})">
+      <summary>
+            Initializes a new instance of the <see cref="T:Lokad.Cqrs.DictionarySettingsProvider" /> class.
+            </summary>
+      <param name="dictionary">The dictionary.</param>
+    </member>
+    <member name="T:Lokad.Cqrs.CloudEngineBuilder">
+      <summary>
+            Fluent API for creating and configuring <see cref="T:Lokad.Cqrs.ICloudEngineHost" /></summary>
+    </member>
+    <member name="M:Lokad.Cqrs.CloudEngineBuilder.AddPublishSubscribe(System.Action{Lokad.Cqrs.PubSub.Build.BuildPubSubModule})">
+      <summary>
+            Adds Publish Subscribe Feature to the instance of <see cref="T:Lokad.Cqrs.ICloudEngineHost" />.
+            </summary>
+      <param name="config">configuration syntax</param>
+      <returns>same builder for inling multiple configuration statements</returns>
+    </member>
+    <member name="M:Lokad.Cqrs.CloudEngineBuilder.AddMessageHandler(System.Action{Lokad.Cqrs.Consume.Build.HandleMessagesModule})">
+      <summary>
+            Adds Message Handling Feature to the instance of <see cref="T:Lokad.Cqrs.ICloudEngineHost" /></summary>
+      <param name="config">configuration syntax</param>
+      <returns>same builder for inling multiple configuration statements</returns>
+    </member>
+    <member name="M:Lokad.Cqrs.CloudEngineBuilder.AddScheduler(System.Action{Lokad.Cqrs.Scheduled.Build.ScheduledModule})">
+      <summary>
+            Adds Task Scheduling Feature to the instance of <see cref="T:Lokad.Cqrs.ICloudEngineHost" /></summary>
+      <param name="config">configuration syntax</param>
+      <returns>same builder for inling multiple configuration statements</returns>
+    </member>
+    <member name="M:Lokad.Cqrs.CloudEngineBuilder.DomainIs(System.Action{Lokad.Cqrs.Domain.DomainBuildModule})">
+      <summary>
+            Configures the message domain for the instance of <see cref="T:Lokad.Cqrs.ICloudEngineHost" />.
+            </summary>
+      <param name="config">configuration syntax.</param>
+      <returns>same builder for inling multiple configuration statements</returns>
+    </member>
+    <member name="M:Lokad.Cqrs.CloudEngineBuilder.AddMessageClient(System.Action{Lokad.Cqrs.Sender.SenderModule})">
+      <summary>
+            Creates default message sender for the instance of <see cref="T:Lokad.Cqrs.ICloudEngineHost" /></summary>
+      <param name="config">configuration syntax.</param>
+      <returns>same builder for inling multiple configuration statements</returns>
+    </member>
+    <member name="M:Lokad.Cqrs.CloudEngineBuilder.Views(System.Action{Lokad.Cqrs.Views.ViewBuildModule})">
+      <summary>
+            Configures the view mappings for the instance of <see cref="T:Lokad.Cqrs.ICloudEngineHost" /> and provides <see cref="!:IWriteViews" /></summary>
+      <param name="config">configuration syntax.</param>
+      <returns>same builder for inling multiple configuration statements</returns>
+    </member>
+    <member name="M:Lokad.Cqrs.CloudEngineBuilder.Build">
+      <summary>
+            Builds this <see cref="T:Lokad.Cqrs.ICloudEngineHost" />.
+            </summary>
+      <returns>new instance of cloud engine host</returns>
+    </member>
+    <member name="M:Lokad.Cqrs.CloudEngineRole.BuildHost">
+      <summary>
+            Implement in the inheriting class to configure the bus host.
+            </summary>
+      <returns>
+      </returns>
+    </member>
+    <member name="M:Lokad.Cqrs.Views.ViewBuildModule.WithDefaultInterfaces">
+      <summary>
+            Uses default interfaces and conventions.
+            </summary>
+      <returns>same module instance for chaining fluent configurations</returns>
+    </member>
+    <member name="M:Lokad.Cqrs.Views.ViewBuildModule.WhereEntitiesAre``1">
+      <summary>
+        <para>Specifies custom rule for finding views - where they derive from the provided interface. </para>
+        <para>By default we expect messages to derive from <see cref="T:Lokad.Default.IMessage" />.</para>
+      </summary>
+      <typeparam name="TInterface">The type of the interface.</typeparam>
+      <returns>same module instance for chaining fluent configurations</returns>
+    </member>
+    <member name="M:Lokad.Cqrs.Views.ViewBuildModule.InAssemblyOf``1">
+      <summary>
+            Includes assemblies of the specified types into the discovery process
+            </summary>
+      <typeparam name="T">
+      </typeparam>
+      <returns>same module instance for chaining fluent configurations</returns>
+    </member>
+    <member name="M:Lokad.Cqrs.Views.ViewBuildModule.InAssemblyOf``2">
+      <summary>
+            Includes assemblies of the specified types into the discovery process
+            </summary>
+      <typeparam name="T1">
+      </typeparam>
+      <typeparam name="T2">
+      </typeparam>
+      <returns>
+            same module instance for chaining fluent configurations
+            </returns>
+    </member>
+    <member name="M:Lokad.Cqrs.Views.ViewBuildModule.InAssemblyOf``3">
+      <summary>
+            Includes assemblies of the specified types into the discovery process
+            </summary>
+      <typeparam name="T1">
+      </typeparam>
+      <typeparam name="T2">
+      </typeparam>
+      <typeparam name="T3">
+      </typeparam>
+      <returns>
+            same module instance for chaining fluent configurations
+            </returns>
+    </member>
+    <member name="M:Lokad.Cqrs.Views.ViewBuildModule.InCurrentAssembly">
+      <summary>
+            Includes the current assembly in the discovery
+            </summary>
+            same module instance for chaining fluent configurations
+        </member>
+    <member name="T:Lokad.Cqrs.CloudManagerBuilder">
+      <summary>
+            Configures management environment for the Lokad.CQRS
+            </summary>
+    </member>
+    <member name="M:Lokad.Cqrs.Consume.Build.HandleMessagesModule.WhereMappings(System.Func{Lokad.Cqrs.Domain.MessageMapping,System.Boolean})">
+      <summary>
+            Adds custom filters for <see cref="T:Lokad.Cqrs.Domain.MessageMapping" />, that will be used
+            for configuring this message handler.
+            </summary>
+      <param name="filter">The filter.</param>
+      <returns>
+      </returns>
+    </member>
+    <member name="M:Lokad.Cqrs.Consume.Build.HandleMessagesModule.WhereMessagesAreNot``1">
+      <summary>
+            Adds filter to exclude all message mappings, where messages derive from the specified class
+            </summary>
+      <typeparam name="TMessage">The type of the message.</typeparam>
+      <returns>same module instance for chaining fluent configurations</returns>
+    </member>
+    <member name="M:Lokad.Cqrs.Consume.Build.HandleMessagesModule.WhereMessagesAre``1">
+      <summary>
+            Adds filter to include only message mappings, where messages derive from the specified class
+            </summary>
+      <typeparam name="TMessage">The type of the message.</typeparam>
+      <returns>same module instance for chaining fluent configurations</returns>
+    </member>
+    <member name="M:Lokad.Cqrs.Consume.Build.HandleMessagesModule.WhereConsumersAre``1">
+      <summary>
+            Adds filter to include only message mappings, where consumers derive from the specified class
+            </summary>
+      <typeparam name="TConsumer">The type of the consumer.</typeparam>
+      <returns>same module instance for chaining fluent configurations</returns>
+    </member>
+    <member name="M:Lokad.Cqrs.Consume.Build.HandleMessagesModule.WhereConsumersAreNot``1">
+      <summary>
+            Adds filter to exclude all message mappings, where consumers derive from the specified class
+            </summary>
+      <typeparam name="TConsumer">The type of the consumer.</typeparam>
+      <returns>same module instance for chaining fluent configurations</returns>
+    </member>
+    <member name="M:Lokad.Cqrs.Consume.Build.HandleMessagesModule.LogExceptionsToBlob(System.Action{Lokad.Cqrs.Consume.Build.ConfigureBlobSavingOnException})">
+      <summary>
+            Additional configuration to log the exceptions to BLOB.
+            </summary>
+      <param name="config">The config.</param>
+      <returns>same module for inlining</returns>
+    </member>
+    <member name="M:Lokad.Cqrs.Consume.Build.HandleMessagesModule.LogExceptionsToBlob(System.String,Lokad.Cqrs.Consume.PrintMessageErrorDelegate[])">
+      <summary>
+            Additional configuration to log the exceptions to BLOB.
+            </summary>
+      <param name="containerName">Name of the container.</param>
+      <param name="delegates">The delegates.</param>
+      <returns>same module for inlining</returns>
+    </member>
+    <member name="M:Lokad.Cqrs.Consume.Build.HandleMessagesModule.LogExceptionsToCommunicator(System.Action{Lokad.Cqrs.Consume.ConfigureNotificationOnException})">
+      <summary>
+            Additional configuration to log the exceptions to active <see cref="!:IRealtimeNotifier" />.
+            </summary>
+      <param name="config">The config.</param>
+      <returns>
+      </returns>
+    </member>
+    <member name="M:Lokad.Cqrs.Consume.Build.HandleMessagesModule.ListenToQueue(System.String[])">
+      <summary>
+            Specifies names of the queues to listen to
+            </summary>
+      <param name="queueNames">The queue names to listen to.</param>
+      <returns>same module instance for chaining fluent configurations</returns>
+    </member>
+    <member name="P:Lokad.Cqrs.Consume.Build.HandleMessagesModule.NumberOfThreads">
+      <summary>
+            Gets or sets the number of threads.
+            </summary>
+      <value>The number of threads.</value>
+    </member>
+    <member name="P:Lokad.Cqrs.Consume.Build.HandleMessagesModule.IsolationLevel">
+      <summary>
+            Gets or sets the isolation level.
+            </summary>
+      <value>The isolation level.</value>
+    </member>
+    <member name="M:Lokad.Cqrs.Scheduled.Build.ScheduledModule.WithIsolationLevel(System.Transactions.IsolationLevel)">
+      <summary>
+            Modifies the isolation level of the tasks (defaults to <see cref="F:System.Transactions.IsolationLevel.ReadCommitted" /></summary>
+      <param name="level">The isolation level to use.</param>
+      <returns>same module for inlining configs</returns>
+    </member>
+    <member name="M:Lokad.Cqrs.Scheduled.Build.ScheduledModule.SleepBetweenCommands(System.TimeSpan)">
+      <summary>
+            Sets the amount of time to sleep between the tasks/commands.
+            </summary>
+      <param name="sleepInterval">The sleep interval.</param>
+      <returns>same module for inlining configs</returns>
+    </member>
+    <member name="M:Lokad.Cqrs.Scheduled.Build.ScheduledModule.SleepOnFailure(System.TimeSpan)">
+      <summary>
+            Sets the amount of time to sleep between the exceptions.
+            </summary>
+      <param name="timeToSleepBetweenExceptions">The time to sleep between exceptions.</param>
+      <returns>same module for inlining configs</returns>
+    </member>
+    <member name="T:Lokad.Cqrs.Domain.DomainBuildModule">
+      <summary>
+            Module for building CQRS domains.
+            </summary>
+    </member>
+    <member name="M:Lokad.Cqrs.Domain.DomainBuildModule.#ctor">
+      <summary>
+            Initializes a new instance of the <see cref="T:Lokad.Cqrs.Domain.DomainBuildModule" /> class.
+            </summary>
+    </member>
+    <member name="M:Lokad.Cqrs.Domain.DomainBuildModule.WithDefaultInterfaces">
+      <summary>
+            Uses default interfaces and conventions.
+            </summary>
+      <returns>same module instance for chaining fluent configurations</returns>
+    </member>
+    <member name="M:Lokad.Cqrs.Domain.DomainBuildModule.ConsumerMethodSample``1(System.Linq.Expressions.Expression{System.Action{``0}})">
+      <summary>
+            Provides sample of the custom consuming method expression. By default we expect it to be <see cref="M:Lokad.Default.IConsume`1.Consume(`0)" />.
+            </summary>
+      <typeparam name="THandler">The type of the handler.</typeparam>
+      <param name="expression">The expression.</param>
+      <returns>same module instance for chaining fluent configurations</returns>
+    </member>
+    <member name="M:Lokad.Cqrs.Domain.DomainBuildModule.WhereMessagesAre``1">
+      <summary>
+        <para>Specifies custom rule for finding messages - where they derive from the provided interface. </para>
+        <para>By default we expect messages to derive from <see cref="T:Lokad.Default.IMessage" />.</para>
+      </summary>
+      <typeparam name="TInterface">The type of the interface.</typeparam>
+      <returns>same module instance for chaining fluent configurations</returns>
+    </member>
+    <member name="M:Lokad.Cqrs.Domain.DomainBuildModule.WhereConsumersAre``1">
+      <summary>
+        <para>Specifies custom rule for finding message consumers - where they derive from the provided interface. </para>
+        <para>By default we expect consumers to derive from <see cref="T:Lokad.Default.IConsumeMessage" />.</para>
+      </summary>
+      <typeparam name="TInterface">The type of the interface.</typeparam>
+      <returns>same module instance for chaining fluent configurations</returns>
+    </member>
+    <member name="M:Lokad.Cqrs.Domain.DomainBuildModule.WhereConsumers(System.Func{System.Type,System.Boolean})">
+      <summary>
+            Specifies custom lookup rule for the consumers
+            </summary>
+      <param name="customFilterForConsumers">The custom filter for consumers.</param>
+      <returns>same module instance for chaining fluent configurations</returns>
+    </member>
+    <member name="M:Lokad.Cqrs.Domain.DomainBuildModule.WhereMessages(System.Func{System.Type,System.Boolean})">
+      <summary>
+            Specifies custom lookup rule for the messages.
+            </summary>
+      <param name="customFilterForMessages">The custom filter for messages.</param>
+      <returns>same module instance for chaining fluent configurations</returns>
+    </member>
+    <member name="M:Lokad.Cqrs.Domain.DomainBuildModule.InAssemblyOf``1">
+      <summary>
+            Includes assemblies of the specified types into the discovery process
+            </summary>
+      <typeparam name="T">
+      </typeparam>
+      <returns>same module instance for chaining fluent configurations</returns>
+    </member>
+    <member name="M:Lokad.Cqrs.Domain.DomainBuildModule.InAssemblyOf``2">
+      <summary>
+            Includes assemblies of the specified types into the discovery process
+            </summary>
+      <typeparam name="T1">
+      </typeparam>
+      <typeparam name="T2">
+      </typeparam>
+      <returns>
+            same module instance for chaining fluent configurations
+            </returns>
+    </member>
+    <member name="M:Lokad.Cqrs.Domain.DomainBuildModule.InAssemblyOf``3">
+      <summary>
+            Includes assemblies of the specified types into the discovery process
+            </summary>
+      <typeparam name="T1">
+      </typeparam>
+      <typeparam name="T2">
+      </typeparam>
+      <typeparam name="T3">
+      </typeparam>
+      <returns>
+            same module instance for chaining fluent configurations
+            </returns>
+    </member>
+    <member name="M:Lokad.Cqrs.Domain.DomainBuildModule.InCurrentAssembly">
+      <summary>
+            Includes the current assembly in the discovery
+            </summary>
+            same module instance for chaining fluent configurations
+        </member>
     <member name="T:ProtoBuf.IExtensible">
       <summary>
             Indicates that the implementing type has support for protocol-buffer

@@ -10,9 +10,8 @@
 using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Threading;
-using Lokad.Cqrs;
-using Lokad.Cqrs.Default;
-using Lokad.Quality;
+using Lokad;
+using Lokad.Default;
 
 namespace Sample_01.Worker
 {

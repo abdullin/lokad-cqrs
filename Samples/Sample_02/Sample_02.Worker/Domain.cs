@@ -11,8 +11,8 @@ using System;
 using System.Diagnostics;
 using System.Runtime.Serialization;
 using Lokad;
-using Lokad.Cqrs;
-using Lokad.Cqrs.Default;
+using Lokad.Default;
+
 
 namespace Sample_02.Worker
 {

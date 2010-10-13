@@ -2,8 +2,7 @@
 using System.Diagnostics;
 using System.Runtime.Serialization;
 using Lokad;
-using Lokad.Cqrs;
-using Lokad.Cqrs.Default;
+using Lokad.Default;
 using NHibernate;
 using NHibernate.Linq;
 using System.Linq;

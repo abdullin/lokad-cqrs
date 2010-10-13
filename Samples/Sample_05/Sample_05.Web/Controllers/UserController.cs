@@ -5,7 +5,6 @@ using DotNetOpenAuth.Messaging;
 using DotNetOpenAuth.OpenId;
 using DotNetOpenAuth.OpenId.RelyingParty;
 using Lokad;
-using Lokad.Quality;
 using Lokad.Rules;
 using Sample_05.Contracts;
 
@@ -175,10 +174,11 @@ namespace Sample_05.Web.Controllers
 			return Json(new
 				{
 					Status = "Registered. Redirecting...",
-					Redirect = Url.Action("index", "wizard")
+					Redirect = Url.Action("index", "home")
 				});
 		}
 	}
+
 
 	public sealed class RegistrationForm
 	{
@@ -263,7 +263,7 @@ namespace Sample_05.Web.Controllers
 	{
 		public ActionResult Index()
 		{
-			return new EmptyResult();
+			return View();
 		}
 	}
 

@@ -7,6 +7,7 @@
 #endregion
 
 using System.Diagnostics;
+using Lokad;
 using Lokad.Cqrs;
 using Sample_05.Contracts;
 

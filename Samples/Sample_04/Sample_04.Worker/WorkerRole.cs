@@ -11,7 +11,6 @@ using System;
 using System.IO;
 using Lokad;
 using Lokad.Cqrs;
-using Lokad.Quality;
 using Microsoft.WindowsAzure.Diagnostics;
 using Newtonsoft.Json;
 
