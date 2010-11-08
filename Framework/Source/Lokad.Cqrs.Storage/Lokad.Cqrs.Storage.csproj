@@ -54,6 +54,7 @@
     <Compile Include="FileStorageItem.cs" />
     <Compile Include="IStorageContainer.cs" />
     <Compile Include="IStorageItem.cs" />
+    <Compile Include="IStorageRoot.cs" />
     <Compile Include="LocalStorageInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReaderDelegate.cs" />
