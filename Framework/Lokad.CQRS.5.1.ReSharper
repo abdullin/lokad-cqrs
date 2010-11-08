@@ -315,6 +315,7 @@ This code is released as Open Source under the terms of the New BSD Licence]]></
       <Abbreviation Text="ID" />
       <Abbreviation Text="HRID" />
       <Abbreviation Text="IPN" />
+      <Abbreviation Text="MD" />
     </Naming2>
   </CodeStyleSettings>
   <CodeAnnotations>

@@ -69,6 +69,7 @@
     <Compile Include="StorageConditionType.cs" />
     <Compile Include="StorageContainerNotFoundException.cs" />
     <Compile Include="StorageErrors.cs" />
+    <Compile Include="StorageItemIntegrityException.cs" />
     <Compile Include="StorageItemInfo.cs" />
     <Compile Include="StorageItemNotFoundException.cs" />
   </ItemGroup>

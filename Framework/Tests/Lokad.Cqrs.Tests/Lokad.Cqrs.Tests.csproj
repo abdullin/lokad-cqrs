@@ -56,6 +56,7 @@
     <Compile Include="SmokeTests.cs" />
     <Compile Include="Storage\BlobStorage.cs" />
     <Compile Include="Storage\FileStorage.cs" />
+    <Compile Include="Storage\HashingTests.cs" />
     <Compile Include="Storage\ITestStorage.cs" />
     <Compile Include="Storage\StorageItemFixture.cs" />
     <Compile Include="Storage\When_checking_item_in.cs" />

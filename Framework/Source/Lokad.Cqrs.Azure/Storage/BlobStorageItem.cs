@@ -8,37 +8,58 @@
 using System;
 using System.IO;
 using System.Net;
+using System.Security.Cryptography;
 using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs.Storage
 {
+	/// <summary>
+	/// Azure BLOB implementation of the <see cref="IStorageItem"/>
+	/// </summary>
 	public sealed class BlobStorageItem : IStorageItem
 	{
 		readonly CloudBlob _blob;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="BlobStorageItem"/> class.
+		/// </summary>
+		/// <param name="blob">The BLOB.</param>
 		public BlobStorageItem(CloudBlob blob)
 		{
 			_blob = blob;
 		}
 
 
+		/// <summary>
+		/// Performs the write operation, ensuring that the condition is met.
+		/// </summary>
+		/// <param name="writer">The writer.</param>
+		/// <param name="condition">The condition.</param>
 		public void Write(Action<Stream> writer, StorageCondition condition)
 		{
 			try
 			{
 				var options = Map(condition);
 
-
-				//using (var stream = _blob.OpenWrite(options))
-				//{
-				//    writer(stream);
-				//}
-
 				using (var memory = new MemoryStream())
 				{
 					writer(memory);
 
-					_blob.UploadByteArray(memory.ToArray(), options);
+					var hash = ComputeContentHashAndResetPosition(memory);
+					_blob.Properties.ContentMD5 = hash;
+					_blob.Metadata[MetadataMD5Key] = hash;
+
+					_blob.UploadFromStream(memory, options);
+				}
+			}
+			catch (StorageServerException ex)
+			{
+				switch (ex.ErrorCode)
+				{
+					case StorageErrorCode.ServiceIntegrityCheckFailed:
+						throw StorageErrors.IntegrityFailure(this, ex);
+					default:
+						throw;
 				}
 			}
 			catch (StorageClientException ex)
@@ -55,6 +76,36 @@ namespace Lokad.Cqrs.Storage
 			}
 		}
 
+		private const string MetadataMD5Key = "ContentMD5";
+
+		/// <summary>
+		/// Computes the MD5 content hash.
+		/// </summary>
+		/// <param name="source">The source.</param>
+		/// <returns></returns>
+		/// <remarks>Copied from Lokad.Cloud</remarks>
+		static string ComputeContentHashAndResetPosition(Stream source)
+		{
+			byte[] hash;
+			source.Seek(0, SeekOrigin.Begin);
+			using (var md5 = MD5.Create())
+			{
+				hash = md5.ComputeHash(source);
+			}
+
+			source.Seek(0, SeekOrigin.Begin);
+
+			return Convert.ToBase64String(hash);
+		}
+
+		static Maybe<string> GetContentHash(CloudBlob blob)
+		{
+			var expectedHash = blob.Metadata[MetadataMD5Key];
+			if (string.IsNullOrEmpty(expectedHash))
+				return Maybe<string>.Empty;
+			return expectedHash;
+		}
+
 
 		public void ReadInto(ReaderDelegate reader, StorageCondition condition)
 		{
@@ -65,6 +116,14 @@ namespace Lokad.Cqrs.Storage
 				var buffer = _blob.DownloadByteArray(options);
 				using (var stream = new MemoryStream(buffer))
 				{
+					var contentHash = GetContentHash(_blob);
+					if (contentHash.HasValue)
+					{
+						var hash = ComputeContentHashAndResetPosition(stream);
+						if (hash != contentHash.Value)
+							throw StorageErrors.IntegrityFailure(this);
+					}
+
 					var properties = Map(_blob.Properties);
 					reader(properties, stream);
 				}

@@ -1,4 +1,5 @@
-﻿using Lokad.Cqrs.Storage;
+﻿using System;
+using Lokad.Cqrs.Storage;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
 using NUnit.Framework;
@@ -45,11 +46,13 @@ namespace Lokad.Cqrs.Tests.Storage
 
 		}
 
+		
+
 		[TestFixture]
 		public sealed class When_writing_blob_item
 			: When_writing_item_in<Here>
 		{
-
+			
 		}
 
 		[TestFixture]

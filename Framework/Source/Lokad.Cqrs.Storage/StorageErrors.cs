@@ -18,6 +18,12 @@ namespace Lokad.Cqrs
 			return new StorageItemNotFoundException(message, inner);
 		}
 
+		public static Exception IntegrityFailure(IStorageItem item, Exception inner = null)
+		{
+			var message = string.Format(CultureInfo.InvariantCulture, "Local hash differs from metadata. Item was probably corrupted in trasfer, please retry: '{0}'.", item.FullPath);
+			return new StorageItemIntegrityException(message, inner);
+		}
+
 		public static Exception ContainerNotFound(IStorageItem item, Exception inner = null)
 		{
 			var message = string.Format(CultureInfo.InvariantCulture, "Storage container was not found for: '{0}'.", item.FullPath);
