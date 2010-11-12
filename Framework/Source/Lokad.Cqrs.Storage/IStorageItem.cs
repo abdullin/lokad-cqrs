@@ -34,7 +34,6 @@ namespace Lokad.Cqrs
 		/// </summary>
 		/// <param name="reader">The reader.</param>
 		/// <param name="condition">The condition.</param>
-		/// <returns>false if the item exists, but the condition was not satisfied</returns>
 		/// <exception cref="StorageItemNotFoundException">if the item does not exist.</exception>
 		/// <exception cref="StorageContainerNotFoundException">if the container for the item does not exist</exception>
 		/// <exception cref="StorageItemIntegrityException">when integrity check fails</exception>
@@ -54,7 +53,7 @@ namespace Lokad.Cqrs
 		Maybe<StorageItemInfo> GetInfo(StorageCondition condition = default(StorageCondition));
 
 		/// <summary>
-		/// Copies to.
+		/// Creates this storage item from another.
 		/// </summary>
 		/// <param name="sourceItem">The target.</param>
 		/// <param name="condition">The condition.</param>

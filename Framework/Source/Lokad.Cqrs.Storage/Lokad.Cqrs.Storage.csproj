@@ -50,6 +50,7 @@
     <Compile Include="ExtendIEntityReader.cs" />
     <Compile Include="ExtendIEntityWriter.cs" />
     <Compile Include="ExtendISupportSyntaxForSerialization.cs" />
+    <Compile Include="ExtendStorageItem.cs" />
     <Compile Include="FileStorageContainer.cs" />
     <Compile Include="FileStorageItem.cs" />
     <Compile Include="IStorageContainer.cs" />
