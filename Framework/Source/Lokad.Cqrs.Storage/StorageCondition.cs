@@ -13,15 +13,6 @@ using System.Linq;
 
 namespace Lokad.Cqrs
 {
-
-	
-	[Flags]
-	public enum StorageWriteOptions
-	{
-		None,
-		CompressIfPossible = 0x01
-	}
-
 	public struct StorageCondition
 	{
 		public static StorageCondition None = default(StorageCondition);

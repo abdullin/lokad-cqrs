@@ -44,7 +44,7 @@ namespace Lokad.Cqrs
 		/// Removes the item, ensuring that the specified condition is met.
 		/// </summary>
 		/// <param name="condition">The condition.</param>
-		void Remove(StorageCondition condition = default(StorageCondition));
+		void Delete(StorageCondition condition = default(StorageCondition));
 
 		/// <summary>
 		/// Gets the info about this item. It returns empty result if the item does not exist or does not match the condition

@@ -77,7 +77,7 @@ namespace Lokad.Cqrs.Tests.Storage
 
 		protected void Write(IStorageItem storageItem, Guid g, StorageCondition condition = default(StorageCondition))
 		{
-			storageItem.Write(stream => stream.Write(g.ToByteArray(), 0, 16), condition);
+			storageItem.Write(stream => stream.Write(g.ToByteArray(), 0, 16), condition, StorageWriteOptions.CompressIfPossible);
 		}
 
 

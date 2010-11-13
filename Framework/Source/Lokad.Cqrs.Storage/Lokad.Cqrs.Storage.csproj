@@ -74,6 +74,7 @@
     <Compile Include="StorageItemIntegrityException.cs" />
     <Compile Include="StorageItemInfo.cs" />
     <Compile Include="StorageItemNotFoundException.cs" />
+    <Compile Include="StorageWriteOptions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Lokad.Cqrs.Shared\Lokad.Cqrs.Shared.csproj">

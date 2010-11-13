@@ -69,7 +69,7 @@ namespace Lokad.Cqrs
 				throw StorageErrors.ItemNotFound(this);
 		}
 
-		public void Remove(StorageCondition condition)
+		public void Delete(StorageCondition condition)
 		{
 			Refresh();
 

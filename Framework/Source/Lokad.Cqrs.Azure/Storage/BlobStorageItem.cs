@@ -115,7 +115,6 @@ namespace Lokad.Cqrs.Storage
 			return expectedHash;
 		}
 
-
 		public void ReadInto(ReaderDelegate reader, StorageCondition condition)
 		{
 			try
@@ -125,6 +124,7 @@ namespace Lokad.Cqrs.Storage
 				_blob.FetchAttributes(mapped);
 				var props = Map(_blob.Properties);
 				var compressed = _blob.Metadata["ContentCompression"] == "gzip";
+
 				if (compressed)
 				{
 					using (var stream = _blob.OpenRead(mapped))
@@ -168,7 +168,7 @@ namespace Lokad.Cqrs.Storage
 			}
 		}
 
-		public void Remove(StorageCondition condition)
+		public void Delete(StorageCondition condition)
 		{
 			try
 			{

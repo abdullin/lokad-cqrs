@@ -101,7 +101,7 @@ namespace Lokad.Cqrs.Storage
 
 		public void Remove(Type type, object key)
 		{
-			MapTypeAndIdentity(type, key).Remove();
+			MapTypeAndIdentity(type, key).Delete();
 		}
 	}
 }
