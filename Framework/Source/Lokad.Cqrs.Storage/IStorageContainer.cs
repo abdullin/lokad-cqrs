@@ -39,7 +39,7 @@ namespace Lokad.Cqrs
 		IStorageContainer Create();
 
 		/// <summary>
-		/// Deletes container
+		/// Deletes this container
 		/// </summary>
 		void Delete();
 

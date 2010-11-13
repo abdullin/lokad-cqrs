@@ -49,6 +49,7 @@
     <Compile Include="EntityNotFoundException.cs" />
     <Compile Include="ExtendIEntityReader.cs" />
     <Compile Include="ExtendIEntityWriter.cs" />
+    <Compile Include="ExtendIStorageRoot.cs" />
     <Compile Include="ExtendISupportSyntaxForSerialization.cs" />
     <Compile Include="ExtendStorageItem.cs" />
     <Compile Include="FileStorageContainer.cs" />
