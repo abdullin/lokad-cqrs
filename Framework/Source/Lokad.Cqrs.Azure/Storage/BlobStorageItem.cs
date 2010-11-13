@@ -49,7 +49,7 @@ namespace Lokad.Cqrs.Storage
 					using (var stream = _blob.OpenWrite(mapped))
 					using (var compress = stream.Compress())
 					{
-						_blob.Metadata["ContentCompression"] = "gzip";
+						_blob.Metadata[CompressionMetadataKey] = CompressionMetadataGzip;
 						writer(compress);
 					}
 				}
@@ -85,35 +85,14 @@ namespace Lokad.Cqrs.Storage
 			}
 		}
 
-		private const string MetadataMD5Key = "ContentMD5";
-
 		/// <summary>
-		/// Computes the MD5 content hash.
+		/// Metadata key name for the optional compression header
 		/// </summary>
-		/// <param name="source">The source.</param>
-		/// <returns></returns>
-		/// <remarks>Copied from Lokad.Cloud</remarks>
-		static string ComputeContentHashAndResetPosition(Stream source)
-		{
-			byte[] hash;
-			source.Seek(0, SeekOrigin.Begin);
-			using (var md5 = MD5.Create())
-			{
-				hash = md5.ComputeHash(source);
-			}
-
-			source.Seek(0, SeekOrigin.Begin);
-
-			return Convert.ToBase64String(hash);
-		}
-
-		static Maybe<string> GetContentHash(CloudBlob blob)
-		{
-			var expectedHash = blob.Metadata[MetadataMD5Key];
-			if (string.IsNullOrEmpty(expectedHash))
-				return Maybe<string>.Empty;
-			return expectedHash;
-		}
+		public const string CompressionMetadataKey = "ContentCompression";
+		/// <summary>
+		/// Medatata value for <see cref="CompressionMetadataKey"/> that represents built-in GZIP encoding.
+		/// </summary>
+		public const string CompressionMetadataGzip = "gzip";
 
 		public void ReadInto(ReaderDelegate reader, StorageCondition condition)
 		{
@@ -123,9 +102,12 @@ namespace Lokad.Cqrs.Storage
 
 				_blob.FetchAttributes(mapped);
 				var props = Map(_blob.Properties);
-				var compressed = _blob.Metadata["ContentCompression"] == "gzip";
 
-				if (compressed)
+
+				var compression = _blob.Metadata[CompressionMetadataKey];
+				
+
+				if (compression == CompressionMetadataGzip)
 				{
 					using (var stream = _blob.OpenRead(mapped))
 					using (var decompress = stream.Decompress())
@@ -133,12 +115,16 @@ namespace Lokad.Cqrs.Storage
 						reader(props, decompress);
 					}
 				}
-				else
+				else if (string.IsNullOrEmpty(compression))
 				{
 					using (var stream = _blob.OpenRead(mapped))
 					{
 						reader(props, stream);
 					}
+				} 
+				else
+				{
+					throw Errors.InvalidOperation("Unsupported compression header '{0}'", compression);
 				}
 			}
 			catch (StorageClientException e)

@@ -35,6 +35,8 @@ namespace Lokad.Cqrs
 			return new StorageItemIntegrityException(message, inner);
 		}
 
+
+
 		public static Exception ContainerNotFound(IStorageItem item, Exception inner = null)
 		{
 			var message = string.Format(CultureInfo.InvariantCulture, "Storage container was not found for: '{0}'.",
