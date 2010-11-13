@@ -319,8 +319,7 @@ This code is released as Open Source under the terms of the New BSD Licence]]></
     </Naming2>
   </CodeStyleSettings>
   <CodeAnnotations>
-    <Namespace>JetBrains.Annotations</Namespace>
     <Namespace>Lokad.Quality</Namespace>
-    <DefaultNamespace>Lokad.Quality</DefaultNamespace>
+    <DefaultNamespace>JetBrains.Annotations</DefaultNamespace>
   </CodeAnnotations>
 </Configuration>

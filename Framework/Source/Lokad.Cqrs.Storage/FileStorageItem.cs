@@ -10,10 +10,17 @@ using System.IO;
 
 namespace Lokad.Cqrs
 {
+	/// <summary>
+	/// File-based implementation of the <see cref="IStorageItem"/>
+	/// </summary>
 	public sealed class FileStorageItem : IStorageItem
 	{
 		readonly FileInfo _file;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="FileStorageItem"/> class.
+		/// </summary>
+		/// <param name="file">The file.</param>
 		public FileStorageItem(FileInfo file)
 		{
 			_file = file;
@@ -29,6 +36,13 @@ namespace Lokad.Cqrs
 
 		//bool ExistingFileMathes()
 
+		/// <summary>
+		/// Performs the write operation, ensuring that the condition is met.
+		/// </summary>
+		/// <param name="writer">The writer.</param>
+		/// <param name="condition">The condition.</param>
+		/// <param name="options">The options.</param>
+		/// <exception cref="StorageItemIntegrityException">when integrity check fails during the upload</exception>
 		public void Write(Action<Stream> writer, StorageCondition condition, StorageWriteOptions options)
 		{
 			Refresh();
@@ -42,6 +56,14 @@ namespace Lokad.Cqrs
 			}
 		}
 
+		/// <summary>
+		/// Attempts to read the storage item.
+		/// </summary>
+		/// <param name="reader">The reader.</param>
+		/// <param name="condition">The condition.</param>
+		/// <exception cref="StorageItemNotFoundException">if the item does not exist.</exception>
+		/// <exception cref="StorageContainerNotFoundException">if the container for the item does not exist</exception>
+		/// <exception cref="StorageItemIntegrityException">when integrity check fails</exception>
 		public void ReadInto(ReaderDelegate reader, StorageCondition condition)
 		{
 			Refresh();
@@ -69,6 +91,10 @@ namespace Lokad.Cqrs
 				throw StorageErrors.ItemNotFound(this);
 		}
 
+		/// <summary>
+		/// Removes the item, ensuring that the specified condition is met.
+		/// </summary>
+		/// <param name="condition">The condition.</param>
 		public void Delete(StorageCondition condition)
 		{
 			Refresh();
@@ -79,6 +105,11 @@ namespace Lokad.Cqrs
 				_file.Delete();
 		}
 
+		/// <summary>
+		/// Gets the info about this item. It returns empty result if the item does not exist or does not match the condition
+		/// </summary>
+		/// <param name="condition">The condition.</param>
+		/// <returns></returns>
 		public Maybe<StorageItemInfo> GetInfo(StorageCondition condition)
 		{
 			Refresh();
@@ -101,6 +132,15 @@ namespace Lokad.Cqrs
 			return new StorageItemInfo(lastWriteTimeUtc, tag);
 		}
 
+		/// <summary>
+		/// Creates this storage item from another.
+		/// </summary>
+		/// <param name="sourceItem">The target.</param>
+		/// <param name="condition">The condition.</param>
+		/// <param name="copySourceCondition">The copy source condition.</param>
+		/// <param name="options">The options.</param>
+		/// <exception cref="StorageItemNotFoundException">when source storage is not found</exception>
+		/// <exception cref="StorageItemIntegrityException">when integrity check fails</exception>
 		public void CopyFrom(IStorageItem sourceItem, StorageCondition condition, StorageCondition copySourceCondition,  StorageWriteOptions options)
 		{
 			var item = sourceItem as FileStorageItem;
@@ -138,6 +178,10 @@ namespace Lokad.Cqrs
 				throw StorageErrors.ContainerNotFound(this);
 		}
 
+		/// <summary>
+		/// Gets the full path of the current item.
+		/// </summary>
+		/// <value>The full path.</value>
 		public string FullPath
 		{
 			get { return _file.FullName; }

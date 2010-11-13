@@ -51,7 +51,7 @@ namespace Lokad.Cqrs.Tests.Views
 		[TearDown]
 		public void TearDown()
 		{
-			Container.Remove();
+			Container.Delete();
 		}
 
 

@@ -13,7 +13,7 @@ namespace Lokad.Cqrs
 	/// Storage container using <see cref="System.IO"/> for persisting data
 	/// </summary>
 	[UsedImplicitly]
-	public sealed class FileStorageContainer : IStorageContainer
+	public sealed class FileStorageContainer : IStorageContainer, IStorageRoot
 	{
 		readonly DirectoryInfo _root;
 
@@ -52,7 +52,7 @@ namespace Lokad.Cqrs
 			return this;
 		}
 
-		public void Remove()
+		public void Delete()
 		{
 			_root.Refresh();
 			if (_root.Exists)

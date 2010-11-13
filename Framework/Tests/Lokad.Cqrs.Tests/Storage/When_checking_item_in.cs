@@ -6,7 +6,6 @@
 #endregion
 
 using System;
-using Lokad.Cqrs.Storage;
 using Lokad.Testing;
 using NUnit.Framework;
 
@@ -41,7 +40,6 @@ namespace Lokad.Cqrs.Tests.Storage
 		[Test]
 		public void Valid_item_and_valid_IfMatch_wild_returns_info()
 		{
-
 			TestContainer.Create();
 			Write(TestItem, Guid.Empty);
 			TestItem.GetInfo(StorageCondition.IfMatch("*")).ShouldPass();
