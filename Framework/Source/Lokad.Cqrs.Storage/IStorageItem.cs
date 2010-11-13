@@ -27,8 +27,9 @@ namespace Lokad.Cqrs
 		/// <param name="writer">The writer.</param>
 		/// <param name="condition">The condition.</param>
 		/// <param name="options">The options.</param>
+		/// <returns>number of bytes written</returns>
 		/// <exception cref="StorageItemIntegrityException">when integrity check fails during the upload</exception>
-		void Write(Action<Stream> writer, StorageCondition condition = default(StorageCondition), StorageWriteOptions options = default(StorageWriteOptions));
+		long Write(Action<Stream> writer, StorageCondition condition = default(StorageCondition), StorageWriteOptions options = default(StorageWriteOptions));
 
 		/// <summary>
 		/// Attempts to read the storage item.

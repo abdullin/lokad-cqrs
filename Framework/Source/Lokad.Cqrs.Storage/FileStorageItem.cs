@@ -43,7 +43,7 @@ namespace Lokad.Cqrs
 		/// <param name="condition">The condition.</param>
 		/// <param name="options">The options.</param>
 		/// <exception cref="StorageItemIntegrityException">when integrity check fails during the upload</exception>
-		public void Write(Action<Stream> writer, StorageCondition condition, StorageWriteOptions options)
+		public long Write(Action<Stream> writer, StorageCondition condition, StorageWriteOptions options)
 		{
 			Refresh();
 
@@ -53,6 +53,7 @@ namespace Lokad.Cqrs
 			using (var file = _file.OpenWrite())
 			{
 				writer(file);
+				return file.Position;
 			}
 		}
 

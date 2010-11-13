@@ -36,7 +36,7 @@ namespace Lokad.Cqrs.Storage
 		/// <param name="writer">The writer.</param>
 		/// <param name="condition">The condition.</param>
 		/// <param name="writeOptions">The write options.</param>
-		public void Write(Action<Stream> writer, StorageCondition condition, StorageWriteOptions writeOptions)
+		public long Write(Action<Stream> writer, StorageCondition condition, StorageWriteOptions writeOptions)
 		{
 			try
 			{
@@ -45,10 +45,13 @@ namespace Lokad.Cqrs.Storage
 				if ((writeOptions & StorageWriteOptions.CompressIfPossible) == StorageWriteOptions.CompressIfPossible)
 				{
 					using (var stream = _blob.OpenWrite(mapped))
-					using (var compress = stream.Compress())
 					{
-						_blob.Properties.ContentEncoding = "gzip";
-						writer(compress);
+						using (var compress = stream.Compress(true))
+						{
+							_blob.Properties.ContentEncoding = "gzip";
+							writer(compress);
+						}
+						return stream.Position;
 					}
 				}
 				else
@@ -56,6 +59,7 @@ namespace Lokad.Cqrs.Storage
 					using (var stream = _blob.OpenWrite(mapped))
 					{
 						writer(stream);
+						return stream.Position;
 					}
 				}
 			}
