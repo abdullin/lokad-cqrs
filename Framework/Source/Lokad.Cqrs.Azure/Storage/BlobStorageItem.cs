@@ -8,12 +8,10 @@
 using System;
 using System.IO;
 using System.Net;
-using System.Security.Cryptography;
 using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs.Storage
 {
-
 	/// <summary>
 	/// Azure BLOB implementation of the <see cref="IStorageItem"/>
 	/// </summary>
@@ -49,7 +47,7 @@ namespace Lokad.Cqrs.Storage
 					using (var stream = _blob.OpenWrite(mapped))
 					using (var compress = stream.Compress())
 					{
-						_blob.Metadata[CompressionMetadataKey] = CompressionMetadataGzip;
+						_blob.Properties.ContentEncoding = "gzip";
 						writer(compress);
 					}
 				}
@@ -85,15 +83,15 @@ namespace Lokad.Cqrs.Storage
 			}
 		}
 
-		/// <summary>
-		/// Metadata key name for the optional compression header
-		/// </summary>
-		public const string CompressionMetadataKey = "ContentCompression";
-		/// <summary>
-		/// Medatata value for <see cref="CompressionMetadataKey"/> that represents built-in GZIP encoding.
-		/// </summary>
-		public const string CompressionMetadataGzip = "gzip";
 
+		/// <summary>
+		/// Attempts to read the storage item.
+		/// </summary>
+		/// <param name="reader">The reader.</param>
+		/// <param name="condition">The condition.</param>
+		/// <exception cref="StorageItemNotFoundException">if the item does not exist.</exception>
+		/// <exception cref="StorageContainerNotFoundException">if the container for the item does not exist</exception>
+		/// <exception cref="StorageItemIntegrityException">when integrity check fails</exception>
 		public void ReadInto(ReaderDelegate reader, StorageCondition condition)
 		{
 			try
@@ -103,11 +101,8 @@ namespace Lokad.Cqrs.Storage
 				_blob.FetchAttributes(mapped);
 				var props = Map(_blob.Properties);
 
-
-				var compression = _blob.Metadata[CompressionMetadataKey];
-				
-
-				if (compression == CompressionMetadataGzip)
+				var compression = _blob.Properties.ContentEncoding;
+				if (compression == "gzip")
 				{
 					using (var stream = _blob.OpenRead(mapped))
 					using (var decompress = stream.Decompress())
@@ -121,10 +116,10 @@ namespace Lokad.Cqrs.Storage
 					{
 						reader(props, stream);
 					}
-				} 
+				}
 				else
 				{
-					throw Errors.InvalidOperation("Unsupported compression header '{0}'", compression);
+					throw Errors.InvalidOperation("Unsupported ContentEncoding '{0}'", compression);
 				}
 			}
 			catch (StorageClientException e)
@@ -235,7 +230,8 @@ namespace Lokad.Cqrs.Storage
 				const int bufferSize = 0x400000;
 				Write(
 					targetStream =>
-						sourceItem.ReadInto((props, stream) => stream.PumpTo(targetStream, bufferSize), copySourceCondition), condition, writeOptions);
+						sourceItem.ReadInto((props, stream) => stream.PumpTo(targetStream, bufferSize), copySourceCondition), condition,
+					writeOptions);
 			}
 		}
 
