@@ -26,8 +26,9 @@ namespace Lokad.Cqrs
 		/// </summary>
 		/// <param name="writer">The writer.</param>
 		/// <param name="condition">The condition.</param>
+		/// <param name="options">The options.</param>
 		/// <exception cref="StorageItemIntegrityException">when integrity check fails during the upload</exception>
-		void Write(Action<Stream> writer, StorageCondition condition = default(StorageCondition));
+		void Write(Action<Stream> writer, StorageCondition condition = default(StorageCondition), StorageWriteOptions options = default(StorageWriteOptions));
 
 		/// <summary>
 		/// Attempts to read the storage item.
@@ -58,11 +59,12 @@ namespace Lokad.Cqrs
 		/// <param name="sourceItem">The target.</param>
 		/// <param name="condition">The condition.</param>
 		/// <param name="copySourceCondition">The copy source condition.</param>
-		/// <returns></returns>
+		/// <param name="options">The options.</param>
 		/// <exception cref="StorageItemNotFoundException">when source storage is not found</exception>
 		/// <exception cref="StorageItemIntegrityException">when integrity check fails</exception>
 		void CopyFrom(IStorageItem sourceItem,
 			StorageCondition condition = default(StorageCondition),
-			StorageCondition copySourceCondition = default(StorageCondition));
+			StorageCondition copySourceCondition = default(StorageCondition),
+			StorageWriteOptions options = default(StorageWriteOptions));
 	}
 }

@@ -29,7 +29,7 @@ namespace Lokad.Cqrs
 
 		//bool ExistingFileMathes()
 
-		public void Write(Action<Stream> writer, StorageCondition condition)
+		public void Write(Action<Stream> writer, StorageCondition condition, StorageWriteOptions options)
 		{
 			Refresh();
 
@@ -101,7 +101,7 @@ namespace Lokad.Cqrs
 			return new StorageItemInfo(lastWriteTimeUtc, tag);
 		}
 
-		public void CopyFrom(IStorageItem sourceItem, StorageCondition condition, StorageCondition copySourceCondition)
+		public void CopyFrom(IStorageItem sourceItem, StorageCondition condition, StorageCondition copySourceCondition,  StorageWriteOptions options)
 		{
 			var item = sourceItem as FileStorageItem;
 
@@ -123,7 +123,7 @@ namespace Lokad.Cqrs
 				const int bufferSize = 64 * 1024;
 				Write(
 					targetStream =>
-						sourceItem.ReadInto((props, stream) => stream.PumpTo(targetStream, bufferSize), copySourceCondition), condition);
+						sourceItem.ReadInto((props, stream) => stream.PumpTo(targetStream, bufferSize), copySourceCondition), condition, options);
 			}
 		}
 

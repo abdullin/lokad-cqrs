@@ -13,6 +13,7 @@ using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs.Storage
 {
+
 	/// <summary>
 	/// Azure BLOB implementation of the <see cref="IStorageItem"/>
 	/// </summary>
@@ -29,27 +30,35 @@ namespace Lokad.Cqrs.Storage
 			_blob = blob;
 		}
 
+		//const string ContentCompression = "gzip";
 
 		/// <summary>
 		/// Performs the write operation, ensuring that the condition is met.
 		/// </summary>
 		/// <param name="writer">The writer.</param>
 		/// <param name="condition">The condition.</param>
-		public void Write(Action<Stream> writer, StorageCondition condition)
+		/// <param name="writeOptions">The write options.</param>
+		public void Write(Action<Stream> writer, StorageCondition condition, StorageWriteOptions writeOptions)
 		{
 			try
 			{
-				var options = Map(condition);
+				var mapped = Map(condition);
 
-				using (var memory = new MemoryStream())
+				if ((writeOptions & StorageWriteOptions.CompressIfPossible) == StorageWriteOptions.CompressIfPossible)
 				{
-					writer(memory);
-
-					var hash = ComputeContentHashAndResetPosition(memory);
-					_blob.Properties.ContentMD5 = hash;
-					_blob.Metadata[MetadataMD5Key] = hash;
-
-					_blob.UploadFromStream(memory, options);
+					using (var stream = _blob.OpenWrite(mapped))
+					using (var compress = stream.Compress())
+					{
+						_blob.Metadata["ContentCompression"] = "gzip";
+						writer(compress);
+					}
+				}
+				else
+				{
+					using (var stream = _blob.OpenWrite(mapped))
+					{
+						writer(stream);
+					}
 				}
 			}
 			catch (StorageServerException ex)
@@ -111,35 +120,26 @@ namespace Lokad.Cqrs.Storage
 		{
 			try
 			{
-				var options = Map(condition);
+				var mapped = Map(condition);
 
-				var buffer = _blob.DownloadByteArray(options);
-				using (var stream = new MemoryStream(buffer))
+				_blob.FetchAttributes(mapped);
+				var props = Map(_blob.Properties);
+				var compressed = _blob.Metadata["ContentCompression"] == "gzip";
+				if (compressed)
 				{
-					var contentHash = GetContentHash(_blob);
-					if (contentHash.HasValue)
+					using (var stream = _blob.OpenRead(mapped))
+					using (var decompress = stream.Decompress())
 					{
-						var hash = ComputeContentHashAndResetPosition(stream);
-						if (hash != contentHash.Value)
-							throw StorageErrors.IntegrityFailure(this);
+						reader(props, decompress);
 					}
-
-					var properties = Map(_blob.Properties);
-					reader(properties, stream);
 				}
-
-				// since access is lazy, we must fail and return empty condition
-				// when condition is not met.
-				//using (var stream = _blob.OpenRead(options))
-				//{
-				//    // we need to start pumping in order to get the properties pulled
-				//    stream.ReadByte();
-				//    stream.Seek(0, SeekOrigin.Begin);
-
-				//    Enforce.That(_blob.Properties.LastModifiedUtc != DateTime.MinValue);
-				//    var properties = Map(_blob.Properties);
-				//    reader(properties, stream);
-				//}
+				else
+				{
+					using (var stream = _blob.OpenRead(mapped))
+					{
+						reader(props, stream);
+					}
+				}
 			}
 			catch (StorageClientException e)
 			{
@@ -221,7 +221,8 @@ namespace Lokad.Cqrs.Storage
 
 		public void CopyFrom(IStorageItem sourceItem,
 			StorageCondition condition,
-			StorageCondition copySourceCondition)
+			StorageCondition copySourceCondition,
+			StorageWriteOptions writeOptions)
 		{
 			var item = sourceItem as BlobStorageItem;
 
@@ -248,7 +249,7 @@ namespace Lokad.Cqrs.Storage
 				const int bufferSize = 0x400000;
 				Write(
 					targetStream =>
-						sourceItem.ReadInto((props, stream) => stream.PumpTo(targetStream, bufferSize), copySourceCondition), condition);
+						sourceItem.ReadInto((props, stream) => stream.PumpTo(targetStream, bufferSize), copySourceCondition), condition, writeOptions);
 			}
 		}
 

@@ -23,21 +23,36 @@ namespace Lokad.Cqrs.Tests.Storage
 		{
 			const string uri = "http://ipv4.fiddler:10000/devstoreaccount1";
 			var credentials = CloudStorageAccount.DevelopmentStorageAccount.Credentials;
+
+
 			var client = new CloudBlobClient(uri, credentials);
+
+
+			//var client =
+			//    CloudStorageAccount.Parse(
+			//        "DefaultEndpointsProtocol=http;AccountName=salescast;AccountKey=DnI8s1Rv7I7+hUWo/okGSuY3E5hR194MG5uqrARQsi2w2SOhHsLF2SjO5s5Up8GC2GyhSd8FAKh9VDH0kGPAFA==")
+			//        .CreateCloudBlobClient();
 			client.RetryPolicy = RetryPolicies.NoRetry();
 
 			var root = new BlobStorageRoot(client, DebugLog.Provider);
-			var cont = root.GetContainer("hash-test").Create();
+			var cont = root.GetContainer("tests").Create();
 
 			var storageItem = cont.GetItem("test");
 
 
-			storageItem.ReadInto((props, designationStream) => designationStream.PumpTo(new MemoryStream(), 20));
+			storageItem.WriteText("Cool");
+			storageItem.ReadText();
 
 
-			var b = new byte[0];
 
-			storageItem.Write(stream => { });
+			storageItem.Write(s =>
+			{
+				using (var writer = new StreamWriter(s))
+				{
+					writer.Write("Cool2");
+				}
+			}, options:StorageWriteOptions.CompressIfPossible);
+			storageItem.ReadText();
 		}
 	}
 }
