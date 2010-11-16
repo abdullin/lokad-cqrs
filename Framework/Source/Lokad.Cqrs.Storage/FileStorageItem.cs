@@ -26,6 +26,15 @@ namespace Lokad.Cqrs
 			_file = file;
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="FileStorageItem"/> class.
+		/// </summary>
+		/// <param name="filePath">The file path.</param>
+		public FileStorageItem(string filePath)
+		{
+			_file = new FileInfo(filePath);
+		}
+
 		bool Satisfy(StorageCondition condition)
 		{
 			return GetUnconditionalInfo()
@@ -34,8 +43,7 @@ namespace Lokad.Cqrs
 		}
 
 
-		//bool ExistingFileMathes()
-
+		
 		/// <summary>
 		/// Performs the write operation, ensuring that the condition is met.
 		/// </summary>
@@ -186,6 +194,15 @@ namespace Lokad.Cqrs
 		public string FullPath
 		{
 			get { return _file.FullName; }
+		}
+
+		/// <summary>
+		/// Gets the file reference behind this instance.
+		/// </summary>
+		/// <value>The reference.</value>
+		public FileInfo Reference
+		{
+			get { return _file; }
 		}
 	}
 }

@@ -153,6 +153,10 @@ namespace Lokad.Cqrs.Storage
 			}
 		}
 
+		/// <summary>
+		/// Removes the item, ensuring that the specified condition is met.
+		/// </summary>
+		/// <param name="condition">The condition.</param>
 		public void Delete(StorageCondition condition)
 		{
 			try
@@ -239,9 +243,22 @@ namespace Lokad.Cqrs.Storage
 			}
 		}
 
+		/// <summary>
+		/// Gets the full path of the current item.
+		/// </summary>
+		/// <value>The full path.</value>
 		public string FullPath
 		{
 			get { return _blob.Uri.ToString(); }
+		}
+
+		/// <summary>
+		/// Gets the BLOB reference behind this instance.
+		/// </summary>
+		/// <value>The reference.</value>
+		public CloudBlob Reference
+		{
+			get { return _blob;}
 		}
 
 		static BlobRequestOptions Map(StorageCondition condition,
