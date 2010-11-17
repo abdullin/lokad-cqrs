@@ -28,6 +28,7 @@ namespace Sample_05.Web
 		public static ICloudClient Build()
 		{
 			var builder = new CloudClientBuilder();
+			
 			builder.Serialization.UseProtocolBuffers();
 			builder.Domain(db =>
 				{

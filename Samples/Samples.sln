@@ -25,7 +25,7 @@ Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "Sample_04.Azure", "Sample_0
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample_04.Worker", "Sample_04\Sample_04.Worker\Sample_04.Worker.csproj", "{D54DD44E-CA1A-4F31-990B-4ABC0B39B2D0}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample 05 - Web + Worker", "Sample 05 - Web + Worker", "{3EB477E7-D5A6-460F-9396-E4AE7C86A8CA}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample 05 - [Not finished]", "Sample 05 - [Not finished]", "{3EB477E7-D5A6-460F-9396-E4AE7C86A8CA}"
 EndProject
 Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "Sample_05.Azure", "Sample_05\Sample_05.Azure\Sample_05.Azure.ccproj", "{0D8E73CF-2961-495E-90BC-43A66A5119A5}"
 EndProject
