@@ -140,7 +140,7 @@ namespace Lokad.Cqrs
 			var lastWriteTimeUtc = _file.LastWriteTimeUtc;
 			var tag = string.Format("{0}-{1}", lastWriteTimeUtc.Ticks, _file.Length);
 			
-			return new StorageItemInfo(_file.Name, _file.FullName,  lastWriteTimeUtc, tag, new NameValueCollection(0), new Dictionary<string, string>(0));
+			return new StorageItemInfo(lastWriteTimeUtc, tag, new NameValueCollection(0), new Dictionary<string, string>(0));
 		}
 
 		/// <summary>

@@ -15,20 +15,20 @@ namespace Lokad.Cqrs
 		[DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
 		public IDictionary<string,string> Properties { get; private set; }
 
-		public string FullPath { get; private set; }
-		public string Name { get; private set; }
+		//public string FullPath { get; private set; }
+		//public string Name { get; private set; }
 
 		public StorageItemInfo(
-			string name,
-			string fullPath,
+			//string name,
+			//string fullPath,
 			DateTime lastModifiedUtc, 
 			string eTag, 
 			NameValueCollection metadata, 
 			IDictionary<string,string> properties)
 		{
 
-			Name = name;
-			FullPath = fullPath;
+			//Name = name;
+			//FullPath = fullPath;
 
 			LastModifiedUtc = lastModifiedUtc;
 			ETag = eTag;
