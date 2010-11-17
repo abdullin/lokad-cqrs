@@ -5,6 +5,7 @@
 
 #endregion
 
+using System;
 using System.IO;
 using Lokad.Cqrs.Storage;
 using Microsoft.WindowsAzure;
@@ -21,17 +22,8 @@ namespace Lokad.Cqrs.Tests.Storage
 		[Test, Explicit]
 		public void Test()
 		{
-			const string uri = "http://ipv4.fiddler:10000/devstoreaccount1";
-			var credentials = CloudStorageAccount.DevelopmentStorageAccount.Credentials;
-
-
-			var client = new CloudBlobClient(uri, credentials);
-
-
-			//var client =
-			//    CloudStorageAccount.Parse(
-			//        "DefaultEndpointsProtocol=http;AccountName=salescast;AccountKey=DnI8s1Rv7I7+hUWo/okGSuY3E5hR194MG5uqrARQsi2w2SOhHsLF2SjO5s5Up8GC2GyhSd8FAKh9VDH0kGPAFA==")
-			//        .CreateCloudBlobClient();
+			var client = BlobStorage.GetCustom();
+			
 			client.RetryPolicy = RetryPolicies.NoRetry();
 
 			var root = new BlobStorageRoot(client, DebugLog.Provider);
@@ -40,19 +32,22 @@ namespace Lokad.Cqrs.Tests.Storage
 			var storageItem = cont.GetItem("test");
 
 
-			storageItem.WriteText("Cool");
-			storageItem.ReadText();
+			storageItem.Write(w => w.WriteByte(1), options:StorageWriteOptions.CompressIfPossible);
+			storageItem.ReadInto((props, stream) => stream.PumpTo(new MemoryStream(), 10));
 
+			var format = storageItem.GetInfo();
+			Console.WriteLine("MD5: {0}", format.Value.Properties.GetValue("ContentMD5", "None"));
 
-
-			storageItem.Write(s =>
-			{
-				using (var writer = new StreamWriter(s))
-				{
-					writer.Write("Cool2");
-				}
-			}, options:StorageWriteOptions.CompressIfPossible);
-			storageItem.ReadText();
+			//storageItem.ReadText();
 		}
+
+		static CloudBlobClient GetFiddler()
+		{
+			const string uri = "http://ipv4.fiddler:10000/devstoreaccount1";
+			var credentials = CloudStorageAccount.DevelopmentStorageAccount.Credentials;
+			return new CloudBlobClient(uri, credentials);
+		}
+
+		
 	}
 }

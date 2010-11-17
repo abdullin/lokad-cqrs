@@ -59,29 +59,4 @@ namespace Lokad.Cqrs
 			return GetString(name);
 		}
 	}
-
-	/// <summary>
-	/// Settings provider based on a simple dictionary
-	/// </summary>
-	public sealed class DictionarySettingsProvider : ISettingsProvider
-	{
-		readonly IDictionary<string, string> _dictionary;
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="DictionarySettingsProvider"/> class.
-		/// </summary>
-		/// <param name="dictionary">The dictionary.</param>
-		public DictionarySettingsProvider([NotNull] IDictionary<string, string> dictionary)
-		{
-			if (dictionary == null) throw new ArgumentNullException("dictionary");
-			_dictionary = dictionary;
-		}
-
-		Maybe<string> ISettingsProvider.GetValue([NotNull] string name)
-		{
-			if (name == null) throw new ArgumentNullException("name");
-
-			return _dictionary.GetValue(name);
-		}
-	}
 }

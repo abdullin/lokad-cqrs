@@ -6,6 +6,8 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 
 namespace Lokad.Cqrs
@@ -137,8 +139,8 @@ namespace Lokad.Cqrs
 			// yes, that's not full hashing, but for now we don't care
 			var lastWriteTimeUtc = _file.LastWriteTimeUtc;
 			var tag = string.Format("{0}-{1}", lastWriteTimeUtc.Ticks, _file.Length);
-
-			return new StorageItemInfo(lastWriteTimeUtc, tag);
+			
+			return new StorageItemInfo(_file.Name, _file.FullName,  lastWriteTimeUtc, tag, new NameValueCollection(0), new Dictionary<string, string>(0));
 		}
 
 		/// <summary>

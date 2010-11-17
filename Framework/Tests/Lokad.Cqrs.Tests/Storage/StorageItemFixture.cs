@@ -18,6 +18,9 @@ namespace Lokad.Cqrs.Tests.Storage
 	{
 		readonly ITestStorage _factory = new TStorage();
 
+
+		
+
 		static void Expect<TEx>(Action action) where TEx : StorageBaseException
 		{
 			try
@@ -38,6 +41,8 @@ namespace Lokad.Cqrs.Tests.Storage
 
 		protected IStorageContainer TestContainer { get; private set; }
 		protected IStorageItem TestItem { get; private set; }
+
+		protected StorageWriteOptions WriteOptions { get; set; }
 
 		[SetUp]
 		public void SetUp()
@@ -77,7 +82,7 @@ namespace Lokad.Cqrs.Tests.Storage
 
 		protected void Write(IStorageItem storageItem, Guid g, StorageCondition condition = default(StorageCondition))
 		{
-			storageItem.Write(stream => stream.Write(g.ToByteArray(), 0, 16), condition, StorageWriteOptions.CompressIfPossible);
+			storageItem.Write(stream => stream.Write(g.ToByteArray(), 0, 16), condition, WriteOptions);
 		}
 
 
@@ -89,21 +94,25 @@ namespace Lokad.Cqrs.Tests.Storage
 		protected void ShouldHaveGuid(IStorageItem storageItem, Guid g, StorageCondition condition = default(StorageCondition))
 		{
 			var set = false;
-
+			Guid actual = Guid.Empty;
+			StorageItemInfo storageItemInfo = null;
 			storageItem.ReadInto((properties, stream) =>
 				{
 					var b = new byte[16];
 					stream.Read(b, 0, 16);
-					var actual = new Guid(b);
-					Assert.AreEqual(g, actual);
-
-					var props = properties;
-
-					Assert.AreNotEqual(DateTime.MinValue, props.LastModifiedUtc, "Valid date should be present");
-					Assert.That(props.ETag, Is.Not.Empty);
-
+					actual = new Guid(b);
 					set = true;
+					storageItemInfo = properties;
 				}, condition);
+			
+			Assert.AreEqual(g, actual);
+
+			
+			Assert.AreNotEqual(DateTime.MinValue, storageItemInfo.LastModifiedUtc, "Valid date should be present");
+			Assert.That(storageItemInfo.ETag, Is.Not.Empty);
+
+			set = true;
+
 			Assert.IsTrue(set);
 		}
 	}

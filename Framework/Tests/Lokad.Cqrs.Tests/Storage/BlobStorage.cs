@@ -5,6 +5,7 @@
 
 #endregion
 
+using System.IO;
 using Lokad.Cqrs.Storage;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
@@ -18,12 +19,22 @@ namespace Lokad.Cqrs.Tests.Storage
 
 	public sealed class BlobStorage : ITestStorage
 	{
-		CloudBlobClient _client = CloudStorageAccount.DevelopmentStorageAccount.CreateCloudBlobClient();
+		CloudBlobClient _client = GetCustom(); //CloudStorageAccount.DevelopmentStorageAccount.CreateCloudBlobClient();
 
 		public IStorageContainer GetContainer(string path)
 		{
 			//UseLocalFiddler();
 			return new BlobStorageContainer(_client.GetBlobDirectoryReference(path), NullLog.Provider);
+		}
+
+		public static CloudBlobClient GetCustom()
+		{
+			return CloudStorageAccount.Parse(File.ReadAllText(@"D:\Environment\Azure.blob.test")).CreateCloudBlobClient();
+		}
+
+		public StorageWriteOptions GetWriteHints()
+		{
+			return StorageWriteOptions.None;
 		}
 
 		public BlobStorage UseLocalFiddler()
@@ -60,9 +71,30 @@ namespace Lokad.Cqrs.Tests.Storage
 
 
 		[TestFixture]
+		public sealed class When_reading_blob_item_with_gzip :
+			When_reading_item_in<Here>
+		{
+			public When_reading_blob_item_with_gzip()
+			{
+				WriteOptions |= StorageWriteOptions.CompressIfPossible;
+			}
+		}
+
+
+		[TestFixture]
 		public sealed class When_writing_blob_item
 			: When_writing_item_in<Here>
 		{
+		}
+
+		[TestFixture]
+		public sealed class When_writing_blob_item_with_gzip
+			: When_writing_item_in<Here>
+		{
+			public When_writing_blob_item_with_gzip()
+			{
+				WriteOptions |= StorageWriteOptions.CompressIfPossible;
+			}
 		}
 	}
 }

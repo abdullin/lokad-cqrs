@@ -6,8 +6,12 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Net;
+using System.Runtime.Remoting;
+using System.Security.Cryptography;
 using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs.Storage
@@ -17,14 +21,17 @@ namespace Lokad.Cqrs.Storage
 	/// </summary>
 	public sealed class BlobStorageItem : IStorageItem
 	{
+		readonly string _name;
 		readonly CloudBlob _blob;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="BlobStorageItem"/> class.
 		/// </summary>
+		/// <param name="name">The name.</param>
 		/// <param name="blob">The BLOB.</param>
-		public BlobStorageItem(CloudBlob blob)
+		public BlobStorageItem(string name, CloudBlob blob)
 		{
+			_name = name;
 			_blob = blob;
 		}
 
@@ -41,26 +48,46 @@ namespace Lokad.Cqrs.Storage
 			try
 			{
 				var mapped = Map(condition);
+				var compressIfPossible = (writeOptions & StorageWriteOptions.CompressIfPossible) ==
+					StorageWriteOptions.CompressIfPossible;
 
-				if ((writeOptions & StorageWriteOptions.CompressIfPossible) == StorageWriteOptions.CompressIfPossible)
+				// we are adding our own hashing on top, to ensure
+				// consistent behavior between Azure StorageClient versions
+
+				if (compressIfPossible)
 				{
+					long position;
+					var md5 = MD5.Create();
+					_blob.Properties.ContentEncoding = "gzip";
 					using (var stream = _blob.OpenWrite(mapped))
 					{
-						using (var compress = stream.Compress(true))
+						using (var crypto = new CryptoStream(stream, md5, CryptoStreamMode.Write))
+						using (var compress = crypto.Compress(true))
 						{
-							_blob.Properties.ContentEncoding = "gzip";
 							writer(compress);
 						}
-						return stream.Position;
+						position = stream.Position;
 					}
+					//_blob.Properties.ContentEncoding = "gzip";
+					_blob.Metadata[LokadHashFieldName] = Convert.ToBase64String(md5.Hash);
+					_blob.SetMetadata();
+					return position;
 				}
-				else
 				{
+					var md5 = MD5.Create();
+					long position;
 					using (var stream = _blob.OpenWrite(mapped))
 					{
-						writer(stream);
-						return stream.Position;
+						using (var crypto = new CryptoStream(stream, md5, CryptoStreamMode.Write))
+						{
+							writer(crypto);
+						}
+						
+						position = stream.Position;
 					}
+					_blob.Metadata[LokadHashFieldName] = Convert.ToBase64String(md5.Hash);
+					_blob.SetMetadata();
+					return position;
 				}
 			}
 			catch (StorageServerException ex)
@@ -87,6 +114,26 @@ namespace Lokad.Cqrs.Storage
 			}
 		}
 
+		static void ReadAndVerifyHash(Stream stream, Action<Stream> reader, string hash)
+		{
+			if (string.IsNullOrEmpty(hash))
+			{
+				reader(stream);
+				return;
+			}
+
+			var md5 = MD5.Create();
+			// Blob streams throw NSE on Flush()
+			using (var hack = new SuppressFlushForStream(stream))
+			using (var crypto = new CryptoStream(hack, md5, CryptoStreamMode.Read))
+			{
+				reader(crypto);
+			}
+			var calculated = Convert.ToBase64String(md5.Hash);
+
+			if (calculated != hash)
+				throw new StorageItemIntegrityException("Hash was provided, but it does not match.");
+		}
 
 		/// <summary>
 		/// Attempts to read the storage item.
@@ -101,30 +148,42 @@ namespace Lokad.Cqrs.Storage
 			try
 			{
 				var mapped = Map(condition);
-
 				_blob.FetchAttributes(mapped);
-				var props = Map(_blob.Properties);
+				var props = MapFetchedAttrbitues(_name, FullPath, _blob);
 
-				var compression = _blob.Properties.ContentEncoding;
-				if (compression == "gzip")
+				var compression = _blob.Properties.ContentEncoding ?? "";
+				var md5 = _blob.Metadata[LokadHashFieldName];
+
+				switch (compression)
 				{
-					using (var stream = _blob.OpenRead(mapped))
-					using (var decompress = stream.Decompress())
-					{
-						reader(props, decompress);
-					}
+					case "gzip":
+						using (var stream = _blob.OpenRead(mapped))
+						{
+							ReadAndVerifyHash(stream, s =>
+								{
+									// important is not to flush the decompression stream
+									using (var decompress = s.Decompress(true))
+									{
+										reader(props, decompress);
+									}
+									
+								}, md5);
+						}
+
+						break;
+					case "":
+						using (var stream = _blob.OpenRead(mapped))
+						{
+							ReadAndVerifyHash(stream, s => reader(props, s), md5);
+						}
+						break;
+					default:
+						throw Errors.InvalidOperation("Unsupported ContentEncoding '{0}'", compression);
 				}
-				else if (string.IsNullOrEmpty(compression))
-				{
-					using (var stream = _blob.OpenRead(mapped))
-					{
-						reader(props, stream);
-					}
-				}
-				else
-				{
-					throw Errors.InvalidOperation("Unsupported ContentEncoding '{0}'", compression);
-				}
+			}
+			catch (StorageItemIntegrityException e)
+			{
+				throw StorageErrors.IntegrityFailure(this, e);
 			}
 			catch (StorageClientException e)
 			{
@@ -137,6 +196,8 @@ namespace Lokad.Cqrs.Storage
 						throw StorageErrors.ItemNotFound(this, e);
 					case StorageErrorCode.ConditionFailed:
 						throw StorageErrors.ConditionFailed(this, condition, e);
+					case StorageErrorCode.ServiceIntegrityCheckFailed:
+						throw StorageErrors.IntegrityFailure(this, e);
 					case StorageErrorCode.BadRequest:
 						switch (e.StatusCode)
 						{
@@ -184,7 +245,7 @@ namespace Lokad.Cqrs.Storage
 			try
 			{
 				_blob.FetchAttributes(Map(condition));
-				return Map(_blob.Properties);
+				return MapFetchedAttrbitues(_name, FullPath, _blob);
 			}
 			catch (StorageClientException e)
 			{
@@ -298,9 +359,173 @@ namespace Lokad.Cqrs.Storage
 			}
 		}
 
-		static StorageItemInfo Map(BlobProperties props)
+		static StorageItemInfo MapFetchedAttrbitues(string name, string path, CloudBlob blob)
 		{
-			return new StorageItemInfo(props.LastModifiedUtc, props.ETag);
+			var meta = new NameValueCollection(blob.Metadata);
+			var properties = new Dictionary<string,string>(5);
+			var props = blob.Properties;
+			if (!string.IsNullOrEmpty(props.ContentMD5))
+			{
+				properties["ContentMD5"] = props.ContentMD5;
+			}
+			if (!string.IsNullOrEmpty(props.ContentEncoding))
+			{
+				properties["ContentEncoding"] = props.ContentEncoding;
+			}
+			if (!string.IsNullOrEmpty(props.ContentType))
+			{
+				properties["ContentType"] = props.ContentType;
+			}
+			properties["BlobType"] = props.BlobType.ToString();
+			properties["Length"] = props.Length.ToString();
+
+			return new StorageItemInfo(name, path,   props.LastModifiedUtc, props.ETag, meta, properties);
+		}
+
+		public const string LokadHashFieldName = "LokadContentMD5";
+	}
+
+	sealed class SuppressFlushForStream : Stream
+	{
+		readonly Stream _inner;
+
+		public SuppressFlushForStream(Stream inner)
+		{
+			_inner = inner;
+		}
+
+		public object GetLifetimeService()
+		{
+			return _inner.GetLifetimeService();
+		}
+
+		public object InitializeLifetimeService()
+		{
+			return _inner.InitializeLifetimeService();
+		}
+
+		public ObjRef CreateObjRef(Type requestedType)
+		{
+			return _inner.CreateObjRef(requestedType);
+		}
+
+		public void CopyTo(Stream destination)
+		{
+			_inner.CopyTo(destination);
+		}
+
+		public void CopyTo(Stream destination, int bufferSize)
+		{
+			_inner.CopyTo(destination, bufferSize);
+		}
+
+		public void Close()
+		{
+			_inner.Close();
+		}
+
+		public void Dispose()
+		{
+			_inner.Dispose();
+		}
+
+		public override void Flush()
+		{
+			// yeah, that's just the hack
+			//_inner.Flush();
+		}
+
+		public IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
+		{
+			return _inner.BeginRead(buffer, offset, count, callback, state);
+		}
+
+		public int EndRead(IAsyncResult asyncResult)
+		{
+			return _inner.EndRead(asyncResult);
+		}
+
+		public IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
+		{
+			return _inner.BeginWrite(buffer, offset, count, callback, state);
+		}
+
+		public void EndWrite(IAsyncResult asyncResult)
+		{
+			_inner.EndWrite(asyncResult);
+		}
+
+		public override long Seek(long offset, SeekOrigin origin)
+		{
+			return _inner.Seek(offset, origin);
+		}
+
+		public override void SetLength(long value)
+		{
+			_inner.SetLength(value);
+		}
+
+		public override int Read(byte[] buffer, int offset, int count)
+		{
+			return _inner.Read(buffer, offset, count);
+		}
+
+		public int ReadByte()
+		{
+			return _inner.ReadByte();
+		}
+
+		public override void Write(byte[] buffer, int offset, int count)
+		{
+			_inner.Write(buffer, offset, count);
+		}
+
+		public void WriteByte(byte value)
+		{
+			_inner.WriteByte(value);
+		}
+
+		public override bool CanRead
+		{
+			get { return _inner.CanRead; }
+		}
+
+		public override bool CanSeek
+		{
+			get { return _inner.CanSeek; }
+		}
+
+		public bool CanTimeout
+		{
+			get { return _inner.CanTimeout; }
+		}
+
+		public override bool CanWrite
+		{
+			get { return _inner.CanWrite; }
+		}
+
+		public override long Length
+		{
+			get { return _inner.Length; }
+		}
+
+		public override long Position
+		{
+			get { return _inner.Position; }
+			set { _inner.Position = value; }
+		}
+
+		public int ReadTimeout
+		{
+			get { return _inner.ReadTimeout; }
+			set { _inner.ReadTimeout = value; }
+		}
+
+		public int WriteTimeout
+		{
+			get { return _inner.WriteTimeout; }
+			set { _inner.WriteTimeout = value; }
 		}
 	}
 }

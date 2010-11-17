@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Lokad.Cqrs.Storage;
 using NUnit.Framework;
 
@@ -24,6 +25,11 @@ namespace Lokad.Cqrs.Tests.Storage
 		{
 			var combine = Path.Combine(_root.FullName, "test");
 			return new FileStorageContainer(new DirectoryInfo(combine));
+		}
+
+		public StorageWriteOptions GetWriteHints()
+		{
+			return StorageWriteOptions.None;
 		}
 
 		[TestFixture]

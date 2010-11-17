@@ -50,7 +50,7 @@ namespace Lokad.Cqrs.Storage
 		public IStorageItem GetItem([NotNull] string name)
 		{
 			if (name == null) throw new ArgumentNullException("name");
-			return new BlobStorageItem(_directory.GetBlobReference(name));
+			return new BlobStorageItem(name, _directory.GetBlobReference(name));
 		}
 
 		public IStorageContainer Create()
