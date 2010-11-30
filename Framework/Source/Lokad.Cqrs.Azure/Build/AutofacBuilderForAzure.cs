@@ -19,6 +19,7 @@ namespace Lokad.Cqrs
 	/// </summary>
 	public sealed class AutofacBuilderForAzure : Syntax
 	{
+		Action<CloudBlobClient> _configureClient = client => { };
 		readonly ContainerBuilder _builder;
 
 		/// <summary>
@@ -28,7 +29,6 @@ namespace Lokad.Cqrs
 		public AutofacBuilderForAzure(ContainerBuilder builder)
 		{
 			_builder = builder;
-			
 		}
 
 		/// <summary>
@@ -133,14 +133,22 @@ namespace Lokad.Cqrs
 			return this;
 		}
 
+		/// <summary>
+		/// Configures the BLOB client. This action is applied to every single instance created.
+		/// </summary>
+		/// <param name="action">The action.</param>
+		public void ConfigureBlobClient(Action<CloudBlobClient> action)
+		{
+			_configureClient += action;
+		}
+
 		void RegisterLocals()
 		{
 			_builder.RegisterType<BlobStorageRoot>().SingleInstance().As<IStorageRoot>();
 			_builder.Register(c =>
 				{
 					var client = c.Resolve<CloudStorageAccount>().CreateCloudBlobClient();
-					// we are streaming everything anyway
-					client.ReadAheadInBytes = 0x400000L;
+					_configureClient(client);
 					return client;
 				});
 		}
