@@ -6,6 +6,8 @@
 #endregion
 
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,6 +28,7 @@ namespace Lokad.Cqrs.Transport
 		readonly IReadMessageQueue[] _queues;
 		readonly int _degreeOfParallelism;
 		readonly Func<uint, TimeSpan> _threadSleepInterval;
+
 		public AzureQueueTransport(
 			AzureQueueTransportConfig config,
 			ILogProvider logProvider,
@@ -69,9 +72,6 @@ namespace Lokad.Cqrs.Transport
 			_log.DebugFormat("Starting transport for {0}", _queueNames.Join(";"));
 
 			var tasks = Range.Array(_degreeOfParallelism, n => Task.Factory.StartNew(() => ReceiveMessages(token), token));
-
-
-
 			return tasks;
 		}
 

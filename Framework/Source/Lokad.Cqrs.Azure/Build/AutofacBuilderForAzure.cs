@@ -14,10 +14,17 @@ using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs
 {
+	/// <summary>
+	/// Autofac syntax for configuring Azure storage
+	/// </summary>
 	public sealed class AutofacBuilderForAzure : Syntax
 	{
 		readonly ContainerBuilder _builder;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="AutofacBuilderForAzure"/> class.
+		/// </summary>
+		/// <param name="builder">The builder.</param>
 		public AutofacBuilderForAzure(ContainerBuilder builder)
 		{
 			_builder = builder;
@@ -129,7 +136,13 @@ namespace Lokad.Cqrs
 		void RegisterLocals()
 		{
 			_builder.RegisterType<BlobStorageRoot>().SingleInstance().As<IStorageRoot>();
-			_builder.Register(c => c.Resolve<CloudStorageAccount>().CreateCloudBlobClient());
+			_builder.Register(c =>
+				{
+					var client = c.Resolve<CloudStorageAccount>().CreateCloudBlobClient();
+					// we are streaming everything anyway
+					client.ReadAheadInBytes = 0x400000L;
+					return client;
+				});
 		}
 	}
 }
