@@ -35,7 +35,7 @@
     <Reference Include="Autofac">
       <HintPath>..\..\Library\Autofac\Autofac.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.WindowsAzure.StorageClient, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.WindowsAzure.StorageClient, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="nunit.framework">
       <HintPath>..\..\Library\NUnit\nunit.framework.dll</HintPath>
     </Reference>
