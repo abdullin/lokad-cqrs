@@ -156,6 +156,7 @@ namespace Lokad.Cqrs.Storage
 			{
 				switch (e.ErrorCode)
 				{
+						
 					case StorageErrorCode.ContainerNotFound:
 					case StorageErrorCode.ResourceNotFound:
 					case StorageErrorCode.BlobNotFound:

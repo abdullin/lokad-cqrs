@@ -17,9 +17,9 @@ namespace Lokad.Cqrs.Tests.Storage
 		where TStorage : ITestStorage, new()
 	{
 		[Test]
-		public void Missing_container_throws_container()
+		public void Missing_container_returns_empty()
 		{
-			ExpectContainerNotFound(() => TestItem.GetInfo());
+			TestItem.GetInfo().ShouldFail();
 		}
 
 		[Test]

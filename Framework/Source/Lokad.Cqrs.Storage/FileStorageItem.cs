@@ -124,7 +124,7 @@ namespace Lokad.Cqrs
 		public Maybe<StorageItemInfo> GetInfo(StorageCondition condition)
 		{
 			Refresh();
-			ThrowIfContainerNotFound();
+			//ThrowIfContainerNotFound();
 
 			if (_file.Exists && Satisfy(condition))
 				return GetUnconditionalInfo();

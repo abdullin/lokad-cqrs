@@ -26,7 +26,7 @@ namespace Lokad.Cqrs.Tests.Storage
 			try
 			{
 				action();
-				Assert.Fail("Expected exception '{0}'", typeof (TEx));
+				Assert.Fail("Expected exception '{0}', but got nothing", typeof (TEx));
 			}
 			catch (TEx)
 			{
