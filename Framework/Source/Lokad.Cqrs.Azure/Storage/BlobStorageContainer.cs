@@ -10,11 +10,19 @@ using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs.Storage
 {
+	/// <summary>
+	/// Windows Azure implementation of storage 
+	/// </summary>
 	public sealed class BlobStorageRoot : IStorageRoot
 	{
 		readonly CloudBlobClient _client;
 		readonly ILogProvider _provider;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="BlobStorageRoot"/> class.
+		/// </summary>
+		/// <param name="client">The client.</param>
+		/// <param name="provider">The provider.</param>
 		public BlobStorageRoot(CloudBlobClient client, ILogProvider provider)
 		{
 			_client = client;
@@ -23,41 +31,42 @@ namespace Lokad.Cqrs.Storage
 
 		public IStorageContainer GetContainer(string name)
 		{
-			return new BlobStorageContainer(_client.GetBlobDirectoryReference(name), _provider);
+			return new BlobStorageContainer(_client.GetBlobDirectoryReference(name));
 		}
 	}
 
+	/// <summary>
+	/// Windows Azure implementation of storage 
+	/// </summary>
 	public sealed class BlobStorageContainer : IStorageContainer
 	{
 		readonly CloudBlobDirectory _directory;
-		readonly ILog _log;
-		readonly ILogProvider _provider;
 
-		public BlobStorageContainer(CloudBlobDirectory directory, ILogProvider provider)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="BlobStorageContainer"/> class.
+		/// </summary>
+		/// <param name="directory">The directory.</param>
+		public BlobStorageContainer(CloudBlobDirectory directory)
 		{
 			_directory = directory;
-			_provider = provider;
-			_log = provider.LogForName(this);
 		}
 
 		public IStorageContainer GetContainer([NotNull] string name)
 		{
 			if (name == null) throw new ArgumentNullException("name");
 
-			return new BlobStorageContainer(_directory.GetSubdirectory(name), _provider);
+			return new BlobStorageContainer(_directory.GetSubdirectory(name));
 		}
 
 		public IStorageItem GetItem([NotNull] string name)
 		{
 			if (name == null) throw new ArgumentNullException("name");
-			return new BlobStorageItem(name, _directory.GetBlobReference(name));
+			return new BlobStorageItem(_directory.GetBlobReference(name));
 		}
 
 		public IStorageContainer Create()
 		{
 			_directory.Container.CreateIfNotExist();
-
-
 			return this;
 		}
 

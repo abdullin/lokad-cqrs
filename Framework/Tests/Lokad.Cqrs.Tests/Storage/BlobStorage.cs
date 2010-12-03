@@ -24,7 +24,7 @@ namespace Lokad.Cqrs.Tests.Storage
 		public IStorageContainer GetContainer(string path)
 		{
 			//UseLocalFiddler();
-			return new BlobStorageContainer(_client.GetBlobDirectoryReference(path), NullLog.Provider);
+			return new BlobStorageContainer(_client.GetBlobDirectoryReference(path));
 		}
 
 		public static CloudBlobClient GetCustom()

@@ -17,17 +17,14 @@ namespace Lokad.Cqrs.Storage
 	/// </summary>
 	public sealed class BlobStorageItem : IStorageItem
 	{
-		readonly string _name;
 		readonly CloudBlob _blob;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="BlobStorageItem"/> class.
 		/// </summary>
-		/// <param name="name">The name.</param>
 		/// <param name="blob">The BLOB.</param>
-		public BlobStorageItem(string name, CloudBlob blob)
+		public BlobStorageItem(CloudBlob blob)
 		{
-			_name = name;
 			_blob = blob;
 		}
 
@@ -156,7 +153,6 @@ namespace Lokad.Cqrs.Storage
 			{
 				switch (e.ErrorCode)
 				{
-						
 					case StorageErrorCode.ContainerNotFound:
 					case StorageErrorCode.ResourceNotFound:
 					case StorageErrorCode.BlobNotFound:
@@ -259,7 +255,6 @@ namespace Lokad.Cqrs.Storage
 				case StorageConditionType.IfNoneMatch:
 					var etag = condition.ETag.ExposeException("'ETag' should be present");
 					return AccessCondition.IfNoneMatch(etag);
-
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
