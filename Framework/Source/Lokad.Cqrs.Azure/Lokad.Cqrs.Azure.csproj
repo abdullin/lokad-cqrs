@@ -74,6 +74,7 @@
     <Compile Include="Consume\ConfigureNotificationOnException.cs" />
     <Compile Include="Consume\DispatchesMultipleMessagesToSharedScope.cs" />
     <Compile Include="Consume\DispatchesSingleMessage.cs" />
+    <Compile Include="Storage\BlobStorageRoot.cs" />
     <Compile Include="Storage\BlobStorageUtil.cs" />
     <Compile Include="Storage\SuppressFlushForStream.cs" />
     <Compile Include="Views\FixedTypeDiscovery.cs" />
