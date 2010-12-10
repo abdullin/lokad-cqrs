@@ -45,13 +45,14 @@ namespace Lokad.Cqrs
 		}
 
 
-		
+
 		/// <summary>
 		/// Performs the write operation, ensuring that the condition is met.
 		/// </summary>
 		/// <param name="writer">The writer.</param>
 		/// <param name="condition">The condition.</param>
 		/// <param name="options">The options.</param>
+		/// <returns>number of bytes written</returns>
 		/// <exception cref="StorageItemIntegrityException">when integrity check fails during the upload</exception>
 		public long Write(Action<Stream> writer, StorageCondition condition, StorageWriteOptions options)
 		{
@@ -63,8 +64,10 @@ namespace Lokad.Cqrs
 			using (var file = _file.OpenWrite())
 			{
 				writer(file);
-				return file.Position;
+				// stream will probably be closed here.
 			}
+			Refresh();
+			return _file.Length;
 		}
 
 		/// <summary>
