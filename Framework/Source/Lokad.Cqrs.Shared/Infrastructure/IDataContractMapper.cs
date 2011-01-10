@@ -1,4 +1,11 @@
-﻿using System;
+﻿#region (c) 2010 Lokad Open Source - New BSD License 
+
+// Copyright (c) Lokad 2010, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
+using System;
 
 namespace Lokad
 {
@@ -13,6 +20,7 @@ namespace Lokad
 		/// <param name="messageType">Type of the message.</param>
 		/// <returns>contract name (if found)</returns>
 		Maybe<string> GetContractNameByType(Type messageType);
+
 		/// <summary>
 		/// Gets the type by contract name.
 		/// </summary>
