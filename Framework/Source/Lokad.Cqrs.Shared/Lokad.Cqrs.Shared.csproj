@@ -82,9 +82,6 @@
     <Compile Include="Logging\LogLevel.cs" />
     <Compile Include="Logging\NullLog.cs" />
     <Compile Include="Logging\TraceLog.cs" />
-    <Compile Include="Messaging\CommunicationType.cs" />
-    <Compile Include="Messaging\ICommunicator.cs" />
-    <Compile Include="Messaging\NullCommunicator.cs" />
     <Compile Include="Monads\Maybe.1.cs" />
     <Compile Include="Monads\Maybe.cs" />
     <Compile Include="Monads\MaybeParse.cs" />

@@ -15,7 +15,6 @@ using Lokad.Cqrs.Scheduled.Build;
 using Lokad.Cqrs.Sender;
 using Lokad.Cqrs.Transport;
 using Lokad.Cqrs.Views;
-using Lokad.Messaging;
 
 namespace Lokad.Cqrs
 {
@@ -37,7 +36,6 @@ namespace Lokad.Cqrs
 			// System presets
 			Logging.LogToTrace();
 			Serialization.UseBinaryFormatter();
-			_builder.RegisterInstance(NullCommunicator.Instance);
 			_builder.RegisterInstance(NullEngineProfiler.Instance);
 			_builder.RegisterInstance(SimpleMessageProfiler.Instance);
 

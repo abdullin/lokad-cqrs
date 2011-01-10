@@ -13,8 +13,6 @@ using Autofac.Core;
 using Lokad.Cqrs.Directory;
 using Lokad.Cqrs.Domain;
 using Lokad.Cqrs.Transport;
-using Lokad.Messaging;
-using Microsoft.WindowsAzure;
 using System.Linq;
 
 namespace Lokad.Cqrs.Consume.Build
@@ -186,19 +184,6 @@ namespace Lokad.Cqrs.Consume.Build
 						x.WithTextAppender(append);
 					}
 				});
-		}
-
-		/// <summary>
-		/// Additional configuration to log the exceptions to active <see cref="IRealtimeNotifier"/>.
-		/// </summary>
-		/// <param name="config">The config.</param>
-		/// <returns></returns>
-		public HandleMessagesModule LogExceptionsToCommunicator(Action<ConfigureNotificationOnException> config)
-		{
-			var configurer = new ConfigureNotificationOnException();
-			config(configurer);
-			ApplyToTransport(configurer.Apply);
-			return this;
 		}
 
 		/// <summary>
