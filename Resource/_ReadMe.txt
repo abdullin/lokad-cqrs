@@ -1,0 +1,1 @@
+Binary resources used by Lokad.CQRS
