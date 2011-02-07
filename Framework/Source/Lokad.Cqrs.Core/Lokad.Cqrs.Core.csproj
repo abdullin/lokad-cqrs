@@ -75,11 +75,6 @@
     <Compile Include="Lmf\MessagePrinter.cs" />
     <Compile Include="Lmf\MessageUtil.cs" />
     <Compile Include="Lmf\UnpackedMessage.cs" />
-    <Compile Include="PubSub\InMemoryPublishSubscribeManager.cs" />
-    <Compile Include="PubSub\IPublishSubscribeManager.cs" />
-    <Compile Include="PubSub\PublishSubscribeProcess.cs" />
-    <Compile Include="PubSub\SubscribeDirectMessage.cs" />
-    <Compile Include="PubSub\SubscribeRegexMessage.cs" />
     <Compile Include="Scheduled\ExpressionTaskBuilder.cs" />
     <Compile Include="Scheduled\IScheduledTaskBuilder.cs" />
     <Compile Include="Scheduled\IScheduledTaskDispatcher.cs" />

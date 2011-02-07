@@ -56,7 +56,7 @@ namespace Lokad.Cqrs.Domain
 
 			var messages = mappings
 				.ToLookup(x => x.Message)
-				.ToArray<IGrouping<Type, MessageMapping>, MessageInfo>(x =>
+				.ToArray(x =>
 				{
 					var domainConsumers = x
 						.Where(t => t.Consumer != typeof(MessageMapping.BusSystem))

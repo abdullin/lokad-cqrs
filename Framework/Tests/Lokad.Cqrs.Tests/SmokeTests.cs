@@ -41,14 +41,6 @@ namespace Lokad.Cqrs.Tests
 					x.WithMultipleConsumers();
 				});
 
-			engine.AddPublishSubscribe(x =>
-				{
-					x.ListenTo("test-in");
-					x.ManagerIsInMemory()
-						.DirectBinding("Hello", "test-hi")
-						.DirectBinding("Bye", "test-bye");
-				});
-
 			engine.AddMessageClient(x => x.DefaultToQueue("test-in"));
 
 

@@ -9,7 +9,6 @@ using System;
 using Autofac;
 using Lokad.Cqrs.Consume.Build;
 using Lokad.Cqrs.Domain;
-using Lokad.Cqrs.PubSub.Build;
 using Lokad.Cqrs.Queue;
 using Lokad.Cqrs.Scheduled.Build;
 using Lokad.Cqrs.Sender;
@@ -49,17 +48,7 @@ namespace Lokad.Cqrs
 			// some defaults
 			_builder.RegisterType<CloudEngineHost>().As<ICloudEngineHost>().SingleInstance();
 		}
-
-		/// <summary>
-		/// Adds Publish Subscribe Feature to the instance of <see cref="ICloudEngineHost"/>.
-		/// </summary>
-		/// <param name="config">configuration syntax</param>
-		/// <returns>same builder for inling multiple configuration statements</returns>
-		public CloudEngineBuilder AddPublishSubscribe(Action<BuildPubSubModule> config)
-		{
-			return this.WithModule(config);
-		}
-
+	
 		/// <summary>
 		/// Adds Message Handling Feature to the instance of <see cref="ICloudEngineHost"/>
 		/// </summary>
