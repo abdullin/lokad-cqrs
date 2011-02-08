@@ -63,22 +63,5 @@ namespace Lokad
 
 			return self.Select(converter).ToArray();
 		}
-
-		/// <summary>
-		/// Retrieves first value from the <paramref name="sequence"/>
-		/// </summary>
-		/// <typeparam name="TSource">The type of the source sequence.</typeparam>
-		/// <param name="sequence">The source.</param>
-		/// <returns>first value or empty result, if it is not found</returns>
-		public static Maybe<TSource> FirstOrEmpty<TSource>([NotNull] this IEnumerable<TSource> sequence)
-		{
-			if (sequence == null) throw new ArgumentNullException("sequence");
-			foreach (var source in sequence)
-			{
-				return source;
-			}
-			return Maybe<TSource>.Empty;
-		}
-
 	}
 }

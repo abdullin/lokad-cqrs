@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ExtendIEnumerable = Lokad.ExtendIEnumerable;
 
@@ -16,14 +17,23 @@ namespace Lokad.Serialization
 		public Maybe<string> GetString<TAttribute>(Func<TAttribute, string> retriever)
 			where TAttribute : Attribute
 		{
-			var v = ExtendIEnumerable.FirstOrEmpty<TAttribute>(_attributes
+			var v = FirstOrEmpty(_attributes
 					.OfType<TAttribute>())
 				.Convert(retriever, "");
 
-			if (string.IsNullOrEmpty(v))
+			if (String.IsNullOrEmpty(v))
 				return Maybe<string>.Empty;
 
 			return v;
+		}
+
+		static Maybe<TSource> FirstOrEmpty<TSource>(IEnumerable<TSource> sequence)
+		{
+			foreach (var source in sequence)
+			{
+				return source;
+			}
+			return Maybe<TSource>.Empty;
 		}
 	}
 }
