@@ -10,9 +10,7 @@ using Autofac;
 using Lokad.Cqrs.Domain;
 using Lokad.Cqrs.Queue;
 using Lokad.Cqrs.Sender;
-using Lokad.Cqrs.Storage;
 using Lokad.Cqrs.Transport;
-using Lokad.Cqrs.Views;
 
 namespace Lokad.Cqrs
 {

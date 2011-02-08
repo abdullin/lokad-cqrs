@@ -13,7 +13,6 @@ using Lokad.Cqrs.Queue;
 using Lokad.Cqrs.Scheduled.Build;
 using Lokad.Cqrs.Sender;
 using Lokad.Cqrs.Transport;
-using Lokad.Cqrs.Views;
 
 namespace Lokad.Cqrs
 {

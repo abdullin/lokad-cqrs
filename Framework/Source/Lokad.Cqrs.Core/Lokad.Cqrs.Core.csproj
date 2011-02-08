@@ -95,7 +95,6 @@
     <Compile Include="ExtendISupportSyntaxForSerialization.cs" />
     <Compile Include="Serialization\ProtoBufMessageSerializer.cs" />
     <Compile Include="Serialization\ProtoBufUtil.cs" />
-    <Compile Include="Views\ViewAssemblyScanner.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Build\Engine\" />
