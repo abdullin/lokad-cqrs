@@ -6,6 +6,8 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Autofac;
@@ -23,6 +25,8 @@ namespace Lokad.Cqrs.Domain
 	{
 		readonly DomainAssemblyScanner _scanner = new DomainAssemblyScanner();
 		readonly ContainerBuilder _builder;
+		InvocationHint _hint;
+		Func<MessageAttributesContract, object> _contextFactory;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DomainBuildModule"/> class.
@@ -30,65 +34,12 @@ namespace Lokad.Cqrs.Domain
 		public DomainBuildModule()
 		{
 			_builder = new ContainerBuilder();
+			// default settings
+			InvocationHandlerBySample<IConsume<IMessage>>(a => a.Consume(null, null));
+			ContextFactory(ac => new MessageDetail(ac.GetAttributeString(MessageAttributeTypeContract.Identity).Value));
 		}
 
-		/// <summary>
-		/// Uses default interfaces and conventions.
-		/// </summary>
-		/// <returns>same module instance for chaining fluent configurations</returns>
-		public DomainBuildModule WithDefaultInterfaces()
-		{
-			ConsumerMethodSample<IConsume<IMessage>>(i => i.Consume(null));
-			WhereMessagesAre<IMessage>();
-			WhereConsumersAre<IConsumeMessage>();
-			
-			return this;
-		}
 
-		/// <summary>
-		/// Provides sample of the custom consuming method expression. By default we expect it to be <see cref="IConsume{TMessage}.Consume"/>.
-		/// </summary>
-		/// <typeparam name="THandler">The type of the handler.</typeparam>
-		/// <param name="expression">The expression.</param>
-		/// <returns>same module instance for chaining fluent configurations</returns>
-		public DomainBuildModule ConsumerMethodSample<THandler>(Expression<Action<THandler>> expression)
-		{
-			_scanner.ConsumerMethodSample(expression);
-			return this;
-		}
-
-		/// <summary>
-		/// <para>Specifies custom rule for finding messages - where they derive from the provided interface. </para>
-		/// <para>By default we expect messages to derive from <see cref="IMessage"/>.</para>
-		/// </summary>
-		/// <typeparam name="TInterface">The type of the interface.</typeparam>
-		/// <returns>same module instance for chaining fluent configurations</returns>
-		public DomainBuildModule WhereMessagesAre<TInterface>()
-		{
-			_scanner.WhereMessages(type =>
-				typeof (TInterface).IsAssignableFrom(type)
-					&& type.IsAbstract == false);
-			_scanner.WithAssemblyOf<TInterface>();
-
-			return this;
-		}
-
-		
-
-		/// <summary>
-		/// <para>Specifies custom rule for finding message consumers - where they derive from the provided interface. </para>
-		/// <para>By default we expect consumers to derive from <see cref="IConsumeMessage"/>.</para>
-		/// </summary>
-		/// <typeparam name="TInterface">The type of the interface.</typeparam>
-		/// <returns>same module instance for chaining fluent configurations</returns>
-		public DomainBuildModule WhereConsumersAre<TInterface>()
-		{
-			_scanner.WhereConsumers(type =>
-				typeof (TInterface).IsAssignableFrom(type)
-					&& type.IsAbstract == false);
-			_scanner.WithAssemblyOf<TInterface>();
-			return this;
-		}
 
 		/// <summary>
 		/// Specifies custom lookup rule for the consumers
@@ -171,10 +122,16 @@ namespace Lokad.Cqrs.Domain
 		void IModule.Configure(IComponentRegistry componentRegistry)
 		{
 			_scanner.IncludeSystemMessages = true;
-			var mappings = _scanner.Build();
 
-			var directoryBuilder = new MessageDirectoryBuilder(mappings, _scanner.ConsumingMethod.Name);
+			// add implicit filters
+			
+			_scanner.Constrain(_hint);
+			var mappings = _scanner.Build(_hint.ConsumerTypeDefinition);
 
+
+
+			var handler = new InvocationHandler(_hint, _contextFactory);
+			var directoryBuilder = new MessageDirectoryBuilder(mappings, handler);
 			var directory = directoryBuilder.BuildDirectory(m => true);
 
 
@@ -196,6 +153,34 @@ namespace Lokad.Cqrs.Domain
 
 			_builder.Update(componentRegistry);
 		}
+
+		
+
+		
+
+		public DomainBuildModule InvocationHandlerBySample<THandler>(Expression<Action<THandler>> action)
+		{
+			_hint = InvocationHint.FromConsumerSample(action);
+			return this;
+		}
+
+		public DomainBuildModule ContextFactory<TResult>(Func<MessageAttributesContract,TResult> result)
+		{
+			if (!_hint.HasContext)
+			{
+				throw new InvalidOperationException("Declaring interface type does not have context parameter");
+			}
+			if (!_hint.MessageContextType.Value.IsAssignableFrom(typeof(TResult)))
+			{
+				throw new InvalidOperationException("Passed lambda returns object instance that is not assignable to: " + _hint.MessageContextType.Value);
+			}
+
+			_contextFactory = contract => result(contract);
+			return this;
+		}
+
+
+		
 
 		public ContainerBuilder Target
 		{

@@ -49,7 +49,7 @@ namespace Lokad.Cqrs.Consume
 					foreach (var consumerType in consumerTypes)
 					{
 						var consumer = scope.Resolve(consumerType);
-						_directory.InvokeConsume(consumer, unpacked.Content);
+						_directory.InvokeConsume(consumer, unpacked.Content, unpacked.Attributes);
 					}
 				}
 

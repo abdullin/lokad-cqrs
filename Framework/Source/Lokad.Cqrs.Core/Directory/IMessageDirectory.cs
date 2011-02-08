@@ -7,10 +7,10 @@
 
 namespace Lokad.Cqrs.Directory
 {
-	public interface IMessageDirectory : IKnowSerializationTypes
+	public interface IMessageDirectory 
 	{
 		ConsumerInfo[] Consumers { get; }
 		MessageInfo[] Messages { get; }
-		void InvokeConsume(object consumer, object message);
+		void InvokeConsume(object consumer, object message, MessageAttributesContract attributes);
 	}
 }

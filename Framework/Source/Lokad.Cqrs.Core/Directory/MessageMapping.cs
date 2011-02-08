@@ -8,6 +8,7 @@ namespace Lokad.Cqrs.Directory
 		public readonly Type Message;
 		public readonly bool Direct;
 
+
 		public MessageMapping(Type consumer, Type message, bool direct)
 		{
 			Consumer = consumer;

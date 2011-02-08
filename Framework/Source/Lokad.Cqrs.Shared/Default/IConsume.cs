@@ -22,6 +22,16 @@ namespace Lokad.Default
 		/// Consumes the specified message.
 		/// </summary>
 		/// <param name="message">The message.</param>
-		void Consume(TMessage message);
+		void Consume(TMessage message, MessageDetail context);
+	}
+
+	public sealed class MessageDetail
+	{
+		public readonly string MessageId;
+
+		public MessageDetail(string messageId)
+		{
+			MessageId = messageId;
+		}
 	}
 }

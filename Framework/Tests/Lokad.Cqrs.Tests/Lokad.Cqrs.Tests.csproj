@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DomainTests.cs" />
+    <Compile Include="DomainWithContextTests.cs" />
     <Compile Include="ExtendMaybe.cs" />
     <Compile Include="MessageUtilTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

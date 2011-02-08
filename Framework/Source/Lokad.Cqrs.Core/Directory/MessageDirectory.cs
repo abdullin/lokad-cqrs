@@ -11,21 +11,20 @@ using System.Linq;
 
 namespace Lokad.Cqrs.Directory
 {
-	public sealed class MessageDirectory : IMessageDirectory
+	public sealed class MessageDirectory : IMessageDirectory, IKnowSerializationTypes
 	{
-		readonly string _consumeMethodName;
 		readonly ConsumerInfo[] _consumers;
 		readonly MessageInfo[] _messages;
+		readonly InvocationHandler _invocationHandler;
 		readonly Type[] _knownTypes;
-
-		public MessageDirectory(string consumeMethodName, ConsumerInfo[] consumers, MessageInfo[] messages)
+		
+		public MessageDirectory(ConsumerInfo[] consumers, MessageInfo[] messages, InvocationHandler invocationHandler)
 		{
-			_consumeMethodName = consumeMethodName;
 			_consumers = consumers;
 			_messages = messages;
+			_invocationHandler = invocationHandler;
 
-			_knownTypes = messages
-				.Where(m => false == m.MessageType.IsAbstract).ToArray(m => m.MessageType);
+			_knownTypes = messages.Where(m => !m.MessageType.IsAbstract).ToArray(m => m.MessageType);
 		}
 
 		public ConsumerInfo[] Consumers
@@ -38,9 +37,10 @@ namespace Lokad.Cqrs.Directory
 			get { return _messages; }
 		}
 
-		public void InvokeConsume(object consumer, object message)
+		public void InvokeConsume(object consumer, object message, MessageAttributesContract attributes)
 		{
-			MessageReflectionUtil.InvokeConsume(consumer, message, _consumeMethodName);
+			// could be cached here or precached at the constructor for the major types
+			_invocationHandler.Invoke(consumer, message, attributes);
 		}
 
 		public IEnumerable<Type> GetKnownTypes()

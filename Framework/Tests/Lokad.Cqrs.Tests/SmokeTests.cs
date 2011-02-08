@@ -5,10 +5,12 @@
 
 #endregion
 
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Threading;
+using Lokad.Cqrs.Queue;
 using Lokad.Default;
 using NUnit.Framework;
 using ProtoBuf;
@@ -29,27 +31,55 @@ namespace Lokad.Cqrs.Tests
 			engine.Azure.UseDevelopmentStorageAccount();
 			engine.Serialization.UseDataContractSerializer();
 
-			engine.DomainIs(m =>
-				{
-					m.WithDefaultInterfaces();
-					m.InCurrentAssembly();
-				});
+			engine.DomainIs(m => m.InCurrentAssembly());
 
 			engine.AddMessageHandler(x =>
 				{
 					x.ListenToQueue("test-hi", "test-bye");
 					x.WithMultipleConsumers();
+					x.WhereConsumersAreNot<Router>();
+				});
+
+			engine.AddMessageHandler(x =>
+				{
+					x.ListenToQueue("test-in");
+					x.WithSingleConsumer();
+					x.WhereConsumersAre<Router>();
 				});
 
 			engine.AddMessageClient(x => x.DefaultToQueue("test-in"));
-
-
 			return engine.Build();
 		}
 
 		#endregion
 
-		
+		public sealed class Router : IConsume<IMessage>
+		{
+			IQueueManager _manager;
+
+
+			public Router(IQueueManager manager)
+			{
+				_manager = manager;
+			}
+
+			public void Consume(IMessage message, MessageDetail context)
+			{
+				if (message.GetType()==typeof(Hello))
+				{
+					RouteTo("test-hi");
+				}
+				else
+				{
+					RouteTo("test-bye");
+				}
+			}
+
+			void RouteTo(string queueName)
+			{
+				_manager.GetWriteQueue(queueName).RouteMessages(new[] { MessageContext.CurrentReference }, builder => { });
+			}
+		}
 
 
 		[DataContract]
@@ -68,13 +98,13 @@ namespace Lokad.Cqrs.Tests
 
 		public sealed class DoSomething : IConsume<Hello>, IConsume<Bye>
 		{
-			public void Consume(Bye message)
+			public void Consume(Bye message, MessageDetail detail)
 			{
 				Trace.WriteLine("Bye length: " + message.Word.Length);
 				Trace.WriteLine("Message total: " + MessageContext.CurrentReference.Header.GetTotalLength());
 			}
 
-			public void Consume(Hello message)
+			public void Consume(Hello message, MessageDetail detail)
 			{
 				Trace.WriteLine("Hello length: " + message.Word.Length);
 				Trace.WriteLine("Message total: " + MessageContext.CurrentReference.Header.GetTotalLength());

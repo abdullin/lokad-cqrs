@@ -19,13 +19,9 @@ namespace Lokad.Cqrs.Directory
 		readonly HashSet<Assembly> _assemblies = new HashSet<Assembly>();
 		readonly Filter<Type> _handlerSelector = new Filter<Type>();
 		readonly Filter<Type> _serializableSelector = new Filter<Type>();
-		MethodInfo _consumingMethod;
+		
+		
 		public bool IncludeSystemMessages { get; set; }
-
-		public MethodInfo ConsumingMethod
-		{
-			get { return _consumingMethod; }
-		}
 
 		public DomainAssemblyScanner WithAssemblyOf<T>()
 		{
@@ -50,12 +46,7 @@ namespace Lokad.Cqrs.Directory
 			_handlerSelector.Where(filter);
 			return this;
 		}
-
-		public DomainAssemblyScanner ConsumerMethodSample<THandler>(Expression<Action<THandler>> expression)
-		{
-			_consumingMethod = MessageReflectionUtil.ExpressConsumer(expression);
-			return this;
-		}
+		//public sealed 
 
 		static bool IsUserAssembly(Assembly a)
 		{
@@ -68,32 +59,6 @@ namespace Lokad.Cqrs.Directory
 			return true;
 		}
 
-
-		public DomainAssemblyScanner ConsumerInterfaceHas<TAttribute>()
-			where TAttribute : Attribute
-		{
-			var methods = AppDomain
-				.CurrentDomain
-				.GetAssemblies()
-				.Where(IsUserAssembly)
-				.SelectMany(e => e.GetTypes().Where(t => t.IsPublic))
-				.Where(t => t.IsInterface)
-				.Where(t => t.IsGenericTypeDefinition)
-				.SelectMany(t => t.GetMethods())
-				.Where(t => t.ContainsGenericParameters)
-				.Where(t => t.IsDefined(typeof (TAttribute), false))
-				.ToArray();
-
-			if (methods.Length == 0)
-				throw new InvalidOperationException("Was not able to find any generic methods marked with the attribute");
-			if (methods.Length > 1)
-				throw new InvalidOperationException("Only one method has to be marked with the attribute");
-
-			_consumingMethod = methods.First();
-
-			return this;
-		}
-
 		public IEnumerable<MessageMapping> GetSystemMessages()
 		{
 			return Assembly
@@ -104,14 +69,24 @@ namespace Lokad.Cqrs.Directory
 				.Select(message => new MessageMapping(typeof (MessageMapping.BusSystem), message, false));
 		}
 
-
-		public IEnumerable<MessageMapping> Build()
+		
+		public DomainAssemblyScanner Constrain(InvocationHint hint)
 		{
-			if (null == _consumingMethod)
-				throw new InvalidOperationException("Consuming method has not been defined");
+			WhereMessages(t => hint.MessageInterface.IsAssignableFrom(t));
+			WhereConsumers(type => type.GetInterfaces().Where(i => i.IsGenericType)
+				.Any(i => i.GetGenericTypeDefinition() == hint.ConsumerTypeDefinition));
+
+			return this;
+		}
+
+		public IEnumerable<MessageMapping> Build(Type consumerInterfaceDefinition)
+		{
+			if (consumerInterfaceDefinition == null) throw new ArgumentNullException("consumerInterfaceDefinition");
 
 			if (!_assemblies.Any())
 				throw new InvalidOperationException("There are no assemblies to scan");
+
+			
 
 			var types = _assemblies
 				.SelectMany(a => a.GetExportedTypes())
@@ -127,9 +102,7 @@ namespace Lokad.Cqrs.Directory
 				.ToArray();
 
 			var consumingDirectly = consumerTypes
-				.SelectMany(consumerType =>
-					GetConsumedMessages(consumerType, _consumingMethod.DeclaringType)
-						.Select(messageType => new MessageMapping(consumerType, messageType, true)))
+				.SelectMany(consumerType => ListMessagesConsumedByInterfaces(consumerType, consumerInterfaceDefinition).Select(messageType => new MessageMapping(consumerType, messageType, true)))
 				.ToArray();
 
 			var consumingIndirectly = consumingDirectly
@@ -165,7 +138,7 @@ namespace Lokad.Cqrs.Directory
 			return result;
 		}
 
-		static IEnumerable<Type> GetConsumedMessages(Type consumerType, Type consumerTypeDefinition)
+		static IEnumerable<Type> ListMessagesConsumedByInterfaces(Type consumerType, Type consumerTypeDefinition)
 		{
 			var interfaces = consumerType
 				.GetInterfaces()
@@ -180,4 +153,5 @@ namespace Lokad.Cqrs.Directory
 			}
 		}
 	}
+
 }

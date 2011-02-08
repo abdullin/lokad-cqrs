@@ -11,23 +11,26 @@ using System.Linq;
 
 namespace Lokad.Cqrs.Directory
 {
+	
+
 	/// <summary>
 	/// Default implementation of the message directory builder
 	/// </summary>
 	public sealed class MessageDirectoryBuilder : IMessageDirectoryBuilder
 	{
 		readonly IEnumerable<MessageMapping> _mappings;
-		readonly string _methodName;
+		readonly InvocationHandler _invocationHandler;
+
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MessageDirectoryBuilder"/> class.
 		/// </summary>
 		/// <param name="mappings">The message mappings.</param>
-		/// <param name="methodName">Name of the method for the invocation.</param>
-		public MessageDirectoryBuilder(IEnumerable<MessageMapping> mappings, string methodName)
+		/// <param name="invocationHandler">The invocation handler.</param>
+		public MessageDirectoryBuilder(IEnumerable<MessageMapping> mappings, InvocationHandler invocationHandler)
 		{
 			_mappings = mappings;
-			_methodName = methodName;
+			_invocationHandler = invocationHandler;
 		}
 
 		public IMessageDirectory BuildDirectory(Func<MessageMapping, bool> filter)
@@ -89,7 +92,7 @@ namespace Lokad.Cqrs.Directory
 						DirectConsumers = Type.EmptyTypes
 					});
 			
-			return new MessageDirectory(_methodName, consumers, messages.Append(orphanedMessages));
+			return new MessageDirectory(consumers, messages.Append(orphanedMessages), _invocationHandler);
 		}
 	}
 }
