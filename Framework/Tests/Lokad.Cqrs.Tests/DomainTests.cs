@@ -119,7 +119,7 @@ namespace Lokad.Cqrs.Tests
 		{
 			var directory = Builder.BuildDirectory(mm => typeof (ListenToAll) == mm.Consumer);
 			Assert.AreEqual(1, directory.Consumers.Count, "Length");
-			var consumer = directory.Consumers.ToArray()[0];
+			var consumer = directory.Consumers.First();
 			Assert.AreEqual(typeof(ListenToAll), consumer.ConsumerType, "Type");
 
 			CollectionAssert.Contains(consumer.MessageTypes, typeof(ISomethingHappenedEvent));

@@ -103,7 +103,6 @@
     <Compile Include="Syntax\ISyntax.TTarget.cs" />
     <Compile Include="Syntax\Syntax.cs" />
     <Compile Include="Syntax\Syntax.TTarget.cs" />
-    <Compile Include="Utils\ArrayUtil.cs" />
     <Compile Include="Utils\EnumComparer.cs" />
     <Compile Include="Utils\EnumUtil.cs" />
     <Compile Include="Utils\EnumUtil.TEnum.cs" />
