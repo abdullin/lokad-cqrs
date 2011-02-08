@@ -23,7 +23,8 @@ namespace Lokad.Cqrs.Transport
 					}
 
 					var foo = Math.Pow(2, (l - 1)/5.0)/64d*seconds;
-					return foo.Seconds();
+
+					return TimeSpan.FromSeconds(foo);
 				};
 		}
 	}
