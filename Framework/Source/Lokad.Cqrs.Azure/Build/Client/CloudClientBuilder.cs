@@ -81,19 +81,7 @@ namespace Lokad.Cqrs
 			return this.WithModule(config);
 		}
 
-		/// <summary>
-		/// Configures the view mappings for the instance of <see cref="ICloudClient"/> and provides <see cref="IReadViews"/> component
-		/// </summary>
-		/// <param name="config">configuration syntax.</param>
-		/// <returns>same builder for inling multiple configuration statements</returns>
-		public CloudClientBuilder Views(Action<ViewBuildModule> config)
-		{
-			var module = new ViewBuildModule(ViewModuleRole.Reader);
-			config(module);
-			Target.RegisterModule(module);
-			return this;
-		}
-
+		
 		public CloudClient BuildFor(string queueName)
 		{
 			var container = _builder.Build();

@@ -76,8 +76,6 @@
     <Compile Include="Storage\BlobStorageRoot.cs" />
     <Compile Include="Storage\BlobStorageUtil.cs" />
     <Compile Include="Storage\SuppressFlushForStream.cs" />
-    <Compile Include="Views\FixedTypeDiscovery.cs" />
-    <Compile Include="Views\ViewBuildModule.cs" />
     <Compile Include="Storage\BlobStorageContainer.cs" />
     <Compile Include="Storage\BlobStorageItem.cs" />
     <Compile Include="Build\SimpleMessageProfiler.cs" />
@@ -93,7 +91,6 @@
     <Compile Include="Domain\DomainBuildModule.cs" />
     <Compile Include="Queue\AzureQueueFactory.cs" />
     <Compile Include="Queue\AzureQueueReference.cs" />
-    <Compile Include="Storage\EntityStorage.cs" />
     <Compile Include="Transport\AzureQueuePolicy.cs" />
     <Compile Include="Transport\AzureQueueTransportConfig.cs" />
     <Compile Include="Queue\AzureMessageQueue.cs" />

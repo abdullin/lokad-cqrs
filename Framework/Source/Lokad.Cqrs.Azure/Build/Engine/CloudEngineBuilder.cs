@@ -90,19 +90,6 @@ namespace Lokad.Cqrs
 		}
 
 		/// <summary>
-		/// Configures the view mappings for the instance of <see cref="ICloudEngineHost"/> and provides <see cref="IWriteViews"/>
-		/// </summary>
-		/// <param name="config">configuration syntax.</param>
-		/// <returns>same builder for inling multiple configuration statements</returns>
-		public CloudEngineBuilder Views(Action<ViewBuildModule> config)
-		{
-			var module = new ViewBuildModule(ViewModuleRole.Writer);
-			config(module);
-			Target.RegisterModule(module);
-			return this;
-		}
-
-		/// <summary>
 		/// Builds this <see cref="ICloudEngineHost"/>.
 		/// </summary>
 		/// <returns>new instance of cloud engine host</returns>

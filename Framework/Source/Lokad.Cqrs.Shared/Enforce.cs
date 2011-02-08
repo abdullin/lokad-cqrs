@@ -7,7 +7,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using Lokad.Reflection;
@@ -83,39 +82,6 @@ namespace Lokad
 
 			if (null == third())
 				throw Errors.ArgumentNull(third);
-		}
-
-		/// <summary>
-		/// 	<para>Throws exception if one of the provided objects is null. </para>
-		/// 	<code>Enforce.Arguments(() =&gt; controller, () =&gt; service, () =&gt; parameters);</code>
-		/// </summary>
-		/// <typeparam name="T1">The type of the first argument.</typeparam>
-		/// <typeparam name="T2">The type of the second argument.</typeparam>
-		/// <typeparam name="T3">The type of the third argument.</typeparam>
-		/// <typeparam name="T4">The type of the fourth argument.</typeparam>
-		/// <param name="first">The first argument to check.</param>
-		/// <param name="second">The second argument to check.</param>
-		/// <param name="third">The third argument to check.</param>
-		/// <param name="fourth">The fourth argument to check.</param>
-		/// <remarks>Silverlight 2.0 does not support fast resolution of variable names, yet</remarks>
-		[DebuggerNonUserCode]
-		public static void Arguments<T1, T2, T3, T4>(Func<T1> first, Func<T2> second, Func<T3> third, Func<T4> fourth)
-			where T1 : class
-			where T2 : class
-			where T3 : class
-			where T4 : class
-		{
-			if (null == first())
-				throw Errors.ArgumentNull(first);
-
-			if (null == second())
-				throw Errors.ArgumentNull(second);
-
-			if (null == third())
-				throw Errors.ArgumentNull(third);
-
-			if (null == fourth())
-				throw Errors.ArgumentNull(fourth);
 		}
 
 		/// <summary>

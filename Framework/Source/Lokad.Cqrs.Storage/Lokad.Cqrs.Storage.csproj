@@ -46,9 +46,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EntityNotFoundException.cs" />
-    <Compile Include="ExtendIEntityReader.cs" />
-    <Compile Include="ExtendIEntityWriter.cs" />
     <Compile Include="ExtendIStorageContainer.cs" />
     <Compile Include="ExtendIStorageRoot.cs" />
     <Compile Include="ExtendISupportSyntaxForSerialization.cs" />
