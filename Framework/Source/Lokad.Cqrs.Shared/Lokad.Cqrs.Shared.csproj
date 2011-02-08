@@ -86,9 +86,7 @@
     <Compile Include="Monads\Result.2.cs" />
     <Compile Include="Monads\Result.cs" />
     <Compile Include="Monads\ResultResources.Designer.cs" />
-    <Compile Include="NamedProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Provider.cs" />
     <Compile Include="Quality\AssertionConditionAttribute.cs" />
     <Compile Include="Quality\AssertionConditionType.cs" />
     <Compile Include="Quality\AssertionMethodAttribute.cs" />
@@ -108,7 +106,6 @@
     <Compile Include="Syntax\ISyntax.TTarget.cs" />
     <Compile Include="Syntax\Syntax.cs" />
     <Compile Include="Syntax\Syntax.TTarget.cs" />
-    <Compile Include="SystemUtil.cs" />
     <Compile Include="Utils\ArrayUtil.cs" />
     <Compile Include="Utils\EnumComparer.cs" />
     <Compile Include="Utils\EnumUtil.cs" />

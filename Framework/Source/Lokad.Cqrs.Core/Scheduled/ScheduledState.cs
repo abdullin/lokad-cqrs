@@ -16,7 +16,7 @@ namespace Lokad.Cqrs.Scheduled
 
 		public ScheduledState(string name, ScheduledTaskInfo task)
 		{
-			NextRun = SystemUtil.UtcNow;
+			NextRun = DateTime.UtcNow;
 			LastException = Maybe<Exception>.Empty;
 			Name = name;
 			Task = task;
@@ -29,7 +29,7 @@ namespace Lokad.Cqrs.Scheduled
 		
 		public void Completed()
 		{
-			NextRun = SystemUtil.UtcNow;
+			NextRun = DateTime.UtcNow;
 		}
 
 		public void RecordException(Exception exception)
@@ -40,7 +40,7 @@ namespace Lokad.Cqrs.Scheduled
 
 		public void ScheduleIn(TimeSpan span)
 		{
-			NextRun = SystemUtil.UtcNow + span;
+			NextRun = DateTime.UtcNow + span;
 		}
 	}
 }

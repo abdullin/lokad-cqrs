@@ -84,7 +84,7 @@ namespace Lokad.Cqrs.Scheduled
 				foreach (var command in _tasks)
 				{
 					// do we need to run this command now?
-					if (command.NextRun <= SystemUtil.UtcNow)
+					if (command.NextRun <= DateTime.UtcNow)
 					{
 						_log.DebugFormat("Executing {0}", command.Name);
 						executed = true;

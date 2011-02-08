@@ -16,32 +16,7 @@ namespace Lokad
 	/// </summary>
 	public static class ExtendIDictionary
 	{
-		/// <summary>
-		/// Wraps the dictionary with the read-only provider instance
-		/// </summary>
-		/// <typeparam name="TKey">The type of the key.</typeparam>
-		/// <typeparam name="TValue">The type of the value.</typeparam>
-		/// <param name="self">The dictionary.</param>
-		/// <returns>provider instance that wraps the dictionary</returns>
-		public static IProvider<TKey, TValue> AsProvider<TKey, TValue>(this IDictionary<TKey, TValue> self)
-		{
-			if (self == null) throw new ArgumentNullException("self");
 
-			return new Provider<TKey, TValue>(key => self[key]);
-		}
-
-		/// <summary>
-		/// Wraps the provider with the read-only provider instance
-		/// </summary>
-		/// <typeparam name="TValue">The type of the value.</typeparam>
-		/// <param name="self">The dictionary.</param>
-		/// <returns>provider instance that wraps the dictionary</returns>
-		public static INamedProvider<TValue> AsProvider<TValue>(this IDictionary<string, TValue> self)
-		{
-			if (self == null) throw new ArgumentNullException("self");
-
-			return new NamedProvider<TValue>(key => self[key]);
-		}
 
 		/// <summary>
 		/// Returns <paramref name="defaultValue"/> if the given <paramref name="key"/>

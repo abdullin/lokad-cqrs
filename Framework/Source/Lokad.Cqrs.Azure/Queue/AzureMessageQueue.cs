@@ -249,7 +249,7 @@ namespace Lokad.Cqrs.Queue
 		CloudQueueMessage PackNewMessage(object message,  Action<MessageAttributeBuilder> modify)
 		{
 			var messageId = Guid.NewGuid();
-			var created = SystemUtil.UtcNow;
+			var created = DateTime.UtcNow;
 
 			var messageType = message.GetType();
 			var contract = _serializer
