@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ExtendIEnumerable = Lokad.ExtendIEnumerable;
 
-namespace Lokad.Serialization
+namespace Lokad.Cqrs.Serialization
 {
 	sealed class AttributeHelper
 	{

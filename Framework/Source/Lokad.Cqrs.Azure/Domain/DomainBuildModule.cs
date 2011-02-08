@@ -12,7 +12,6 @@ using Autofac;
 using Autofac.Core;
 using Lokad.Cqrs.Directory;
 using Lokad.Default;
-using Lokad.Serialization;
 
 namespace Lokad.Cqrs.Domain
 {

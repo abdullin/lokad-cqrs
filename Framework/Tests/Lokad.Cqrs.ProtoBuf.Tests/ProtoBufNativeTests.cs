@@ -7,7 +7,6 @@
 
 using System;
 using Lokad.Cqrs.Serialization;
-using Lokad.Serialization;
 using NUnit.Framework;
 using ProtoBuf;
 

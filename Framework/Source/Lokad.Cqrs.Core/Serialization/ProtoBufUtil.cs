@@ -2,7 +2,6 @@
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using Lokad.Serialization;
 using ProtoBuf;
 
 namespace Lokad.Cqrs.Serialization

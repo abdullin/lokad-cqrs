@@ -92,7 +92,6 @@
     <Compile Include="Serialization\AttributeHelper.cs" />
     <Compile Include="Serialization\DataContractMessageSerializer.cs" />
     <Compile Include="Serialization\DataContractUtil.cs" />
-    <Compile Include="ExtendISupportSyntaxForSerialization.cs" />
     <Compile Include="Serialization\ProtoBufMessageSerializer.cs" />
     <Compile Include="Serialization\ProtoBufUtil.cs" />
   </ItemGroup>

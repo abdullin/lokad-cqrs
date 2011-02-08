@@ -61,7 +61,6 @@
     <Compile Include="Infrastructure\IEngineProcess.cs" />
     <Compile Include="Infrastructure\IMessageClient.cs" />
     <Compile Include="Infrastructure\IMessageSerializer.cs" />
-    <Compile Include="Infrastructure\ISupportSyntaxForSerialization.cs" />
     <Compile Include="IProvider.cs" />
     <Compile Include="Logging\DebugLog.cs" />
     <Compile Include="Logging\ExtendILogProvider.cs" />

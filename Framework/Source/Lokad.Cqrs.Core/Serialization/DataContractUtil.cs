@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
-using ExtendIEnumerable = Lokad.ExtendIEnumerable;
 
-namespace Lokad.Serialization
+namespace Lokad.Cqrs.Serialization
 {
 	/// <summary>
 	/// Helper class to work with <see cref="DataContract"/>

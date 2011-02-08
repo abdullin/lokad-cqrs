@@ -9,7 +9,6 @@ using System;
 using System.IO;
 using System.Transactions;
 using Lokad.Cqrs.Lmf;
-using Lokad.Serialization;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
 namespace Lokad.Cqrs.Queue

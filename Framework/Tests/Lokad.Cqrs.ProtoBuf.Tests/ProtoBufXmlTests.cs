@@ -1,6 +1,5 @@
 ﻿using System.Xml.Serialization;
 using Lokad.Cqrs.Serialization;
-using Lokad.Serialization;
 using NUnit.Framework;
 
 namespace Lokad.Cqrs.ProtoBuf.Tests

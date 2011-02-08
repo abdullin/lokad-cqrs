@@ -12,10 +12,8 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Xml;
-using Lokad.Cqrs;
-using ExtendIEnumerable = Lokad.ExtendIEnumerable;
 
-namespace Lokad.Serialization
+namespace Lokad.Cqrs.Serialization
 {
 	/// <summary>
 	/// Message serializer for the <see cref="DataContractSerializer"/>
