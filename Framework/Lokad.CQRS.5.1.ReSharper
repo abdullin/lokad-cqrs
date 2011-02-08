@@ -290,7 +290,7 @@ II.2.12 <HandlesEvent />
     <XML>
       <FormatSettings />
     </XML>
-    <FileHeader Region="(c) 2010 Lokad Open Source - New BSD License "><![CDATA[Copyright (c) Lokad 2010, http://www.lokad.com
+    <FileHeader Region="(c) 2010-2011 Lokad Open Source - New BSD License "><![CDATA[Copyright (c) Lokad 2010-2011, http://www.lokad.com
 This code is released as Open Source under the terms of the New BSD Licence]]></FileHeader>
     <GenerateMemberBody />
     <Naming2>

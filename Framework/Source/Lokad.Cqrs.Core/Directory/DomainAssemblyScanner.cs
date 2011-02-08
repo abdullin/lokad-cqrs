@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.Serialization;
-using Lokad.Cqrs.Domain;
 
 namespace Lokad.Cqrs.Directory
 {

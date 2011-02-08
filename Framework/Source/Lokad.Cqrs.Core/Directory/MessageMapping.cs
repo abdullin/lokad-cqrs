@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Lokad.Cqrs.Domain
+namespace Lokad.Cqrs.Directory
 {
 	public sealed class MessageMapping
 	{

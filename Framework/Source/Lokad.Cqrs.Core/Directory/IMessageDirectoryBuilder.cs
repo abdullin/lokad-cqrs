@@ -6,9 +6,8 @@
 #endregion
 
 using System;
-using Lokad.Cqrs.Directory;
 
-namespace Lokad.Cqrs.Domain
+namespace Lokad.Cqrs.Directory
 {
 	public interface IMessageDirectoryBuilder
 	{

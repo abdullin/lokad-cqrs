@@ -8,9 +8,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Lokad.Cqrs.Directory;
 
-namespace Lokad.Cqrs.Domain
+namespace Lokad.Cqrs.Directory
 {
 	/// <summary>
 	/// Default implementation of the message directory builder

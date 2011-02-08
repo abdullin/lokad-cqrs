@@ -8,7 +8,7 @@
 using System;
 using System.Diagnostics;
 
-namespace Lokad.Cqrs.Domain
+namespace Lokad.Cqrs.Directory
 {
 	[DebuggerDisplay("{MessageType.Name}")]
 	public sealed class MessageInfo

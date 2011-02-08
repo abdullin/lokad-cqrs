@@ -1,24 +1,21 @@
-#region (c) 2010 Lokad Open Source - New BSD License 
+#region (c) 2010-2011 Lokad Open Source - New BSD License 
 
-// Copyright (c) Lokad 2010, http://www.lokad.com
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
 // This code is released as Open Source under the terms of the New BSD Licence
 
 #endregion
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
-using Lokad.Cqrs.Directory;
-using ExtendIEnumerable = Lokad.ExtendIEnumerable;
+using System.Linq;
 
-namespace Lokad.Cqrs.Domain
+namespace Lokad.Cqrs.Directory
 {
 	public sealed class MessageDirectory : IMessageDirectory
 	{
 		readonly string _consumeMethodName;
 		readonly ConsumerInfo[] _consumers;
 		readonly MessageInfo[] _messages;
-
 		readonly Type[] _knownTypes;
 
 		public MessageDirectory(string consumeMethodName, ConsumerInfo[] consumers, MessageInfo[] messages)
@@ -27,8 +24,8 @@ namespace Lokad.Cqrs.Domain
 			_consumers = consumers;
 			_messages = messages;
 
-			_knownTypes = ExtendIEnumerable.ToArray<MessageInfo, Type>(messages
-					.Where(m => false == m.MessageType.IsAbstract), m => m.MessageType);
+			_knownTypes = messages
+				.Where(m => false == m.MessageType.IsAbstract).ToArray(m => m.MessageType);
 		}
 
 		public ConsumerInfo[] Consumers
