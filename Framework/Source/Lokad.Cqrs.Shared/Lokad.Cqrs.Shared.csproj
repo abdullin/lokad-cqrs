@@ -48,7 +48,6 @@
     <Compile Include="Default\IMessage.cs" />
     <Compile Include="Default\IScheduledTask.cs" />
     <Compile Include="DisposableAction.cs" />
-    <Compile Include="Enforce.cs" />
     <Compile Include="Errors.cs" />
     <Compile Include="Extensions\ExtendIDictionary.cs" />
     <Compile Include="Extensions\ExtendIEnumerable.cs" />
@@ -93,10 +92,6 @@
     <Compile Include="Quality\NotNullAttribute.cs" />
     <Compile Include="Quality\StringFormatMethodAttribute.cs" />
     <Compile Include="Quality\UsedImplicitlyAttribute.cs" />
-    <Compile Include="Reflection\ILHelper.cs" />
-    <Compile Include="Reflection\Reflect.cs" />
-    <Compile Include="Reflection\ReflectCache.cs" />
-    <Compile Include="Reflection\ReflectLambdaException.cs" />
     <Compile Include="ResolutionException.cs" />
     <Compile Include="ISettingsProvider.cs" />
     <Compile Include="Syntax\ISyntax.TTarget.cs" />

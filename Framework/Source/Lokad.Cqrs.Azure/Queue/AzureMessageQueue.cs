@@ -146,7 +146,7 @@ namespace Lokad.Cqrs.Queue
 
 		public void AckMessage(UnpackedMessage message)
 		{
-			Enforce.Argument(() => message);
+			if (message == null) throw new ArgumentNullException("message");
 
 			var cloud = message.GetRequiredState<CloudQueueMessage>();
 
@@ -160,7 +160,8 @@ namespace Lokad.Cqrs.Queue
 
 		public void DiscardMessage(UnpackedMessage message)
 		{
-			Enforce.Argument(() => message);
+			if (message == null) throw new ArgumentNullException("message");
+
 
 			var cloud = message.GetRequiredState<CloudQueueMessage>();
 
