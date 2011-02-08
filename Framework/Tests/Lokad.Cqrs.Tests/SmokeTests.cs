@@ -5,6 +5,7 @@
 
 #endregion
 
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization;
@@ -127,9 +128,10 @@ namespace Lokad.Cqrs.Tests
 		[Test]
 		public void Test()
 		{
+			var r = new Random();
 			using (var mem = new MemoryStream())
 			{
-				var fix = MessageHeader.ForData(Rand.Next(1000), Rand.Next(0, 12), 0);
+				var fix = MessageHeader.ForData(r.Next(0,1000), r.Next(0, 12), 0);
 				Serializer.Serialize(mem, fix);
 				Assert.AreEqual(MessageHeader.FixedSize, mem.Position);
 			}

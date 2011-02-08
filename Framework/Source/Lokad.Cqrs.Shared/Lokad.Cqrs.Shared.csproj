@@ -100,7 +100,6 @@
     <Compile Include="Quality\NotNullAttribute.cs" />
     <Compile Include="Quality\StringFormatMethodAttribute.cs" />
     <Compile Include="Quality\UsedImplicitlyAttribute.cs" />
-    <Compile Include="Rand.cs" />
     <Compile Include="Reflection\ILHelper.cs" />
     <Compile Include="Reflection\Reflect.cs" />
     <Compile Include="Reflection\ReflectCache.cs" />
@@ -112,7 +111,6 @@
     <Compile Include="Syntax\Syntax.TTarget.cs" />
     <Compile Include="SystemUtil.cs" />
     <Compile Include="Utils\ArrayUtil.cs" />
-    <Compile Include="Utils\BufferUtil.cs" />
     <Compile Include="Utils\EnumComparer.cs" />
     <Compile Include="Utils\EnumUtil.cs" />
     <Compile Include="Utils\EnumUtil.TEnum.cs" />
