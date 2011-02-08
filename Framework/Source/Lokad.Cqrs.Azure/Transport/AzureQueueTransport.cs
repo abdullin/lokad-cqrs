@@ -71,8 +71,12 @@ namespace Lokad.Cqrs.Transport
 		{
 			_log.DebugFormat("Starting transport for {0}", _queueNames.Join(";"));
 
-			var tasks = Range.Array(_degreeOfParallelism, n => Task.Factory.StartNew(() => ReceiveMessages(token), token));
-			return tasks;
+			var array = new Task[_degreeOfParallelism];
+			for (int i = 0; i < _degreeOfParallelism; i++)
+			{
+				array[i] = Task.Factory.StartNew(() => ReceiveMessages(token), token);
+			}
+			return array;
 		}
 
 

@@ -101,8 +101,6 @@
     <Compile Include="Quality\StringFormatMethodAttribute.cs" />
     <Compile Include="Quality\UsedImplicitlyAttribute.cs" />
     <Compile Include="Rand.cs" />
-    <Compile Include="Rand.String.cs" />
-    <Compile Include="Range.cs" />
     <Compile Include="Reflection\ILHelper.cs" />
     <Compile Include="Reflection\Reflect.cs" />
     <Compile Include="Reflection\ReflectCache.cs" />

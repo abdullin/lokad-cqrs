@@ -92,7 +92,7 @@ namespace Lokad.Cqrs.Tests
 				var client = host.Resolve<IMessageClient>();
 
 				client.Send(new Hello { Word = "World" });
-				client.Send(new Hello { Word = Rand.String.NextText(6000, 6000) });
+				client.Send(new Hello { Word = new string('1',9000) });
 				client.Send(new Bye { Word = "Earth" });
 
 				using (var cts = new CancellationTokenSource())

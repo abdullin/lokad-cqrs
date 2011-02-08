@@ -138,7 +138,11 @@ namespace Lokad.Reflection
 					return From(code, module.ResolveString(stringToken), position);
 				case OperandType.InlineSwitch:
 					int count = il.ReadInt32();
-					var addresses = Range.Array(count, i => il.ReadInt32());
+					var addresses = new int[count];
+					for (int i = 0; i < count; i++)
+					{
+						addresses[i] = il.ReadInt32();
+					}
 					return From(code, addresses, position);
 				case OperandType.InlineVar:
 					return From(code, il.ReadUInt16(), position);
