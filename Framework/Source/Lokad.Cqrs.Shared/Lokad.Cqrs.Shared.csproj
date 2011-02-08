@@ -92,6 +92,11 @@
     <Compile Include="Quality\StringFormatMethodAttribute.cs" />
     <Compile Include="Quality\UsedImplicitlyAttribute.cs" />
     <Compile Include="ISettingsProvider.cs" />
+    <Compile Include="Storage\Extend\ExtendIStorageContainer.cs" />
+    <Compile Include="Storage\Extend\ExtendIStorageRoot.cs" />
+    <Compile Include="Storage\Extend\ExtendStorageItem.cs" />
+    <Compile Include="Storage\Files\FileStorageContainer.cs" />
+    <Compile Include="Storage\Files\FileStorageItem.cs" />
     <Compile Include="Storage\IStorageContainer.cs" />
     <Compile Include="Storage\IStorageItem.cs" />
     <Compile Include="Storage\IStorageRoot.cs" />

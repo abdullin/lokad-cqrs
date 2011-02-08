@@ -46,12 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ExtendIStorageContainer.cs" />
-    <Compile Include="ExtendIStorageRoot.cs" />
     <Compile Include="ExtendISupportSyntaxForSerialization.cs" />
-    <Compile Include="ExtendStorageItem.cs" />
-    <Compile Include="FileStorageContainer.cs" />
-    <Compile Include="FileStorageItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Serialization\AttributeHelper.cs" />
     <Compile Include="Serialization\DataContractMessageSerializer.cs" />
