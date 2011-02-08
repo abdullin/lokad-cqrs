@@ -43,7 +43,10 @@ namespace Lokad.Cqrs.Scheduled
 
 		public ExpressionTaskBuilder<TTask> InAssemblies(IEnumerable<Assembly> assembly)
 		{
-			_assemblies.AddRange(assembly);
+			foreach (var a in assembly)
+			{
+				_assemblies.Add(a);
+			}
 			return this;
 		}
 
