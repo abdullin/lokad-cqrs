@@ -16,14 +16,6 @@ namespace Lokad.Cqrs
 	/// </summary>
 	public static class ExtendISupportSyntaxForSerialization
 	{
-		/// <summary>
-		/// Uses the binary formatter.
-		/// </summary>
-		/// <param name="module">The module to extend.</param>
-		public static void UseBinaryFormatter(this ISupportSyntaxForSerialization module)
-		{
-			module.RegisterSerializer<BinaryMessageSerializer>();
-		}
 
 		/// <summary>
 		/// Uses the data contract serializer.

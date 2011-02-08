@@ -34,7 +34,7 @@ namespace Lokad.Cqrs
 		{
 			// System presets
 			Logging.LogToTrace();
-			Serialization.UseBinaryFormatter();
+			Serialization.UseDataContractSerializer();
 			_builder.RegisterInstance(NullEngineProfiler.Instance);
 			_builder.RegisterInstance(SimpleMessageProfiler.Instance);
 

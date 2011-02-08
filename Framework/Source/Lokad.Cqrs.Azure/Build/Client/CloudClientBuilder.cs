@@ -27,7 +27,7 @@ namespace Lokad.Cqrs
 		public CloudClientBuilder()
 		{
 			Azure.UseDevelopmentStorageAccount();
-			Serialization.UseBinaryFormatter();
+			Serialization.UseDataContractSerializer();
 			Logging.LogToTrace();
 
 			_builder.RegisterInstance(SimpleMessageProfiler.Instance);

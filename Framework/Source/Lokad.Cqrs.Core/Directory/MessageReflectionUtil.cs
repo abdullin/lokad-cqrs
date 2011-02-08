@@ -10,7 +10,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Lokad.Reflection;
+
 
 namespace Lokad.Cqrs.Directory
 {

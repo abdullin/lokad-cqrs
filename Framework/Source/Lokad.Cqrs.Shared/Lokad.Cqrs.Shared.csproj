@@ -63,7 +63,6 @@
     <Compile Include="Infrastructure\IMessageSerializer.cs" />
     <Compile Include="Infrastructure\ISupportSyntaxForSerialization.cs" />
     <Compile Include="IProvider.cs" />
-    <Compile Include="KeyInvalidException.cs" />
     <Compile Include="Logging\DebugLog.cs" />
     <Compile Include="Logging\ExtendILogProvider.cs" />
     <Compile Include="Logging\ExtendISupportSyntaxForLogging.cs" />
@@ -92,7 +91,6 @@
     <Compile Include="Quality\NotNullAttribute.cs" />
     <Compile Include="Quality\StringFormatMethodAttribute.cs" />
     <Compile Include="Quality\UsedImplicitlyAttribute.cs" />
-    <Compile Include="ResolutionException.cs" />
     <Compile Include="ISettingsProvider.cs" />
     <Compile Include="Syntax\ISyntax.TTarget.cs" />
     <Compile Include="Syntax\Syntax.cs" />
