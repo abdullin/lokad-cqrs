@@ -119,7 +119,6 @@
     <Compile Include="Utils\EnumUtil.cs" />
     <Compile Include="Utils\EnumUtil.TEnum.cs" />
     <Compile Include="Utils\EnumUtil.TFromEnum.TToEnum.cs" />
-    <Compile Include="Utils\StringUtil.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Monads\ResultResources.resx" />

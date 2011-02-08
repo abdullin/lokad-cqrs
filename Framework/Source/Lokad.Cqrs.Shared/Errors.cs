@@ -125,7 +125,7 @@ namespace Lokad
 		[NotNull]
 		internal static Exception ArgumentNull<T>([NotNull] Func<T> argumentReference)
 		{
-			var message = StringUtil.FormatInvariant("Parameter of type '{0}' can't be null", typeof (T));
+			var message = String.Format("Parameter of type '{0}' can't be null", typeof (T));
 			var paramName = Reflect.VariableName(argumentReference);
 			return new ArgumentNullException(paramName, message);
 		}
