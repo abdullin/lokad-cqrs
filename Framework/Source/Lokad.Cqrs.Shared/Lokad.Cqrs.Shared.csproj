@@ -78,7 +78,6 @@
     <Compile Include="Logging\TraceLog.cs" />
     <Compile Include="Monads\Maybe.1.cs" />
     <Compile Include="Monads\Maybe.cs" />
-    <Compile Include="Monads\MaybeParse.cs" />
     <Compile Include="Monads\Result.1.cs" />
     <Compile Include="Monads\Result.2.cs" />
     <Compile Include="Monads\Result.cs" />
@@ -103,10 +102,6 @@
     <Compile Include="Syntax\ISyntax.TTarget.cs" />
     <Compile Include="Syntax\Syntax.cs" />
     <Compile Include="Syntax\Syntax.TTarget.cs" />
-    <Compile Include="Utils\EnumComparer.cs" />
-    <Compile Include="Utils\EnumUtil.cs" />
-    <Compile Include="Utils\EnumUtil.TEnum.cs" />
-    <Compile Include="Utils\EnumUtil.TFromEnum.TToEnum.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Monads\ResultResources.resx" />
