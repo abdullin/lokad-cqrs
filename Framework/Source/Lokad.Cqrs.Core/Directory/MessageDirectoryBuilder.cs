@@ -65,8 +65,8 @@ namespace Lokad.Cqrs.Directory
 					return new MessageInfo
 						{
 							MessageType = x.Key,
-							IsDomainMessage = x.Exists(t => t.Consumer != typeof (MessageMapping.BusSystem)),
-							IsSystemMessage = x.Exists(t => t.Consumer == typeof (MessageMapping.BusSystem)),
+							IsDomainMessage = x.Any(t => t.Consumer != typeof (MessageMapping.BusSystem)),
+							IsSystemMessage = x.Any(t => t.Consumer == typeof (MessageMapping.BusSystem)),
 							AllConsumers = domainConsumers.Select(m => m.Consumer).Distinct().ToArray(),
 							DerivedConsumers = domainConsumers.Where(m => !m.Direct).Select(m => m.Consumer).Distinct().ToArray(),
 							DirectConsumers = domainConsumers.Where(m => m.Direct).Select(m => m.Consumer).Distinct().ToArray(),
@@ -74,7 +74,7 @@ namespace Lokad.Cqrs.Directory
 				});
 
 			var includedTypes = messages
-				.ToSet(m => m.MessageType);
+				.Select(m => m.MessageType).ToSet();
 
 			// message directory should still include all messages for the serializers
 			var orphanedMessages = _mappings

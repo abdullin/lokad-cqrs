@@ -150,7 +150,7 @@ namespace Lokad.Cqrs.Directory
 				result.AddRange(GetSystemMessages());
 			}
 
-			var allMessages = result.ToSet(m => m.Message);
+			var allMessages = result.Select(m => m.Message).ToSet();
 
 			foreach (var messageType in messageTypes)
 			{

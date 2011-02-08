@@ -60,7 +60,12 @@ namespace Lokad.Cqrs.Scheduled
 
 		public ExpressionTaskBuilder(Expression<Func<TTask, TimeSpan>> adapter)
 		{
-			_info = Express.MethodWithLambda(adapter);
+			if (adapter == null) throw new ArgumentNullException("adapter");
+
+			if (adapter.Body.NodeType != ExpressionType.Call)
+				throw new ArgumentException("Expected 'Call' expression");
+
+			_info = ((MethodCallExpression)adapter.Body).Method;
 		}
 
 		public IEnumerable<ScheduledTaskInfo> BuildTasks()

@@ -6,8 +6,6 @@
 
 #endregion
 
-#if !SILVERLIGHT2
-
 using System;
 using System.IO;
 using System.IO.Compression;
@@ -19,16 +17,7 @@ namespace Lokad
 	/// </summary>
 	public static class ExtendStream
 	{
-		/// <summary>
-		/// Wraps the specified stream with Compression stream
-		/// </summary>
-		/// <param name="stream">The stream to compress</param>
-		/// <returns>compressing stream</returns>
-		public static GZipStream Compress(this Stream stream)
-		{
-			return new GZipStream(stream, CompressionMode.Compress);
-		}
-
+	
 		/// <summary>
 		/// Wraps the specified stream with Compression stream
 		/// </summary>
@@ -40,15 +29,7 @@ namespace Lokad
 			return new GZipStream(stream, CompressionMode.Compress, leaveOpen);
 		}
 
-		/// <summary>
-		/// Wraps the stream with Decompressing stream
-		/// </summary>
-		/// <param name="stream">The stream to decompress.</param>
-		/// <returns>decompressing stream</returns>
-		public static GZipStream Decompress(this Stream stream)
-		{
-			return new GZipStream(stream, CompressionMode.Decompress);
-		}
+	
 
 		/// <summary>
 		/// Wraps the stream with Decompressing stream
@@ -100,5 +81,3 @@ namespace Lokad
 		}
 	}
 }
-
-#endif

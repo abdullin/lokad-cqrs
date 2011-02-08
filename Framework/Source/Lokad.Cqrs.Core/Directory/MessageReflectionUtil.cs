@@ -46,12 +46,20 @@ namespace Lokad.Cqrs.Directory
 
 		public static MethodInfo ExpressConsumer<THandler>(Expression<Action<THandler>> expression)
 		{
+			if (expression == null) throw new ArgumentNullException("expression");
+
+			if (expression.Body.NodeType != ExpressionType.Call)
+				throw new ArgumentException("Expected 'Call' expression.");
+
+			
 			if (false == typeof (THandler).IsGenericType)
 				throw new InvalidOperationException("Type should be a generic like 'IConsumeMessage<IMessage>'");
 
 			var generic = typeof (THandler).GetGenericTypeDefinition();
 
-			var methodInfo = Express<THandler>.Method(expression);
+
+
+			var methodInfo = ((MethodCallExpression)expression.Body).Method;
 
 			var parameters = methodInfo.GetParameters();
 			if ((parameters.Length != 1)) //|| (parameters[0].ParameterType != typeof (string))
