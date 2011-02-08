@@ -118,8 +118,8 @@ namespace Lokad.Cqrs.Tests
 		public void Filtered()
 		{
 			var directory = Builder.BuildDirectory(mm => typeof (ListenToAll) == mm.Consumer);
-			Assert.AreEqual(1, directory.Consumers.Length, "Length");
-			var consumer = directory.Consumers[0];
+			Assert.AreEqual(1, directory.Consumers.Count, "Length");
+			var consumer = directory.Consumers.ToArray()[0];
 			Assert.AreEqual(typeof(ListenToAll), consumer.ConsumerType, "Type");
 
 			CollectionAssert.Contains(consumer.MessageTypes, typeof(ISomethingHappenedEvent));

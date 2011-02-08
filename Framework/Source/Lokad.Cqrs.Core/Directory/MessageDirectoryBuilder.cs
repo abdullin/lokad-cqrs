@@ -55,7 +55,7 @@ namespace Lokad.Cqrs.Directory
 
 			var messages = mappings
 				.ToLookup(x => x.Message)
-				.ToArray(x =>
+				.Select(x =>
 				{
 					var domainConsumers = x
 						.Where(t => t.Consumer != typeof(MessageMapping.BusSystem))
@@ -71,7 +71,7 @@ namespace Lokad.Cqrs.Directory
 							DerivedConsumers = domainConsumers.Where(m => !m.Direct).Select(m => m.Consumer).Distinct().ToArray(),
 							DirectConsumers = domainConsumers.Where(m => m.Direct).Select(m => m.Consumer).Distinct().ToArray(),
 						};
-				});
+				}).ToList();
 
 			var includedTypes = messages
 				.Select(m => m.MessageType).ToSet();
@@ -88,8 +88,10 @@ namespace Lokad.Cqrs.Directory
 						DerivedConsumers = Type.EmptyTypes,
 						DirectConsumers = Type.EmptyTypes
 					});
+
+			messages.AddRange(orphanedMessages);
 			
-			return new MessageDirectory(_methodName, consumers, messages.Append(orphanedMessages));
+			return new MessageDirectory(_methodName, consumers, messages.ToArray());
 		}
 	}
 }

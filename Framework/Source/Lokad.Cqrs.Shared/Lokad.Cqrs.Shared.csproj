@@ -50,7 +50,6 @@
     <Compile Include="DisposableAction.cs" />
     <Compile Include="Enforce.cs" />
     <Compile Include="Errors.cs" />
-    <Compile Include="Extensions\ArrayExtensionsForLinq.cs" />
     <Compile Include="Extensions\ExtendIDictionary.cs" />
     <Compile Include="Extensions\ExtendIEnumerable.cs" />
     <Compile Include="Extensions\ExtendInt32.cs" />

@@ -222,7 +222,7 @@ namespace Lokad.Cqrs.Consume.Build
 			var filter = _filter.BuildFilter();
 			var directory = builder.BuildDirectory(filter);
 
-			log.DebugFormat("Discovered {0} messages", directory.Messages.Length);
+			log.DebugFormat("Discovered {0} messages", directory.Messages.Count);
 
 			DebugPrintIfNeeded(log, directory);
 

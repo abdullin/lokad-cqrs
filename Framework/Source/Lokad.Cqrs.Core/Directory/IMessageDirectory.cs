@@ -5,12 +5,14 @@
 
 #endregion
 
+using System.Collections.Generic;
+
 namespace Lokad.Cqrs.Directory
 {
 	public interface IMessageDirectory : IKnowSerializationTypes
 	{
-		ConsumerInfo[] Consumers { get; }
-		MessageInfo[] Messages { get; }
+		ICollection<ConsumerInfo> Consumers { get; }
+		ICollection<MessageInfo> Messages { get; }
 		void InvokeConsume(object consumer, object message);
 	}
 }
