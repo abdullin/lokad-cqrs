@@ -51,7 +51,6 @@
     <Compile Include="Enforce.cs" />
     <Compile Include="Errors.cs" />
     <Compile Include="Extensions\ArrayExtensionsForLinq.cs" />
-    <Compile Include="Extensions\ExtendArray.cs" />
     <Compile Include="Extensions\ExtendICollection.cs" />
     <Compile Include="Extensions\ExtendIDictionary.cs" />
     <Compile Include="Extensions\ExtendIEnumerable.cs" />
