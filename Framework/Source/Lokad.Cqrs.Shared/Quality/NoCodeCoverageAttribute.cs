@@ -18,9 +18,6 @@ namespace Lokad
 	[NoCodeCoverage]
 	public sealed class NoCodeCoverageAttribute : Attribute
 	{
-		/// <summary> Gets or sets the justification for removing 
-		/// the member from the unit test code coverage. </summary>
-		/// <value>The justification.</value>
-		public string Justification { get; set; }
+		
 	}
 }

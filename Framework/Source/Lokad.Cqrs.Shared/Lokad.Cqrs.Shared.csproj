@@ -81,15 +81,10 @@
     <Compile Include="Monads\Result.cs" />
     <Compile Include="Monads\ResultResources.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Quality\AssertionConditionAttribute.cs" />
-    <Compile Include="Quality\AssertionConditionType.cs" />
-    <Compile Include="Quality\AssertionMethodAttribute.cs" />
     <Compile Include="Quality\ImplicitUseFlags.cs" />
-    <Compile Include="Quality\InvokerParameterNameAttribute.cs" />
     <Compile Include="Quality\MeansImplicitUseAttribute.cs" />
     <Compile Include="Quality\NoCodeCoverageAttribute.cs" />
     <Compile Include="Quality\NotNullAttribute.cs" />
-    <Compile Include="Quality\StringFormatMethodAttribute.cs" />
     <Compile Include="Quality\UsedImplicitlyAttribute.cs" />
     <Compile Include="ISettingsProvider.cs" />
     <Compile Include="Storage\Extend\ExtendIStorageContainer.cs" />
