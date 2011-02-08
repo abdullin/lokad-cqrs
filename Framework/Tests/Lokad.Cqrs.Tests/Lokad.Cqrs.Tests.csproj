@@ -70,10 +70,6 @@
       <Project>{5B606929-E54C-4D73-AE8A-B742C9BE72E4}</Project>
       <Name>Lokad.Cqrs.Shared</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Source\Lokad.Cqrs.Storage\Lokad.Cqrs.Storage.csproj">
-      <Project>{00CB3AB5-5BE9-432C-A589-0A7A436D5F8F}</Project>
-      <Name>Lokad.Cqrs.Storage</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Source\Lokad.Cqrs.Azure\Lokad.Cqrs.Azure.csproj">
       <Project>{FD6C8202-F530-4C09-8889-28DC383965AA}</Project>
       <Name>Lokad.Cqrs.Azure</Name>

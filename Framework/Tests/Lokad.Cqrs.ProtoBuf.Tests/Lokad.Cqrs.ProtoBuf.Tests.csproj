@@ -62,10 +62,6 @@
       <Project>{CE441C5A-2DC1-4639-81ED-5B4CAC649BD9}</Project>
       <Name>Lokad.Cqrs.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Source\Lokad.Cqrs.Storage\Lokad.Cqrs.Storage.csproj">
-      <Project>{00CB3AB5-5BE9-432C-A589-0A7A436D5F8F}</Project>
-      <Name>Lokad.Cqrs.Storage</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
