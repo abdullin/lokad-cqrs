@@ -6,6 +6,7 @@
 #endregion
 
 using System;
+using Lokad.Storage;
 using Lokad.Testing;
 using NUnit.Framework;
 

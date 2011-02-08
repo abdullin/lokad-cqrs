@@ -6,6 +6,7 @@
 #endregion
 
 using System;
+using Lokad.Storage;
 using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs.Storage

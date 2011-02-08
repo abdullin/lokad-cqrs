@@ -52,27 +52,12 @@
     <Compile Include="ExtendStorageItem.cs" />
     <Compile Include="FileStorageContainer.cs" />
     <Compile Include="FileStorageItem.cs" />
-    <Compile Include="IStorageContainer.cs" />
-    <Compile Include="IStorageItem.cs" />
-    <Compile Include="IStorageRoot.cs" />
-    <Compile Include="LocalStorageInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ReaderDelegate.cs" />
     <Compile Include="Serialization\AttributeHelper.cs" />
     <Compile Include="Serialization\DataContractMessageSerializer.cs" />
     <Compile Include="Serialization\DataContractUtil.cs" />
     <Compile Include="Serialization\ProtoBufMessageSerializer.cs" />
     <Compile Include="Serialization\ProtoBufUtil.cs" />
-    <Compile Include="StorageBaseException.cs" />
-    <Compile Include="StorageCondition.cs" />
-    <Compile Include="StorageConditionFailedException.cs" />
-    <Compile Include="StorageConditionType.cs" />
-    <Compile Include="StorageContainerNotFoundException.cs" />
-    <Compile Include="StorageErrors.cs" />
-    <Compile Include="StorageItemIntegrityException.cs" />
-    <Compile Include="StorageItemInfo.cs" />
-    <Compile Include="StorageItemNotFoundException.cs" />
-    <Compile Include="StorageWriteOptions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Lokad.Cqrs.Shared\Lokad.Cqrs.Shared.csproj">

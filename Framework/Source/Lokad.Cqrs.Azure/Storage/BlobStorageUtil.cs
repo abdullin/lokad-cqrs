@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Security.Cryptography;
+using Lokad.Storage;
 using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs.Storage

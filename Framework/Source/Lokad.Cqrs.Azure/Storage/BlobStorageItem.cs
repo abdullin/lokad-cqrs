@@ -8,6 +8,7 @@
 using System;
 using System.IO;
 using System.Net;
+using Lokad.Storage;
 using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs.Storage

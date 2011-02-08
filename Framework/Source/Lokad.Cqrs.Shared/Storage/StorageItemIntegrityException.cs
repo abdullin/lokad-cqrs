@@ -8,7 +8,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace Lokad.Cqrs
+namespace Lokad.Storage
 {
 	/// <summary>
 	/// Happens, when data corruption was detected. Normally retrying the operation should solve the problem

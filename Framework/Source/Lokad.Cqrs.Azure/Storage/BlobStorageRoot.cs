@@ -1,4 +1,5 @@
-﻿using Microsoft.WindowsAzure.StorageClient;
+﻿using Lokad.Storage;
+using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs.Storage
 {

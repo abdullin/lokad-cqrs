@@ -5,7 +5,7 @@
 
 #endregion
 
-namespace Lokad.Cqrs
+namespace Lokad.Storage
 {
 	/// <summary>
 	/// Represents storage container regefence

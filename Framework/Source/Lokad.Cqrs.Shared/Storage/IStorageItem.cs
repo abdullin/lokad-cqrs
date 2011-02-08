@@ -8,7 +8,7 @@
 using System;
 using System.IO;
 
-namespace Lokad.Cqrs
+namespace Lokad.Storage
 {
 	/// <summary>
 	/// Base interface for performing storage operations against local or remote persistence.

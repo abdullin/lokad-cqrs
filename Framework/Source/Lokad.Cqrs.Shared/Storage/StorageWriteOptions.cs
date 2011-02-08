@@ -7,7 +7,7 @@
 
 using System;
 
-namespace Lokad.Cqrs
+namespace Lokad.Storage
 {
 	[Flags]
 	public enum StorageWriteOptions

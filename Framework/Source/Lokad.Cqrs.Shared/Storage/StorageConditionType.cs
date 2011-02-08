@@ -1,4 +1,4 @@
-﻿namespace Lokad.Cqrs
+﻿namespace Lokad.Storage
 {
 	public enum StorageConditionType
 	{

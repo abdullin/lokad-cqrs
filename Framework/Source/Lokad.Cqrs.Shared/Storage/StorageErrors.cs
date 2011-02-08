@@ -8,7 +8,7 @@
 using System;
 using System.Globalization;
 
-namespace Lokad.Cqrs
+namespace Lokad.Storage
 {
 	/// <summary>
 	/// Helper class for throwing storage exceptions in a consistent way.

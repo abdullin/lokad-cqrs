@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace Lokad.Cqrs
+namespace Lokad.Storage
 {
 	[Serializable]
 	public class StorageConditionFailedException : StorageBaseException

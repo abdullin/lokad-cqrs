@@ -10,8 +10,7 @@ using System;
 using System.Globalization;
 using System.Linq;
 
-
-namespace Lokad.Cqrs
+namespace Lokad.Storage
 {
 	public struct StorageCondition
 	{

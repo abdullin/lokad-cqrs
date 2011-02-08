@@ -5,6 +5,8 @@
 
 #endregion
 
+using Lokad.Storage;
+
 namespace Lokad.Cqrs
 {
 	/// <summary>

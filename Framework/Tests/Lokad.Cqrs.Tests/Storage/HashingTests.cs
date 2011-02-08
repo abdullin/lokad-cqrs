@@ -8,6 +8,7 @@
 using System;
 using System.IO;
 using Lokad.Cqrs.Storage;
+using Lokad.Storage;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
 using NUnit.Framework;

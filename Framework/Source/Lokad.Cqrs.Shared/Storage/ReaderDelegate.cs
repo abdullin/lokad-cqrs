@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace Lokad.Cqrs
+namespace Lokad.Storage
 {
 	public delegate void ReaderDelegate(StorageItemInfo props, Stream designationStream);
 }

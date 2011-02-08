@@ -1,5 +1,6 @@
 ﻿using System;
 using Lokad.Cqrs.Storage;
+using Lokad.Storage;
 using Lokad.Testing;
 using NUnit.Framework;
 

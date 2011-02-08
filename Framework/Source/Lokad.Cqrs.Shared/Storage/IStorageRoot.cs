@@ -5,7 +5,7 @@
 
 #endregion
 
-namespace Lokad.Cqrs
+namespace Lokad.Storage
 {
 	/// <summary>
 	/// Storage root (Azure Blob account or file drive)

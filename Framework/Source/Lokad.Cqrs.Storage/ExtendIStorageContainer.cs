@@ -1,4 +1,6 @@
-﻿namespace Lokad.Cqrs
+﻿using Lokad.Storage;
+
+namespace Lokad.Cqrs
 {
 	/// <summary>
 	/// Extensions for the <see cref="IStorageContainer"/>

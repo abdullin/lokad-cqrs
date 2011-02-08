@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 
-namespace Lokad.Cqrs
+namespace Lokad.Storage
 {
 	public sealed class StorageItemInfo
 	{

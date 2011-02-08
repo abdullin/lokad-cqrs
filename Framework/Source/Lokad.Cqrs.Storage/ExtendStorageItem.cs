@@ -7,6 +7,7 @@
 
 using System.IO;
 using System.Text;
+using Lokad.Storage;
 
 namespace Lokad.Cqrs
 {
