@@ -9,7 +9,6 @@
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
-using Lokad.Rules;
 
 namespace Lokad.Reflection
 {
@@ -18,15 +17,6 @@ namespace Lokad.Reflection
 	/// </summary>
 	public static class Express
 	{
-		static Rule<LambdaExpression> LambdaIs(ExpressionType type)
-		{
-			return (expression, scope) =>
-				{
-					if (expression.Body.NodeType != type)
-						scope.Error("Lambda expression must be of type {0}", type);
-				};
-		}
-
 		/// <summary>
 		/// Gets the <see cref="MethodInfo"/> 
 		/// from the provided <paramref name="method"/>.
@@ -35,7 +25,7 @@ namespace Lokad.Reflection
 		/// <returns>method information</returns>
 		public static MethodInfo MethodWithLambda(LambdaExpression method)
 		{
-			Enforce.Argument(() => method, LambdaIs(ExpressionType.Call));
+			EnforceLambda(method, ExpressionType.Call);
 
 			return ((MethodCallExpression) method.Body).Method;
 		}
@@ -46,7 +36,7 @@ namespace Lokad.Reflection
 		/// <returns>constructor information</returns>
 		public static ConstructorInfo ConstructorWithLamda(LambdaExpression constructor)
 		{
-			Enforce.Argument(() => constructor, LambdaIs(ExpressionType.New));
+			EnforceLambda(constructor,ExpressionType.New);
 
 			return ((NewExpression) constructor.Body).Constructor;
 		}
@@ -57,8 +47,18 @@ namespace Lokad.Reflection
 		/// <returns>member information</returns>
 		public static MemberInfo MemberWithLambda(LambdaExpression member)
 		{
-			Enforce.Argument(() => member, LambdaIs(ExpressionType.MemberAccess));
+			EnforceLambda(member, ExpressionType.MemberAccess);
 			return ((MemberExpression) member.Body).Member;
+		}
+
+		static void EnforceLambda(LambdaExpression member, ExpressionType expressionType)
+		{
+			if (member == null) throw new ArgumentNullException("member");
+			if (member.Body.NodeType != expressionType)
+			{
+				var message = string.Format("Lambda expression must be of type {0}", expressionType);
+				throw new ArgumentException(message);
+			}
 		}
 
 		/// <summary> Gets the <see cref="PropertyInfo"/> from the provided

@@ -111,26 +111,6 @@
     <Compile Include="Reflection\ReflectCache.cs" />
     <Compile Include="Reflection\ReflectLambdaException.cs" />
     <Compile Include="ResolutionException.cs" />
-    <Compile Include="Rules\Common\BufferIs.cs" />
-    <Compile Include="Rules\Common\DateIs.cs" />
-    <Compile Include="Rules\Common\DoubleIs.cs" />
-    <Compile Include="Rules\Common\Is.cs" />
-    <Compile Include="Rules\Common\MaybeIs.cs" />
-    <Compile Include="Rules\Common\StringIs.cs" />
-    <Compile Include="Rules\ExtendIScope.cs" />
-    <Compile Include="Rules\IScope.cs" />
-    <Compile Include="Rules\Rule.cs" />
-    <Compile Include="Rules\RuleException.cs" />
-    <Compile Include="Rules\RuleLevel.cs" />
-    <Compile Include="Rules\RuleMessage.cs" />
-    <Compile Include="Rules\RuleMessages.cs" />
-    <Compile Include="Rules\RuleResources.Designer.cs" />
-    <Compile Include="Rules\Scope.cs" />
-    <Compile Include="Rules\Scopes\DelayedScope.cs" />
-    <Compile Include="Rules\Scopes\ModifierScope.cs" />
-    <Compile Include="Rules\Scopes\ScopeFactory.cs" />
-    <Compile Include="Rules\Scopes\SimpleScope.cs" />
-    <Compile Include="Rules\Scopes\TrackScope.cs" />
     <Compile Include="ISettingsProvider.cs" />
     <Compile Include="Storage\IEntityReader.cs" />
     <Compile Include="Storage\IEntityWriter.cs" />
@@ -149,7 +129,6 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Monads\ResultResources.resx" />
-    <EmbeddedResource Include="Rules\RuleResources.resx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\SharedKey.snk">

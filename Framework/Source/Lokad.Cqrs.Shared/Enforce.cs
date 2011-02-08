@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using Lokad.Reflection;
-using Lokad.Rules;
 
 namespace Lokad
 {
@@ -343,119 +342,119 @@ namespace Lokad
 			return value;
 		}
 
-		/// <summary>
-		/// Runs the rules against single argument, using scope that fails on <see cref="Scope.WhenError"/>
-		/// </summary>
-		/// <typeparam name="T">type of the item to validate</typeparam>
-		/// <param name="argumentReference">The argument reference.</param>
-		/// <param name="rules">The rules.</param>
-		/// <remarks>Silverlight 2.0 does not support fast resolution of variable names, yet</remarks>
-		/// <exception cref="ArgumentException">When any rule fails</exception>
-		[DebuggerNonUserCode]
-		[AssertionMethod]
-		public static void Argument<T>(Func<T> argumentReference, params Rule<T>[] rules)
-		{
-			using (var scope = ScopeFactory.ForEnforceArgument(argumentReference, Scope.WhenError))
-			{
-				scope.ValidateInScope(argumentReference(), rules);
-			}
-		}
+		///// <summary>
+		///// Runs the rules against single argument, using scope that fails on <see cref="Scope.WhenError"/>
+		///// </summary>
+		///// <typeparam name="T">type of the item to validate</typeparam>
+		///// <param name="argumentReference">The argument reference.</param>
+		///// <param name="rules">The rules.</param>
+		///// <remarks>Silverlight 2.0 does not support fast resolution of variable names, yet</remarks>
+		///// <exception cref="ArgumentException">When any rule fails</exception>
+		//[DebuggerNonUserCode]
+		//[AssertionMethod]
+		//public static void Argument<T>(Func<T> argumentReference, params Rule<T>[] rules)
+		//{
+		//    using (var scope = ScopeFactory.ForEnforceArgument(argumentReference, Scope.WhenError))
+		//    {
+		//        scope.ValidateInScope(argumentReference(), rules);
+		//    }
+		//}
 
-		/// <summary>
-		/// Runs the rules against single collection, using scope that fails on <see cref="Scope.WhenError"/>
-		/// </summary>
-		/// <typeparam name="T">type of the item to validate</typeparam>
-		/// <param name="items">The items to validate.</param>
-		/// <param name="rules">The rules.</param>
-		/// <remarks>Silverlight 2.0 does not support fast resolution of variable names, yet</remarks>
-		/// <exception cref="ArgumentException">When any rule fails</exception>
-		[DebuggerNonUserCode]
-		public static void Argument<T>(Func<IEnumerable<T>> items, params Rule<T>[] rules)
-		{
-			using (var scope = ScopeFactory.ForEnforceArgument(items, Scope.WhenError))
-			{
-				scope.ValidateInScope(items(), rules);
-			}
-		}
-
-
-		/// <summary> Runs the rules against single argument, 
-		/// using scope that fails on <see cref="Scope.WhenError"/>.
-		///  </summary>
-		/// <typeparam name="T">type of the item to validate</typeparam>
-		/// <param name="item">The item to validate.</param>
-		/// <param name="rules">The rules.</param>
-		/// <exception cref="RuleException">When check fails</exception>
-		[DebuggerNonUserCode]
-		[AssertionMethod]
-		public static void That<T>(
-			[AssertionCondition(AssertionConditionType.IS_NOT_NULL)] T item,
-			params Rule<T>[] rules)
-		{
-			using (var scope = Scope.ForEnforce(typeof (T).Name, Scope.WhenError))
-			{
-				scope.ValidateInScope(item, rules);
-			}
-		}
-
-		/// <summary> Runs the rules against single collection, using 
-		/// scope that fails on <see cref="Scope.WhenError"/>.</summary>
-		/// <typeparam name="T">type of the item to validate</typeparam>
-		/// <param name="items">The items to validate.</param>
-		/// <param name="rules">The rules.</param>
-		/// <exception cref="RuleException">When check fails</exception>
-		[DebuggerNonUserCode]
-		[AssertionMethod]
-		public static void That<T>(
-			[AssertionCondition(AssertionConditionType.IS_NOT_NULL)] IEnumerable<T> items,
-			params Rule<T>[] rules)
-		{
-			using (var scope = Scope.ForEnforce(typeof (T).Name, Scope.WhenError))
-			{
-				scope.ValidateInScope(items, rules);
-			}
-		}
+		///// <summary>
+		///// Runs the rules against single collection, using scope that fails on <see cref="Scope.WhenError"/>
+		///// </summary>
+		///// <typeparam name="T">type of the item to validate</typeparam>
+		///// <param name="items">The items to validate.</param>
+		///// <param name="rules">The rules.</param>
+		///// <remarks>Silverlight 2.0 does not support fast resolution of variable names, yet</remarks>
+		///// <exception cref="ArgumentException">When any rule fails</exception>
+		//[DebuggerNonUserCode]
+		//public static void Argument<T>(Func<IEnumerable<T>> items, params Rule<T>[] rules)
+		//{
+		//    using (var scope = ScopeFactory.ForEnforceArgument(items, Scope.WhenError))
+		//    {
+		//        scope.ValidateInScope(items(), rules);
+		//    }
+		//}
 
 
-		/// <summary> Runs the rules against single item, using 
-		/// scope that fails on <see cref="Scope.WhenError"/>.</summary>
-		/// <typeparam name="T">type of the item to validate</typeparam>
-		/// <param name="argumentReference">The item to validate.</param>
-		/// <param name="rules">The rules.</param>
-		/// <exception cref="RuleException">When check fails</exception>
-		/// <remarks>Silverlight 2.0 does not support fast resolution of variable names, yet</remarks>
-		[DebuggerNonUserCode]
-		[AssertionMethod]
-		public static void That<T>(
-			Func<T> argumentReference,
-			params Rule<T>[] rules)
-		{
-			var name = Reflection.Reflect.VariableName(argumentReference);
+		///// <summary> Runs the rules against single argument, 
+		///// using scope that fails on <see cref="Scope.WhenError"/>.
+		/////  </summary>
+		///// <typeparam name="T">type of the item to validate</typeparam>
+		///// <param name="item">The item to validate.</param>
+		///// <param name="rules">The rules.</param>
+		///// <exception cref="RuleException">When check fails</exception>
+		//[DebuggerNonUserCode]
+		//[AssertionMethod]
+		//public static void That<T>(
+		//    [AssertionCondition(AssertionConditionType.IS_NOT_NULL)] T item,
+		//    params Rule<T>[] rules)
+		//{
+		//    using (var scope = Scope.ForEnforce(typeof (T).Name, Scope.WhenError))
+		//    {
+		//        scope.ValidateInScope(item, rules);
+		//    }
+		//}
 
-			using (var scope = Scope.ForEnforce(name, Scope.WhenError))
-			{
-				scope.ValidateInScope(argumentReference(), rules);
-			}
-		}
+		///// <summary> Runs the rules against single collection, using 
+		///// scope that fails on <see cref="Scope.WhenError"/>.</summary>
+		///// <typeparam name="T">type of the item to validate</typeparam>
+		///// <param name="items">The items to validate.</param>
+		///// <param name="rules">The rules.</param>
+		///// <exception cref="RuleException">When check fails</exception>
+		//[DebuggerNonUserCode]
+		//[AssertionMethod]
+		//public static void That<T>(
+		//    [AssertionCondition(AssertionConditionType.IS_NOT_NULL)] IEnumerable<T> items,
+		//    params Rule<T>[] rules)
+		//{
+		//    using (var scope = Scope.ForEnforce(typeof (T).Name, Scope.WhenError))
+		//    {
+		//        scope.ValidateInScope(items, rules);
+		//    }
+		//}
 
-		/// <summary> Runs the rules against collection, 
-		/// using scope that fails on <see cref="Scope.WhenError"/> </summary>
-		/// <typeparam name="T">type of the item to validate</typeparam>
-		/// <param name="collectionReference">The items to validate.</param>
-		/// <param name="rules">The rules.</param>
-		/// <exception cref="RuleException">When check fails</exception>
-		/// <remarks>Silverlight 2.0 does not support fast resolution of variable names, yet</remarks>
-		[DebuggerNonUserCode]
-		[AssertionMethod]
-		public static void That<T>(
-			Func<IEnumerable<T>> collectionReference,
-			params Rule<T>[] rules)
-		{
-			var name = Reflection.Reflect.VariableName(collectionReference);
-			using (var scope = Scope.ForEnforce(name, Scope.WhenError))
-			{
-				scope.ValidateInScope(collectionReference(), rules);
-			}
-		}
+
+		///// <summary> Runs the rules against single item, using 
+		///// scope that fails on <see cref="Scope.WhenError"/>.</summary>
+		///// <typeparam name="T">type of the item to validate</typeparam>
+		///// <param name="argumentReference">The item to validate.</param>
+		///// <param name="rules">The rules.</param>
+		///// <exception cref="RuleException">When check fails</exception>
+		///// <remarks>Silverlight 2.0 does not support fast resolution of variable names, yet</remarks>
+		//[DebuggerNonUserCode]
+		//[AssertionMethod]
+		//public static void That<T>(
+		//    Func<T> argumentReference,
+		//    params Rule<T>[] rules)
+		//{
+		//    var name = Reflection.Reflect.VariableName(argumentReference);
+
+		//    using (var scope = Scope.ForEnforce(name, Scope.WhenError))
+		//    {
+		//        scope.ValidateInScope(argumentReference(), rules);
+		//    }
+		//}
+
+		///// <summary> Runs the rules against collection, 
+		///// using scope that fails on <see cref="Scope.WhenError"/> </summary>
+		///// <typeparam name="T">type of the item to validate</typeparam>
+		///// <param name="collectionReference">The items to validate.</param>
+		///// <param name="rules">The rules.</param>
+		///// <exception cref="RuleException">When check fails</exception>
+		///// <remarks>Silverlight 2.0 does not support fast resolution of variable names, yet</remarks>
+		//[DebuggerNonUserCode]
+		//[AssertionMethod]
+		//public static void That<T>(
+		//    Func<IEnumerable<T>> collectionReference,
+		//    params Rule<T>[] rules)
+		//{
+		//    var name = Reflection.Reflect.VariableName(collectionReference);
+		//    using (var scope = Scope.ForEnforce(name, Scope.WhenError))
+		//    {
+		//        scope.ValidateInScope(collectionReference(), rules);
+		//    }
+		//}
 	}
 }
