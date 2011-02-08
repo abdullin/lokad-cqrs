@@ -248,7 +248,7 @@ namespace Lokad.Cqrs.Queue
 
 		CloudQueueMessage PackNewMessage(object message,  Action<MessageAttributeBuilder> modify)
 		{
-			var messageId = GuidUtil.NewComb();
+			var messageId = Guid.NewGuid();
 			var created = SystemUtil.UtcNow;
 
 			var messageType = message.GetType();

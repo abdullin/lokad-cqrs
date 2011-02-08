@@ -58,7 +58,6 @@
     <Compile Include="Extensions\ExtendInt32.cs" />
     <Compile Include="Extensions\ExtendStream.cs" />
     <Compile Include="Filter.cs" />
-    <Compile Include="GuidUtil.cs" />
     <Compile Include="IKnowSerializationTypes.cs" />
     <Compile Include="INamedProvider.cs" />
     <Compile Include="Infrastructure\IDataContractMapper.cs" />
