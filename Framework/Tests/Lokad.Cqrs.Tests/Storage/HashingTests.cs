@@ -34,7 +34,7 @@ namespace Lokad.Cqrs.Tests.Storage
 
 
 			storageItem.Write(w => w.WriteByte(1), options:StorageWriteOptions.CompressIfPossible);
-			storageItem.ReadInto((props, stream) => stream.PumpTo(new MemoryStream(), 10));
+			storageItem.ReadInto((props, stream) => StreamUtil.BlockCopy(stream, new MemoryStream(), 10));
 
 			var format = storageItem.GetInfo();
 			Console.WriteLine("MD5: {0}", format.Value.Properties.GetValue("ContentMD5").GetValue("None"));

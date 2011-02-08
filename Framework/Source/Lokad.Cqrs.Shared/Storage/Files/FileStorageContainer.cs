@@ -6,9 +6,8 @@
 #endregion
 
 using System.IO;
-using Lokad.Storage;
 
-namespace Lokad.Cqrs
+namespace Lokad.Storage
 {
 	/// <summary>
 	/// Storage container using <see cref="System.IO"/> for persisting data

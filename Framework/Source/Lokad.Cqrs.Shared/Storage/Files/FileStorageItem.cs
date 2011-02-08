@@ -9,9 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
-using Lokad.Storage;
 
-namespace Lokad.Cqrs
+namespace Lokad.Storage
 {
 	/// <summary>
 	/// File-based implementation of the <see cref="IStorageItem"/>
@@ -178,7 +177,7 @@ namespace Lokad.Cqrs
 				const int bufferSize = 64 * 1024;
 				Write(
 					targetStream =>
-						sourceItem.ReadInto((props, stream) => stream.PumpTo(targetStream, bufferSize), copySourceCondition), condition, options);
+						sourceItem.ReadInto((props, stream) => StreamUtil.BlockCopy(stream, targetStream, bufferSize), copySourceCondition), condition, options);
 			}
 		}
 

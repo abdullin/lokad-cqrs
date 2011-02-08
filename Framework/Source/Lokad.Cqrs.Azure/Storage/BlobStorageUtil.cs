@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
+using System.IO.Compression;
 using System.Security.Cryptography;
 using Lokad.Storage;
 using Microsoft.WindowsAzure.StorageClient;
@@ -74,7 +75,7 @@ namespace Lokad.Cqrs.Storage
 						ReadAndVerifyHash(stream, s =>
 							{
 								// important is not to flush the decompression stream
-								using (var decompress = s.Decompress(true))
+								using (var decompress = new GZipStream(s, CompressionMode.Decompress, true))
 								{
 									reader(props, decompress);
 								}
@@ -140,7 +141,7 @@ namespace Lokad.Cqrs.Storage
 			using (var stream = blob.OpenWrite(mapped))
 			{
 				using (var crypto = new CryptoStream(stream, md5, CryptoStreamMode.Write))
-				using (var compress = crypto.Compress(true))
+				using (var compress = new GZipStream(crypto, CompressionMode.Compress, true))
 				{
 					writer(compress);
 				}
