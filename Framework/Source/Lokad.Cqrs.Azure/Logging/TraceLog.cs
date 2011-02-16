@@ -6,7 +6,6 @@
 
 #endregion
 
-#if !SILVERLIGHT2
 using System;
 using System.Diagnostics;
 
@@ -61,5 +60,3 @@ namespace Lokad
 		}
 	}
 }
-
-#endif
