@@ -24,7 +24,7 @@ namespace Lokad.Cqrs
 		{
 			_builder
 				.RegisterType<TSerializer>()
-				.As<IMessageSerializer, IDataContractMapper, IDataSerializer>().SingleInstance();
+				.As<IMessageSerializer>().SingleInstance();
 		}
 
 		public void UseDataContractSerializer()
