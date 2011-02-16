@@ -68,7 +68,6 @@
     <Compile Include="Build\Engine\CloudEngineRole.cs" />
     <Compile Include="Build\Engine\CloudEngineHost.cs" />
     <Compile Include="Build\ExtendSyntaxForCloudStorageAccount.cs" />
-    <Compile Include="Build\ICloudClient.cs" />
     <Compile Include="Build\NullEngineProfiler.cs" />
     <Compile Include="Consume\BlobExceptionLogger.cs" />
     <Compile Include="Consume\ConfigureBlobSavingOnException.cs" />
