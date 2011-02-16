@@ -66,10 +66,6 @@
     <Compile Include="Storage\When_reading_item_in.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Source\Lokad.Cqrs.Shared\Lokad.Cqrs.Shared.csproj">
-      <Project>{5B606929-E54C-4D73-AE8A-B742C9BE72E4}</Project>
-      <Name>Lokad.Cqrs.Shared</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Source\Lokad.Cqrs.Azure\Lokad.Cqrs.Azure.csproj">
       <Project>{FD6C8202-F530-4C09-8889-28DC383965AA}</Project>
       <Name>Lokad.Cqrs.Azure</Name>
