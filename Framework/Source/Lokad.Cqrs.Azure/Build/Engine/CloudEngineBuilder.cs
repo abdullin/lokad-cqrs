@@ -41,8 +41,6 @@ namespace Lokad.Cqrs
 			Azure.UseDevelopmentStorageAccount();
 			_builder.RegisterType<AzureQueueFactory>().As<IRouteMessages, IQueueManager>().SingleInstance();
 			_builder.RegisterType<AzureQueueTransport>().As<IMessageTransport>();
-			_builder.RegisterType<CloudSettingsProvider>().As<ISettingsProvider>().SingleInstance();
-
 
 			// some defaults
 			_builder.RegisterType<CloudEngineHost>().As<ICloudEngineHost>().SingleInstance();

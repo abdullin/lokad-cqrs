@@ -27,14 +27,10 @@ namespace Lokad.Cqrs
 			Azure.UseDevelopmentStorageAccount();
 			Serialization.UseDataContractSerializer();
 			Logging.LogToTrace();
-
 			_builder.RegisterInstance(SimpleMessageProfiler.Instance);
 			_builder.RegisterInstance(NullEngineProfiler.Instance);
-
-			_builder.RegisterType<CloudSettingsProvider>().As<ISettingsProvider>().SingleInstance();
 			_builder.RegisterType<AzureQueueFactory>().As<IRouteMessages, IQueueManager>().SingleInstance();
 			_builder.RegisterType<AzureQueueTransport>().As<IMessageTransport>();
-			_builder.RegisterType<CloudSettingsProvider>().As<ISettingsProvider>().SingleInstance();
 			_builder.RegisterType<CloudClient>().SingleInstance();
 		}
 

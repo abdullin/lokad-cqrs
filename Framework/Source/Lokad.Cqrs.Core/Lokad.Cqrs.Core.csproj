@@ -72,7 +72,6 @@
     <Compile Include="Infrastructure\IEngineProcess.cs" />
     <Compile Include="Infrastructure\IMessageClient.cs" />
     <Compile Include="Infrastructure\IMessageSerializer.cs" />
-    <Compile Include="ISettingsProvider.cs" />
     <Compile Include="Lmf\MessageAttributeBuilder.cs" />
     <Compile Include="Lmf\MessageAttributeContract.cs" />
     <Compile Include="Lmf\MessageAttributesContract.cs" />

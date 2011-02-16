@@ -16,8 +16,7 @@ namespace Lokad.Cqrs
 	/// <summary>
 	/// Settings provider built on top of the Windows Azure
 	/// </summary>
-	
-	public sealed class CloudSettingsProvider : ISettingsProvider
+	public sealed class CloudSettingsProvider 
 	{
 		static readonly bool HasCloudEnvironment;
 
@@ -53,11 +52,6 @@ namespace Lokad.Cqrs
 				result = ConfigurationManager.AppSettings[key];
 			}
 			return string.IsNullOrEmpty(result) ? Maybe<string>.Empty : result;
-		}
-
-		Maybe<string> ISettingsProvider.GetValue(string name)
-		{
-			return GetString(name);
 		}
 	}
 }

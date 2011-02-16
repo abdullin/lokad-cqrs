@@ -13,7 +13,9 @@ using Lokad.Cqrs.Storage;
 using Lokad.Storage;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
-
+// ReSharper disable UnusedMember.Global
+// ReSharper disable UnusedMethodReturnValue.Global
+// ReSharper disable MemberCanBePrivate.Global
 namespace Lokad.Cqrs
 {
 	/// <summary>
@@ -127,6 +129,17 @@ namespace Lokad.Cqrs
 			RegisterLocals();
 
 			return this;
+		}
+
+		/// <summary>
+		/// Uses development storage as retrieved from the provider
+		/// </summary>
+		/// <returns>
+		/// same builder for inling multiple configuration statements
+		/// </returns>
+		public AutofacBuilderForAzure LoadStorageAccountFromSettings(Func<string> configProvider)
+		{
+			return LoadStorageAccountFromSettings(c => configProvider());
 		}
 
 

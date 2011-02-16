@@ -3,10 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{CBB0EA40-FEC5-48D9-A04D-782440D9D693}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Features", "Features", "{50854899-7A0C-4BC3-84F3-771D052DE41E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lokad.Cqrs.NHibernate", "Features\Lokad.Cqrs.NHibernate\Lokad.Cqrs.NHibernate.csproj", "{FB8810A2-0888-4400-B7F4-1736A983A894}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lokad.Cqrs.Tests", "Tests\Lokad.Cqrs.Tests\Lokad.Cqrs.Tests.csproj", "{24DA9150-1C7E-45B3-8A75-EA529081237F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{C5183B3E-3155-466A-BEC3-B7EBDCFB4BEF}"
@@ -34,16 +30,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{FB8810A2-0888-4400-B7F4-1736A983A894}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FB8810A2-0888-4400-B7F4-1736A983A894}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FB8810A2-0888-4400-B7F4-1736A983A894}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{FB8810A2-0888-4400-B7F4-1736A983A894}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{FB8810A2-0888-4400-B7F4-1736A983A894}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{FB8810A2-0888-4400-B7F4-1736A983A894}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FB8810A2-0888-4400-B7F4-1736A983A894}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FB8810A2-0888-4400-B7F4-1736A983A894}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{FB8810A2-0888-4400-B7F4-1736A983A894}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{FB8810A2-0888-4400-B7F4-1736A983A894}.Release|x86.ActiveCfg = Release|Any CPU
 		{24DA9150-1C7E-45B3-8A75-EA529081237F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{24DA9150-1C7E-45B3-8A75-EA529081237F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{24DA9150-1C7E-45B3-8A75-EA529081237F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -91,7 +77,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{CE441C5A-2DC1-4639-81ED-5B4CAC649BD9} = {CBB0EA40-FEC5-48D9-A04D-782440D9D693}
 		{FD6C8202-F530-4C09-8889-28DC383965AA} = {CBB0EA40-FEC5-48D9-A04D-782440D9D693}
-		{FB8810A2-0888-4400-B7F4-1736A983A894} = {50854899-7A0C-4BC3-84F3-771D052DE41E}
 		{B29FAA6C-F0DE-4683-A6E3-993A5030D45B} = {A0D52FD8-DA91-458C-AFD1-A29AF38AAC40}
 		{24DA9150-1C7E-45B3-8A75-EA529081237F} = {A0D52FD8-DA91-458C-AFD1-A29AF38AAC40}
 	EndGlobalSection
