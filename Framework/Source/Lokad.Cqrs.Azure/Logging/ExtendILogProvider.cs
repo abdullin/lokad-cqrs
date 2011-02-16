@@ -11,8 +11,7 @@ using System;
 namespace Lokad
 {
 	/// <summary>
-	/// Extension methods for the <see cref="INamedProvider{TValue}"/>
-	/// of <see cref="ILog"/>
+	/// Extension methods for the <see cref="ILogProvider"/>
 	/// </summary>
 	[NoCodeCoverage, UsedImplicitly]
 	public static class ExtendILogProvider
@@ -22,7 +21,7 @@ namespace Lokad
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		[Obsolete("Obsolete, Use LogForType overrides to specify log name precisely")]
-		public static ILog CreateLog<T>(this INamedProvider<ILog> logProvider) where T : class
+		public static ILog CreateLog<T>(this ILogProvider logProvider) where T : class
 		{
 			return logProvider.Get(typeof (T).Name);
 		}

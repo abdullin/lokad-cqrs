@@ -18,7 +18,7 @@ namespace Lokad
 			_factory = factory;
 		}
 
-		ILog IProvider<string, ILog>.Get(string key)
+		public ILog Get(string key)
 		{
 			return _factory(key);
 		}

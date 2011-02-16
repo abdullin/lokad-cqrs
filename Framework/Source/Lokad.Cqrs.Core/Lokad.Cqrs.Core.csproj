@@ -67,13 +67,11 @@
     <Compile Include="Extensions\ExtendInt32.cs" />
     <Compile Include="Filter.cs" />
     <Compile Include="IKnowSerializationTypes.cs" />
-    <Compile Include="INamedProvider.cs" />
     <Compile Include="Infrastructure\IDataContractMapper.cs" />
     <Compile Include="Infrastructure\IDataSerializer.cs" />
     <Compile Include="Infrastructure\IEngineProcess.cs" />
     <Compile Include="Infrastructure\IMessageClient.cs" />
     <Compile Include="Infrastructure\IMessageSerializer.cs" />
-    <Compile Include="IProvider.cs" />
     <Compile Include="ISettingsProvider.cs" />
     <Compile Include="Lmf\MessageAttributeBuilder.cs" />
     <Compile Include="Lmf\MessageAttributeContract.cs" />

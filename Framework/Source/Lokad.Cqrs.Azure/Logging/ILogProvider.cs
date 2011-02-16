@@ -11,7 +11,13 @@ namespace Lokad
 	/// <summary>
 	/// Creates logs using the name
 	/// </summary>
-	public interface ILogProvider : INamedProvider<ILog>
+	public interface ILogProvider 
 	{
+		/// <summary>
+		/// Creates log, given the name
+		/// </summary>
+		/// <param name="name">The name.</param>
+		/// <returns></returns>
+		ILog Get(string name);
 	}
 }
