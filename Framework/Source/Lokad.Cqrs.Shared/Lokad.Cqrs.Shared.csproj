@@ -47,7 +47,6 @@
     <Compile Include="Default\IConsumeMessage.cs" />
     <Compile Include="Default\IMessage.cs" />
     <Compile Include="Default\IScheduledTask.cs" />
-    <Compile Include="DisposableAction.cs" />
     <Compile Include="Errors.cs" />
     <Compile Include="Extensions\ExtendIDictionary.cs" />
     <Compile Include="Extensions\ExtendIEnumerable.cs" />
@@ -55,7 +54,6 @@
     <Compile Include="Monads\Maybe.1.cs" />
     <Compile Include="Monads\Maybe.cs" />
     <Compile Include="Storage\StreamUtil.cs" />
-    <Compile Include="Filter.cs" />
     <Compile Include="IKnowSerializationTypes.cs" />
     <Compile Include="INamedProvider.cs" />
     <Compile Include="Infrastructure\IDataContractMapper.cs" />

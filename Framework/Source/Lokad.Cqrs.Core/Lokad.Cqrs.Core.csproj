@@ -63,6 +63,7 @@
     <Compile Include="Directory\MessageMapping.cs" />
     <Compile Include="Directory\MessageReflectionUtil.cs" />
     <Compile Include="Build\NullEngineProfiler.cs" />
+    <Compile Include="Filter.cs" />
     <Compile Include="IEngineProfiler.cs" />
     <Compile Include="IMessageProfiler.cs" />
     <Compile Include="IMessageTransport.cs" />
