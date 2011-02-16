@@ -69,16 +69,5 @@ namespace Lokad
 		{
 			return base.GetType();
 		}
-
-		/// <summary>
-		/// Creates the syntax for the specified target
-		/// </summary>
-		/// <typeparam name="TTarget">The type of the target.</typeparam>
-		/// <param name="inner">The inner.</param>
-		/// <returns>new syntax instance</returns>
-		public static Syntax<TTarget> For<TTarget>(TTarget inner)
-		{
-			return new Syntax<TTarget>(inner);
-		}
 	}
 }

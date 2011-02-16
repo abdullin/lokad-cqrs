@@ -19,7 +19,6 @@ namespace Lokad
 	[UsedImplicitly]
 	public static class Errors
 	{
-
 		/// <summary>
 		/// Creates new instance of <see cref="InvalidOperationException"/>
 		/// </summary>
@@ -30,10 +29,6 @@ namespace Lokad
 		{
 			return new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, message, args));
 		}
-
-
-
-
 
 		static readonly MethodInfo InternalPreserveStackTraceMethod;
 

@@ -47,7 +47,6 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ExtendSyntax.cs" />
     <Compile Include="NHibernateModule.cs" />
     <Compile Include="NHibernateStarter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

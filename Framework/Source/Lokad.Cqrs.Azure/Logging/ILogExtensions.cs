@@ -16,20 +16,7 @@ namespace Lokad
 	/// </summary>
 	public static class ILogExtensions
 	{
-		static readonly CultureInfo _culture = CultureInfo.InvariantCulture;
-
-		/// <summary>
-		/// Determines whether the specified log is recording debug messages.
-		/// </summary>
-		/// <param name="log">The log.</param>
-		/// <returns>
-		/// 	<c>true</c> if the specified log is recording debug messages; otherwise, <c>false</c>.
-		/// </returns>
-		public static bool IsDebugEnabled(this ILog log)
-		{
-			return log.IsEnabled(LogLevel.Debug);
-		}
-
+		static readonly CultureInfo Culture = CultureInfo.InvariantCulture;
 
 		/// <summary>
 		/// Writes message with <see cref="LogLevel.Debug"/> level
@@ -50,7 +37,7 @@ namespace Lokad
 		/// <param name="args">Arguments</param>
 		public static void DebugFormat(this ILog log, string format, params object[] args)
 		{
-			log.Log(LogLevel.Debug, string.Format(_culture, format, args));
+			log.Log(LogLevel.Debug, string.Format(Culture, format, args));
 		}
 
 		/// <summary>
@@ -76,21 +63,8 @@ namespace Lokad
 		/// <param name="args">Arguments</param>
 		public static void DebugFormat(this ILog log, Exception ex, string format, params object[] args)
 		{
-			log.Log(LogLevel.Debug, ex, string.Format(_culture, format, args));
+			log.Log(LogLevel.Debug, ex, string.Format(Culture, format, args));
 		}
-
-		/// <summary>
-		/// Determines whether the specified log is recording info messages.
-		/// </summary>
-		/// <param name="log">The log.</param>
-		/// <returns>
-		/// 	<c>true</c> if the specified log is recording info messages; otherwise, <c>false</c>.
-		/// </returns>
-		public static bool IsInfoEnabled(this ILog log)
-		{
-			return log.IsEnabled(LogLevel.Info);
-		}
-
 
 		/// <summary>
 		/// Writes message with <see cref="LogLevel.Info"/> level
@@ -111,7 +85,7 @@ namespace Lokad
 		/// <param name="args">Arguments</param>
 		public static void InfoFormat(this ILog log, string format, params object[] args)
 		{
-			log.Log(LogLevel.Info, string.Format(_culture, format, args));
+			log.Log(LogLevel.Info, string.Format(Culture, format, args));
 		}
 
 		/// <summary>
@@ -137,20 +111,7 @@ namespace Lokad
 		/// <param name="args">Arguments</param>
 		public static void InfoFormat(this ILog log, Exception ex, string format, params object[] args)
 		{
-			log.Log(LogLevel.Info, ex, string.Format(_culture, format, args));
-		}
-
-
-		/// <summary>
-		/// Determines whether the specified log is recording warning messages.
-		/// </summary>
-		/// <param name="log">The log.</param>
-		/// <returns>
-		/// 	<c>true</c> if the specified log is recording warning messages; otherwise, <c>false</c>.
-		/// </returns>
-		public static bool IsWarnEnabled(this ILog log)
-		{
-			return log.IsEnabled(LogLevel.Warn);
+			log.Log(LogLevel.Info, ex, string.Format(Culture, format, args));
 		}
 
 		/// <summary>
@@ -172,7 +133,7 @@ namespace Lokad
 		/// <param name="args">Arguments</param>
 		public static void WarnFormat(this ILog log, string format, params object[] args)
 		{
-			log.Log(LogLevel.Warn, string.Format(_culture, format, args));
+			log.Log(LogLevel.Warn, string.Format(Culture, format, args));
 		}
 
 		/// <summary>
@@ -198,20 +159,7 @@ namespace Lokad
 		/// <param name="args">Arguments</param>
 		public static void WarnFormat(this ILog log, Exception ex, string format, params object[] args)
 		{
-			log.Log(LogLevel.Warn, ex, string.Format(_culture, format, args));
-		}
-
-
-		/// <summary>
-		/// Determines whether the specified log is recording error messages.
-		/// </summary>
-		/// <param name="log">The log.</param>
-		/// <returns>
-		/// 	<c>true</c> if the specified log is recording error messages; otherwise, <c>false</c>.
-		/// </returns>
-		public static bool IsErrorEnabled(this ILog log)
-		{
-			return log.IsEnabled(LogLevel.Error);
+			log.Log(LogLevel.Warn, ex, string.Format(Culture, format, args));
 		}
 
 
@@ -234,7 +182,7 @@ namespace Lokad
 		/// <param name="args">Arguments</param>
 		public static void ErrorFormat(this ILog log, string format, params object[] args)
 		{
-			log.Log(LogLevel.Error, string.Format(_culture, format, args));
+			log.Log(LogLevel.Error, string.Format(Culture, format, args));
 		}
 
 		/// <summary>
@@ -260,20 +208,10 @@ namespace Lokad
 		/// <param name="args">Arguments</param>
 		public static void ErrorFormat(this ILog log, Exception ex, string format, params object[] args)
 		{
-			log.Log(LogLevel.Error, ex, string.Format(_culture, format, args));
+			log.Log(LogLevel.Error, ex, string.Format(Culture, format, args));
 		}
 
-		/// <summary>
-		/// Determines whether the specified log is recording Fatal messages.
-		/// </summary>
-		/// <param name="log">The log.</param>
-		/// <returns>
-		/// 	<c>true</c> if the specified log is recording datal messages; otherwise, <c>false</c>.
-		/// </returns>
-		public static bool IsFatalEnabled(this ILog log)
-		{
-			return log.IsEnabled(LogLevel.Fatal);
-		}
+		
 
 
 		/// <summary>
@@ -295,7 +233,7 @@ namespace Lokad
 		/// <param name="args">Arguments</param>
 		public static void FatalFormat(this ILog log, string format, params object[] args)
 		{
-			log.Log(LogLevel.Fatal, string.Format(_culture, format, args));
+			log.Log(LogLevel.Fatal, string.Format(Culture, format, args));
 		}
 
 		/// <summary>
@@ -321,7 +259,7 @@ namespace Lokad
 		/// <param name="args">Arguments</param>
 		public static void FatalFormat(this ILog log, Exception ex, string format, params object[] args)
 		{
-			log.Log(LogLevel.Fatal, ex, string.Format(_culture, format, args));
+			log.Log(LogLevel.Fatal, ex, string.Format(Culture, format, args));
 		}
 	}
 }

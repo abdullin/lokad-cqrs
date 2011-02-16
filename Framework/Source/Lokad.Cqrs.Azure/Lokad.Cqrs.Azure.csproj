@@ -122,7 +122,6 @@
     <Compile Include="Queue\AzureQueueReference.cs" />
     <Compile Include="Syntax\ISyntax.TTarget.cs" />
     <Compile Include="Syntax\Syntax.cs" />
-    <Compile Include="Syntax\Syntax.TTarget.cs" />
     <Compile Include="Transport\AzureQueuePolicy.cs" />
     <Compile Include="Transport\AzureQueueTransportConfig.cs" />
     <Compile Include="Queue\AzureMessageQueue.cs" />

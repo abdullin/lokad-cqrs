@@ -148,11 +148,7 @@ namespace Lokad.Cqrs.Queue
 			if (message == null) throw new ArgumentNullException("message");
 
 			var cloud = message.GetRequiredState<CloudQueueMessage>();
-
-			if (_log.IsDebugEnabled())
-			{
-				_log.Debug(_debugger.GetReadableMessageInfo(message));
-			}
+			_log.Debug(_debugger.GetReadableMessageInfo(message));
 			
 			TransactionalDeleteMessage(cloud);
 		}

@@ -26,13 +26,6 @@ namespace Lokad
 		/// <summary> Some error has occured </summary>
 		Error,
 		/// <summary> Message is associated with the critical problem </summary>
-		Fatal,
-
-		/// <summary>
-		/// Highest possible level
-		/// </summary>
-		Max = int.MaxValue,
-		/// <summary> Smallest logging level</summary>
-		Min = int.MinValue
+		Fatal
 	}
 }
