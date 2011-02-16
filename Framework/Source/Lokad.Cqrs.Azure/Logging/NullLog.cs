@@ -8,13 +8,14 @@
 
 using System;
 
+
 namespace Lokad
 {
 	/// <summary>
 	/// <see cref="ILog"/> that does not do anything
 	/// </summary>
 	[Serializable]
-	[NoCodeCoverage, UsedImplicitly]
+	
 	public sealed class NullLog : ILog
 	{
 		/// <summary>
@@ -25,7 +26,7 @@ namespace Lokad
 		/// <summary>
 		/// Named provider for the <see cref="NullLog"/>
 		/// </summary>
-		[UsedImplicitly] public static readonly ILogProvider Provider =
+		 public static readonly ILogProvider Provider =
 			new LambdaLogProvider(s => Instance);
 
 		NullLog()

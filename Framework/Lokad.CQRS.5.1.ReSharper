@@ -320,6 +320,6 @@ This code is released as Open Source under the terms of the New BSD Licence]]></
   </CodeStyleSettings>
   <CodeAnnotations>
     <Namespace>Lokad.Quality</Namespace>
-    <DefaultNamespace>JetBrains.Annotations</DefaultNamespace>
+    <DefaultNamespace>Lokad.Cqrs</DefaultNamespace>
   </CodeAnnotations>
 </Configuration>

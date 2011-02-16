@@ -8,6 +8,7 @@
 
 using System;
 using System.Linq.Expressions;
+using Lokad.Cqrs;
 using NUnit.Framework;
 
 namespace Lokad.Testing
@@ -15,7 +16,7 @@ namespace Lokad.Testing
 	/// <summary>
 	/// Extends <see cref="Maybe{T}"/> for the purposes of testing
 	/// </summary>
-	[UsedImplicitly]
+	
 	public static class ExtendMaybe
 	{
 		/// <summary>

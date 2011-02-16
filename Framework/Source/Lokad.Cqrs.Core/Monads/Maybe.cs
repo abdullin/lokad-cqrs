@@ -7,13 +7,15 @@
 #endregion
 
 using System;
+using Lokad.Cqrs;
+
 
 namespace Lokad
 {
 	/// <summary>
 	/// Helper routines for <see cref="Maybe{T}"/>
 	/// </summary>
-	[UsedImplicitly]
+	
 	public static class Maybe
 	{
 		//public static T? ToNullable<T>(this Maybe<T> maybe) where T : struct
@@ -37,7 +39,7 @@ namespace Lokad
 		/// <param name="item">The item.</param>
 		/// <returns><see cref="Maybe{T}"/> that matches the provided value</returns>
 		/// <exception cref="ArgumentNullException">if argument is a null reference</exception>
-		public static Maybe<TSource> From<TSource>([NotNull] TSource item)
+		public static Maybe<TSource> From<TSource>( TSource item)
 		{
 			// ReSharper disable CompareNonConstrainedGenericWithNull
 			if (null == item) throw new ArgumentNullException("item");

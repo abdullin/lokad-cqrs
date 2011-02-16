@@ -6,6 +6,7 @@
 #endregion
 
 using System;
+
 using ProtoBuf;
 
 namespace Lokad.Cqrs
@@ -24,7 +25,7 @@ namespace Lokad.Cqrs
 		[ProtoMember(5)]
 		public readonly long NumberValue;
 
-		[UsedImplicitly]
+		
 		MessageAttributeContract()
 		{
 		}

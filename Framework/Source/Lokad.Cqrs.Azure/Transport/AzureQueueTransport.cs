@@ -12,11 +12,12 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
+
 using Lokad.Cqrs.Queue;
 
 namespace Lokad.Cqrs.Transport
 {
-	[UsedImplicitly]
+	
 	public sealed class AzureQueueTransport : IMessageTransport
 	{
 		readonly IQueueManager _factory;

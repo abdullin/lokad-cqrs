@@ -13,7 +13,7 @@ namespace Lokad.Cqrs.ProtoBuf.Tests
 
 	public abstract class Fixture
 	{
-		[NotNull]
+		
 		static readonly ConcurrentDictionary<Type, IFormatter> Dict = new ConcurrentDictionary<Type, IFormatter>();
 
 		static IFormatter GetFormatter(Type type)

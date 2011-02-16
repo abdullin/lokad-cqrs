@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.IO;
 using System.Runtime.Serialization;
+
 using Lokad.Cqrs.Serialization;
 using NUnit.Framework;
 
@@ -53,7 +54,7 @@ namespace Lokad.Cqrs.ProtoBuf.Tests
 				Field = field;
 			}
 
-			[UsedImplicitly]
+			
 			SimpleDataClass()
 			{
 			}

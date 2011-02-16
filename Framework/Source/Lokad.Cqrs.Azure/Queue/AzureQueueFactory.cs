@@ -7,11 +7,12 @@
 
 using System;
 using System.Collections.Generic;
+
 using Microsoft.WindowsAzure;
 
 namespace Lokad.Cqrs.Queue
 {
-	[UsedImplicitly]
+	
 	public sealed class AzureQueueFactory : IQueueManager, IRouteMessages
 	{
 		const int RetryCount = 4;

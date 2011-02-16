@@ -6,6 +6,7 @@
 #endregion
 
 using System;
+
 using Lokad.Cqrs.Serialization;
 using NUnit.Framework;
 using ProtoBuf;
@@ -59,7 +60,7 @@ namespace Lokad.Cqrs.ProtoBuf.Tests
 				Field = field;
 			}
 
-			[UsedImplicitly]
+			
 			SimpleProtoClass()
 			{
 			}

@@ -8,11 +8,12 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+
 using NHibernate;
 
 namespace Lokad.Cqrs.NHibernate
 {
-	[UsedImplicitly]
+	
 	public sealed class NHibernateStarter : IEngineProcess
 	{
 		// is needed to initialize NHibernate on start.

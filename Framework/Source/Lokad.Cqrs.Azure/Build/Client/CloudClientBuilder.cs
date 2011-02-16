@@ -8,6 +8,7 @@
 using System;
 using Autofac;
 using Lokad.Cqrs.Domain;
+
 using Lokad.Cqrs.Queue;
 using Lokad.Cqrs.Sender;
 using Lokad.Cqrs.Transport;
@@ -17,7 +18,6 @@ namespace Lokad.Cqrs
 	/// <summary>
 	/// Fluent API for creating and configuring <see cref="ICloudClient"/>
 	/// </summary>
-	[UsedImplicitly]
 	public sealed class CloudClientBuilder : ISyntax<ContainerBuilder>
 	{
 		readonly ContainerBuilder _builder = new ContainerBuilder();

@@ -9,14 +9,14 @@
 using System;
 using System.Globalization;
 using System.Reflection;
+using Lokad.Cqrs;
+
 
 namespace Lokad
 {
 	/// <summary>
 	/// Helper class for generating exceptions
 	/// </summary>
-	[NoCodeCoverage]
-	[UsedImplicitly]
 	public static class Errors
 	{
 		/// <summary>
@@ -25,7 +25,7 @@ namespace Lokad
 		/// <param name="message">The message.</param>
 		/// <param name="args">The arguments of the format string.</param>
 		/// <returns>new exception instance</returns>
-		public static Exception InvalidOperation([NotNull] string message, params object[] args)
+		public static Exception InvalidOperation( string message, params object[] args)
 		{
 			return new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, message, args));
 		}
@@ -43,8 +43,7 @@ namespace Lokad
 		/// </summary>
 		/// <param name="e">The target invocation exception to unwrap.</param>
 		/// <returns>inner exception</returns>
-		[NotNull, UsedImplicitly]
-		public static Exception Inner([NotNull] Exception e)
+		public static Exception Inner( Exception e)
 		{
 			if (e == null) throw new ArgumentNullException("e");
 			InternalPreserveStackTraceMethod.Invoke(e.InnerException, new object[0]);

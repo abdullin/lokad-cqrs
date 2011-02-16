@@ -6,11 +6,12 @@
 #endregion
 
 using System;
+
 using Lokad.Cqrs.Queue;
 
 namespace Lokad.Cqrs
 {
-	[UsedImplicitly]
+	
 	public sealed class NullEngineProfiler : IEngineProfiler
 	{
 		public static readonly IEngineProfiler Instance = new NullEngineProfiler();

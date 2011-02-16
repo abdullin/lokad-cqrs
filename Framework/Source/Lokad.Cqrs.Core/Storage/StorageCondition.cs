@@ -9,6 +9,7 @@
 using System;
 using System.Globalization;
 using System.Linq;
+using Lokad.Cqrs;
 
 namespace Lokad.Storage
 {
@@ -18,7 +19,7 @@ namespace Lokad.Storage
 		readonly string _etag;
 		readonly DateTime? _lastModifiedUtc;
 
-		public StorageCondition(StorageConditionType type, [NotNull] string eTag) : this()
+		public StorageCondition(StorageConditionType type,  string eTag) : this()
 		{
 			
 			if (eTag == null) throw new ArgumentNullException("eTag");

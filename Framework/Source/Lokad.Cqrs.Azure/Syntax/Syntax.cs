@@ -8,6 +8,7 @@
 
 using System;
 using System.ComponentModel;
+using Lokad.Cqrs;
 
 namespace Lokad
 {
@@ -15,7 +16,6 @@ namespace Lokad
 	/// Helper class for creating fluent APIs, that hides unused signatures
 	/// </summary>
 	[Serializable]
-	[NoCodeCoverage]
 	public abstract class Syntax
 	{
 		/// <summary>

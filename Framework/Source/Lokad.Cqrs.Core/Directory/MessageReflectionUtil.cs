@@ -17,7 +17,7 @@ namespace Lokad.Cqrs.Directory
 	static class MessageReflectionUtil
 	{
 		[DebuggerNonUserCode]
-		public static void InvokeConsume([NotNull] object messageHandler, [NotNull] object messageInstance, [NotNull] string methodName)
+		public static void InvokeConsume(object messageHandler,  object messageInstance,  string methodName)
 		{
 			if (messageHandler == null) throw new ArgumentNullException("messageHandler");
 			if (messageInstance == null) throw new ArgumentNullException("messageInstance");

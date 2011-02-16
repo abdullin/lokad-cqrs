@@ -37,7 +37,7 @@ namespace Lokad.Cqrs
 			get { return _current; }
 		}
 
-		public static void OverrideContext([NotNull] UnpackedMessage message)
+		public static void OverrideContext( UnpackedMessage message)
 		{
 			if (message == null) throw new ArgumentNullException("message");
 			_current = message;

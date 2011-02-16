@@ -11,9 +11,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 
+
 namespace Lokad.Cqrs
 {
-	[UsedImplicitly]
+	
 	public sealed class CloudEngineHost : ICloudEngineHost
 	{
 		readonly IContainer _container;

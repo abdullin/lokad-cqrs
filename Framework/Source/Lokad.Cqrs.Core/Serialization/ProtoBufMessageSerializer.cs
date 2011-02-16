@@ -16,14 +16,14 @@ using ExtendIEnumerable = Lokad.ExtendIEnumerable;
 
 namespace Lokad.Cqrs.Serialization
 {
-	[UsedImplicitly]
+	
 	public class ProtoBufMessageSerializer : IMessageSerializer
 	{
 		readonly IDictionary<string, Type> _contract2Type = new Dictionary<string, Type>();
 		readonly IDictionary<Type, string> _type2Contract = new Dictionary<Type, string>();
 		readonly IDictionary<Type, IFormatter> _type2Formatter = new Dictionary<Type, IFormatter>();
 
-		[UsedImplicitly]
+		
 		public ProtoBufMessageSerializer(ICollection<Type> knownTypes)
 		{
 			if (knownTypes.Count == 0)
@@ -43,7 +43,7 @@ namespace Lokad.Cqrs.Serialization
 		/// Initializes a new instance of the <see cref="ProtoBufMessageSerializer"/> class.
 		/// </summary>
 		/// <param name="types">The types.</param>
-		[UsedImplicitly]
+		
 		public ProtoBufMessageSerializer(IEnumerable<IKnowSerializationTypes> types) : this (ExtendIEnumerable.ToSet<Type>(types.SelectMany(t => t.GetKnownTypes())))
 		{
 		}

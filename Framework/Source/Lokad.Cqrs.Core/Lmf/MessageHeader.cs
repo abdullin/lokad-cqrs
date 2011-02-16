@@ -1,4 +1,5 @@
-﻿using ProtoBuf;
+﻿
+using ProtoBuf;
 
 namespace Lokad.Cqrs
 {
@@ -38,7 +39,7 @@ namespace Lokad.Cqrs
 			return new MessageHeader(ReferenceMessageFormatVersion, attributesLength, 0, checksum);
 		}
 
-		[UsedImplicitly]
+		
 		MessageHeader()
 		{
 		}

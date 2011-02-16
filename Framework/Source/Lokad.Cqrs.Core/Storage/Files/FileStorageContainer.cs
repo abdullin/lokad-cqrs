@@ -6,13 +6,15 @@
 #endregion
 
 using System.IO;
+using Lokad.Cqrs;
+
 
 namespace Lokad.Storage
 {
 	/// <summary>
 	/// Storage container using <see cref="System.IO"/> for persisting data
 	/// </summary>
-	[UsedImplicitly]
+	
 	public sealed class FileStorageContainer : IStorageContainer, IStorageRoot
 	{
 		readonly DirectoryInfo _root;

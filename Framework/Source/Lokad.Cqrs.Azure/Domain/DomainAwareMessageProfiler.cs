@@ -8,12 +8,13 @@
 using System;
 using System.Collections.Generic;
 using Lokad.Cqrs.Directory;
+
 using Lokad.Cqrs.Queue;
 using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs.Domain
 {
-	[UsedImplicitly]
+	
 	public sealed class DomainAwareMessageProfiler : IMessageProfiler
 	{
 		readonly IDictionary<Type, GetInfoDelegate> _delegates;

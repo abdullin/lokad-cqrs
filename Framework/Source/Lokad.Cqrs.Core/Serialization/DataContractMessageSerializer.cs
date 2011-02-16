@@ -13,12 +13,13 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Xml;
 
+
 namespace Lokad.Cqrs.Serialization
 {
 	/// <summary>
 	/// Message serializer for the <see cref="DataContractSerializer"/>
 	/// </summary>
-	[UsedImplicitly]
+	
 	public class DataContractMessageSerializer : IMessageSerializer
 	{
 		readonly IDictionary<string, Type> _contract2Type = new Dictionary<string, Type>();

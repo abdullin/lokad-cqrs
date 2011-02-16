@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+
 using Microsoft.WindowsAzure.ServiceRuntime;
 
 namespace Lokad.Cqrs
@@ -15,7 +16,7 @@ namespace Lokad.Cqrs
 	/// <summary>
 	/// Settings provider built on top of the Windows Azure
 	/// </summary>
-	[UsedImplicitly]
+	
 	public sealed class CloudSettingsProvider : ISettingsProvider
 	{
 		static readonly bool HasCloudEnvironment;

@@ -11,9 +11,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
 
+
 namespace Lokad.Cqrs.Scheduled
 {
-	[UsedImplicitly]
+	
 	public sealed class ScheduledProcess : IEngineProcess
 	{
 		public delegate void ChainProcessedDelegate(ScheduledState[] state, bool emptyChain);

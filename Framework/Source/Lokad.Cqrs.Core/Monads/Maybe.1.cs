@@ -7,6 +7,8 @@
 #endregion
 
 using System;
+using Lokad.Cqrs;
+
 
 namespace Lokad
 {
@@ -15,7 +17,7 @@ namespace Lokad
 	/// </summary>
 	/// <typeparam name="T">underlying type</typeparam>
 	[Serializable]
-	[UsedImplicitly]
+	
 	public sealed class Maybe<T> : IEquatable<Maybe<T>>
 	{
 		readonly T _value;
@@ -164,7 +166,7 @@ namespace Lokad
 		/// </summary>
 		/// <returns>actual value</returns>
 		/// <exception cref="InvalidOperationException">if maybe does not have value</exception>
-		public T ExposeException([NotNull] string message)
+		public T ExposeException( string message)
 		{
 			if (message == null) throw new ArgumentNullException(@"message");
 			if (!_hasValue)
@@ -180,7 +182,7 @@ namespace Lokad
 		/// </summary>
 		/// <returns>actual value</returns>
 		/// <exception cref="InvalidOperationException">if maybe does not have value</exception>
-		public T ExposeException([NotNull] string message, params object[] args)
+		public T ExposeException( string message, params object[] args)
 		{
 			if (message == null) throw new ArgumentNullException(@"message");
 			if (!_hasValue)

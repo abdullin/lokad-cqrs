@@ -8,9 +8,10 @@
 using System.Threading;
 using System.Threading.Tasks;
 
+
 namespace Lokad.Cqrs.Consume
 {
-	[UsedImplicitly]
+	
 	public sealed class ConsumingProcess : IEngineProcess
 	{
 		readonly IMessageDispatcher _dispatcher;

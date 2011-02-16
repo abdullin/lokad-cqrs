@@ -11,6 +11,7 @@
 using System;
 using System.Diagnostics;
 
+
 namespace Lokad
 {
 	/// <summary>
@@ -19,16 +20,15 @@ namespace Lokad
 	/// </summary>
 	/// <remarks>Use Logging stack, if more flexibility is needed</remarks>
 	[Serializable]
-	[NoCodeCoverage, UsedImplicitly]
 	public sealed class DebugLog : ILog
 	{
 		/// <summary>  Singleton instance </summary>
-		[UsedImplicitly] public static readonly ILog Instance = new DebugLog("");
+		 public static readonly ILog Instance = new DebugLog("");
 
 		/// <summary>
 		/// Named provider for the <see cref="DebugLog"/>
 		/// </summary>
-		[UsedImplicitly] public static readonly ILogProvider Provider =
+		 public static readonly ILogProvider Provider =
 			new LambdaLogProvider(s => new DebugLog(s));
 
 		readonly string _logName;

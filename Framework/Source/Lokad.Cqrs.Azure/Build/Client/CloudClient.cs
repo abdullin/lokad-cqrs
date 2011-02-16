@@ -10,9 +10,10 @@ using System.Reflection;
 using System.Threading;
 using Autofac;
 
+
 namespace Lokad.Cqrs
 {
-	[UsedImplicitly]
+	
 	public class CloudClient : ICloudClient
 	{
 		readonly Lazy<IMessageClient> _client;

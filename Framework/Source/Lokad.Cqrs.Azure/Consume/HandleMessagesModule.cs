@@ -12,6 +12,7 @@ using Autofac;
 using Autofac.Core;
 using Lokad.Cqrs.Directory;
 using Lokad.Cqrs.Domain;
+
 using Lokad.Cqrs.Transport;
 using System.Linq;
 
@@ -44,7 +45,7 @@ namespace Lokad.Cqrs.Consume.Build
 			return this;
 		}
 
-		[UsedImplicitly]
+		
 		public HandleMessagesModule WhenMessageHandlerFails(Action<UnpackedMessage, Exception> handler)
 		{
 			return ApplyToTransport((transport, context) =>
@@ -54,7 +55,7 @@ namespace Lokad.Cqrs.Consume.Build
 				});
 		}
 
-		[UsedImplicitly]
+		
 		public HandleMessagesModule WhenMessageArrives(Func<UnpackedMessage, bool> interceptor)
 		{
 			return ApplyToTransport((transport, context) =>

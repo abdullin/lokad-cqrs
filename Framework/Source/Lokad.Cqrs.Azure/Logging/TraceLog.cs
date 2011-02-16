@@ -10,6 +10,7 @@
 using System;
 using System.Diagnostics;
 
+
 namespace Lokad
 {
 	/// <summary>
@@ -17,16 +18,16 @@ namespace Lokad
 	/// </summary>
 	/// <remarks>Use Logging stack, if more flexibility is needed</remarks>
 	[Serializable]
-	[NoCodeCoverage, UsedImplicitly]
+	
 	public sealed class TraceLog : ILog
 	{
 		/// <summary>  Singleton instance </summary>
-		[UsedImplicitly] public static readonly ILog Instance = new TraceLog("");
+		 public static readonly ILog Instance = new TraceLog("");
 
 		/// <summary>
 		/// Named provider for the <see cref="TraceLog"/>
 		/// </summary>
-		[UsedImplicitly] public static readonly ILogProvider Provider =
+		 public static readonly ILogProvider Provider =
 			new LambdaLogProvider(s => new TraceLog(s));
 
 		readonly string _logName;

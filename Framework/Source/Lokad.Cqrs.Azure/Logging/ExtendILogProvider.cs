@@ -8,12 +8,13 @@
 
 using System;
 
+
 namespace Lokad
 {
 	/// <summary>
 	/// Extension methods for the <see cref="ILogProvider"/>
 	/// </summary>
-	[NoCodeCoverage, UsedImplicitly]
+	
 	public static class ExtendILogProvider
 	{
 		/// <summary>
