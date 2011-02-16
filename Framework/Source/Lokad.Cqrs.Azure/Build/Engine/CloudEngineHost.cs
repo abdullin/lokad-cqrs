@@ -5,6 +5,7 @@
 
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
@@ -15,18 +16,18 @@ using Autofac;
 namespace Lokad.Cqrs
 {
 	
-	public sealed class CloudEngineHost : ICloudEngineHost
+	public sealed class CloudEngineHost : IDisposable
 	{
-		readonly IContainer _container;
+		public ILifetimeScope Container { get; private set; }
 		readonly ILog _log;
 		readonly IEnumerable<IEngineProcess> _serverProcesses;
 
 		public CloudEngineHost(
-			IContainer container,
+			ILifetimeScope container,
 			ILogProvider provider,
 			IEnumerable<IEngineProcess> serverProcesses)
 		{
-			_container = container;
+			Container = container;
 			_serverProcesses = serverProcesses;
 			_log = provider.LogForName(this);
 		}
@@ -54,7 +55,7 @@ namespace Lokad.Cqrs
 		{
 			try
 			{
-				return _container.Resolve<TService>();
+				return Container.Resolve<TService>();
 			}
 			catch (TargetInvocationException e)
 			{
@@ -64,7 +65,7 @@ namespace Lokad.Cqrs
 
 		public void Dispose()
 		{
-			_container.Dispose();
+			Container.Dispose();
 		}
 	}
 }

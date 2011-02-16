@@ -23,7 +23,7 @@ namespace Lokad.Cqrs.Tests
 
 		#region Setup/Teardown
 
-		ICloudEngineHost BuildHost()
+		CloudEngineHost BuildHost()
 		{
 			var engine = new CloudEngineBuilder();
 			

@@ -69,7 +69,6 @@
     <Compile Include="Build\Engine\CloudEngineHost.cs" />
     <Compile Include="Build\ExtendSyntaxForCloudStorageAccount.cs" />
     <Compile Include="Build\ICloudClient.cs" />
-    <Compile Include="Build\ICloudEngineHost.cs" />
     <Compile Include="Build\NullEngineProfiler.cs" />
     <Compile Include="Consume\BlobExceptionLogger.cs" />
     <Compile Include="Consume\ConfigureBlobSavingOnException.cs" />
@@ -107,7 +106,6 @@
     <Compile Include="Storage\BlobStorageContainer.cs" />
     <Compile Include="Storage\BlobStorageItem.cs" />
     <Compile Include="Build\SimpleMessageProfiler.cs" />
-    <Compile Include="Build\Manager\CloudManagerBuilder.cs" />
     <Compile Include="Consume\HandleMessagesModule.cs" />
     <Compile Include="Domain\DomainAwareMessageProfiler.cs" />
     <Compile Include="Queue\QueueErrors.cs" />
