@@ -25,7 +25,7 @@ namespace Lokad.Cqrs.Scheduled
 		readonly TimeSpan _sleepOnEmptyChain;
 		readonly TimeSpan _sleepOnFailure;
 		readonly ScheduledState[] _tasks;
-		readonly IsolationLevel _isolationLevel;
+		
 		readonly IScheduledTaskDispatcher _dispatcher;
 
 		readonly CancellationTokenSource _disposal = new CancellationTokenSource();
@@ -43,7 +43,6 @@ namespace Lokad.Cqrs.Scheduled
 			_sleepBetweenCommands = config.SleepBetweenCommands;
 			_sleepOnEmptyChain = config.SleepOnEmptyChain;
 			_sleepOnFailure = config.SleepOnFailure;
-			_isolationLevel = config.IsolationLevel;
 			_profiler = profiler;
 			_dispatcher = dispatcher;
 		}
@@ -103,14 +102,7 @@ namespace Lokad.Cqrs.Scheduled
 			return _stopped.Wait(timeout);
 		}
 
-		TransactionOptions GetTransactionOptions()
-		{
-			return new TransactionOptions
-				{
-					IsolationLevel = Transaction.Current == null ? _isolationLevel : Transaction.Current.IsolationLevel,
-					Timeout = Debugger.IsAttached ? 45.Minutes() : 0.Minutes(),
-				};
-		}
+		
 
 		void RunCommandTillItFinishes(ScheduledState state, CancellationToken token)
 		{
@@ -118,20 +110,13 @@ namespace Lokad.Cqrs.Scheduled
 			{
 				while (!token.IsCancellationRequested)
 				{
-					var transactionOptions = GetTransactionOptions();
-					TimeSpan result;
-					using (var scope = new TransactionScope(TransactionScopeOption.Required, transactionOptions))
-					{
-						result = _dispatcher.Execute(state.Task);
-						scope.Complete();
-					}
+					var result = _dispatcher.Execute(state.Task);
 
 					if (result > TimeSpan.Zero)
 					{
 						state.ScheduleIn(result);
 						return;
 					}
-
 					_log.Debug("Repeat");
 					state.ScheduleIn(0.Seconds());
 				}

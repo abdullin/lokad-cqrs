@@ -110,7 +110,7 @@
     <Compile Include="Queue\QueueErrors.cs" />
     <Compile Include="Sender\DefaultMessageClient.cs" />
     <Compile Include="Infrastructure\ExtendIComponentContext.cs" />
-    <Compile Include="Scheduled\DefaultTaskDispatcher.cs" />
+    <Compile Include="Scheduled\TransactionalTaskDispatcher.cs" />
     <Compile Include="Scheduled\ScheduledModule.cs" />
     <Compile Include="Sender\SenderModule.cs" />
     <Compile Include="Domain\DomainBuildModule.cs" />

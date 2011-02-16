@@ -29,22 +29,11 @@ namespace Lokad.Cqrs.Scheduled.Build
 					SleepBetweenCommands = 0.Seconds(),
 					SleepOnEmptyChain = 1.Seconds(),
 					SleepOnFailure = 1.Seconds(),
-					IsolationLevel = IsolationLevel.ReadCommitted
 				};
 
 			WithDefaultDispatcher();
 		}
-
-		/// <summary>
-		/// Modifies the isolation level of the tasks (defaults to <see cref="IsolationLevel.ReadCommitted"/>
-		/// </summary>
-		/// <param name="level">The isolation level to use.</param>
-		/// <returns>same module for inlining configs</returns>
-		public ScheduledModule WithIsolationLevel(IsolationLevel level)
-		{
-			_config.IsolationLevel = level;
-			return this;
-		}
+		
 
 		/// <summary>
 		/// Sets the amount of time to sleep between the tasks/commands.
@@ -70,7 +59,7 @@ namespace Lokad.Cqrs.Scheduled.Build
 
 		public ScheduledModule WithDefaultDispatcher()
 		{
-			_dispatcher = scope => new DefaultTaskDispatcher(scope);
+			_dispatcher = scope => new TransactionalTaskDispatcher(scope);
 			return this;
 		}
 
