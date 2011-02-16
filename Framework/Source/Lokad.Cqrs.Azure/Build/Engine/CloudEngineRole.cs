@@ -56,7 +56,7 @@ namespace Lokad.Cqrs
 		{
 			_source.Cancel(true);
 
-			_task.Wait(10.Seconds());
+			_task.Wait(TimeSpan.FromSeconds(10));
 			_host.Dispose();
 
 			base.OnStop();
