@@ -53,8 +53,6 @@
     <Compile Include="Default\IMessage.cs" />
     <Compile Include="Default\IScheduledTask.cs" />
     <Compile Include="Directory\ConsumerInfo.cs" />
-    <Compile Include="Directory\IMessageDirectory.cs" />
-    <Compile Include="Directory\IMessageDirectoryBuilder.cs" />
     <Compile Include="Directory\DomainAssemblyScanner.cs" />
     <Compile Include="Directory\MessageDirectory.cs" />
     <Compile Include="Directory\MessageDirectoryBuilder.cs" />

@@ -19,7 +19,7 @@ namespace Lokad.Cqrs.Domain
 	{
 		readonly IDictionary<Type, GetInfoDelegate> _delegates;
 
-		public DomainAwareMessageProfiler(IMessageDirectory directory)
+		public DomainAwareMessageProfiler(MessageDirectory directory)
 		{
 			_delegates = BuildFrom(directory);
 		}
@@ -44,7 +44,7 @@ namespace Lokad.Cqrs.Domain
 				.Convert(s => contract + " - " + s.Id, contract);
 		}
 
-		static IDictionary<Type, GetInfoDelegate> BuildFrom(IMessageDirectory directory)
+		static IDictionary<Type, GetInfoDelegate> BuildFrom(MessageDirectory directory)
 		{
 			var delegates = new Dictionary<Type, GetInfoDelegate>();
 			foreach (var message in directory.Messages)

@@ -19,7 +19,7 @@ namespace Lokad.Cqrs.Consume.Build
 	{
 		readonly Filter<MessageMapping> _filter = new Filter<MessageMapping>();
 		HashSet<string> _queueNames = new HashSet<string>();
-		Func<ILifetimeScope, IMessageDirectory, IMessageDispatcher> _dispatcher;
+		Func<ILifetimeScope, MessageDirectory, IMessageDispatcher> _dispatcher;
 
 
 		Action<AzureQueueTransport, IComponentContext> _applyToTransport = (transport, context) => { };
@@ -216,7 +216,7 @@ namespace Lokad.Cqrs.Consume.Build
 			_applyToTransport(transport, context);
 
 
-			var builder = context.Resolve<IMessageDirectoryBuilder>();
+			var builder = context.Resolve<MessageDirectoryBuilder>();
 			var filter = _filter.BuildFilter();
 			var directory = builder.BuildDirectory(filter);
 
@@ -235,7 +235,7 @@ namespace Lokad.Cqrs.Consume.Build
 			return consumer;
 		}
 
-		void DebugPrintIfNeeded(ILog log, IMessageDirectory directory)
+		void DebugPrintIfNeeded(ILog log, MessageDirectory directory)
 		{
 			if (DebugPrintsMessageTree)
 			{

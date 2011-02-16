@@ -16,7 +16,7 @@ namespace Lokad.Cqrs.Scheduled
 			_scope = scope;
 		}
 
-		TransactionOptions GetTransactionOptions()
+		static TransactionOptions GetTransactionOptions()
 		{
 			return new TransactionOptions
 			{

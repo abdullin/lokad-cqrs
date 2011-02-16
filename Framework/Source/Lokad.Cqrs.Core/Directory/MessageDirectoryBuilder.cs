@@ -14,7 +14,7 @@ namespace Lokad.Cqrs.Directory
 	/// <summary>
 	/// Default implementation of the message directory builder
 	/// </summary>
-	public sealed class MessageDirectoryBuilder : IMessageDirectoryBuilder
+	public sealed class MessageDirectoryBuilder
 	{
 		readonly IEnumerable<MessageMapping> _mappings;
 		readonly string _methodName;
@@ -30,7 +30,7 @@ namespace Lokad.Cqrs.Directory
 			_methodName = methodName;
 		}
 
-		public IMessageDirectory BuildDirectory(Func<MessageMapping, bool> filter)
+		public MessageDirectory BuildDirectory(Func<MessageMapping, bool> filter)
 		{
 			var mappings = _mappings.Where(filter);
 

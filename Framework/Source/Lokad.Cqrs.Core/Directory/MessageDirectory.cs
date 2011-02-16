@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace Lokad.Cqrs.Directory
 {
-	public sealed class MessageDirectory : IMessageDirectory
+	public sealed class MessageDirectory : IKnowSerializationTypes
 	{
 		readonly string _consumeMethodName;
 		readonly ConsumerInfo[] _consumers;

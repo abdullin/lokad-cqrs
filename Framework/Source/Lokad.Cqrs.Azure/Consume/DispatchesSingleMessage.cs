@@ -17,10 +17,10 @@ namespace Lokad.Cqrs.Consume
 	{
 		readonly ILifetimeScope _container;
 		readonly IDictionary<Type, Type> _messageConsumers = new Dictionary<Type, Type>();
-		readonly IMessageDirectory _messageDirectory;
+		readonly MessageDirectory _messageDirectory;
 
 
-		public DispatchesSingleMessage(ILifetimeScope container, IMessageDirectory messageDirectory)
+		public DispatchesSingleMessage(ILifetimeScope container, MessageDirectory messageDirectory)
 		{
 			_container = container;
 			_messageDirectory = messageDirectory;

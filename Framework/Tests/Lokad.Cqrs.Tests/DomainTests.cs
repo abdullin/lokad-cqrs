@@ -79,9 +79,9 @@ namespace Lokad.Cqrs.Tests
 
 		#endregion
 
-		IMessageDirectoryBuilder Builder { get; set;}
+		MessageDirectoryBuilder Builder { get; set;}
 		MessageMapping[] Mappings { get; set; }
-		IMessageDirectory Directory { get; set; }
+		MessageDirectory Directory { get; set; }
 
 		[TestFixtureSetUp]
 		public void FixtureSetUp()
