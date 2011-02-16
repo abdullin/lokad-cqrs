@@ -7,6 +7,7 @@
 
 using System.Threading;
 using System.Threading.Tasks;
+using Lokad.Cqrs.Transport;
 
 
 namespace Lokad.Cqrs.Consume
@@ -16,9 +17,9 @@ namespace Lokad.Cqrs.Consume
 	{
 		readonly IMessageDispatcher _dispatcher;
 		readonly ILog _log;
-		readonly IMessageTransport _transport;
+		readonly AzureQueueTransport _transport;
 
-		public ConsumingProcess(IMessageTransport transport, ILogProvider provider, IMessageDispatcher dispatcher)
+		public ConsumingProcess(AzureQueueTransport transport, ILogProvider provider, IMessageDispatcher dispatcher)
 		{
 			_transport = transport;
 			_dispatcher = dispatcher;

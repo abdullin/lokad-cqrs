@@ -29,7 +29,7 @@ namespace Lokad.Cqrs
 			Builder.RegisterInstance(SimpleMessageProfiler.Instance);
 			Builder.RegisterInstance(NullEngineProfiler.Instance);
 			Builder.RegisterType<AzureQueueFactory>().As<IRouteMessages, IQueueManager>().SingleInstance();
-			Builder.RegisterType<AzureQueueTransport>().As<IMessageTransport>();
+			Builder.RegisterType<AzureQueueTransport>();
 			Builder.RegisterType<CloudClient>().SingleInstance();
 		}
 

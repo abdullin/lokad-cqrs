@@ -18,7 +18,7 @@ using Lokad.Cqrs.Queue;
 namespace Lokad.Cqrs.Transport
 {
 	
-	public sealed class AzureQueueTransport : IMessageTransport
+	public sealed class AzureQueueTransport : IDisposable
 	{
 		readonly IQueueManager _factory;
 		readonly IsolationLevel _isolationLevel;

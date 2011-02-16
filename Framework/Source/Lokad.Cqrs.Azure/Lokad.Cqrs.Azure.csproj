@@ -125,7 +125,6 @@
     <Compile Include="Queue\TransactionCommitDeletesMessage.cs" />
     <Compile Include="Queue\TransactionCommitAddsMessage.cs" />
     <Compile Include="Queue\SubQueueType.cs" />
-    <Compile Include="Transport\IMessageTransport.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Lokad.Cqrs.Core\Lokad.Cqrs.Core.csproj">
