@@ -9,10 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Transactions;
 using Autofac;
-using Autofac.Core;
 using Lokad.Cqrs.Directory;
-using Lokad.Cqrs.Domain;
-
 using Lokad.Cqrs.Transport;
 using System.Linq;
 

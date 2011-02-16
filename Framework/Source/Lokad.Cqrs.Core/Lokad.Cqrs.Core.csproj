@@ -89,8 +89,6 @@
     <Compile Include="Serialization\DataContractUtil.cs" />
     <Compile Include="Serialization\ProtoBufMessageSerializer.cs" />
     <Compile Include="Serialization\ProtoBufUtil.cs" />
-    <Compile Include="Storage\Extend\ExtendIStorageContainer.cs" />
-    <Compile Include="Storage\Extend\ExtendIStorageRoot.cs" />
     <Compile Include="Storage\Extend\ExtendStorageItem.cs" />
     <Compile Include="Storage\Files\FileStorageContainer.cs" />
     <Compile Include="Storage\Files\FileStorageItem.cs" />
