@@ -69,10 +69,39 @@
     <Compile Include="Build\Engine\CloudEngineRole.cs" />
     <Compile Include="Build\Engine\CloudEngineHost.cs" />
     <Compile Include="Build\ExtendSyntaxForCloudStorageAccount.cs" />
+    <Compile Include="Build\ICloudClient.cs" />
+    <Compile Include="Build\ICloudEngineHost.cs" />
+    <Compile Include="Build\NullEngineProfiler.cs" />
     <Compile Include="Consume\BlobExceptionLogger.cs" />
     <Compile Include="Consume\ConfigureBlobSavingOnException.cs" />
+    <Compile Include="Consume\ConsumingProcess.cs" />
     <Compile Include="Consume\DispatchesMultipleMessagesToSharedScope.cs" />
     <Compile Include="Consume\DispatchesSingleMessage.cs" />
+    <Compile Include="Consume\IMessageDispatcher.cs" />
+    <Compile Include="Infrastructure\IEngineProfiler.cs" />
+    <Compile Include="Infrastructure\IMessageProfiler.cs" />
+    <Compile Include="Logging\DebugLog.cs" />
+    <Compile Include="Logging\ExtendILogProvider.cs" />
+    <Compile Include="Logging\ILog.cs" />
+    <Compile Include="Logging\ILogExtensions.cs" />
+    <Compile Include="Logging\ILogProvider.cs" />
+    <Compile Include="Logging\LambdaLogProvider.cs" />
+    <Compile Include="Logging\LogLevel.cs" />
+    <Compile Include="Logging\NullLog.cs" />
+    <Compile Include="Logging\TraceLog.cs" />
+    <Compile Include="Queue\GetMessageResult.cs" />
+    <Compile Include="Queue\GetMessageResultState.cs" />
+    <Compile Include="Queue\IQueueManager.cs" />
+    <Compile Include="Queue\IReadMessageQueue.cs" />
+    <Compile Include="Queue\IRouteMessages.cs" />
+    <Compile Include="Queue\IWriteMessageQueue.cs" />
+    <Compile Include="Scheduled\ExpressionTaskBuilder.cs" />
+    <Compile Include="Scheduled\IScheduledTaskBuilder.cs" />
+    <Compile Include="Scheduled\IScheduledTaskDispatcher.cs" />
+    <Compile Include="Scheduled\ScheduledConfig.cs" />
+    <Compile Include="Scheduled\ScheduledProcess.cs" />
+    <Compile Include="Scheduled\ScheduledState.cs" />
+    <Compile Include="Scheduled\ScheduledTaskInfo.cs" />
     <Compile Include="Storage\BlobStorageRoot.cs" />
     <Compile Include="Storage\BlobStorageUtil.cs" />
     <Compile Include="Storage\SuppressFlushForStream.cs" />
@@ -91,6 +120,9 @@
     <Compile Include="Domain\DomainBuildModule.cs" />
     <Compile Include="Queue\AzureQueueFactory.cs" />
     <Compile Include="Queue\AzureQueueReference.cs" />
+    <Compile Include="Syntax\ISyntax.TTarget.cs" />
+    <Compile Include="Syntax\Syntax.cs" />
+    <Compile Include="Syntax\Syntax.TTarget.cs" />
     <Compile Include="Transport\AzureQueuePolicy.cs" />
     <Compile Include="Transport\AzureQueueTransportConfig.cs" />
     <Compile Include="Queue\AzureMessageQueue.cs" />
@@ -99,6 +131,7 @@
     <Compile Include="Queue\TransactionCommitDeletesMessage.cs" />
     <Compile Include="Queue\TransactionCommitAddsMessage.cs" />
     <Compile Include="Queue\SubQueueType.cs" />
+    <Compile Include="Transport\IMessageTransport.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Lokad.Cqrs.Shared\Lokad.Cqrs.Shared.csproj">

@@ -5,12 +5,13 @@
 
 #endregion
 
-using Lokad.Cqrs.Queue;
+using System;
 
 namespace Lokad.Cqrs
 {
-	public interface IMessageProfiler
+	public interface IEngineProfiler
 	{
-		string GetReadableMessageInfo(UnpackedMessage message);
+		IDisposable TrackMessage(UnpackedMessage message);
+		IDisposable TrackContext(string context);
 	}
 }
