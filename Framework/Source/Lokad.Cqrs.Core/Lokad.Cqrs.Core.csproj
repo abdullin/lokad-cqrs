@@ -97,6 +97,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Build\Engine\" />
+    <Folder Include="Shared\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Lokad.Cqrs.Shared\Lokad.Cqrs.Shared.csproj">

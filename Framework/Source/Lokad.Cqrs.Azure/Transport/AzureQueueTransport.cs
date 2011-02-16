@@ -78,9 +78,9 @@ namespace Lokad.Cqrs.Transport
 			}
 			return array;
 		}
+	
 
-
-		Result<UnpackedMessage, Exception> Process(IReadMessageQueue queue, UnpackedMessage message)
+		Maybe<Exception> GetProcessingFailure(IReadMessageQueue queue, UnpackedMessage message)
 		{
 			bool consumed;
 
@@ -108,8 +108,7 @@ namespace Lokad.Cqrs.Transport
 					_log.ErrorFormat(ex, "Failed to discard the message {0}", _profiler.TrackMessage(message));
 				}
 			}
-
-			return message;
+			return Maybe<Exception>.Empty;
 		}
 
 		bool ProcessSingleMessage(UnpackedMessage message, Func<UnpackedMessage, bool> messageHandlers)
@@ -221,9 +220,9 @@ namespace Lokad.Cqrs.Transport
 					switch (result.State)
 					{
 						case GetMessageResultState.Success:
-							Process(queue, result.Message)
-								.Handle(ex => MessageHandlingProblem(result.Message, ex))
-								.Apply(m => FinalizeSuccess(queue, m, tx));
+							GetProcessingFailure(queue, result.Message)
+								.Apply(ex => MessageHandlingProblem(result.Message, ex))
+								.Handle(() => FinalizeSuccess(queue, result.Message, tx));
 							return QueueProcessingResult.MoreWork;
 
 						case GetMessageResultState.Wait:

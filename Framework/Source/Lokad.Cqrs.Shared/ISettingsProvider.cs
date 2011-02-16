@@ -24,7 +24,6 @@ namespace Lokad
 		/// 	value for the specified key name, or empty result
 		/// </returns>
 		Maybe<string> GetValue(string name);
-
 	}
 
 	/// <summary>

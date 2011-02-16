@@ -53,7 +53,7 @@ namespace Lokad
 			{
 				if (!_hasValue)
 				{
-					throw Errors.InvalidOperation(ResultResources.Dont_access_value_when_maybe_is_empty);
+					throw Errors.InvalidOperation("Dont access value when maybe is empty");
 				}
 
 				return _value;
@@ -340,34 +340,7 @@ namespace Lokad
 
 			return item.Value;
 		}
-
-
-		/// <summary>
-		/// Converts maybe into result, using the specified error as the failure
-		/// descriptor
-		/// </summary>
-		/// <typeparam name="TError">The type of the failure.</typeparam>
-		/// <param name="error">The error.</param>
-		/// <returns>result describing current maybe</returns>
-		public Result<T, TError> Join<TError>(TError error)
-		{
-			if (_hasValue)
-				return _value;
-			return error;
-		}
-
-		/// <summary>
-		/// Converts maybe into result, using the specified error as the failure
-		/// descriptor
-		/// </summary>
-		/// <returns>result describing current maybe</returns>
-		public Result<T> JoinMessage(string error)
-		{
-			if (_hasValue)
-				return _value;
-			return error;
-		}
-
+		
 		/// <summary>
 		/// Returns a <see cref="System.String"/> that represents this instance.
 		/// </summary>

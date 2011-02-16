@@ -52,6 +52,8 @@
     <Compile Include="Extensions\ExtendIDictionary.cs" />
     <Compile Include="Extensions\ExtendIEnumerable.cs" />
     <Compile Include="Extensions\ExtendInt32.cs" />
+    <Compile Include="Monads\Maybe.1.cs" />
+    <Compile Include="Monads\Maybe.cs" />
     <Compile Include="Storage\StreamUtil.cs" />
     <Compile Include="Filter.cs" />
     <Compile Include="IKnowSerializationTypes.cs" />
@@ -71,12 +73,6 @@
     <Compile Include="Logging\LogLevel.cs" />
     <Compile Include="Logging\NullLog.cs" />
     <Compile Include="Logging\TraceLog.cs" />
-    <Compile Include="Monads\Maybe.1.cs" />
-    <Compile Include="Monads\Maybe.cs" />
-    <Compile Include="Monads\Result.1.cs" />
-    <Compile Include="Monads\Result.2.cs" />
-    <Compile Include="Monads\Result.cs" />
-    <Compile Include="Monads\ResultResources.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Quality\ImplicitUseFlags.cs" />
     <Compile Include="Quality\MeansImplicitUseAttribute.cs" />
@@ -107,9 +103,6 @@
     <Compile Include="Syntax\ISyntax.TTarget.cs" />
     <Compile Include="Syntax\Syntax.cs" />
     <Compile Include="Syntax\Syntax.TTarget.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Monads\ResultResources.resx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\SharedKey.snk">
