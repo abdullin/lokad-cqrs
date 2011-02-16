@@ -12,8 +12,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{C5183B3E
 		SharedKey.snk = SharedKey.snk
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lokad.Cqrs.ProtoBuf.Tests", "Tests\Lokad.Cqrs.ProtoBuf.Tests\Lokad.Cqrs.ProtoBuf.Tests.csproj", "{B29FAA6C-F0DE-4683-A6E3-993A5030D45B}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lokad.Cqrs.Core", "Source\Lokad.Cqrs.Core\Lokad.Cqrs.Core.csproj", "{CE441C5A-2DC1-4639-81ED-5B4CAC649BD9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lokad.Cqrs.Azure", "Source\Lokad.Cqrs.Azure\Lokad.Cqrs.Azure.csproj", "{FD6C8202-F530-4C09-8889-28DC383965AA}"
@@ -40,16 +38,6 @@ Global
 		{24DA9150-1C7E-45B3-8A75-EA529081237F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{24DA9150-1C7E-45B3-8A75-EA529081237F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{24DA9150-1C7E-45B3-8A75-EA529081237F}.Release|x86.ActiveCfg = Release|Any CPU
-		{B29FAA6C-F0DE-4683-A6E3-993A5030D45B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B29FAA6C-F0DE-4683-A6E3-993A5030D45B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B29FAA6C-F0DE-4683-A6E3-993A5030D45B}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{B29FAA6C-F0DE-4683-A6E3-993A5030D45B}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{B29FAA6C-F0DE-4683-A6E3-993A5030D45B}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{B29FAA6C-F0DE-4683-A6E3-993A5030D45B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B29FAA6C-F0DE-4683-A6E3-993A5030D45B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B29FAA6C-F0DE-4683-A6E3-993A5030D45B}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{B29FAA6C-F0DE-4683-A6E3-993A5030D45B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{B29FAA6C-F0DE-4683-A6E3-993A5030D45B}.Release|x86.ActiveCfg = Release|Any CPU
 		{CE441C5A-2DC1-4639-81ED-5B4CAC649BD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CE441C5A-2DC1-4639-81ED-5B4CAC649BD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CE441C5A-2DC1-4639-81ED-5B4CAC649BD9}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -77,7 +65,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{CE441C5A-2DC1-4639-81ED-5B4CAC649BD9} = {CBB0EA40-FEC5-48D9-A04D-782440D9D693}
 		{FD6C8202-F530-4C09-8889-28DC383965AA} = {CBB0EA40-FEC5-48D9-A04D-782440D9D693}
-		{B29FAA6C-F0DE-4683-A6E3-993A5030D45B} = {A0D52FD8-DA91-458C-AFD1-A29AF38AAC40}
 		{24DA9150-1C7E-45B3-8A75-EA529081237F} = {A0D52FD8-DA91-458C-AFD1-A29AF38AAC40}
 	EndGlobalSection
 EndGlobal
