@@ -195,10 +195,5 @@ namespace Lokad.Cqrs.Domain
 
 			_builder.Update(componentRegistry);
 		}
-
-		public ContainerBuilder Target
-		{
-			get { return _builder; }
-		}
 	}
 }

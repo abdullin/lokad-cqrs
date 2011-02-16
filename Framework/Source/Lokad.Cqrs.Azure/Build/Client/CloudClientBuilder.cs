@@ -18,42 +18,38 @@ namespace Lokad.Cqrs
 	/// <summary>
 	/// Fluent API for creating and configuring <see cref="ICloudClient"/>
 	/// </summary>
-	public sealed class CloudClientBuilder : ISyntax<ContainerBuilder>
+	public sealed class CloudClientBuilder : Syntax
 	{
-		readonly ContainerBuilder _builder = new ContainerBuilder();
 
 		public CloudClientBuilder()
 		{
 			Azure.UseDevelopmentStorageAccount();
 			Serialization.UseDataContractSerializer();
 			Logging.LogToTrace();
-			_builder.RegisterInstance(SimpleMessageProfiler.Instance);
-			_builder.RegisterInstance(NullEngineProfiler.Instance);
-			_builder.RegisterType<AzureQueueFactory>().As<IRouteMessages, IQueueManager>().SingleInstance();
-			_builder.RegisterType<AzureQueueTransport>().As<IMessageTransport>();
-			_builder.RegisterType<CloudClient>().SingleInstance();
+			Builder.RegisterInstance(SimpleMessageProfiler.Instance);
+			Builder.RegisterInstance(NullEngineProfiler.Instance);
+			Builder.RegisterType<AzureQueueFactory>().As<IRouteMessages, IQueueManager>().SingleInstance();
+			Builder.RegisterType<AzureQueueTransport>().As<IMessageTransport>();
+			Builder.RegisterType<CloudClient>().SingleInstance();
 		}
 
 
 		public AutofacBuilderForLogging Logging
 		{
-			get { return new AutofacBuilderForLogging(_builder); }
+			get { return new AutofacBuilderForLogging(Builder); }
 		}
 
 		public AutofacBuilderForSerialization Serialization
 		{
-			get { return new AutofacBuilderForSerialization(_builder); }
+			get { return new AutofacBuilderForSerialization(Builder); }
 		}
 
 		public AutofacBuilderForAzure Azure
 		{
-			get { return new AutofacBuilderForAzure(_builder); }
+			get { return new AutofacBuilderForAzure(Builder); }
 		}
 
-		public ContainerBuilder Target
-		{
-			get { return _builder; }
-		}
+		
 
 		/// <summary>
 		/// Creates default message sender for the instance of <see cref="ICloudClient"/>
@@ -62,7 +58,8 @@ namespace Lokad.Cqrs
 		/// <returns>same builder for inling multiple configuration statements</returns>
 		public CloudClientBuilder AddMessageClient(Action<SenderModule> config)
 		{
-			return this.WithModule(config);
+			RegisterModule(config);
+			return this;
 		}
 
 		/// <summary>
@@ -72,13 +69,14 @@ namespace Lokad.Cqrs
 		/// <returns>same builder for inling multiple configuration statements</returns>
 		public CloudClientBuilder Domain(Action<DomainBuildModule> config)
 		{
-			return this.WithModule(config);
+			RegisterModule(config);
+			return this;
 		}
 
 		
 		public CloudClient BuildFor(string queueName)
 		{
-			var container = _builder.Build();
+			var container = Builder.Build();
 
 			var lazy = new Lazy<IMessageClient>(() =>
 				{
@@ -92,7 +90,7 @@ namespace Lokad.Cqrs
 		
 		public CloudClient Build()
 		{
-			return _builder.Build().Resolve<CloudClient>();
+			return Builder.Build().Resolve<CloudClient>();
 		}
 	}
 }

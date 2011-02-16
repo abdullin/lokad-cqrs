@@ -13,7 +13,7 @@ using Lokad.Cqrs.Queue;
 using Lokad.Cqrs.Scheduled.Build;
 using Lokad.Cqrs.Sender;
 using Lokad.Cqrs.Transport;
-
+// ReSharper disable UnusedMethodReturnValue.Global
 namespace Lokad.Cqrs
 {
 	
@@ -21,29 +21,28 @@ namespace Lokad.Cqrs
 	/// <summary>
 	/// Fluent API for creating and configuring <see cref="ICloudEngineHost"/>
 	/// </summary>
-	public class CloudEngineBuilder : Syntax, ISyntax<ContainerBuilder>
+	public class CloudEngineBuilder : Syntax
 	{
-		readonly ContainerBuilder _builder = new ContainerBuilder();
 
-		public AutofacBuilderForLogging Logging { get { return new AutofacBuilderForLogging(_builder); } }
-		public AutofacBuilderForSerialization Serialization { get { return new AutofacBuilderForSerialization(_builder);} }
-		public AutofacBuilderForAzure Azure { get { return new AutofacBuilderForAzure(_builder);}}
+		public AutofacBuilderForLogging Logging { get { return new AutofacBuilderForLogging(Builder); } }
+		public AutofacBuilderForSerialization Serialization { get { return new AutofacBuilderForSerialization(Builder);} }
+		public AutofacBuilderForAzure Azure { get { return new AutofacBuilderForAzure(Builder);}}
 
 		public CloudEngineBuilder()
 		{
 			// System presets
 			Logging.LogToTrace();
 			Serialization.UseDataContractSerializer();
-			_builder.RegisterInstance(NullEngineProfiler.Instance);
-			_builder.RegisterInstance(SimpleMessageProfiler.Instance);
+			Builder.RegisterInstance(NullEngineProfiler.Instance);
+			Builder.RegisterInstance(SimpleMessageProfiler.Instance);
 
 			// Azure presets
 			Azure.UseDevelopmentStorageAccount();
-			_builder.RegisterType<AzureQueueFactory>().As<IRouteMessages, IQueueManager>().SingleInstance();
-			_builder.RegisterType<AzureQueueTransport>().As<IMessageTransport>();
+			Builder.RegisterType<AzureQueueFactory>().As<IRouteMessages, IQueueManager>().SingleInstance();
+			Builder.RegisterType<AzureQueueTransport>().As<IMessageTransport>();
 
 			// some defaults
-			_builder.RegisterType<CloudEngineHost>().As<ICloudEngineHost>().SingleInstance();
+			Builder.RegisterType<CloudEngineHost>().As<ICloudEngineHost>().SingleInstance();
 		}
 	
 		/// <summary>
@@ -53,7 +52,8 @@ namespace Lokad.Cqrs
 		/// <returns>same builder for inling multiple configuration statements</returns>
 		public CloudEngineBuilder AddMessageHandler(Action<HandleMessagesModule> config)
 		{
-			return this.WithModule(config);
+			RegisterModule(config);
+			return this;
 		}
 
 		/// <summary>
@@ -63,7 +63,8 @@ namespace Lokad.Cqrs
 		/// <returns>same builder for inling multiple configuration statements</returns>
 		public CloudEngineBuilder AddScheduler(Action<ScheduledModule> config)
 		{
-			return this.WithModule(config);
+			RegisterModule(config);
+			return this;
 		}
 
 		/// <summary>
@@ -73,7 +74,8 @@ namespace Lokad.Cqrs
 		/// <returns>same builder for inling multiple configuration statements</returns>
 		public CloudEngineBuilder DomainIs(Action<DomainBuildModule> config)
 		{
-			return this.WithModule(config);
+			RegisterModule(config);
+			return this;
 		}
 
 		/// <summary>
@@ -83,7 +85,8 @@ namespace Lokad.Cqrs
 		/// <returns>same builder for inling multiple configuration statements</returns>
 		public CloudEngineBuilder AddMessageClient(Action<SenderModule> config)
 		{
-			return this.WithModule(config);
+			RegisterModule(config);
+			return this;
 		}
 
 		/// <summary>
@@ -92,13 +95,8 @@ namespace Lokad.Cqrs
 		/// <returns>new instance of cloud engine host</returns>
 		public ICloudEngineHost Build()
 		{
-			var container = _builder.Build();
+			var container = Builder.Build();
 			return container.Resolve<ICloudEngineHost>(TypedParameter.From(container));
-		}
-
-		public ContainerBuilder Target
-		{
-			get { return _builder; }
 		}
 	}
 }

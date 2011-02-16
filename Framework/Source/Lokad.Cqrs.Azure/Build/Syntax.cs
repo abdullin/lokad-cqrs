@@ -8,6 +8,8 @@
 
 using System;
 using System.ComponentModel;
+using Autofac;
+using Autofac.Core;
 using Lokad.Cqrs;
 
 namespace Lokad
@@ -18,6 +20,16 @@ namespace Lokad
 	[Serializable]
 	public abstract class Syntax
 	{
+		public readonly ContainerBuilder Builder = new ContainerBuilder();
+
+		public void RegisterModule<TModule>(Action<TModule> configure)
+			where TModule : IModule, new()
+		{
+			var module = new TModule();
+			configure(module);
+			Builder.RegisterModule(module);
+		}
+
 		/// <summary>
 		/// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
 		/// </summary>

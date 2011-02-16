@@ -61,7 +61,6 @@
     <Compile Include="Build\AutofacBuilderForAzure.cs" />
     <Compile Include="Build\AutofacBuilderForLogging.cs" />
     <Compile Include="Build\AutofacBuilderForSerialization.cs" />
-    <Compile Include="Build\BuilderExtensions.cs" />
     <Compile Include="Build\Client\CloudClient.cs" />
     <Compile Include="Build\Client\CloudClientBuilder.cs" />
     <Compile Include="Build\CloudSettingsProvider.cs" />
@@ -120,8 +119,7 @@
     <Compile Include="Domain\DomainBuildModule.cs" />
     <Compile Include="Queue\AzureQueueFactory.cs" />
     <Compile Include="Queue\AzureQueueReference.cs" />
-    <Compile Include="Syntax\ISyntax.TTarget.cs" />
-    <Compile Include="Syntax\Syntax.cs" />
+    <Compile Include="Build\Syntax.cs" />
     <Compile Include="Transport\AzureQueuePolicy.cs" />
     <Compile Include="Transport\AzureQueueTransportConfig.cs" />
     <Compile Include="Queue\AzureMessageQueue.cs" />
@@ -145,6 +143,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="_ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Syntax\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

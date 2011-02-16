@@ -18,13 +18,11 @@ namespace Lokad.Cqrs
 	/// Configures management environment for the Lokad.CQRS
 	/// </summary>
 	
-	public sealed class CloudManagerBuilder : Syntax, ISyntax<ContainerBuilder>
+	public sealed class CloudManagerBuilder : Syntax
 	{
-		readonly ContainerBuilder _builder = new ContainerBuilder();
-
-		public AutofacBuilderForLogging Logging { get { return new AutofacBuilderForLogging(_builder);}}
-		public AutofacBuilderForAzure Azure { get { return new AutofacBuilderForAzure(_builder);} }
-		public AutofacBuilderForSerialization Serialization { get { return new AutofacBuilderForSerialization(_builder);}}
+		public AutofacBuilderForLogging Logging { get { return new AutofacBuilderForLogging(Builder);}}
+		public AutofacBuilderForAzure Azure { get { return new AutofacBuilderForAzure(Builder);} }
+		public AutofacBuilderForSerialization Serialization { get { return new AutofacBuilderForSerialization(Builder);}}
 
 
 		public CloudManagerBuilder()
@@ -32,27 +30,22 @@ namespace Lokad.Cqrs
 			Logging.LogToTrace();
 
 			
-			_builder.RegisterInstance(NullEngineProfiler.Instance);
-			_builder.RegisterType<AzureQueueFactory>().As<IRouteMessages, IQueueManager>().SingleInstance();
-			_builder.RegisterType<AzureQueueTransport>().As<IMessageTransport>();
+			Builder.RegisterInstance(NullEngineProfiler.Instance);
+			Builder.RegisterType<AzureQueueFactory>().As<IRouteMessages, IQueueManager>().SingleInstance();
+			Builder.RegisterType<AzureQueueTransport>().As<IMessageTransport>();
 		}
 
 		public CloudManagerBuilder DomainIs(Action<DomainBuildModule> configuration)
 		{
 			var m = new DomainBuildModule();
 			configuration(m);
-			_builder.RegisterModule(m);
+			Builder.RegisterModule(m);
 			return this;
 		}
 
 		public IContainer Build()
 		{
-			return _builder.Build();
-		}
-
-		public ContainerBuilder Target
-		{
-			get { return _builder; }
+			return Builder.Build();
 		}
 	}
 }
