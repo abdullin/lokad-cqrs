@@ -14,7 +14,7 @@ namespace Lokad
 	/// <summary>
 	/// Helper extensions for any class that implements <see cref="ILog"/>
 	/// </summary>
-	public static class ILogExtensions
+	public static class ExtendILog
 	{
 		static readonly CultureInfo Culture = CultureInfo.InvariantCulture;
 

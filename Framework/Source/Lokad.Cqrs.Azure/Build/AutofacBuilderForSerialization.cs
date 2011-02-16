@@ -1,11 +1,10 @@
-﻿#region (c) 2010-2011 Lokad Open Source - New BSD License 
+﻿#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
 
 // Copyright (c) Lokad 2010-2011, http://www.lokad.com
 // This code is released as Open Source under the terms of the New BSD Licence
 
 #endregion
 
-using System;
 using Autofac;
 using Lokad.Cqrs.Serialization;
 
@@ -13,16 +12,13 @@ namespace Lokad.Cqrs
 {
 	public sealed class AutofacBuilderForSerialization : Syntax
 	{
-		readonly ContainerBuilder _builder;
-
-		public AutofacBuilderForSerialization(ContainerBuilder builder)
+		public AutofacBuilderForSerialization(ContainerBuilder builder) : base(builder)
 		{
-			_builder = builder;
 		}
 
 		public void RegisterSerializer<TSerializer>() where TSerializer : IMessageSerializer
 		{
-			_builder
+			Builder
 				.RegisterType<TSerializer>()
 				.As<IMessageSerializer>().SingleInstance();
 		}

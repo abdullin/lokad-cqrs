@@ -20,7 +20,17 @@ namespace Lokad
 	[Serializable]
 	public abstract class Syntax
 	{
-		public readonly ContainerBuilder Builder = new ContainerBuilder();
+		public readonly ContainerBuilder Builder;
+
+		protected Syntax()
+		{
+			Builder = new ContainerBuilder();
+		}
+
+		protected Syntax(ContainerBuilder builder)
+		{
+			Builder = builder;
+		}
 
 		public void RegisterModule<TModule>(Action<TModule> configure)
 			where TModule : IModule, new()

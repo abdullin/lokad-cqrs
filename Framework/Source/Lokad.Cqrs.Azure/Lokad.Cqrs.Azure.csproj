@@ -80,7 +80,7 @@
     <Compile Include="Logging\DebugLog.cs" />
     <Compile Include="Logging\ExtendILogProvider.cs" />
     <Compile Include="Logging\ILog.cs" />
-    <Compile Include="Logging\ILogExtensions.cs" />
+    <Compile Include="Logging\ExtendILog.cs" />
     <Compile Include="Logging\ILogProvider.cs" />
     <Compile Include="Logging\LambdaLogProvider.cs" />
     <Compile Include="Logging\LogLevel.cs" />
