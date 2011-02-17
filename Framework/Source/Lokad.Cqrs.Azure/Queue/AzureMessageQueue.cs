@@ -54,14 +54,9 @@ namespace Lokad.Cqrs.Queue
 
 		public void Init()
 		{
-			if (_queue.CreateIfNotExist())
-				_log.DebugFormat("Auto-created queue {0}", _queue.Uri);
-
-			if (_posionQueue.CreateIfNotExist())
-				_log.DebugFormat("Auto-created poison queue {0}", _posionQueue.Uri);
-
-			if (_cloudBlob.CreateIfNotExist())
-				_log.DebugFormat("Auto-created blob storage {0}", _cloudBlob.Uri);
+			_queue.CreateIfNotExist();
+			_posionQueue.CreateIfNotExist();
+			_cloudBlob.CreateIfNotExist();
 		}
 
 		public GetMessageResult GetMessage()
