@@ -11,16 +11,14 @@ namespace Lokad.Cqrs.Transport
 {
 	public sealed class AzureQueueTransportConfig
 	{
-		public readonly string LogName;
 		public readonly string[] QueueNames;
 		public readonly Func<uint, TimeSpan> SleepWhenNoMessages;
 
 
-		public AzureQueueTransportConfig(string logName, string[] queueNames,
+		public AzureQueueTransportConfig(string[] queueNames,
 			Func<uint, TimeSpan> sleepWhenNoMessages)
 		{
 			
-			LogName = logName;
 			SleepWhenNoMessages = sleepWhenNoMessages;
 			QueueNames = queueNames;
 		}

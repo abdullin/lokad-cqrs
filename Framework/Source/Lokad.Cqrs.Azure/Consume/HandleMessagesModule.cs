@@ -27,8 +27,6 @@ namespace Lokad.Cqrs.Consume.Build
 		public HandleMessagesModule()
 		{
 			SleepWhenNoMessages = AzureQueuePolicy.BuildDecayPolicy(1.Seconds());
-
-			LogName = "Messages";
 			ListenToQueue("azure-messages");
 
 			WithSingleConsumer();
@@ -86,7 +84,6 @@ namespace Lokad.Cqrs.Consume.Build
 		
 		public Func<uint, TimeSpan> SleepWhenNoMessages { get; set; }
 
-		public string LogName { get; set; }
 		public bool DebugPrintsMessageTree { get; set; }
 		public bool DebugPrintsConsumerTree { get; set; }
 
@@ -192,7 +189,6 @@ namespace Lokad.Cqrs.Consume.Build
 				throw Errors.InvalidOperation("No queue names are specified. Please use ListenTo method");
 
 			var transportConfig = new AzureQueueTransportConfig(
-				LogName,
 				queueNames,
 				SleepWhenNoMessages);
 

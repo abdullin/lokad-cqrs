@@ -11,7 +11,7 @@ namespace Lokad.Cqrs.Queue
 {
 	public sealed class AzureQueueReference
 	{
-		public readonly Uri Endpoint;
+		readonly Uri _endpoint;
 		public readonly string QueueName;
 		public readonly Uri Uri;
 
@@ -20,13 +20,13 @@ namespace Lokad.Cqrs.Queue
 		{
 			Uri = new Uri(endpoint + "/" + queueName);
 			QueueName = queueName;
-			Endpoint = endpoint;
+			_endpoint = endpoint;
 		}
 
 		public AzureQueueReference SubQueue(string type)
 		{
 			var name = QueueName + "-" + type;
-			return new AzureQueueReference(Endpoint, name);
+			return new AzureQueueReference(_endpoint, name);
 		}
 
 		public bool Equals(AzureQueueReference other)

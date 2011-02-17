@@ -16,14 +16,12 @@ namespace Lokad.Cqrs.Consume
 	public sealed class ConsumingProcess : IEngineProcess
 	{
 		readonly IMessageDispatcher _dispatcher;
-		readonly ILog _log;
 		readonly AzureQueueTransport _transport;
 
-		public ConsumingProcess(AzureQueueTransport transport, ILogProvider provider, IMessageDispatcher dispatcher)
+		public ConsumingProcess(AzureQueueTransport transport, IMessageDispatcher dispatcher)
 		{
 			_transport = transport;
 			_dispatcher = dispatcher;
-			_log = provider.CreateLog<ConsumingProcess>();
 		}
 
 		public void Initialize()
@@ -40,8 +38,9 @@ namespace Lokad.Cqrs.Consume
 
 		public Task Start(CancellationToken token)
 		{
-			_log.DebugFormat("Starting consumer for {0}", _transport.ToString());
-			return _transport.Start(token).ContinueWith(t => _log.DebugFormat("Stopped consumer for {0}", _transport.ToString()));
+			//_log.DebugFormat("Starting consumer for {0}", _transport.ToString());
+			return _transport.Start(token);
+			//.ContinueWith(t => _log.DebugFormat("Stopped consumer for {0}", _transport.ToString()));
 		}
 
 		void TransportOnMessageRecieved(UnpackedMessage arg)

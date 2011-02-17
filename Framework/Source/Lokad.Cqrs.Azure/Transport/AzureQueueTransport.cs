@@ -31,7 +31,7 @@ namespace Lokad.Cqrs.Transport
 		{
 			_factory = factory;
 			_queueNames = config.QueueNames;
-			_log = logProvider.Get(typeof (AzureQueueTransport).Name + "." + config.LogName);
+			_log = logProvider.Get(typeof (AzureQueueTransport).Name + "." + _queueNames.Join("|"));
 			_threadSleepInterval = config.SleepWhenNoMessages;
 			_queues = new AzureMessageQueue[_queueNames.Length];
 		}
