@@ -47,9 +47,9 @@ namespace Lokad.Cqrs.Consume
 				.ContinueWhenAll(tasks, t => _log.DebugFormat("Stopped consumer for {0}", _transport.ToString()));
 		}
 
-		bool TransportOnMessageRecieved(UnpackedMessage arg)
+		void TransportOnMessageRecieved(UnpackedMessage arg)
 		{
-			return _dispatcher.DispatchMessage(arg);
+			_dispatcher.DispatchMessage(arg);
 		}
 	}
 }

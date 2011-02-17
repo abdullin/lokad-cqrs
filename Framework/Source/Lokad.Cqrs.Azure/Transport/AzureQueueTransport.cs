@@ -49,7 +49,7 @@ namespace Lokad.Cqrs.Transport
 			_queues = new IReadMessageQueue[_queueNames.Length];
 		}
 
-		public event Func<UnpackedMessage, bool> MessageReceived = m => false;
+		public event Action<UnpackedMessage> MessageReceived = m => { };
 		public event Action<UnpackedMessage, Exception> MessageHandlerFailed = (message, exception) => { };
 		
 		public void Dispose()
@@ -83,11 +83,10 @@ namespace Lokad.Cqrs.Transport
 
 		Maybe<Exception> GetProcessingFailure(IReadMessageQueue queue, UnpackedMessage message)
 		{
-			bool consumed;
-
 			try
 			{
-				consumed = ProcessSingleMessage(message, m => MessageReceived(m));
+				ProcessSingleMessage(message, m => MessageReceived(m));
+				return Maybe<Exception>.Empty;
 			}
 			catch (Exception ex)
 			{
@@ -97,37 +96,21 @@ namespace Lokad.Cqrs.Transport
 				_log.Error(ex, text);
 				return ex;
 			}
-
-			if (!consumed)
-			{
-				try
-				{
-					Discard(queue, message);
-				}
-				catch (Exception ex)
-				{
-					_log.ErrorFormat(ex, "Failed to discard the message {0}", _profiler.TrackMessage(message));
-				}
-			}
-			return Maybe<Exception>.Empty;
 		}
 
-		bool ProcessSingleMessage(UnpackedMessage message, Func<UnpackedMessage, bool> messageHandlers)
+		void ProcessSingleMessage(UnpackedMessage message, Action<UnpackedMessage> messageHandlers)
 		{
 			if (messageHandlers == null)
-				return false;
+				return;
 
 			try
 			{
 				MessageContext.OverrideContext(message);
 				using (_profiler.TrackMessage(message))
 				{
-					foreach (Func<UnpackedMessage, bool> func in messageHandlers.GetInvocationList())
+					foreach (Action<UnpackedMessage> func in messageHandlers.GetInvocationList())
 					{
-						if (func(message))
-						{
-							return true;
-						}
+						func(message);
 					}
 				}
 			}
@@ -135,17 +118,7 @@ namespace Lokad.Cqrs.Transport
 			{
 				MessageContext.ClearContext();
 			}
-			return false;
 		}
-
-		void Discard(IReadMessageQueue queue, UnpackedMessage detail)
-		{
-			_log.DebugFormat("Discarding message {0} because there are no consumers for it.",
-				_messageProfiler.GetReadableMessageInfo(detail));
-
-			queue.DiscardMessage(detail);
-		}
-
 
 		void MessageHandlingProblem(UnpackedMessage message, Exception ex)
 		{

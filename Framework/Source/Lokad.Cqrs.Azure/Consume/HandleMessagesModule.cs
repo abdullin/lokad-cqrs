@@ -53,7 +53,7 @@ namespace Lokad.Cqrs.Consume.Build
 		}
 
 		
-		public HandleMessagesModule WhenMessageArrives(Func<UnpackedMessage, bool> interceptor)
+		public HandleMessagesModule WhenMessageArrives(Action<UnpackedMessage> interceptor)
 		{
 			return ApplyToTransport((transport, context) =>
 				{

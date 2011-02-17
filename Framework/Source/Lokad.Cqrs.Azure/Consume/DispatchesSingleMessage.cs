@@ -26,7 +26,7 @@ namespace Lokad.Cqrs.Consume
 			_messageDirectory = messageDirectory;
 		}
 
-		public bool DispatchMessage(UnpackedMessage message)
+		public void DispatchMessage(UnpackedMessage message)
 		{
 			Type consumerType;
 			if (_messageConsumers.TryGetValue(message.ContractType, out consumerType))
@@ -36,10 +36,7 @@ namespace Lokad.Cqrs.Consume
 					var consumer = scope.Resolve(consumerType);
 					_messageDirectory.InvokeConsume(consumer, message.Content);
 				}
-
-				return true;
 			}
-			return false;
 		}
 
 		static void ThrowIfCommandHasMultipleConsumers(IEnumerable<MessageInfo> commands)

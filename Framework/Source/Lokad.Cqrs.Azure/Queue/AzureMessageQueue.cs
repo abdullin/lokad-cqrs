@@ -18,7 +18,6 @@ namespace Lokad.Cqrs.Queue
 		public const string DateFormatInBlobName = "yyyy-MM-dd-HH-mm-ss-ffff";
 		readonly CloudBlobContainer _cloudBlob;
 		readonly IMessageProfiler _debugger;
-		readonly CloudQueue _discardQueue;
 		readonly ILog _log;
 		readonly IMessageSerializer _serializer;
 		readonly CloudQueue _posionQueue;
@@ -47,7 +46,6 @@ namespace Lokad.Cqrs.Queue
 
 			_queueReference = new AzureQueueReference(account.QueueEndpoint, _queue.Name);
 			_posionQueue = queueClient.GetQueueReference(_queueReference.SubQueue(SubQueueType.Poison).QueueName);
-			_discardQueue = queueClient.GetQueueReference(_queueReference.SubQueue(SubQueueType.Discard).QueueName);
 
 			_log = provider.Get("Queue[" + queueName + "]");
 			
@@ -71,9 +69,6 @@ namespace Lokad.Cqrs.Queue
 
 			if (_posionQueue.CreateIfNotExist())
 				_log.DebugFormat("Auto-created poison queue {0}", _posionQueue.Uri);
-
-			if (_discardQueue.CreateIfNotExist())
-				_log.DebugFormat("Auto-created discard queue {0}", _discardQueue.Uri);
 
 			if (_cloudBlob.CreateIfNotExist())
 				_log.DebugFormat("Auto-created blob storage {0}", _cloudBlob.Uri);
@@ -151,29 +146,6 @@ namespace Lokad.Cqrs.Queue
 			_log.Debug(_debugger.GetReadableMessageInfo(message));
 			
 			TransactionalDeleteMessage(cloud);
-		}
-
-		public void DiscardMessage(UnpackedMessage message)
-		{
-			if (message == null) throw new ArgumentNullException("message");
-
-
-			var cloud = message.GetState<CloudQueueMessage>().Value;
-
-			if (Transaction.Current == null)
-			{
-				_discardQueue.AddMessage(cloud);
-				_queue.DeleteMessage(cloud);
-			}
-			else
-			{
-				Transaction.Current.EnlistVolatile(
-					new TransactionCommitDeletesMessage(_queue, cloud),
-					EnlistmentOptions.None);
-				Transaction.Current.EnlistVolatile(
-					new TransactionCommitAddsMessage(_discardQueue, cloud),
-					EnlistmentOptions.None);
-			}
 		}
 
 		public void SendMessages(object[] messages, Action<MessageAttributeBuilder> headers)

@@ -15,6 +15,5 @@ namespace Lokad.Cqrs.Queue
 		void Init();
 		GetMessageResult GetMessage();
 		void AckMessage(UnpackedMessage message);
-		void DiscardMessage(UnpackedMessage message);
 	}
 }

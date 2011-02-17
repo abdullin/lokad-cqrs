@@ -37,7 +37,7 @@ namespace Lokad.Cqrs.Consume
 			}
 		}
 
-		public bool DispatchMessage(UnpackedMessage unpacked)
+		public void DispatchMessage(UnpackedMessage unpacked)
 		{
 			// we get failure if one of the subscribers fails
 			Type[] consumerTypes;
@@ -52,10 +52,7 @@ namespace Lokad.Cqrs.Consume
 						_directory.InvokeConsume(consumer, unpacked.Content);
 					}
 				}
-
-				return true;
 			}
-			return false;
 		}
 	}
 }

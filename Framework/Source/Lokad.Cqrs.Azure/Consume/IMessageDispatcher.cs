@@ -11,6 +11,6 @@ namespace Lokad.Cqrs.Consume
 {
 	public interface IMessageDispatcher
 	{
-		bool DispatchMessage(UnpackedMessage message);
+		void DispatchMessage(UnpackedMessage message);
 	}
 }

@@ -9,7 +9,6 @@ namespace Lokad.Cqrs.Queue
 {
 	public enum SubQueueType
 	{
-		Poison,
-		Discard
+		Poison
 	}
 }
