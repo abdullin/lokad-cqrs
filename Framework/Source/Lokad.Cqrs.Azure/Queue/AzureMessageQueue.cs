@@ -137,13 +137,13 @@ namespace Lokad.Cqrs.Queue
 			_queue.DeleteMessage(cloud);
 		}
 
-		public void SendMessages(object[] messages, Action<MessageAttributeBuilder> headers)
+		public void SendMessages(object[] messages)
 		{
 			if (messages.Length == 0)
 				return;
 			foreach (var message in messages)
 			{
-				var packed = PackNewMessage(message, headers);
+				var packed = PackNewMessage(message);
 				_queue.AddMessage(packed);
 			}
 		}
@@ -159,7 +159,7 @@ namespace Lokad.Cqrs.Queue
 		const int CloudQueueLimit = 6144;
 
 
-		CloudQueueMessage PackNewMessage(object message,  Action<MessageAttributeBuilder> modify)
+		CloudQueueMessage PackNewMessage(object message)
 		{
 			var messageId = Guid.NewGuid();
 			var created = DateTime.UtcNow;
@@ -177,7 +177,6 @@ namespace Lokad.Cqrs.Queue
 			builder.AddSender(_queue.Uri.ToString());
 			builder.AddIdentity(messageId.ToString());
 			builder.AddCreated(created);
-			modify(builder);
 			var attributes = builder.Build();
 
 			using (var stream = MessageUtil.SaveDataMessageToStream(attributes, s => _serializer.Serialize(message, s)))

@@ -23,7 +23,7 @@ namespace Lokad.Cqrs.Sender
 			if (messages.Length == 0)
 				return;
 
-			_queue.SendMessages(messages, nv => { });
+			_queue.SendMessages(messages);
 		}
 	}
 }
