@@ -13,6 +13,7 @@ using Lokad.Cqrs.Directory;
 using Lokad.Cqrs.Queue;
 using Lokad.Cqrs.Transport;
 using System.Linq;
+using Microsoft.WindowsAzure;
 
 namespace Lokad.Cqrs.Consume.Build
 {
@@ -179,7 +180,8 @@ namespace Lokad.Cqrs.Consume.Build
 
 		IEngineProcess ConfigureComponent(IComponentContext context)
 		{
-			var log = context.Resolve<ILogProvider>().CreateLog<HandleMessagesModule>();
+			var provider = context.Resolve<ILogProvider>();
+			var log = provider.CreateLog<HandleMessagesModule>();
 
 			var queueNames = _queueNames.ToArray();
 
@@ -198,8 +200,7 @@ namespace Lokad.Cqrs.Consume.Build
 			var dispatcher = _dispatcher(context.Resolve<ILifetimeScope>(), directory);
 
 
-			var transport = new ConsumingProcess(context.Resolve<ILogProvider>(),
-				context.Resolve<AzureQueueFactory>(), dispatcher, SleepWhenNoMessages, queueNames);
+			var transport = new ConsumingProcess(provider, dispatcher, SleepWhenNoMessages, queueNames, context.Resolve<CloudStorageAccount>(), context.Resolve<IMessageSerializer>());
 
 			_applyToTransport(transport, context);
 			

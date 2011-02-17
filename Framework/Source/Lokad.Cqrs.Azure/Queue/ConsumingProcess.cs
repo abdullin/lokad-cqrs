@@ -11,24 +11,29 @@ using System.Threading.Tasks;
 using System.Transactions;
 using Lokad.Cqrs.Consume;
 using Lokad.Cqrs.Queue;
+using Microsoft.WindowsAzure;
 
 namespace Lokad.Cqrs.Transport
 {
 	
 	public sealed class ConsumingProcess : IEngineProcess
 	{
-		readonly AzureQueueFactory _factory;
+		readonly ILogProvider _logProvider;
 		readonly IMessageDispatcher _dispatcher;
 		readonly ILog _log;
 		readonly string[] _queueNames;
 		readonly AzureReadQueue[] _queues;
 		readonly Func<uint, TimeSpan> _threadSleepInterval;
 
-		public ConsumingProcess(ILogProvider logProvider,
-			AzureQueueFactory factory, 
-			IMessageDispatcher dispatcher, Func<uint, TimeSpan> sleepWhenNoMessages, string[] queueNames)
+		readonly CloudStorageAccount _account;
+		readonly IMessageSerializer _serializer;
+
+		public ConsumingProcess(ILogProvider logProvider, 
+			IMessageDispatcher dispatcher, Func<uint, TimeSpan> sleepWhenNoMessages, string[] queueNames, CloudStorageAccount account, IMessageSerializer serializer)
 		{
-			_factory = factory;
+			_logProvider = logProvider;
+			_serializer = serializer;
+			_account = account;
 			_dispatcher = dispatcher;
 			_queueNames = queueNames;
 			_log = logProvider.Get(typeof (ConsumingProcess).Name + "." + _queueNames.Join("|"));
@@ -45,7 +50,8 @@ namespace Lokad.Cqrs.Transport
 		{
 			for (int i = 0; i < _queueNames.Length; i++)
 			{
-				_queues[i] = _factory.GetReadQueue(_queueNames[i]);
+				_queues[i] = new AzureReadQueue(_account, _queueNames[i], _logProvider, _serializer);
+				_queues[i].Init();
 			}
 		}
 
