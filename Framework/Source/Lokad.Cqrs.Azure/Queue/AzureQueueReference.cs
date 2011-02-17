@@ -1,13 +1,11 @@
-#region (c) 2010 Lokad Open Source - New BSD License 
+#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
 
-// Copyright (c) Lokad 2010, http://www.lokad.com
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
 // This code is released as Open Source under the terms of the New BSD Licence
 
 #endregion
 
 using System;
-using System.Linq;
-using ExtendIEnumerable = Lokad.ExtendIEnumerable;
 
 namespace Lokad.Cqrs.Queue
 {
@@ -25,17 +23,9 @@ namespace Lokad.Cqrs.Queue
 			Endpoint = endpoint;
 		}
 
-		public static AzureQueueReference FromUri(Uri uri)
+		public AzureQueueReference SubQueue(string type)
 		{
-			var segments = uri.Segments;
-			var @join = ExtendIEnumerable.Join(segments.Take(segments.Length - 1), "");
-			var endpoint = new Uri(uri, @join.TrimEnd('/'));
-			return new AzureQueueReference(endpoint, segments.Last());
-		}
-
-		public AzureQueueReference SubQueue(SubQueueType type)
-		{
-			var name = QueueName + "-" + type.ToString().ToLowerInvariant();
+			var name = QueueName + "-" + type;
 			return new AzureQueueReference(Endpoint, name);
 		}
 

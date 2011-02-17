@@ -22,11 +22,8 @@ namespace Lokad.Cqrs.Queue
 		readonly IMessageSerializer _serializer;
 		readonly CloudQueue _posionQueue;
 		readonly CloudQueue _queue;
-
-
 		readonly AzureQueueReference _queueReference;
 		readonly int _retryCount;
-
 
 		public AzureMessageQueue(
 			CloudStorageAccount account,
@@ -45,7 +42,7 @@ namespace Lokad.Cqrs.Queue
 			_queue = queueClient.GetQueueReference(queueName);
 
 			_queueReference = new AzureQueueReference(account.QueueEndpoint, _queue.Name);
-			_posionQueue = queueClient.GetQueueReference(_queueReference.SubQueue(SubQueueType.Poison).QueueName);
+			_posionQueue = queueClient.GetQueueReference(_queueReference.SubQueue("poison").QueueName);
 
 			_log = provider.Get("Queue[" + queueName + "]");
 			
