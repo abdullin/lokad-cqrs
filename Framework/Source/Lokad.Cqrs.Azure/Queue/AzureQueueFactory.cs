@@ -5,7 +5,6 @@
 
 #endregion
 
-using System;
 using System.Collections.Generic;
 
 using Microsoft.WindowsAzure;
@@ -48,36 +47,6 @@ namespace Lokad.Cqrs.Queue
 			}
 		}
 
-		public void RouteMessages(UnpackedMessage[] messages, params string[] references)
-		{
-			//var endpoints = references.Convert(AzureQueueReference.FromUri);
-
-			//var unsupported = endpoints.Where(aqr => aqr.Uri != _account.QueueEndpoint).ToArray();
-
-			//if (endpoints.Any())
-			//{
-			//    throw new InvalidOperationException("Can't send messages to unknown queues: " +
-			//        unsupported.Select(s => s.Uri.ToString()).Join("; "));
-			//}
-			AzureMessageQueue[] queues;
-			lock (_queues)
-			{
-				queues = Convert(references, GetOrCreateQueue);
-			}
-			foreach (var queue in queues)
-			{
-				queue.RouteMessages(messages, nv => { });
-			}
-		}
-
-		public string[] GetQueueNames()
-		{
-			lock (_queues)
-			{
-				return _queues.ToArray(c => c.Key);
-			}
-		}
-
 		AzureMessageQueue GetOrCreateQueue(string queueName)
 		{
 			AzureMessageQueue value;
@@ -89,19 +58,6 @@ namespace Lokad.Cqrs.Queue
 				_queues.Add(queueName, value);
 			}
 			return value;
-		}
-		
-		static TTarget[] Convert<TSource, TTarget>(TSource[] source, Converter<TSource, TTarget> converter)
-		{
-			if (source == null) throw new ArgumentNullException("source");
-			if (converter == null) throw new ArgumentNullException("converter");
-
-			var outputArray = new TTarget[source.Length];
-			for (int i = 0; i < source.Length; i++)
-			{
-				outputArray[i] = converter(source[i]);
-			}
-			return outputArray;
 		}
 	}
 }
