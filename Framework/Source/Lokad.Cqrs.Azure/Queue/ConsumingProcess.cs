@@ -86,10 +86,10 @@ namespace Lokad.Cqrs.Transport
 			// do nothing. Message will show up in the queue with the increased enqueue count.
 		}
 
-		static void FinalizeSuccess(AzureReadQueue queue, UnpackedMessage message, TransactionScope tx)
+		static void FinalizeSuccess(AzureReadQueue queue, UnpackedMessage message)
 		{
 			queue.AckMessage(message);
-			tx.Complete();
+			//tx.Complete();
 		}
 
 		void ReceiveMessages(CancellationToken outer)
@@ -134,32 +134,29 @@ namespace Lokad.Cqrs.Transport
 			
 			try
 			{
-				using (var tx = new TransactionScope(TransactionScopeOption.Required))
+				var result = queue.GetMessage();
+
+				switch (result.State)
 				{
-					var result = queue.GetMessage();
+					case GetMessageResultState.Success:
+						GetProcessingFailure(queue, result.Message)
+							.Apply(ex => MessageHandlingProblem(result.Message, ex))
+							.Handle(() => FinalizeSuccess(queue, result.Message));
+						return QueueProcessingResult.MoreWork;
 
-					switch (result.State)
-					{
-						case GetMessageResultState.Success:
-							GetProcessingFailure(queue, result.Message)
-								.Apply(ex => MessageHandlingProblem(result.Message, ex))
-								.Handle(() => FinalizeSuccess(queue, result.Message, tx));
-							return QueueProcessingResult.MoreWork;
+					case GetMessageResultState.Wait:
+						return QueueProcessingResult.Sleep;
 
-						case GetMessageResultState.Wait:
-							return QueueProcessingResult.Sleep;
+					case GetMessageResultState.Exception:
+						_log.DebugFormat(result.Exception, "Exception, while trying to get message");
+						return QueueProcessingResult.MoreWork;
 
-						case GetMessageResultState.Exception:
-							_log.DebugFormat(result.Exception, "Exception, while trying to get message");
-							return QueueProcessingResult.MoreWork;
-
-						case GetMessageResultState.Retry:
-							tx.Complete();
-							// retry immediately
-							return QueueProcessingResult.MoreWork;
-						default:
-							throw new ArgumentOutOfRangeException();
-					}
+					case GetMessageResultState.Retry:
+						//tx.Complete();
+						// retry immediately
+						return QueueProcessingResult.MoreWork;
+					default:
+						throw new ArgumentOutOfRangeException();
 				}
 			}
 			catch (TransactionAbortedException ex)
