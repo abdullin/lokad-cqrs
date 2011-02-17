@@ -28,7 +28,7 @@ namespace Lokad.Cqrs.Consume.Build
 
 		public HandleMessagesModule()
 		{
-			SleepWhenNoMessages = AzureQueuePolicy.BuildDecayPolicy(1.Seconds());
+			SleepWhenNoMessages = BuildDecayPolicy(1.Seconds());
 			ListenToQueue("azure-messages");
 
 			WithSingleConsumer();
@@ -230,6 +230,23 @@ namespace Lokad.Cqrs.Consume.Build
 		protected override void Load(ContainerBuilder builder)
 		{
 			builder.Register(ConfigureComponent);
+		}
+
+		public static Func<uint, TimeSpan> BuildDecayPolicy(TimeSpan maxDecay)
+		{
+			//var seconds = (Rand.Next(0, 1000) / 10000d).Seconds();
+			var seconds = maxDecay.TotalSeconds;
+			return l =>
+				{
+					if (l >= 31)
+					{
+						return maxDecay;
+					}
+
+					var foo = Math.Pow(2, (l - 1)/5.0)/64d*seconds;
+
+					return TimeSpan.FromSeconds(foo);
+				};
 		}
 	}
 }
