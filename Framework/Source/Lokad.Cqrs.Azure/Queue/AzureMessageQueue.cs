@@ -13,7 +13,7 @@ using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
 namespace Lokad.Cqrs.Queue
 {
-	public sealed class AzureMessageQueue : IReadMessageQueue, IWriteMessageQueue
+	public sealed class AzureMessageQueue
 	{
 		public const string DateFormatInBlobName = "yyyy-MM-dd-HH-mm-ss-ffff";
 		readonly CloudBlobContainer _cloudBlob;

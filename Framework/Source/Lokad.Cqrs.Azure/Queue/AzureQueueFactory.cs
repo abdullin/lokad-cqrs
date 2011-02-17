@@ -32,7 +32,7 @@ namespace Lokad.Cqrs.Queue
 			_logProvider = logProvider;
 		}
 
-		public IReadMessageQueue GetReadQueue(string queueName)
+		public AzureMessageQueue GetReadQueue(string queueName)
 		{
 			lock (_queues)
 			{
@@ -40,7 +40,7 @@ namespace Lokad.Cqrs.Queue
 			}
 		}
 
-		public IWriteMessageQueue GetWriteQueue(string queueName)
+		public AzureMessageQueue GetWriteQueue(string queueName)
 		{
 			lock (_queues)
 			{
@@ -59,7 +59,7 @@ namespace Lokad.Cqrs.Queue
 			//    throw new InvalidOperationException("Can't send messages to unknown queues: " +
 			//        unsupported.Select(s => s.Uri.ToString()).Join("; "));
 			//}
-			IWriteMessageQueue[] queues;
+			AzureMessageQueue[] queues;
 			lock (_queues)
 			{
 				queues = Convert(references, GetOrCreateQueue);

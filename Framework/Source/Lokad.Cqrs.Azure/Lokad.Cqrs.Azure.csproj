@@ -86,9 +86,7 @@
     <Compile Include="Queue\GetMessageResult.cs" />
     <Compile Include="Queue\GetMessageResultState.cs" />
     <Compile Include="Queue\IQueueManager.cs" />
-    <Compile Include="Queue\IReadMessageQueue.cs" />
     <Compile Include="Queue\IRouteMessages.cs" />
-    <Compile Include="Queue\IWriteMessageQueue.cs" />
     <Compile Include="Scheduled\ExpressionTaskBuilder.cs" />
     <Compile Include="Scheduled\IScheduledTaskBuilder.cs" />
     <Compile Include="Scheduled\IScheduledTaskDispatcher.cs" />

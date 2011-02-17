@@ -22,7 +22,7 @@ namespace Lokad.Cqrs.Transport
 		readonly IsolationLevel _isolationLevel;
 		readonly ILog _log;
 		readonly string[] _queueNames;
-		readonly IReadMessageQueue[] _queues;
+		readonly AzureMessageQueue[] _queues;
 		readonly int _degreeOfParallelism;
 		readonly Func<uint, TimeSpan> _threadSleepInterval;
 
@@ -38,7 +38,7 @@ namespace Lokad.Cqrs.Transport
 			_threadSleepInterval = config.SleepWhenNoMessages;
 			_degreeOfParallelism = config.DegreeOfParallelism;
 			
-			_queues = new IReadMessageQueue[_queueNames.Length];
+			_queues = new AzureMessageQueue[_queueNames.Length];
 		}
 
 		public event Action<UnpackedMessage> MessageReceived = m => { };
@@ -73,7 +73,7 @@ namespace Lokad.Cqrs.Transport
 		}
 	
 
-		Maybe<Exception> GetProcessingFailure(IReadMessageQueue queue, UnpackedMessage message)
+		Maybe<Exception> GetProcessingFailure(AzureMessageQueue queue, UnpackedMessage message)
 		{
 			try
 			{
@@ -126,7 +126,7 @@ namespace Lokad.Cqrs.Transport
 			// do nothing. Message will show up in the queue with the increased enqueue count.
 		}
 
-		static void FinalizeSuccess(IReadMessageQueue queue, UnpackedMessage message, TransactionScope tx)
+		static void FinalizeSuccess(AzureMessageQueue queue, UnpackedMessage message, TransactionScope tx)
 		{
 			queue.AckMessage(message);
 			tx.Complete();
@@ -170,7 +170,7 @@ namespace Lokad.Cqrs.Transport
 			}
 		}
 
-		QueueProcessingResult ProcessQueueForMessage(IReadMessageQueue queue)
+		QueueProcessingResult ProcessQueueForMessage(AzureMessageQueue queue)
 		{
 			var transactionOptions = GetTransactionOptions();
 			try

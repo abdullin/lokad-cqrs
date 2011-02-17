@@ -11,9 +11,9 @@ namespace Lokad.Cqrs.Sender
 {
 	sealed class DefaultMessageClient : IMessageClient
 	{
-		readonly IWriteMessageQueue _queue;
+		readonly AzureMessageQueue _queue;
 
-		public DefaultMessageClient(IWriteMessageQueue queue)
+		public DefaultMessageClient(AzureMessageQueue queue)
 		{
 			_queue = queue;
 		}
