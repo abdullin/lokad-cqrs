@@ -42,11 +42,12 @@ namespace Lokad.Cqrs.Consume.Build
 		
 		public HandleMessagesModule WhenMessageHandlerFails(Action<UnpackedMessage, Exception> handler)
 		{
-			return ApplyToTransport((transport, context) =>
-				{
-					transport.MessageHandlerFailed += handler;
-					context.WhenDisposed(() => transport.MessageHandlerFailed -= handler);
-				});
+			throw new NotImplementedException();
+			//return ApplyToTransport((transport, context) =>
+			//    {
+			//        transport.MessageHandlerFailed += handler;
+			//        context.WhenDisposed(() => transport.MessageHandlerFailed -= handler);
+			//    });
 		}
 
 		

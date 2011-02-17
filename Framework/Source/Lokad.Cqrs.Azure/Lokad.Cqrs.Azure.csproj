@@ -99,19 +99,17 @@
     <Compile Include="Storage\BlobStorageItem.cs" />
     <Compile Include="Consume\HandleMessagesModule.cs" />
     <Compile Include="Domain\DomainAwareMessageProfiler.cs" />
-    <Compile Include="Queue\QueueErrors.cs" />
     <Compile Include="Sender\DefaultMessageClient.cs" />
-    <Compile Include="Infrastructure\ExtendIComponentContext.cs" />
     <Compile Include="Scheduled\TransactionalTaskDispatcher.cs" />
     <Compile Include="Scheduled\ScheduledModule.cs" />
     <Compile Include="Sender\SenderModule.cs" />
     <Compile Include="Domain\DomainBuildModule.cs" />
     <Compile Include="Queue\AzureQueueFactory.cs" />
     <Compile Include="Build\Syntax.cs" />
-    <Compile Include="Transport\AzureQueuePolicy.cs" />
-    <Compile Include="Transport\AzureQueueTransportConfig.cs" />
+    <Compile Include="Queue\AzureQueuePolicy.cs" />
+    <Compile Include="Queue\AzureQueueTransportConfig.cs" />
     <Compile Include="Queue\AzureReadQueue.cs" />
-    <Compile Include="Transport\ConsumingProcess.cs" />
+    <Compile Include="Queue\ConsumingProcess.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -128,7 +126,9 @@
   <ItemGroup>
     <Content Include="_ReadMe.txt" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Infrastructure\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

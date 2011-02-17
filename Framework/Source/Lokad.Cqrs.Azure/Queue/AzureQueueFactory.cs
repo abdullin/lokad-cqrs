@@ -1,25 +1,23 @@
-#region (c) 2010 Lokad Open Source - New BSD License 
+#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
 
-// Copyright (c) Lokad 2010, http://www.lokad.com
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
 // This code is released as Open Source under the terms of the New BSD Licence
 
 #endregion
 
 using System.Collections.Generic;
-
 using Microsoft.WindowsAzure;
 
 namespace Lokad.Cqrs.Queue
 {
-	
 	public sealed class AzureQueueFactory
 	{
 		readonly CloudStorageAccount _account;
 		readonly ILogProvider _logProvider;
 
 		readonly IDictionary<string, AzureReadQueue> _readQueues = new Dictionary<string, AzureReadQueue>();
-		readonly IDictionary<string,AzureWriteQueue> _writeQueues = new Dictionary<string, AzureWriteQueue>();
 		readonly IMessageSerializer _serializer;
+		readonly IDictionary<string, AzureWriteQueue> _writeQueues = new Dictionary<string, AzureWriteQueue>();
 
 		public AzureQueueFactory(
 			CloudStorageAccount account,
@@ -31,7 +29,6 @@ namespace Lokad.Cqrs.Queue
 			_logProvider = logProvider;
 		}
 
-		
 
 		public AzureReadQueue GetReadQueue(string queueName)
 		{

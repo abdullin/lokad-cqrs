@@ -32,13 +32,14 @@ namespace Lokad.Cqrs.Consume.Build
 				logger.OnRender += @delegate;
 			}
 
-			Action<UnpackedMessage, Exception> action = logger.Handle;
-			transport.MessageHandlerFailed += action;
+			//Action<UnpackedMessage, Exception> action = logger.Handle;
+			throw new NotImplementedException();
+			//transport.MessageHandlerFailed += action;
 
-			context.WhenDisposed(() =>
-				{
-					transport.MessageHandlerFailed -= action;
-				});
+			//context.WhenDisposed(() =>
+			//    {
+			//        transport.MessageHandlerFailed -= action;
+			//    });
 		}
 	}
 }

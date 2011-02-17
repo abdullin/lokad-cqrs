@@ -31,7 +31,7 @@ namespace Lokad.Cqrs.Queue
 			var messageType = message.GetType();
 			var contract = _serializer
 				.GetContractNameByType(messageType)
-				.ExposeException(() => QueueErrors.NoContractNameOnSend(messageType, _serializer));
+				.ExposeException(() => NoContractNameOnSend(messageType, _serializer));
 
 			var referenceId = created.ToString(DateFormatInBlobName) + "-" + messageId;
 
@@ -96,5 +96,11 @@ namespace Lokad.Cqrs.Queue
 		readonly CloudBlobContainer _cloudBlob;
 		readonly CloudQueue _queue;
 
+		public static Exception NoContractNameOnSend(Type messageType, IMessageSerializer serializer)
+		{
+			return Errors.InvalidOperation(
+				"Can't find contract name to serialize message: '{0}'. Make sure that your message types are loaded by domain and are compatible with '{1}'.",
+				messageType, serializer.GetType().Name);
+		}
 	}
 }

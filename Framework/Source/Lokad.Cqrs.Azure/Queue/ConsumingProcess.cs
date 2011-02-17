@@ -6,7 +6,6 @@
 #endregion
 
 using System;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
@@ -28,7 +27,8 @@ namespace Lokad.Cqrs.Transport
 		public ConsumingProcess(
 			AzureQueueTransportConfig config,
 			ILogProvider logProvider,
-			AzureQueueFactory factory, IMessageDispatcher dispatcher)
+			AzureQueueFactory factory, 
+			IMessageDispatcher dispatcher)
 		{
 			_factory = factory;
 			_dispatcher = dispatcher;
@@ -37,8 +37,6 @@ namespace Lokad.Cqrs.Transport
 			_threadSleepInterval = config.SleepWhenNoMessages;
 			_queues = new AzureReadQueue[_queueNames.Length];
 		}
-		
-		public event Action<UnpackedMessage, Exception> MessageHandlerFailed = (message, exception) => { };
 		
 		public void Dispose()
 		{
@@ -85,18 +83,6 @@ namespace Lokad.Cqrs.Transport
 		void MessageHandlingProblem(UnpackedMessage message, Exception ex)
 		{
 			// notify all subscribers
-			foreach (Action<UnpackedMessage, Exception> @delegate in MessageHandlerFailed.GetInvocationList())
-			{
-				try
-				{
-					@delegate(message, ex);
-				}
-				catch (Exception handleEx)
-				{
-					_log.WarnFormat(handleEx, "Failed to handle message processing failure");
-				}
-			}
-
 			// do nothing. Message will show up in the queue with the increased enqueue count.
 		}
 
