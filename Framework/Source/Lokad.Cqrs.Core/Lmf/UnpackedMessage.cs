@@ -39,13 +39,6 @@ namespace Lokad.Cqrs
 			Content = content;
 		}
 
-		public Maybe<TValue> GetState<TValue>(string key)
-		{
-			return _dynamicState
-				.GetValue(key)
-				.Convert(o => (TValue) o);
-		}
-
 		public Maybe<TValue> GetState<TValue>()
 		{
 			return _dynamicState
@@ -53,28 +46,12 @@ namespace Lokad.Cqrs
 				.Convert(o => (TValue)o);
 		}
 
-		public TValue GetRequiredState<TValue>()
-		{
-			return GetState<TValue>().ExposeException("Should have required state " + typeof (TValue));
-		}
-		
 		public UnpackedMessage WithState<TValue>(TValue value)
 		{
 			_dynamicState.Add(typeof(TValue).Name, value);
 			return this;
 		}
-
-		public UnpackedMessage WithState<TValue>(string key, TValue value)
-		{
-			_dynamicState.Add(key, value);
-			return this;
-		}
-		/// <summary>
-		/// Returns a <see cref="System.String"/> that represents this instance.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="System.String"/> that represents this instance.
-		/// </returns>
+		
 		public override string ToString()
 		{
 			return Content == null ? "NULL" : Content.ToString();
