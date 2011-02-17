@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Transactions;
 using Autofac;
 using Lokad.Cqrs.Directory;
+using Lokad.Cqrs.Queue;
 using Lokad.Cqrs.Transport;
 using System.Linq;
 
@@ -196,6 +197,10 @@ namespace Lokad.Cqrs.Consume.Build
 
 
 			var dispatcher = _dispatcher(context.Resolve<ILifetimeScope>(), directory);
+
+			
+			
+
 			var transport = context.Resolve<AzureQueueTransport>(TypedParameter.From(transportConfig), TypedParameter.From(dispatcher));
 
 			_applyToTransport(transport, context);

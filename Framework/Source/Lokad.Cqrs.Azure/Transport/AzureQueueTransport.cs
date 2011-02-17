@@ -16,7 +16,7 @@ using Lokad.Cqrs.Queue;
 namespace Lokad.Cqrs.Transport
 {
 	
-	public sealed class AzureQueueTransport : IDisposable, IEngineProcess
+	public sealed class AzureQueueTransport : IEngineProcess
 	{
 		readonly AzureQueueFactory _factory;
 		readonly IMessageDispatcher _dispatcher;
