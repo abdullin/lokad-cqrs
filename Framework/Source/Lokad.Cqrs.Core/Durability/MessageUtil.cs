@@ -106,7 +106,7 @@ namespace Lokad.Cqrs.Lmf
 			using (var stream = new MemoryStream(buffer, index, count))
 			{
 				var instance = serializer.Deserialize(stream, type);
-				return new UnpackedMessage(header, attributes, instance, type);
+				return new UnpackedMessage(attributes, instance, type);
 			}
 		}
 	}

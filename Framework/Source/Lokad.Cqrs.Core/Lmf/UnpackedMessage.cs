@@ -19,10 +19,7 @@ namespace Lokad.Cqrs
 		/// Type of the contract behind the message
 		/// </summary>
 		public readonly Type ContractType;
-		/// <summary>
-		/// Message Header information
-		/// </summary>
-		public readonly MessageHeader Header;
+		
 		/// <summary>
 		/// Available message attributes
 		/// </summary>
@@ -34,9 +31,9 @@ namespace Lokad.Cqrs
 		
 		readonly IDictionary<string, object> _dynamicState = new Dictionary<string, object>();
 
-		public UnpackedMessage(MessageHeader header, MessageAttributesContract attributes, object content, Type contractType)
+		public UnpackedMessage(MessageAttributesContract attributes, object content, Type contractType)
 		{
-			Header = header;
+		
 			ContractType = contractType;
 			Attributes = attributes;
 			Content = content;
