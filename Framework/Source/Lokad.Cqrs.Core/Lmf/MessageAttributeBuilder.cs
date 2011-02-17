@@ -9,30 +9,6 @@ namespace Lokad.Cqrs
 		[ProtoMember(1)]
 		readonly List<MessageAttributeContract> _list = new List<MessageAttributeContract>();
 
-		public MessageAttributeBuilder()
-		{
-		}
-
-		public MessageAttributeBuilder(IEnumerable<MessageAttributeContract> attributes)
-		{
-			_list = new List<MessageAttributeContract>(attributes);
-		}
-
-		public MessageAttributeBuilder(MessageAttributesContract attributes) : this(attributes.Items)
-		{
-
-		}
-
-		public void AddCustomString(string key, string value)
-		{
-			_list.Add(new MessageAttributeContract(key, value));
-		}
-
-		public void AddRange(IEnumerable<MessageAttributeContract> attributes)
-		{
-			_list.AddRange(attributes);
-		}
-
 		public void AddIdentity(string identity)
 		{
 			Add(MessageAttributeTypeContract.Identity, identity);

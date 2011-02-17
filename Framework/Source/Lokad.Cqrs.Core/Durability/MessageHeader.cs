@@ -15,13 +15,13 @@ namespace Lokad.Cqrs
 		[ProtoMember(3, DataFormat = DataFormat.FixedSize, IsRequired = true)] public readonly long ContentLength;
 		[ProtoMember(4, DataFormat = DataFormat.FixedSize, IsRequired = true)] public readonly int Checksum;
 
-		public long GetTotalLength()
-		{
-			return FixedSize + AttributesLength + ContentLength;
-		}
+		//public long GetTotalLength()
+		//{
+		//    return FixedSize + AttributesLength + ContentLength;
+		//}
 
 
-		public MessageHeader(int messageFormatVersion, long attributesLength, long contentLength, int checksum)
+		MessageHeader(int messageFormatVersion, long attributesLength, long contentLength, int checksum)
 		{
 			MessageFormatVersion = messageFormatVersion;
 			AttributesLength = attributesLength;
@@ -37,11 +37,6 @@ namespace Lokad.Cqrs
 		public static MessageHeader ForReference(long attributesLength, int checksum)
 		{
 			return new MessageHeader(ReferenceMessageFormatVersion, attributesLength, 0, checksum);
-		}
-
-		
-		MessageHeader()
-		{
 		}
 	}
 }

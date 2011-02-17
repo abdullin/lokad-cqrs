@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using ProtoBuf;
 
@@ -57,22 +56,6 @@ namespace Lokad.Cqrs.Lmf
 			using (var stream = new MemoryStream(buffer, 0, MessageHeader.FixedSize))
 			{
 				return Serializer.Deserialize<MessageHeader>(stream);
-			}
-		}
-
-		public static IEnumerable<UnpackedMessage> ReadDataMessagesFromStream(Stream stream, IMessageSerializer serializer)
-		{
-			var buffer = new byte[MessageHeader.FixedSize];
-			while(stream.Position < stream.Length)
-			{
-				stream.Read(buffer, 0, buffer.Length);
-				var header = ReadHeader(buffer);
-				var dataLength = header.AttributesLength + header.ContentLength;
-				var message = new byte[dataLength + buffer.Length];
-				Array.Copy(buffer, message, buffer.Length);
-
-				stream.Read(message, buffer.Length,(int)dataLength);
-				yield return ReadDataMessage(message, serializer);
 			}
 		}
 
