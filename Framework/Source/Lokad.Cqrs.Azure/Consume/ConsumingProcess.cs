@@ -71,8 +71,6 @@ namespace Lokad.Cqrs.Transport
 				_log.Error(ex, text);
 				return ex;
 			}
-			
-			
 		}
 
 		void MessageHandlingProblem(UnpackedMessage message, Exception ex)
@@ -126,39 +124,29 @@ namespace Lokad.Cqrs.Transport
 
 		QueueProcessingResult ProcessQueueForMessage(AzureReadQueue queue)
 		{
-			
-			try
+			var result = queue.GetMessage();
+
+			switch (result.State)
 			{
-				var result = queue.GetMessage();
+				case GetMessageResultState.Success:
+					GetProcessingFailure(queue, result.Message)
+						.Apply(ex => MessageHandlingProblem(result.Message, ex))
+						.Handle(() => FinalizeSuccess(queue, result.Message));
+					return QueueProcessingResult.MoreWork;
 
-				switch (result.State)
-				{
-					case GetMessageResultState.Success:
-						GetProcessingFailure(queue, result.Message)
-							.Apply(ex => MessageHandlingProblem(result.Message, ex))
-							.Handle(() => FinalizeSuccess(queue, result.Message));
-						return QueueProcessingResult.MoreWork;
+				case GetMessageResultState.Wait:
+					return QueueProcessingResult.Sleep;
 
-					case GetMessageResultState.Wait:
-						return QueueProcessingResult.Sleep;
+				case GetMessageResultState.Exception:
+					_log.DebugFormat(result.Exception, "Exception, while trying to get message");
+					return QueueProcessingResult.MoreWork;
 
-					case GetMessageResultState.Exception:
-						_log.DebugFormat(result.Exception, "Exception, while trying to get message");
-						return QueueProcessingResult.MoreWork;
-
-					case GetMessageResultState.Retry:
-						//tx.Complete();
-						// retry immediately
-						return QueueProcessingResult.MoreWork;
-					default:
-						throw new ArgumentOutOfRangeException();
-				}
-			}
-			catch (TransactionAbortedException ex)
-			{
-				_log.Error(ex, "Aborting transaction");
-				// do nothing);
-				return QueueProcessingResult.MoreWork;
+				case GetMessageResultState.Retry:
+					//tx.Complete();
+					// retry immediately
+					return QueueProcessingResult.MoreWork;
+				default:
+					throw new ArgumentOutOfRangeException();
 			}
 		}
 
