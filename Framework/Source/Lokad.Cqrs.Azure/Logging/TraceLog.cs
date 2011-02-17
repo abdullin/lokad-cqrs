@@ -53,10 +53,5 @@ namespace Lokad
 			Trace.WriteLine("[" + level + "] " + ex, _logName);
 			Trace.Flush();
 		}
-
-		bool ILog.IsEnabled(LogLevel level)
-		{
-			return true;
-		}
 	}
 }

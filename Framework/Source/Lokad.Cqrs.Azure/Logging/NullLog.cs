@@ -40,10 +40,5 @@ namespace Lokad
 		void ILog.Log(LogLevel level, Exception ex, object message)
 		{
 		}
-
-		bool ILog.IsEnabled(LogLevel level)
-		{
-			return false;
-		}
 	}
 }

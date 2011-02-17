@@ -29,14 +29,5 @@ namespace Lokad
 		/// <param name="ex">The actual exception</param>
 		/// <param name="message">Information related to the exception</param>
 		void Log(LogLevel level, Exception ex, object message);
-
-		/// <summary>
-		/// Determines whether the messages of specified level are being logged down
-		/// </summary>
-		/// <param name="level">The level.</param>
-		/// <returns>
-		/// 	<c>true</c> if the specified level is logged; otherwise, <c>false</c>.
-		/// </returns>
-		bool IsEnabled(LogLevel level);
 	}
 }
