@@ -114,9 +114,6 @@
     <Compile Include="Queue\AzureMessageQueue.cs" />
     <Compile Include="Transport\AzureQueueTransport.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Queue\TransactionCommitDeletesMessage.cs" />
-    <Compile Include="Queue\TransactionCommitAddsMessage.cs" />
-    <Compile Include="Queue\SubQueueType.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Lokad.Cqrs.Core\Lokad.Cqrs.Core.csproj">

@@ -91,7 +91,8 @@ namespace Lokad.Cqrs.Queue
 			{
 				// we consider this to be poison
 				_log.ErrorFormat("Moving message {0} to poison queue {1}", message.Id, _posionQueue.Name);
-				TransactionalMoveMessage(message, _posionQueue);
+				_posionQueue.AddMessage(message);
+				_queue.DeleteMessage(message);
 				return GetMessageResult.Retry;
 			}
 
@@ -138,8 +139,8 @@ namespace Lokad.Cqrs.Queue
 
 			var cloud = message.GetState<CloudQueueMessage>().Value;
 			_log.Debug(message);
-			
-			TransactionalDeleteMessage(cloud);
+
+			_queue.DeleteMessage(cloud);
 		}
 
 		public void SendMessages(object[] messages, Action<MessageAttributeBuilder> headers)
@@ -149,7 +150,7 @@ namespace Lokad.Cqrs.Queue
 			foreach (var message in messages)
 			{
 				var packed = PackNewMessage(message, headers);
-				TransactionalSendMessage(_queue, packed);
+				_queue.AddMessage(packed);
 			}
 		}
 
@@ -158,50 +159,15 @@ namespace Lokad.Cqrs.Queue
 			foreach (var message in messages)
 			{
 				var packed = PackNewMessage(message.Content, headers);
-				TransactionalSendMessage(_queue, packed);
-			}
-		}
-
-		public void Purge()
-		{
-			_queue.Clear();
-			_posionQueue.Clear();
-		}
-
-		void TransactionalMoveMessage(CloudQueueMessage message, CloudQueue target)
-		{
-			if (Transaction.Current == null)
-			{
-				target.AddMessage(message);
-				_queue.DeleteMessage(message);
-			}
-			else
-			{
-				Transaction.Current.EnlistVolatile(
-					new TransactionCommitDeletesMessage(_queue, message),
-					EnlistmentOptions.None);
-				Transaction.Current.EnlistVolatile(
-					new TransactionCommitAddsMessage(target, message),
-					EnlistmentOptions.None);
+				_queue.AddMessage(packed);
 			}
 		}
 
 		void MoveIncomingToPoison(CloudQueueMessage message)
 		{
 			// new poison details
-			TransactionalMoveMessage(message, _posionQueue);
-		}
-
-		void TransactionalDeleteMessage(CloudQueueMessage message)
-		{
-			if (Transaction.Current == null)
-			{
-				_queue.DeleteMessage(message);
-			}
-			else
-			{
-				Transaction.Current.EnlistVolatile(new TransactionCommitDeletesMessage(_queue, message), EnlistmentOptions.None);
-			}
+			_posionQueue.AddMessage(message);
+			_queue.DeleteMessage(message);
 		}
 
 		//http://abdullin.com/journal/2010/6/4/azure-queue-messages-cannot-be-larger-than-8192-bytes.html
@@ -257,18 +223,5 @@ namespace Lokad.Cqrs.Queue
 		}
 
 
-		void TransactionalSendMessage(CloudQueue queue, CloudQueueMessage cloudQueueMessage)
-		{
-			if (Transaction.Current == null)
-			{
-				queue.AddMessage(cloudQueueMessage);
-			}
-			else
-			{
-				Transaction.Current.EnlistVolatile(
-					new TransactionCommitAddsMessage(queue, cloudQueueMessage),
-					EnlistmentOptions.None);
-			}
-		}
 	}
 }
