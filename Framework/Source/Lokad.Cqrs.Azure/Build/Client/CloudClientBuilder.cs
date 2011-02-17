@@ -78,7 +78,7 @@ namespace Lokad.Cqrs
 
 			var lazy = new Lazy<IMessageClient>(() =>
 				{
-					var queue = container.Resolve<AzureQueueFactory>().GetWriteQueue(queueName);
+					var queue = container.Resolve<AzureQueueFactory>().GetQueue(queueName);
 					return new DefaultMessageClient(queue);
 				},false);
 

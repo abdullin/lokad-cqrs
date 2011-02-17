@@ -49,7 +49,7 @@ namespace Lokad.Cqrs.Transport
 		{
 			for (int i = 0; i < _queueNames.Length; i++)
 			{
-				_queues[i] = _factory.GetReadQueue(_queueNames[i]);
+				_queues[i] = _factory.GetQueue(_queueNames[i]);
 			}
 
 		}

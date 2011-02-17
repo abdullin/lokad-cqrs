@@ -46,8 +46,7 @@ namespace Lokad.Cqrs.Queue
 			_serializer = serializer;
 		}
 
-		public TimeSpan? QueueVisibility { get; set; }
-
+		
 		public Uri Uri
 		{
 			get { return _queueReference.Uri; }
@@ -70,9 +69,7 @@ namespace Lokad.Cqrs.Queue
 			CloudQueueMessage message;
 			try
 			{
-				message = QueueVisibility.HasValue
-					? _queue.GetMessage(QueueVisibility.Value)
-					: _queue.GetMessage();
+				message = _queue.GetMessage();
 			}
 			catch (Exception ex)
 			{

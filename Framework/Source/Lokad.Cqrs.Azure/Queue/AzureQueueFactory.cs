@@ -30,33 +30,22 @@ namespace Lokad.Cqrs.Queue
 			_logProvider = logProvider;
 		}
 
-		public AzureMessageQueue GetReadQueue(string queueName)
+		
+
+		public AzureMessageQueue GetQueue(string queueName)
 		{
 			lock (_queues)
 			{
-				return GetOrCreateQueue(queueName);
-			}
-		}
-
-		public AzureMessageQueue GetWriteQueue(string queueName)
-		{
-			lock (_queues)
-			{
-				return GetOrCreateQueue(queueName);
-			}
-		}
-
-		AzureMessageQueue GetOrCreateQueue(string queueName)
-		{
-			AzureMessageQueue value;
-			if (!_queues.TryGetValue(queueName, out value))
-			{
+				AzureMessageQueue value;
+				if (!_queues.TryGetValue(queueName, out value))
+				{
 				
-				value = new AzureMessageQueue(_account, queueName, _logProvider, _serializer);
-				value.Init();
-				_queues.Add(queueName, value);
+					value = new AzureMessageQueue(_account, queueName, _logProvider, _serializer);
+					value.Init();
+					_queues.Add(queueName, value);
+				}
+				return value;
 			}
-			return value;
 		}
 	}
 }
