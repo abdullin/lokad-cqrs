@@ -4,11 +4,9 @@ namespace Lokad.Cqrs
 {
 	public sealed class AutofacBuilderForLogging : Syntax
 	{
-		readonly ContainerBuilder _builder;
-
-		public AutofacBuilderForLogging(ContainerBuilder builder)
+		public AutofacBuilderForLogging(ContainerBuilder builder) : base(builder)
 		{
-			_builder = builder;
+	
 		}
 
 		public void LogToNull()
@@ -23,7 +21,7 @@ namespace Lokad.Cqrs
 
 		public void RegisterLogProvider(ILogProvider provider)
 		{
-			_builder.RegisterInstance(provider);
+			Builder.RegisterInstance(provider);
 		}
 	}
 }

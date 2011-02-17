@@ -1,14 +1,11 @@
-#region (c) 2010 Lokad Open Source - New BSD License 
+#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
 
-// Copyright (c) Lokad 2010, http://www.lokad.com
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
 // This code is released as Open Source under the terms of the New BSD Licence
 
 #endregion
 
-using System;
-using System.Collections.Generic;
 using System.Configuration;
-
 using Microsoft.WindowsAzure.ServiceRuntime;
 
 namespace Lokad.Cqrs
@@ -16,7 +13,7 @@ namespace Lokad.Cqrs
 	/// <summary>
 	/// Settings provider built on top of the Windows Azure
 	/// </summary>
-	public sealed class CloudSettingsProvider 
+	public sealed class CloudSettingsProvider
 	{
 		static readonly bool HasCloudEnvironment;
 

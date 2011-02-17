@@ -24,15 +24,14 @@ namespace Lokad.Cqrs
 	public sealed class AutofacBuilderForAzure : Syntax
 	{
 		Action<CloudBlobClient> _configureClient = client => { };
-		readonly ContainerBuilder _builder;
+		
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AutofacBuilderForAzure"/> class.
 		/// </summary>
 		/// <param name="builder">The builder.</param>
-		public AutofacBuilderForAzure(ContainerBuilder builder)
+		public AutofacBuilderForAzure(ContainerBuilder builder) : base(builder)
 		{
-			_builder = builder;
 		}
 
 		/// <summary>
@@ -47,7 +46,7 @@ namespace Lokad.Cqrs
 		public AutofacBuilderForAzure UseStorageAccount(string accountString)
 		{
 			var account = CloudStorageAccount.Parse(accountString);
-			_builder.RegisterInstance(account);
+			Builder.RegisterInstance(account);
 			DisableNagleForQueuesAndTables(account);
 			RegisterLocals();
 			return this;
@@ -63,7 +62,7 @@ namespace Lokad.Cqrs
 		
 		public AutofacBuilderForAzure UseStorageAccount(CloudStorageAccount account)
 		{
-			_builder.RegisterInstance(account);
+			Builder.RegisterInstance(account);
 			DisableNagleForQueuesAndTables(account);
 			RegisterLocals();
 			return this;
@@ -81,7 +80,7 @@ namespace Lokad.Cqrs
 		{
 			var credentials = new StorageCredentialsAccountAndKey(accountName, accessKey);
 			var account = new CloudStorageAccount(credentials, useHttps);
-			_builder.RegisterInstance(account);
+			Builder.RegisterInstance(account);
 			DisableNagleForQueuesAndTables(account);
 			RegisterLocals();
 			return this;
@@ -105,7 +104,7 @@ namespace Lokad.Cqrs
 		/// <remarks>This option is enabled by default</remarks>
 		public AutofacBuilderForAzure UseDevelopmentStorageAccount()
 		{
-			_builder.RegisterInstance(CloudStorageAccount.DevelopmentStorageAccount);
+			Builder.RegisterInstance(CloudStorageAccount.DevelopmentStorageAccount);
 			RegisterLocals();
 			return this;
 		}
@@ -118,7 +117,7 @@ namespace Lokad.Cqrs
 		/// </returns>
 		public AutofacBuilderForAzure LoadStorageAccountFromSettings(Func<IComponentContext, string> configProvider)
 		{
-			_builder.Register(c =>
+			Builder.Register(c =>
 				{
 					var value = configProvider(c);
 					var account = CloudStorageAccount.Parse(value);
@@ -155,8 +154,8 @@ namespace Lokad.Cqrs
 
 		void RegisterLocals()
 		{
-			_builder.RegisterType<BlobStorageRoot>().SingleInstance().As<IStorageRoot>();
-			_builder.Register(c =>
+			Builder.RegisterType<BlobStorageRoot>().SingleInstance().As<IStorageRoot>();
+			Builder.Register(c =>
 				{
 					var client = c.Resolve<CloudStorageAccount>().CreateCloudBlobClient();
 					_configureClient(client);
