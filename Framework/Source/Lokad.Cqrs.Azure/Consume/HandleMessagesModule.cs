@@ -26,7 +26,6 @@ namespace Lokad.Cqrs.Consume.Build
 
 		public HandleMessagesModule()
 		{
-			IsolationLevel = IsolationLevel.RepeatableRead;
 			NumberOfThreads = 1;
 			SleepWhenNoMessages = AzureQueuePolicy.BuildDecayPolicy(1.Seconds());
 
@@ -92,11 +91,7 @@ namespace Lokad.Cqrs.Consume.Build
 		/// <value>The number of threads.</value>
 		public int NumberOfThreads { get; set; }
 
-		/// <summary>
-		/// Gets or sets the isolation level.
-		/// </summary>
-		/// <value>The isolation level.</value>
-		public IsolationLevel IsolationLevel { get; set; }
+		
 		public Func<uint, TimeSpan> SleepWhenNoMessages { get; set; }
 
 		public string LogName { get; set; }
@@ -207,7 +202,6 @@ namespace Lokad.Cqrs.Consume.Build
 			var transportConfig = new AzureQueueTransportConfig(
 				LogName,
 				NumberOfThreads,
-				IsolationLevel,
 				queueNames,
 				SleepWhenNoMessages);
 

@@ -7,7 +7,6 @@
 
 using System;
 using System.IO;
-using System.Transactions;
 using Lokad.Cqrs.Lmf;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
@@ -154,15 +153,6 @@ namespace Lokad.Cqrs.Queue
 			}
 		}
 
-		public void RouteMessages(UnpackedMessage[] messages, Action<MessageAttributeBuilder> headers)
-		{
-			foreach (var message in messages)
-			{
-				var packed = PackNewMessage(message.Content, headers);
-				_queue.AddMessage(packed);
-			}
-		}
-
 		void MoveIncomingToPoison(CloudQueueMessage message)
 		{
 			// new poison details
@@ -221,7 +211,5 @@ namespace Lokad.Cqrs.Queue
 				return new CloudQueueMessage(stream.ToArray());
 			}
 		}
-
-
 	}
 }

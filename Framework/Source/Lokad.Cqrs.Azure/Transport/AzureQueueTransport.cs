@@ -19,7 +19,6 @@ namespace Lokad.Cqrs.Transport
 	public sealed class AzureQueueTransport : IDisposable
 	{
 		readonly AzureQueueFactory _factory;
-		readonly IsolationLevel _isolationLevel;
 		readonly ILog _log;
 		readonly string[] _queueNames;
 		readonly AzureMessageQueue[] _queues;
@@ -33,7 +32,6 @@ namespace Lokad.Cqrs.Transport
 		{
 			_factory = factory;
 			_queueNames = config.QueueNames;
-			_isolationLevel = config.IsolationLevel;
 			_log = logProvider.Get(typeof (AzureQueueTransport).Name + "." + config.LogName);
 			_threadSleepInterval = config.SleepWhenNoMessages;
 			_degreeOfParallelism = config.DegreeOfParallelism;
@@ -172,10 +170,10 @@ namespace Lokad.Cqrs.Transport
 
 		QueueProcessingResult ProcessQueueForMessage(AzureMessageQueue queue)
 		{
-			var transactionOptions = GetTransactionOptions();
+			
 			try
 			{
-				using (var tx = new TransactionScope(TransactionScopeOption.Required, transactionOptions))
+				using (var tx = new TransactionScope(TransactionScopeOption.Required))
 				{
 					var result = queue.GetMessage();
 
@@ -209,15 +207,6 @@ namespace Lokad.Cqrs.Transport
 				// do nothing);
 				return QueueProcessingResult.MoreWork;
 			}
-		}
-
-		TransactionOptions GetTransactionOptions()
-		{
-			return new TransactionOptions
-				{
-					IsolationLevel = Transaction.Current == null ? _isolationLevel : Transaction.Current.IsolationLevel,
-					Timeout = Debugger.IsAttached ? 45.Minutes() : 0.Minutes(),
-				};
 		}
 
 		public override string ToString()
