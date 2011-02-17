@@ -22,7 +22,7 @@ namespace Lokad.Cqrs.Consume.Build
 			ContainerName = "errors";
 		}
 
-		internal void Apply(AzureQueueTransport transport, IComponentContext context)
+		internal void Apply(ConsumingProcess transport, IComponentContext context)
 		{
 			var account = context.Resolve<CloudStorageAccount>();
 			var logger = new BlobExceptionLogger(account, ContainerName);

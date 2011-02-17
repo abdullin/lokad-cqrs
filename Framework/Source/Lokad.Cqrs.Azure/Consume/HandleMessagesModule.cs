@@ -23,7 +23,7 @@ namespace Lokad.Cqrs.Consume.Build
 		Func<ILifetimeScope, MessageDirectory, IMessageDispatcher> _dispatcher;
 
 
-		Action<AzureQueueTransport, IComponentContext> _applyToTransport = (transport, context) => { };
+		Action<ConsumingProcess, IComponentContext> _applyToTransport = (transport, context) => { };
 
 		public HandleMessagesModule()
 		{
@@ -33,7 +33,7 @@ namespace Lokad.Cqrs.Consume.Build
 			WithSingleConsumer();
 		}
 
-		public HandleMessagesModule ApplyToTransport(Action<AzureQueueTransport, IComponentContext> config)
+		public HandleMessagesModule ApplyToTransport(Action<ConsumingProcess, IComponentContext> config)
 		{
 			_applyToTransport += config;
 			return this;
@@ -201,7 +201,7 @@ namespace Lokad.Cqrs.Consume.Build
 			
 			
 
-			var transport = context.Resolve<AzureQueueTransport>(TypedParameter.From(transportConfig), TypedParameter.From(dispatcher));
+			var transport = context.Resolve<ConsumingProcess>(TypedParameter.From(transportConfig), TypedParameter.From(dispatcher));
 
 			_applyToTransport(transport, context);
 			

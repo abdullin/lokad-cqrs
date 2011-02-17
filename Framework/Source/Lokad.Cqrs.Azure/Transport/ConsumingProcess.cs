@@ -16,7 +16,7 @@ using Lokad.Cqrs.Queue;
 namespace Lokad.Cqrs.Transport
 {
 	
-	public sealed class AzureQueueTransport : IEngineProcess
+	public sealed class ConsumingProcess : IEngineProcess
 	{
 		readonly AzureQueueFactory _factory;
 		readonly IMessageDispatcher _dispatcher;
@@ -25,7 +25,7 @@ namespace Lokad.Cqrs.Transport
 		readonly AzureMessageQueue[] _queues;
 		readonly Func<uint, TimeSpan> _threadSleepInterval;
 
-		public AzureQueueTransport(
+		public ConsumingProcess(
 			AzureQueueTransportConfig config,
 			ILogProvider logProvider,
 			AzureQueueFactory factory, IMessageDispatcher dispatcher)
@@ -33,7 +33,7 @@ namespace Lokad.Cqrs.Transport
 			_factory = factory;
 			_dispatcher = dispatcher;
 			_queueNames = config.QueueNames;
-			_log = logProvider.Get(typeof (AzureQueueTransport).Name + "." + _queueNames.Join("|"));
+			_log = logProvider.Get(typeof (ConsumingProcess).Name + "." + _queueNames.Join("|"));
 			_threadSleepInterval = config.SleepWhenNoMessages;
 			_queues = new AzureMessageQueue[_queueNames.Length];
 		}
@@ -51,7 +51,6 @@ namespace Lokad.Cqrs.Transport
 			{
 				_queues[i] = _factory.GetQueue(_queueNames[i]);
 			}
-
 		}
 
 		readonly CancellationTokenSource _disposal = new CancellationTokenSource();
@@ -67,30 +66,20 @@ namespace Lokad.Cqrs.Transport
 		{
 			try
 			{
-				ProcessSingleMessage(message);
-				return Maybe<Exception>.Empty;
+				MessageContext.OverrideContext(message);
+				_dispatcher.DispatchMessage(message);
 			}
 			catch (Exception ex)
 			{
 				var text = string.Format("Failed to consume '{0}' from '{1}'", message, queue.Uri);
-
 				_log.Error(ex, text);
 				return ex;
-			}
-		}
-
-		void ProcessSingleMessage(UnpackedMessage message)
-		{
-			try
-			{
-				MessageContext.OverrideContext(message);
-
-				_dispatcher.DispatchMessage(message);
 			}
 			finally
 			{
 				MessageContext.ClearContext();
 			}
+			return Maybe<Exception>.Empty;
 		}
 
 		void MessageHandlingProblem(UnpackedMessage message, Exception ex)
@@ -119,7 +108,6 @@ namespace Lokad.Cqrs.Transport
 
 		void ReceiveMessages(CancellationToken outer)
 		{
-			
 			uint beenIdleFor = 0;
 
 			using (var source = CancellationTokenSource.CreateLinkedTokenSource(_disposal.Token, outer))
@@ -194,11 +182,6 @@ namespace Lokad.Cqrs.Transport
 				// do nothing);
 				return QueueProcessingResult.MoreWork;
 			}
-		}
-
-		public override string ToString()
-		{
-			return string.Format("Queue x ({0})", _queueNames.Join(", "));
 		}
 
 		enum QueueProcessingResult

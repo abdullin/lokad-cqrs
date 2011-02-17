@@ -111,7 +111,7 @@
     <Compile Include="Transport\AzureQueuePolicy.cs" />
     <Compile Include="Transport\AzureQueueTransportConfig.cs" />
     <Compile Include="Queue\AzureMessageQueue.cs" />
-    <Compile Include="Transport\AzureQueueTransport.cs" />
+    <Compile Include="Transport\ConsumingProcess.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

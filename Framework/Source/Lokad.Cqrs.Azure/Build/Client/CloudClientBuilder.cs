@@ -27,7 +27,7 @@ namespace Lokad.Cqrs
 			Serialization.UseDataContractSerializer();
 			Logging.LogToTrace();
 			Builder.RegisterType<AzureQueueFactory>().As<AzureQueueFactory, AzureQueueFactory>().SingleInstance();
-			Builder.RegisterType<AzureQueueTransport>();
+			Builder.RegisterType<ConsumingProcess>();
 			Builder.RegisterType<CloudClient>().SingleInstance();
 		}
 
