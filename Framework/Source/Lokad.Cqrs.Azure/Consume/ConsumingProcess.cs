@@ -22,7 +22,6 @@ namespace Lokad.Cqrs.Transport
 		
 		readonly IMessageDispatcher _dispatcher;
 		readonly ILog _log;
-		
 		readonly AzureReadQueue[] _queues;
 		readonly Func<uint, TimeSpan> _threadSleepInterval;
 
@@ -33,7 +32,6 @@ namespace Lokad.Cqrs.Transport
 		
 			_queues = readQueues;
 			_dispatcher = dispatcher;
-			
 			_log = logProvider.Get(typeof (ConsumingProcess).Name + "." + readQueues.ToArray(q => q.Name).Join(","));
 			_threadSleepInterval = sleepWhenNoMessages;
 		}

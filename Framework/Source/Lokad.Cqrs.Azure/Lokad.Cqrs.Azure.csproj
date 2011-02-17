@@ -82,9 +82,9 @@
     <Compile Include="Logging\LogLevel.cs" />
     <Compile Include="Logging\NullLog.cs" />
     <Compile Include="Logging\TraceLog.cs" />
-    <Compile Include="Queue\AzureWriteQueue.cs" />
-    <Compile Include="Queue\GetMessageResult.cs" />
-    <Compile Include="Queue\GetMessageResultState.cs" />
+    <Compile Include="Sender\AzureWriteQueue.cs" />
+    <Compile Include="Consume\GetMessageResult.cs" />
+    <Compile Include="Consume\GetMessageResultState.cs" />
     <Compile Include="Scheduled\ExpressionTaskBuilder.cs" />
     <Compile Include="Scheduled\IScheduledTaskBuilder.cs" />
     <Compile Include="Scheduled\IScheduledTaskDispatcher.cs" />
@@ -104,11 +104,11 @@
     <Compile Include="Scheduled\ScheduledModule.cs" />
     <Compile Include="Sender\SenderModule.cs" />
     <Compile Include="Domain\DomainBuildModule.cs" />
-    <Compile Include="Queue\AzureQueueFactory.cs" />
+    <Compile Include="Sender\AzureQueueFactory.cs" />
     <Compile Include="Build\Syntax.cs" />
-    <Compile Include="Queue\AzureQueuePolicy.cs" />
-    <Compile Include="Queue\AzureReadQueue.cs" />
-    <Compile Include="Queue\ConsumingProcess.cs" />
+    <Compile Include="Consume\AzureQueuePolicy.cs" />
+    <Compile Include="Consume\AzureReadQueue.cs" />
+    <Compile Include="Consume\ConsumingProcess.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -125,9 +125,7 @@
   <ItemGroup>
     <Content Include="_ReadMe.txt" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Infrastructure\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
