@@ -13,7 +13,7 @@ namespace Lokad.Cqrs.Queue
 {
 	public sealed class AzureReadQueue
 	{
-		
+		readonly string _queueName;
 		readonly IMessageSerializer _serializer;
 
 		readonly CloudBlobContainer _cloudBlob;
@@ -21,7 +21,6 @@ namespace Lokad.Cqrs.Queue
 		
 		readonly CloudQueue _posionQueue;
 		readonly CloudQueue _queue;
-		readonly AzureQueueReference _queueReference;
 		const int RetryCount = 4;
 
 		public AzureReadQueue(
@@ -38,19 +37,18 @@ namespace Lokad.Cqrs.Queue
 			var queueClient = account.CreateCloudQueueClient();
 			queueClient.RetryPolicy = RetryPolicies.NoRetry();
 			_queue = queueClient.GetQueueReference(queueName);
-
-			_queueReference = new AzureQueueReference(account.QueueEndpoint, _queue.Name);
-			_posionQueue = queueClient.GetQueueReference(_queueReference.SubQueue("poison").QueueName);
+			_posionQueue = queueClient.GetQueueReference(queueName + "-poison");
 
 			_log = provider.Get("Queue[" + queueName + "]");
 
+			_queueName = queueName;
 			_serializer = serializer;
 		}
 
 		
-		public Uri Uri
+		public string Name
 		{
-			get { return _queueReference.Uri; }
+			get { return _queueName; }
 		}
 
 		public void Init()
@@ -81,6 +79,7 @@ namespace Lokad.Cqrs.Queue
 			{
 				// we consider this to be poison
 				_log.ErrorFormat("Moving message {0} to poison queue {1}", message.Id, _posionQueue.Name);
+				// Move to poison
 				_posionQueue.AddMessage(message);
 				_queue.DeleteMessage(message);
 				return GetMessageResult.Retry;
@@ -99,7 +98,9 @@ namespace Lokad.Cqrs.Queue
 			catch (Exception ex)
 			{
 				_log.ErrorFormat(ex, "Failed to deserialize envelope {0}. Moving to poison", message.Id);
-				MoveIncomingToPoison(message);
+				// new poison details
+				_posionQueue.AddMessage(message);
+				_queue.DeleteMessage(message);
 				return GetMessageResult.Retry;
 			}
 		}
@@ -129,18 +130,7 @@ namespace Lokad.Cqrs.Queue
 
 			var cloud = message.GetState<CloudQueueMessage>().Value;
 			_log.Debug(message);
-
 			_queue.DeleteMessage(cloud);
 		}
-
-
-		void MoveIncomingToPoison(CloudQueueMessage message)
-		{
-			// new poison details
-			_posionQueue.AddMessage(message);
-			_queue.DeleteMessage(message);
-		}
-
-		
 	}
 }

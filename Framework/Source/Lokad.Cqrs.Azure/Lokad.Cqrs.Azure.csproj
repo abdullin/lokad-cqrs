@@ -107,7 +107,6 @@
     <Compile Include="Sender\SenderModule.cs" />
     <Compile Include="Domain\DomainBuildModule.cs" />
     <Compile Include="Queue\AzureQueueFactory.cs" />
-    <Compile Include="Queue\AzureQueueReference.cs" />
     <Compile Include="Build\Syntax.cs" />
     <Compile Include="Transport\AzureQueuePolicy.cs" />
     <Compile Include="Transport\AzureQueueTransportConfig.cs" />

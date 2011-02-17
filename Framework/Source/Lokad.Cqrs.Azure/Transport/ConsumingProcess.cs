@@ -71,7 +71,7 @@ namespace Lokad.Cqrs.Transport
 			}
 			catch (Exception ex)
 			{
-				var text = string.Format("Failed to consume '{0}' from '{1}'", message, queue.Uri);
+				var text = string.Format("Failed to consume '{0}' from '{1}'", message, queue.Name);
 				_log.Error(ex, text);
 				return ex;
 			}
