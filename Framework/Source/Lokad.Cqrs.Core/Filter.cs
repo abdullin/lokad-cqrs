@@ -8,15 +8,9 @@ namespace Lokad
 	{
 		readonly HashSet<Func<TItem, bool>> _filters = new HashSet<Func<TItem, bool>>();
 
-		public bool Any()
-		{
-			return _filters.Any();
-		}
-
-		public Filter<TItem> Where(Func<TItem, bool> filter)
+		public void AddFilter(Func<TItem, bool> filter)
 		{
 			_filters.Add(filter);
-			return this;
 		}
 
 		public IEnumerable<TItem> Apply(IEnumerable<TItem> types)

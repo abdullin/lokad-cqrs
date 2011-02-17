@@ -94,7 +94,7 @@ namespace Lokad.Cqrs.Consume.Build
 		/// <returns></returns>
 		public HandleMessagesModule WhereMappings(Func<MessageMapping, bool> filter)
 		{
-			_filter.Where(filter);
+			_filter.AddFilter(filter);
 			return this;
 		}
 

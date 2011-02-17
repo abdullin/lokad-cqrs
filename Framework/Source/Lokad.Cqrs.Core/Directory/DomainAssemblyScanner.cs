@@ -41,13 +41,13 @@ namespace Lokad.Cqrs.Directory
 
 		public DomainAssemblyScanner WhereMessages(Func<Type, bool> filter)
 		{
-			_serializableSelector.Where(filter);
+			_serializableSelector.AddFilter(filter);
 			return this;
 		}
 
 		public DomainAssemblyScanner WhereConsumers(Func<Type, Boolean> filter)
 		{
-			_handlerSelector.Where(filter);
+			_handlerSelector.AddFilter(filter);
 			return this;
 		}
 

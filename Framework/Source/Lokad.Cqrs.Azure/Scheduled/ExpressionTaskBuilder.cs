@@ -25,7 +25,7 @@ namespace Lokad.Cqrs.Scheduled
 
 		public ExpressionTaskBuilder<TTask> WithFilter(Func<Type, bool> filter)
 		{
-			_taskFilter.Where(filter);
+			_taskFilter.AddFilter(filter);
 			return this;
 		}
 
