@@ -33,7 +33,6 @@ namespace Lokad.Cqrs
 			// System presets
 			Logging.LogToTrace();
 			Serialization.UseDataContractSerializer();
-			Builder.RegisterInstance(NullEngineProfiler.Instance);
 			Builder.RegisterInstance(SimpleMessageProfiler.Instance);
 
 			// Azure presets

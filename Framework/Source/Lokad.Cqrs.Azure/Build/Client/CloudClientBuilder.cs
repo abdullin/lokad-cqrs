@@ -27,7 +27,6 @@ namespace Lokad.Cqrs
 			Serialization.UseDataContractSerializer();
 			Logging.LogToTrace();
 			Builder.RegisterInstance(SimpleMessageProfiler.Instance);
-			Builder.RegisterInstance(NullEngineProfiler.Instance);
 			Builder.RegisterType<AzureQueueFactory>().As<IRouteMessages, IQueueManager>().SingleInstance();
 			Builder.RegisterType<AzureQueueTransport>();
 			Builder.RegisterType<CloudClient>().SingleInstance();

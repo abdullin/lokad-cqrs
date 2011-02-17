@@ -68,14 +68,12 @@
     <Compile Include="Build\Engine\CloudEngineRole.cs" />
     <Compile Include="Build\Engine\CloudEngineHost.cs" />
     <Compile Include="Build\ExtendSyntaxForCloudStorageAccount.cs" />
-    <Compile Include="Build\NullEngineProfiler.cs" />
     <Compile Include="Consume\BlobExceptionLogger.cs" />
     <Compile Include="Consume\ConfigureBlobSavingOnException.cs" />
     <Compile Include="Consume\ConsumingProcess.cs" />
     <Compile Include="Consume\DispatchesMultipleMessagesToSharedScope.cs" />
     <Compile Include="Consume\DispatchesSingleMessage.cs" />
     <Compile Include="Consume\IMessageDispatcher.cs" />
-    <Compile Include="Infrastructure\IEngineProfiler.cs" />
     <Compile Include="Infrastructure\IMessageProfiler.cs" />
     <Compile Include="Logging\DebugLog.cs" />
     <Compile Include="Logging\ExtendILogProvider.cs" />

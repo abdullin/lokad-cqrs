@@ -20,4 +20,15 @@ namespace Lokad
 		/// <returns></returns>
 		ILog Get(string name);
 	}
+
+
+	public interface IDagnosticEvent
+	{
+		
+	}
+
+	public interface IDiagnosticsPipe
+	{
+		void Send(params IDagnosticEvent[] events);
+	}
 }

@@ -22,7 +22,6 @@ namespace Lokad.Cqrs.Transport
 		readonly IsolationLevel _isolationLevel;
 		readonly ILog _log;
 		readonly IMessageProfiler _messageProfiler;
-		readonly IEngineProfiler _profiler;
 		readonly string[] _queueNames;
 		readonly IReadMessageQueue[] _queues;
 		readonly int _degreeOfParallelism;
@@ -32,12 +31,10 @@ namespace Lokad.Cqrs.Transport
 			AzureQueueTransportConfig config,
 			ILogProvider logProvider,
 			IQueueManager factory,
-			IEngineProfiler profiler,
 			IMessageProfiler messageProfiler)
 		{
 			_factory = factory;
 			_messageProfiler = messageProfiler;
-			_profiler = profiler;
 			_queueNames = config.QueueNames;
 			_isolationLevel = config.IsolationLevel;
 			_log = logProvider.Get(typeof (AzureQueueTransport).Name + "." + config.LogName);
@@ -104,12 +101,9 @@ namespace Lokad.Cqrs.Transport
 			try
 			{
 				MessageContext.OverrideContext(message);
-				using (_profiler.TrackMessage(message))
+				foreach (Action<UnpackedMessage> func in messageHandlers.GetInvocationList())
 				{
-					foreach (Action<UnpackedMessage> func in messageHandlers.GetInvocationList())
-					{
-						func(message);
-					}
+					func(message);
 				}
 			}
 			finally

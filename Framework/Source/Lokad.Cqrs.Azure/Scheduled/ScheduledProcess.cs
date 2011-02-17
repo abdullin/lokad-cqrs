@@ -20,7 +20,6 @@ namespace Lokad.Cqrs.Scheduled
 		public delegate void ChainProcessedDelegate(ScheduledState[] state, bool emptyChain);
 
 		readonly ILog _log;
-		readonly IEngineProfiler _profiler;
 		readonly TimeSpan _sleepBetweenCommands;
 		readonly TimeSpan _sleepOnEmptyChain;
 		readonly TimeSpan _sleepOnFailure;
@@ -34,7 +33,6 @@ namespace Lokad.Cqrs.Scheduled
 			ILogProvider provider,
 			ScheduledTaskInfo[] commands,
 			ScheduledConfig config,
-			IEngineProfiler profiler,
 			IScheduledTaskDispatcher dispatcher)
 		{
 			_log = provider.CreateLog<ScheduledProcess>();
@@ -43,7 +41,6 @@ namespace Lokad.Cqrs.Scheduled
 			_sleepBetweenCommands = config.SleepBetweenCommands;
 			_sleepOnEmptyChain = config.SleepOnEmptyChain;
 			_sleepOnFailure = config.SleepOnFailure;
-			_profiler = profiler;
 			_dispatcher = dispatcher;
 		}
 
@@ -106,20 +103,17 @@ namespace Lokad.Cqrs.Scheduled
 
 		void RunCommandTillItFinishes(ScheduledState state, CancellationToken token)
 		{
-			using (_profiler.TrackContext(state.Name))
+			while (!token.IsCancellationRequested)
 			{
-				while (!token.IsCancellationRequested)
-				{
-					var result = _dispatcher.Execute(state.Task);
+				var result = _dispatcher.Execute(state.Task);
 
-					if (result > TimeSpan.Zero)
-					{
-						state.ScheduleIn(result);
-						return;
-					}
-					_log.Debug("Repeat");
-					state.ScheduleIn(0.Seconds());
+				if (result > TimeSpan.Zero)
+				{
+					state.ScheduleIn(result);
+					return;
 				}
+				_log.Debug("Repeat");
+				state.ScheduleIn(0.Seconds());
 			}
 		}
 
