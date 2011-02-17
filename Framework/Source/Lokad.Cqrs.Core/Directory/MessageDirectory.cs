@@ -11,14 +11,14 @@ using System.Linq;
 
 namespace Lokad.Cqrs.Directory
 {
-	public sealed class MessageDirectory : IMessageDirectory
+	public sealed class MessageDirectory : IKnowSerializationTypes
 	{
 		readonly string _consumeMethodName;
 		readonly ConsumerInfo[] _consumers;
-		readonly MessageInfo[] _messages;
+		readonly ICollection<MessageInfo> _messages;
 		readonly Type[] _knownTypes;
 
-		public MessageDirectory(string consumeMethodName, ConsumerInfo[] consumers, MessageInfo[] messages)
+		public MessageDirectory(string consumeMethodName, ConsumerInfo[] consumers, ICollection<MessageInfo> messages)
 		{
 			_consumeMethodName = consumeMethodName;
 			_consumers = consumers;
@@ -28,12 +28,12 @@ namespace Lokad.Cqrs.Directory
 				.Where(m => false == m.MessageType.IsAbstract).ToArray(m => m.MessageType);
 		}
 
-		public ConsumerInfo[] Consumers
+		public ICollection<ConsumerInfo> Consumers
 		{
 			get { return _consumers; }
 		}
 
-		public MessageInfo[] Messages
+		public ICollection<MessageInfo> Messages
 		{
 			get { return _messages; }
 		}

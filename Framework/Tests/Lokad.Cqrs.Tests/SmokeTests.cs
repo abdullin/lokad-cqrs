@@ -5,6 +5,7 @@
 
 #endregion
 
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization;
@@ -22,7 +23,7 @@ namespace Lokad.Cqrs.Tests
 
 		#region Setup/Teardown
 
-		ICloudEngineHost BuildHost()
+		CloudEngineHost BuildHost()
 		{
 			var engine = new CloudEngineBuilder();
 			
@@ -92,7 +93,7 @@ namespace Lokad.Cqrs.Tests
 				var client = host.Resolve<IMessageClient>();
 
 				client.Send(new Hello { Word = "World" });
-				client.Send(new Hello { Word = Rand.String.NextText(6000, 6000) });
+				client.Send(new Hello { Word = new string('1',9000) });
 				client.Send(new Bye { Word = "Earth" });
 
 				using (var cts = new CancellationTokenSource())
@@ -127,9 +128,10 @@ namespace Lokad.Cqrs.Tests
 		[Test]
 		public void Test()
 		{
+			var r = new Random();
 			using (var mem = new MemoryStream())
 			{
-				var fix = MessageHeader.ForData(Rand.Next(1000), Rand.Next(0, 12), 0);
+				var fix = MessageHeader.ForData(r.Next(0,1000), r.Next(0, 12), 0);
 				Serializer.Serialize(mem, fix);
 				Assert.AreEqual(MessageHeader.FixedSize, mem.Position);
 			}

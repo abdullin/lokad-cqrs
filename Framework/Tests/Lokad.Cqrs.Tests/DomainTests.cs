@@ -79,9 +79,9 @@ namespace Lokad.Cqrs.Tests
 
 		#endregion
 
-		IMessageDirectoryBuilder Builder { get; set;}
+		MessageDirectoryBuilder Builder { get; set;}
 		MessageMapping[] Mappings { get; set; }
-		IMessageDirectory Directory { get; set; }
+		MessageDirectory Directory { get; set; }
 
 		[TestFixtureSetUp]
 		public void FixtureSetUp()
@@ -118,8 +118,8 @@ namespace Lokad.Cqrs.Tests
 		public void Filtered()
 		{
 			var directory = Builder.BuildDirectory(mm => typeof (ListenToAll) == mm.Consumer);
-			Assert.AreEqual(1, directory.Consumers.Length, "Length");
-			var consumer = directory.Consumers[0];
+			Assert.AreEqual(1, directory.Consumers.Count, "Length");
+			var consumer = directory.Consumers.First();
 			Assert.AreEqual(typeof(ListenToAll), consumer.ConsumerType, "Type");
 
 			CollectionAssert.Contains(consumer.MessageTypes, typeof(ISomethingHappenedEvent));

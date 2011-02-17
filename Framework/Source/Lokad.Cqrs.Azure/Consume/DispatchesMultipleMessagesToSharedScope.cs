@@ -17,10 +17,10 @@ namespace Lokad.Cqrs.Consume
 	public sealed class DispatchesMultipleMessagesToSharedScope : IMessageDispatcher
 	{
 		readonly ILifetimeScope _container;
-		readonly IMessageDirectory _directory;
+		readonly MessageDirectory _directory;
 		readonly IDictionary<Type, Type[]> _dispatcher = new Dictionary<Type, Type[]>();
 
-		public DispatchesMultipleMessagesToSharedScope(ILifetimeScope container, IMessageDirectory directory)
+		public DispatchesMultipleMessagesToSharedScope(ILifetimeScope container, MessageDirectory directory)
 		{
 			_container = container;
 			_directory = directory;

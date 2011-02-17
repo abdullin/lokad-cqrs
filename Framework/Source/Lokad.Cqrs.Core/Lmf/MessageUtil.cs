@@ -22,14 +22,6 @@ namespace Lokad.Cqrs.Lmf
 			return stream;
 		}
 
-		public static void SaveMessageToStream(UnpackedMessage message, Stream stream, IMessageSerializer serializer)
-		{
-			using (var mem = SaveDataMessageToStream(message.Attributes, s => serializer.Serialize(message.Content, s)))
-			{
-				mem.PumpTo(stream, 10.Kb());
-			}
-		}
-
 		public static MemoryStream SaveDataMessageToStream(MessageAttributesContract messageAttributes, Action<Stream> message)
 		{
 			var stream = new MemoryStream();

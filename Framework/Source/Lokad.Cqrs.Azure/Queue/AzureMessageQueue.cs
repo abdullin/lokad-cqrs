@@ -9,7 +9,6 @@ using System;
 using System.IO;
 using System.Transactions;
 using Lokad.Cqrs.Lmf;
-using Lokad.Serialization;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
 namespace Lokad.Cqrs.Queue
@@ -146,21 +145,18 @@ namespace Lokad.Cqrs.Queue
 
 		public void AckMessage(UnpackedMessage message)
 		{
-			Enforce.Argument(() => message);
+			if (message == null) throw new ArgumentNullException("message");
 
 			var cloud = message.GetRequiredState<CloudQueueMessage>();
-
-			if (_log.IsDebugEnabled())
-			{
-				_log.Debug(_debugger.GetReadableMessageInfo(message));
-			}
+			_log.Debug(_debugger.GetReadableMessageInfo(message));
 			
 			TransactionalDeleteMessage(cloud);
 		}
 
 		public void DiscardMessage(UnpackedMessage message)
 		{
-			Enforce.Argument(() => message);
+			if (message == null) throw new ArgumentNullException("message");
+
 
 			var cloud = message.GetRequiredState<CloudQueueMessage>();
 
@@ -248,8 +244,8 @@ namespace Lokad.Cqrs.Queue
 
 		CloudQueueMessage PackNewMessage(object message,  Action<MessageAttributeBuilder> modify)
 		{
-			var messageId = GuidUtil.NewComb();
-			var created = SystemUtil.UtcNow;
+			var messageId = Guid.NewGuid();
+			var created = DateTime.UtcNow;
 
 			var messageType = message.GetType();
 			var contract = _serializer

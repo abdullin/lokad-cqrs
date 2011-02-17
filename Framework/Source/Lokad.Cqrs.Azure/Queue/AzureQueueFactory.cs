@@ -5,12 +5,14 @@
 
 #endregion
 
+using System;
 using System.Collections.Generic;
+
 using Microsoft.WindowsAzure;
 
 namespace Lokad.Cqrs.Queue
 {
-	[UsedImplicitly]
+	
 	public sealed class AzureQueueFactory : IQueueManager, IRouteMessages
 	{
 		const int RetryCount = 4;
@@ -63,7 +65,7 @@ namespace Lokad.Cqrs.Queue
 			IWriteMessageQueue[] queues;
 			lock (_queues)
 			{
-				queues = references.Convert(GetOrCreateQueue);
+				queues = Convert(references, GetOrCreateQueue);
 			}
 			foreach (var queue in queues)
 			{
@@ -90,6 +92,19 @@ namespace Lokad.Cqrs.Queue
 				_queues.Add(queueName, value);
 			}
 			return value;
+		}
+		
+		static TTarget[] Convert<TSource, TTarget>(TSource[] source, Converter<TSource, TTarget> converter)
+		{
+			if (source == null) throw new ArgumentNullException("source");
+			if (converter == null) throw new ArgumentNullException("converter");
+
+			var outputArray = new TTarget[source.Length];
+			for (int i = 0; i < source.Length; i++)
+			{
+				outputArray[i] = converter(source[i]);
+			}
+			return outputArray;
 		}
 	}
 }

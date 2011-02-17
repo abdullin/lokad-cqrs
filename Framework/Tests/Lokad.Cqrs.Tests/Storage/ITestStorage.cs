@@ -1,4 +1,5 @@
 ﻿using Lokad.Cqrs.Storage;
+using Lokad.Storage;
 
 namespace Lokad.Cqrs.Tests.Storage
 {

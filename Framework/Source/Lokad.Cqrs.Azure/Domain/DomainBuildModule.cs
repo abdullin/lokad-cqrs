@@ -12,7 +12,6 @@ using Autofac;
 using Autofac.Core;
 using Lokad.Cqrs.Directory;
 using Lokad.Default;
-using Lokad.Serialization;
 
 namespace Lokad.Cqrs.Domain
 {
@@ -186,8 +185,8 @@ namespace Lokad.Cqrs.Domain
 				}
 			}
 
-			_builder.RegisterInstance(directoryBuilder).As<IMessageDirectoryBuilder>();
-			_builder.RegisterInstance(directory).As<IMessageDirectory, IKnowSerializationTypes>();
+			_builder.RegisterInstance(directoryBuilder).As<MessageDirectoryBuilder>();
+			_builder.RegisterInstance(directory).As<MessageDirectory, IKnowSerializationTypes>();
 
 			_builder
 				.RegisterType<DomainAwareMessageProfiler>()
@@ -195,11 +194,6 @@ namespace Lokad.Cqrs.Domain
 				.SingleInstance();
 
 			_builder.Update(componentRegistry);
-		}
-
-		public ContainerBuilder Target
-		{
-			get { return _builder; }
 		}
 	}
 }

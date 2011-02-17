@@ -6,7 +6,6 @@
 #endregion
 
 using System;
-using Lokad.Serialization;
 
 namespace Lokad.Cqrs.Queue
 {

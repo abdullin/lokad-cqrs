@@ -1,4 +1,5 @@
 ﻿using System;
+
 using ProtoBuf;
 
 namespace Lokad.Cqrs
@@ -14,7 +15,7 @@ namespace Lokad.Cqrs
 			Items = items;
 		}
 
-		[UsedImplicitly]
+		
 		MessageAttributesContract()
 		{
 			Items = new MessageAttributeContract[0];

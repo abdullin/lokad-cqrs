@@ -61,7 +61,6 @@
     <Compile Include="Build\AutofacBuilderForAzure.cs" />
     <Compile Include="Build\AutofacBuilderForLogging.cs" />
     <Compile Include="Build\AutofacBuilderForSerialization.cs" />
-    <Compile Include="Build\BuilderExtensions.cs" />
     <Compile Include="Build\Client\CloudClient.cs" />
     <Compile Include="Build\Client\CloudClientBuilder.cs" />
     <Compile Include="Build\CloudSettingsProvider.cs" />
@@ -69,31 +68,55 @@
     <Compile Include="Build\Engine\CloudEngineRole.cs" />
     <Compile Include="Build\Engine\CloudEngineHost.cs" />
     <Compile Include="Build\ExtendSyntaxForCloudStorageAccount.cs" />
+    <Compile Include="Build\NullEngineProfiler.cs" />
     <Compile Include="Consume\BlobExceptionLogger.cs" />
     <Compile Include="Consume\ConfigureBlobSavingOnException.cs" />
+    <Compile Include="Consume\ConsumingProcess.cs" />
     <Compile Include="Consume\DispatchesMultipleMessagesToSharedScope.cs" />
     <Compile Include="Consume\DispatchesSingleMessage.cs" />
+    <Compile Include="Consume\IMessageDispatcher.cs" />
+    <Compile Include="Infrastructure\IEngineProfiler.cs" />
+    <Compile Include="Infrastructure\IMessageProfiler.cs" />
+    <Compile Include="Logging\DebugLog.cs" />
+    <Compile Include="Logging\ExtendILogProvider.cs" />
+    <Compile Include="Logging\ILog.cs" />
+    <Compile Include="Logging\ExtendILog.cs" />
+    <Compile Include="Logging\ILogProvider.cs" />
+    <Compile Include="Logging\LambdaLogProvider.cs" />
+    <Compile Include="Logging\LogLevel.cs" />
+    <Compile Include="Logging\NullLog.cs" />
+    <Compile Include="Logging\TraceLog.cs" />
+    <Compile Include="Queue\GetMessageResult.cs" />
+    <Compile Include="Queue\GetMessageResultState.cs" />
+    <Compile Include="Queue\IQueueManager.cs" />
+    <Compile Include="Queue\IReadMessageQueue.cs" />
+    <Compile Include="Queue\IRouteMessages.cs" />
+    <Compile Include="Queue\IWriteMessageQueue.cs" />
+    <Compile Include="Scheduled\ExpressionTaskBuilder.cs" />
+    <Compile Include="Scheduled\IScheduledTaskBuilder.cs" />
+    <Compile Include="Scheduled\IScheduledTaskDispatcher.cs" />
+    <Compile Include="Scheduled\ScheduledConfig.cs" />
+    <Compile Include="Scheduled\ScheduledProcess.cs" />
+    <Compile Include="Scheduled\ScheduledState.cs" />
+    <Compile Include="Scheduled\ScheduledTaskInfo.cs" />
     <Compile Include="Storage\BlobStorageRoot.cs" />
     <Compile Include="Storage\BlobStorageUtil.cs" />
     <Compile Include="Storage\SuppressFlushForStream.cs" />
-    <Compile Include="Views\FixedTypeDiscovery.cs" />
-    <Compile Include="Views\ViewBuildModule.cs" />
     <Compile Include="Storage\BlobStorageContainer.cs" />
     <Compile Include="Storage\BlobStorageItem.cs" />
     <Compile Include="Build\SimpleMessageProfiler.cs" />
-    <Compile Include="Build\Manager\CloudManagerBuilder.cs" />
     <Compile Include="Consume\HandleMessagesModule.cs" />
     <Compile Include="Domain\DomainAwareMessageProfiler.cs" />
     <Compile Include="Queue\QueueErrors.cs" />
     <Compile Include="Sender\DefaultMessageClient.cs" />
     <Compile Include="Infrastructure\ExtendIComponentContext.cs" />
-    <Compile Include="Scheduled\DefaultTaskDispatcher.cs" />
+    <Compile Include="Scheduled\TransactionalTaskDispatcher.cs" />
     <Compile Include="Scheduled\ScheduledModule.cs" />
     <Compile Include="Sender\SenderModule.cs" />
     <Compile Include="Domain\DomainBuildModule.cs" />
     <Compile Include="Queue\AzureQueueFactory.cs" />
     <Compile Include="Queue\AzureQueueReference.cs" />
-    <Compile Include="Storage\EntityStorage.cs" />
+    <Compile Include="Build\Syntax.cs" />
     <Compile Include="Transport\AzureQueuePolicy.cs" />
     <Compile Include="Transport\AzureQueueTransportConfig.cs" />
     <Compile Include="Queue\AzureMessageQueue.cs" />
@@ -104,14 +127,6 @@
     <Compile Include="Queue\SubQueueType.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Lokad.Cqrs.Shared\Lokad.Cqrs.Shared.csproj">
-      <Project>{5B606929-E54C-4D73-AE8A-B742C9BE72E4}</Project>
-      <Name>Lokad.Cqrs.Shared</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Lokad.Cqrs.Storage\Lokad.Cqrs.Storage.csproj">
-      <Project>{00CB3AB5-5BE9-432C-A589-0A7A436D5F8F}</Project>
-      <Name>Lokad.Cqrs.Storage</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Lokad.Cqrs.Core\Lokad.Cqrs.Core.csproj">
       <Project>{CE441C5A-2DC1-4639-81ED-5B4CAC649BD9}</Project>
       <Name>Lokad.Cqrs.Core</Name>
@@ -125,6 +140,7 @@
   <ItemGroup>
     <Content Include="_ReadMe.txt" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

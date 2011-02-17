@@ -12,19 +12,18 @@ using Autofac;
 
 namespace Lokad.Cqrs
 {
-	[UsedImplicitly]
-	public class CloudClient : ICloudClient
+	public class CloudClient : IDisposable
 	{
 		readonly Lazy<IMessageClient> _client;
-		readonly IComponentContext _resolver;
+		readonly ILifetimeScope _resolver;
 
-		public CloudClient(IComponentContext resolver)
+		public CloudClient(ILifetimeScope resolver)
 		{
 			_resolver = resolver;
 			_client = new Lazy<IMessageClient>(GetClient, LazyThreadSafetyMode.ExecutionAndPublication);
 		}
 
-		public CloudClient(IComponentContext resolver, Lazy<IMessageClient> client)
+		public CloudClient(ILifetimeScope resolver, Lazy<IMessageClient> client)
 		{
 			_resolver = resolver;
 			_client = client;
@@ -58,6 +57,11 @@ namespace Lokad.Cqrs
 				throw new InvalidOperationException(
 					"Failed to resolve message client. Have you used Builder.AddMessageClient or Builder.BuildFor(name)?", e);
 			}
+		}
+
+		public void Dispose()
+		{
+			_resolver.Dispose();
 		}
 	}
 }

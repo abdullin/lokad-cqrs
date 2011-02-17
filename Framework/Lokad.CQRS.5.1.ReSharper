@@ -290,7 +290,7 @@ II.2.12 <HandlesEvent />
     <XML>
       <FormatSettings />
     </XML>
-    <FileHeader Region="(c) 2010-2011 Lokad Open Source - New BSD License "><![CDATA[Copyright (c) Lokad 2010-2011, http://www.lokad.com
+    <FileHeader Region="(c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License "><![CDATA[Copyright (c) Lokad 2010-2011, http://www.lokad.com
 This code is released as Open Source under the terms of the New BSD Licence]]></FileHeader>
     <GenerateMemberBody />
     <Naming2>
@@ -320,6 +320,6 @@ This code is released as Open Source under the terms of the New BSD Licence]]></
   </CodeStyleSettings>
   <CodeAnnotations>
     <Namespace>Lokad.Quality</Namespace>
-    <DefaultNamespace>JetBrains.Annotations</DefaultNamespace>
+    <DefaultNamespace>Lokad.Cqrs</DefaultNamespace>
   </CodeAnnotations>
 </Configuration>

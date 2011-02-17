@@ -8,17 +8,18 @@
 using System;
 using System.Collections.Generic;
 using Lokad.Cqrs.Directory;
+
 using Lokad.Cqrs.Queue;
 using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs.Domain
 {
-	[UsedImplicitly]
+	
 	public sealed class DomainAwareMessageProfiler : IMessageProfiler
 	{
 		readonly IDictionary<Type, GetInfoDelegate> _delegates;
 
-		public DomainAwareMessageProfiler(IMessageDirectory directory)
+		public DomainAwareMessageProfiler(MessageDirectory directory)
 		{
 			_delegates = BuildFrom(directory);
 		}
@@ -43,7 +44,7 @@ namespace Lokad.Cqrs.Domain
 				.Convert(s => contract + " - " + s.Id, contract);
 		}
 
-		static IDictionary<Type, GetInfoDelegate> BuildFrom(IMessageDirectory directory)
+		static IDictionary<Type, GetInfoDelegate> BuildFrom(MessageDirectory directory)
 		{
 			var delegates = new Dictionary<Type, GetInfoDelegate>();
 			foreach (var message in directory.Messages)

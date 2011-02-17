@@ -51,8 +51,12 @@
   <ItemGroup>
     <Compile Include="DomainTests.cs" />
     <Compile Include="ExtendMaybe.cs" />
+    <Compile Include="Fixture.cs" />
     <Compile Include="MessageUtilTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ProtoBufDataTests.cs" />
+    <Compile Include="ProtoBufNativeTests.cs" />
+    <Compile Include="ProtoBufXmlTests.cs" />
     <Compile Include="SmokeTests.cs" />
     <Compile Include="Storage\BlobStorage.cs" />
     <Compile Include="Storage\FileStorage.cs" />
@@ -64,17 +68,8 @@
     <Compile Include="Storage\When_deleting_item_in.cs" />
     <Compile Include="Storage\When_writing_item_in.cs" />
     <Compile Include="Storage\When_reading_item_in.cs" />
-    <Compile Include="Views\EntityStorageTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Source\Lokad.Cqrs.Shared\Lokad.Cqrs.Shared.csproj">
-      <Project>{5B606929-E54C-4D73-AE8A-B742C9BE72E4}</Project>
-      <Name>Lokad.Cqrs.Shared</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Source\Lokad.Cqrs.Storage\Lokad.Cqrs.Storage.csproj">
-      <Project>{00CB3AB5-5BE9-432C-A589-0A7A436D5F8F}</Project>
-      <Name>Lokad.Cqrs.Storage</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Source\Lokad.Cqrs.Azure\Lokad.Cqrs.Azure.csproj">
       <Project>{FD6C8202-F530-4C09-8889-28DC383965AA}</Project>
       <Name>Lokad.Cqrs.Azure</Name>

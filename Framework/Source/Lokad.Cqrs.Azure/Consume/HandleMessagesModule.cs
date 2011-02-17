@@ -9,9 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Transactions;
 using Autofac;
-using Autofac.Core;
 using Lokad.Cqrs.Directory;
-using Lokad.Cqrs.Domain;
 using Lokad.Cqrs.Transport;
 using System.Linq;
 
@@ -21,10 +19,10 @@ namespace Lokad.Cqrs.Consume.Build
 	{
 		readonly Filter<MessageMapping> _filter = new Filter<MessageMapping>();
 		HashSet<string> _queueNames = new HashSet<string>();
-		Func<ILifetimeScope, IMessageDirectory, IMessageDispatcher> _dispatcher;
+		Func<ILifetimeScope, MessageDirectory, IMessageDispatcher> _dispatcher;
 
 
-		Action<IMessageTransport, IComponentContext> _applyToTransport = (transport, context) => { };
+		Action<AzureQueueTransport, IComponentContext> _applyToTransport = (transport, context) => { };
 
 		public HandleMessagesModule()
 		{
@@ -38,13 +36,13 @@ namespace Lokad.Cqrs.Consume.Build
 			WithSingleConsumer();
 		}
 
-		public HandleMessagesModule ApplyToTransport(Action<IMessageTransport, IComponentContext> config)
+		public HandleMessagesModule ApplyToTransport(Action<AzureQueueTransport, IComponentContext> config)
 		{
 			_applyToTransport += config;
 			return this;
 		}
 
-		[UsedImplicitly]
+		
 		public HandleMessagesModule WhenMessageHandlerFails(Action<UnpackedMessage, Exception> handler)
 		{
 			return ApplyToTransport((transport, context) =>
@@ -54,7 +52,7 @@ namespace Lokad.Cqrs.Consume.Build
 				});
 		}
 
-		[UsedImplicitly]
+		
 		public HandleMessagesModule WhenMessageArrives(Func<UnpackedMessage, bool> interceptor)
 		{
 			return ApplyToTransport((transport, context) =>
@@ -213,16 +211,16 @@ namespace Lokad.Cqrs.Consume.Build
 				queueNames,
 				SleepWhenNoMessages);
 
-			var transport = context.Resolve<IMessageTransport>(TypedParameter.From(transportConfig));
+			var transport = context.Resolve<AzureQueueTransport>(TypedParameter.From(transportConfig));
 
 			_applyToTransport(transport, context);
 
 
-			var builder = context.Resolve<IMessageDirectoryBuilder>();
+			var builder = context.Resolve<MessageDirectoryBuilder>();
 			var filter = _filter.BuildFilter();
 			var directory = builder.BuildDirectory(filter);
 
-			log.DebugFormat("Discovered {0} messages", directory.Messages.Length);
+			log.DebugFormat("Discovered {0} messages", directory.Messages.Count);
 
 			DebugPrintIfNeeded(log, directory);
 
@@ -237,7 +235,7 @@ namespace Lokad.Cqrs.Consume.Build
 			return consumer;
 		}
 
-		void DebugPrintIfNeeded(ILog log, IMessageDirectory directory)
+		void DebugPrintIfNeeded(ILog log, MessageDirectory directory)
 		{
 			if (DebugPrintsMessageTree)
 			{

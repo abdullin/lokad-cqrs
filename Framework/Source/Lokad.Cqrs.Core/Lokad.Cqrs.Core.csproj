@@ -45,27 +45,29 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Transactions" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Build\ICloudEngineHost.cs" />
-    <Compile Include="Build\ICloudClient.cs" />
-    <Compile Include="Consume\ConsumingProcess.cs" />
-    <Compile Include="Consume\IMessageDispatcher.cs" />
+    <Compile Include="Default\IConsume.cs" />
+    <Compile Include="Default\IConsumeMessage.cs" />
+    <Compile Include="Default\IMessage.cs" />
+    <Compile Include="Default\IScheduledTask.cs" />
     <Compile Include="Directory\ConsumerInfo.cs" />
-    <Compile Include="Directory\IMessageDirectory.cs" />
-    <Compile Include="Directory\IMessageDirectoryBuilder.cs" />
     <Compile Include="Directory\DomainAssemblyScanner.cs" />
     <Compile Include="Directory\MessageDirectory.cs" />
     <Compile Include="Directory\MessageDirectoryBuilder.cs" />
     <Compile Include="Directory\MessageInfo.cs" />
     <Compile Include="Directory\MessageMapping.cs" />
     <Compile Include="Directory\MessageReflectionUtil.cs" />
-    <Compile Include="Build\NullEngineProfiler.cs" />
-    <Compile Include="IEngineProfiler.cs" />
-    <Compile Include="IMessageProfiler.cs" />
-    <Compile Include="IMessageTransport.cs" />
+    <Compile Include="Errors.cs" />
+    <Compile Include="Extensions\ExtendIDictionary.cs" />
+    <Compile Include="Extensions\ExtendIEnumerable.cs" />
+    <Compile Include="Extensions\ExtendInt32.cs" />
+    <Compile Include="Filter.cs" />
+    <Compile Include="IKnowSerializationTypes.cs" />
+    <Compile Include="Infrastructure\IEngineProcess.cs" />
+    <Compile Include="Infrastructure\IMessageClient.cs" />
+    <Compile Include="Infrastructure\IMessageSerializer.cs" />
     <Compile Include="Lmf\MessageAttributeBuilder.cs" />
     <Compile Include="Lmf\MessageAttributeContract.cs" />
     <Compile Include="Lmf\MessageAttributesContract.cs" />
@@ -75,31 +77,35 @@
     <Compile Include="Lmf\MessagePrinter.cs" />
     <Compile Include="Lmf\MessageUtil.cs" />
     <Compile Include="Lmf\UnpackedMessage.cs" />
-    <Compile Include="Scheduled\ExpressionTaskBuilder.cs" />
-    <Compile Include="Scheduled\IScheduledTaskBuilder.cs" />
-    <Compile Include="Scheduled\IScheduledTaskDispatcher.cs" />
-    <Compile Include="Scheduled\ScheduledConfig.cs" />
-    <Compile Include="Scheduled\ScheduledProcess.cs" />
-    <Compile Include="Scheduled\ScheduledState.cs" />
-    <Compile Include="Scheduled\ScheduledTaskInfo.cs" />
-    <Compile Include="Queue\GetMessageResult.cs" />
-    <Compile Include="Queue\GetMessageResultState.cs" />
-    <Compile Include="Queue\IQueueManager.cs" />
-    <Compile Include="Queue\IReadMessageQueue.cs" />
-    <Compile Include="Queue\IRouteMessages.cs" />
-    <Compile Include="Queue\IWriteMessageQueue.cs" />
+    <Compile Include="Monads\Maybe.1.cs" />
+    <Compile Include="Monads\Maybe.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Views\ViewAssemblyScanner.cs" />
+    <Compile Include="Serialization\AttributeHelper.cs" />
+    <Compile Include="Serialization\DataContractMessageSerializer.cs" />
+    <Compile Include="Serialization\DataContractUtil.cs" />
+    <Compile Include="Serialization\ProtoBufMessageSerializer.cs" />
+    <Compile Include="Serialization\ProtoBufUtil.cs" />
+    <Compile Include="Storage\Extend\ExtendStorageItem.cs" />
+    <Compile Include="Storage\Files\FileStorageContainer.cs" />
+    <Compile Include="Storage\Files\FileStorageItem.cs" />
+    <Compile Include="Storage\IStorageContainer.cs" />
+    <Compile Include="Storage\IStorageItem.cs" />
+    <Compile Include="Storage\IStorageRoot.cs" />
+    <Compile Include="Storage\LocalStorageInfo.cs" />
+    <Compile Include="Storage\ReaderDelegate.cs" />
+    <Compile Include="Storage\StorageBaseException.cs" />
+    <Compile Include="Storage\StorageCondition.cs" />
+    <Compile Include="Storage\StorageConditionFailedException.cs" />
+    <Compile Include="Storage\StorageConditionType.cs" />
+    <Compile Include="Storage\StorageContainerNotFoundException.cs" />
+    <Compile Include="Storage\StorageErrors.cs" />
+    <Compile Include="Storage\StorageItemInfo.cs" />
+    <Compile Include="Storage\StorageItemIntegrityException.cs" />
+    <Compile Include="Storage\StorageItemNotFoundException.cs" />
+    <Compile Include="Storage\StorageWriteOptions.cs" />
+    <Compile Include="Storage\StreamUtil.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Build\Engine\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Lokad.Cqrs.Shared\Lokad.Cqrs.Shared.csproj">
-      <Project>{5B606929-E54C-4D73-AE8A-B742C9BE72E4}</Project>
-      <Name>Lokad.Cqrs.Shared</Name>
-    </ProjectReference>
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="..\..\SharedKey.snk">
       <Link>SharedKey.snk</Link>

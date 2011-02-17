@@ -12,12 +12,13 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
+
 using Lokad.Cqrs.Queue;
 
 namespace Lokad.Cqrs.Transport
 {
-	[UsedImplicitly]
-	public sealed class AzureQueueTransport : IMessageTransport
+	
+	public sealed class AzureQueueTransport : IDisposable
 	{
 		readonly IQueueManager _factory;
 		readonly IsolationLevel _isolationLevel;
@@ -71,12 +72,16 @@ namespace Lokad.Cqrs.Transport
 		{
 			_log.DebugFormat("Starting transport for {0}", _queueNames.Join(";"));
 
-			var tasks = Range.Array(_degreeOfParallelism, n => Task.Factory.StartNew(() => ReceiveMessages(token), token));
-			return tasks;
+			var array = new Task[_degreeOfParallelism];
+			for (int i = 0; i < _degreeOfParallelism; i++)
+			{
+				array[i] = Task.Factory.StartNew(() => ReceiveMessages(token), token);
+			}
+			return array;
 		}
+	
 
-
-		Result<UnpackedMessage, Exception> Process(IReadMessageQueue queue, UnpackedMessage message)
+		Maybe<Exception> GetProcessingFailure(IReadMessageQueue queue, UnpackedMessage message)
 		{
 			bool consumed;
 
@@ -104,8 +109,7 @@ namespace Lokad.Cqrs.Transport
 					_log.ErrorFormat(ex, "Failed to discard the message {0}", _profiler.TrackMessage(message));
 				}
 			}
-
-			return message;
+			return Maybe<Exception>.Empty;
 		}
 
 		bool ProcessSingleMessage(UnpackedMessage message, Func<UnpackedMessage, bool> messageHandlers)
@@ -217,9 +221,9 @@ namespace Lokad.Cqrs.Transport
 					switch (result.State)
 					{
 						case GetMessageResultState.Success:
-							Process(queue, result.Message)
-								.Handle(ex => MessageHandlingProblem(result.Message, ex))
-								.Apply(m => FinalizeSuccess(queue, m, tx));
+							GetProcessingFailure(queue, result.Message)
+								.Apply(ex => MessageHandlingProblem(result.Message, ex))
+								.Handle(() => FinalizeSuccess(queue, result.Message, tx));
 							return QueueProcessingResult.MoreWork;
 
 						case GetMessageResultState.Wait:

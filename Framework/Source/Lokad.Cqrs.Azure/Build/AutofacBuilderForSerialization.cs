@@ -1,35 +1,36 @@
-﻿using System;
+﻿#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
+
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
 using Autofac;
-using Autofac.Core;
-using Lokad.Cqrs.Storage;
-using Lokad.Serialization;
+using Lokad.Cqrs.Serialization;
 
 namespace Lokad.Cqrs
 {
-	public sealed class AutofacBuilderForSerialization : Syntax, ISupportSyntaxForSerialization
+	public sealed class AutofacBuilderForSerialization : Syntax
 	{
-		readonly ContainerBuilder _builder;
-
-		public AutofacBuilderForSerialization(ContainerBuilder builder)
+		public AutofacBuilderForSerialization(ContainerBuilder builder) : base(builder)
 		{
-			_builder = builder;
 		}
 
 		public void RegisterSerializer<TSerializer>() where TSerializer : IMessageSerializer
 		{
-			_builder
+			Builder
 				.RegisterType<TSerializer>()
-				.As<IMessageSerializer, IDataContractMapper, IDataSerializer>().SingleInstance();
+				.As<IMessageSerializer>().SingleInstance();
 		}
-	}
 
-	public sealed class AutofacBuilderForDomain : Syntax
-	{
-		ContainerBuilder _builder;
-
-		public AutofacBuilderForDomain(ContainerBuilder builder)
+		public void UseDataContractSerializer()
 		{
-			_builder = builder;
+			RegisterSerializer<DataContractMessageSerializer>();
+		}
+
+		public void UseProtoBufMessageSerializer()
+		{
+			RegisterSerializer<ProtoBufMessageSerializer>();
 		}
 	}
 }

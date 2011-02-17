@@ -10,14 +10,14 @@ using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Lokad.Reflection;
+
 
 namespace Lokad.Cqrs.Directory
 {
 	static class MessageReflectionUtil
 	{
 		[DebuggerNonUserCode]
-		public static void InvokeConsume([NotNull] object messageHandler, [NotNull] object messageInstance, [NotNull] string methodName)
+		public static void InvokeConsume(object messageHandler,  object messageInstance,  string methodName)
 		{
 			if (messageHandler == null) throw new ArgumentNullException("messageHandler");
 			if (messageInstance == null) throw new ArgumentNullException("messageInstance");
@@ -46,12 +46,20 @@ namespace Lokad.Cqrs.Directory
 
 		public static MethodInfo ExpressConsumer<THandler>(Expression<Action<THandler>> expression)
 		{
+			if (expression == null) throw new ArgumentNullException("expression");
+
+			if (expression.Body.NodeType != ExpressionType.Call)
+				throw new ArgumentException("Expected 'Call' expression.");
+
+			
 			if (false == typeof (THandler).IsGenericType)
 				throw new InvalidOperationException("Type should be a generic like 'IConsumeMessage<IMessage>'");
 
 			var generic = typeof (THandler).GetGenericTypeDefinition();
 
-			var methodInfo = Express<THandler>.Method(expression);
+
+
+			var methodInfo = ((MethodCallExpression)expression.Body).Method;
 
 			var parameters = methodInfo.GetParameters();
 			if ((parameters.Length != 1)) //|| (parameters[0].ParameterType != typeof (string))

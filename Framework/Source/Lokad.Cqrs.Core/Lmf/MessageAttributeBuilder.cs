@@ -49,11 +49,6 @@ namespace Lokad.Cqrs
 		{
 			Add(MessageAttributeTypeContract.Sender, sender);
 		}
-		public void AddError(string error)
-		{
-			Enforce.ArgumentNotEmpty(() => error);
-			Add(MessageAttributeTypeContract.ErrorText, error);
-		}
 		public void Add(MessageAttributeTypeContract type, string value)
 		{
 			_list.Add(new MessageAttributeContract(type, value));

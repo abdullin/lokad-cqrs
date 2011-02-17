@@ -56,7 +56,7 @@ namespace Lokad.Cqrs.Consume
 			}
 			// we might have multiple errors for this message
 
-			var landingTime = (DateTime.UtcNow - date).TotalSeconds.Round(0);
+			var landingTime = Math.Round((DateTime.UtcNow - date).TotalSeconds,0);
 
 			// error for Lokad.CQRS message would be in format:
 			// 2010-02-08-13-58-7b19df43-344c-4488-91ae-960d8a843318-0000127.txt

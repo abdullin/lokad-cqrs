@@ -5,6 +5,7 @@
 
 #endregion
 
+using System;
 using System.Transactions;
 using Microsoft.WindowsAzure.StorageClient;
 
@@ -18,7 +19,9 @@ namespace Lokad.Cqrs.Queue
 
 		public TransactionCommitDeletesMessage(CloudQueue queue, CloudQueueMessage message)
 		{
-			Enforce.Arguments(() => queue, () => message);
+			if (queue == null) throw new ArgumentNullException("queue");
+			if (message == null) throw new ArgumentNullException("message");
+
 			_queue = queue;
 			_message = message;
 

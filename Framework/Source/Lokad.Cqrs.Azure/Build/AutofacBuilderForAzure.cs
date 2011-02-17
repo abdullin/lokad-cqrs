@@ -8,10 +8,14 @@
 using System;
 using System.Net;
 using Autofac;
+
 using Lokad.Cqrs.Storage;
+using Lokad.Storage;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
-
+// ReSharper disable UnusedMember.Global
+// ReSharper disable UnusedMethodReturnValue.Global
+// ReSharper disable MemberCanBePrivate.Global
 namespace Lokad.Cqrs
 {
 	/// <summary>
@@ -39,7 +43,7 @@ namespace Lokad.Cqrs
 		/// same builder for inling multiple configuration statements
 		/// </returns>
 		/// <seealso cref="CloudStorageAccount.Parse"/>
-		[UsedImplicitly]
+		
 		public AutofacBuilderForAzure UseStorageAccount(string accountString)
 		{
 			var account = CloudStorageAccount.Parse(accountString);
@@ -56,7 +60,7 @@ namespace Lokad.Cqrs
 		/// <returns>
 		/// same builder for inling multiple configuration statements
 		/// </returns>
-		[UsedImplicitly]
+		
 		public AutofacBuilderForAzure UseStorageAccount(CloudStorageAccount account)
 		{
 			_builder.RegisterInstance(account);
@@ -72,7 +76,7 @@ namespace Lokad.Cqrs
 		/// <returns>
 		/// same builder for inling multiple configuration statements
 		/// </returns>
-		[UsedImplicitly]
+		
 		public AutofacBuilderForAzure UseStorageAccount(string accountName, string accessKey, bool useHttps = true)
 		{
 			var credentials = new StorageCredentialsAccountAndKey(accountName, accessKey);
@@ -107,22 +111,16 @@ namespace Lokad.Cqrs
 		}
 
 		/// <summary>
-		/// Uses development storage account defined in the configuration setting.
+		/// Uses development storage as retrieved from the provider
 		/// </summary>
-		/// <param name="name">The name of the configuration value to look up.</param>
 		/// <returns>
 		/// same builder for inling multiple configuration statements
 		/// </returns>
-		public AutofacBuilderForAzure LoadStorageAccountFromSettings([NotNull] string name)
+		public AutofacBuilderForAzure LoadStorageAccountFromSettings(Func<IComponentContext, string> configProvider)
 		{
-			if (name == null) throw new ArgumentNullException("name");
-
-
 			_builder.Register(c =>
 				{
-					var value = c.Resolve<ISettingsProvider>()
-						.GetValue(name)
-						.ExposeException("Failed to load account from '{0}'", name);
+					var value = configProvider(c);
 					var account = CloudStorageAccount.Parse(value);
 					DisableNagleForQueuesAndTables(account);
 					return account;
@@ -132,6 +130,19 @@ namespace Lokad.Cqrs
 
 			return this;
 		}
+
+		/// <summary>
+		/// Uses development storage as retrieved from the provider
+		/// </summary>
+		/// <returns>
+		/// same builder for inling multiple configuration statements
+		/// </returns>
+		public AutofacBuilderForAzure LoadStorageAccountFromSettings(Func<string> configProvider)
+		{
+			return LoadStorageAccountFromSettings(c => configProvider());
+		}
+
+
 
 		/// <summary>
 		/// Configures the BLOB client. This action is applied to every single instance created.

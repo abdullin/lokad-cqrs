@@ -18,11 +18,11 @@ namespace Lokad.Cqrs
 		/// Implement in the inheriting class to configure the bus host.
 		/// </summary>
 		/// <returns></returns>
-		protected abstract ICloudEngineHost BuildHost();
+		protected abstract CloudEngineHost BuildHost();
 
-		protected event Action<ICloudEngineHost> WhenEngineStarts = host => { };
+		protected event Action<CloudEngineHost> WhenEngineStarts = host => { };
 
-		ICloudEngineHost _host;
+		CloudEngineHost _host;
 		readonly CancellationTokenSource _source = new CancellationTokenSource();
 
 		Task _task;
@@ -56,7 +56,7 @@ namespace Lokad.Cqrs
 		{
 			_source.Cancel(true);
 
-			_task.Wait(10.Seconds());
+			_task.Wait(TimeSpan.FromSeconds(10));
 			_host.Dispose();
 
 			base.OnStop();

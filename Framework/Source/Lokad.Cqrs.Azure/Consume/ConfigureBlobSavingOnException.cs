@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Autofac;
+using Lokad.Cqrs.Transport;
 using Microsoft.WindowsAzure;
 
 namespace Lokad.Cqrs.Consume.Build
@@ -21,7 +22,7 @@ namespace Lokad.Cqrs.Consume.Build
 			ContainerName = "errors";
 		}
 
-		internal void Apply(IMessageTransport transport, IComponentContext context)
+		internal void Apply(AzureQueueTransport transport, IComponentContext context)
 		{
 			var account = context.Resolve<CloudStorageAccount>();
 			var logger = new BlobExceptionLogger(account, ContainerName);

@@ -13,108 +13,90 @@ using Lokad.Cqrs.Queue;
 using Lokad.Cqrs.Scheduled.Build;
 using Lokad.Cqrs.Sender;
 using Lokad.Cqrs.Transport;
-using Lokad.Cqrs.Views;
-
+// ReSharper disable UnusedMethodReturnValue.Global
 namespace Lokad.Cqrs
 {
 	
 
 	/// <summary>
-	/// Fluent API for creating and configuring <see cref="ICloudEngineHost"/>
+	/// Fluent API for creating and configuring <see cref="CloudEngineHost"/>
 	/// </summary>
-	public class CloudEngineBuilder : Syntax, ISyntax<ContainerBuilder>
+	public class CloudEngineBuilder : Syntax
 	{
-		readonly ContainerBuilder _builder = new ContainerBuilder();
 
-		public AutofacBuilderForLogging Logging { get { return new AutofacBuilderForLogging(_builder); } }
-		public AutofacBuilderForSerialization Serialization { get { return new AutofacBuilderForSerialization(_builder);} }
-		public AutofacBuilderForAzure Azure { get { return new AutofacBuilderForAzure(_builder);}}
+		public AutofacBuilderForLogging Logging { get { return new AutofacBuilderForLogging(Builder); } }
+		public AutofacBuilderForSerialization Serialization { get { return new AutofacBuilderForSerialization(Builder);} }
+		public AutofacBuilderForAzure Azure { get { return new AutofacBuilderForAzure(Builder);}}
 
 		public CloudEngineBuilder()
 		{
 			// System presets
 			Logging.LogToTrace();
-			Serialization.UseBinaryFormatter();
-			_builder.RegisterInstance(NullEngineProfiler.Instance);
-			_builder.RegisterInstance(SimpleMessageProfiler.Instance);
+			Serialization.UseDataContractSerializer();
+			Builder.RegisterInstance(NullEngineProfiler.Instance);
+			Builder.RegisterInstance(SimpleMessageProfiler.Instance);
 
 			// Azure presets
 			Azure.UseDevelopmentStorageAccount();
-			_builder.RegisterType<AzureQueueFactory>().As<IRouteMessages, IQueueManager>().SingleInstance();
-			_builder.RegisterType<AzureQueueTransport>().As<IMessageTransport>();
-			_builder.RegisterType<CloudSettingsProvider>().As<ISettingsProvider>().SingleInstance();
-
+			Builder.RegisterType<AzureQueueFactory>().As<IRouteMessages, IQueueManager>().SingleInstance();
+			Builder.RegisterType<AzureQueueTransport>();
 
 			// some defaults
-			_builder.RegisterType<CloudEngineHost>().As<ICloudEngineHost>().SingleInstance();
+			Builder.RegisterType<CloudEngineHost>().SingleInstance();
 		}
 	
 		/// <summary>
-		/// Adds Message Handling Feature to the instance of <see cref="ICloudEngineHost"/>
+		/// Adds Message Handling Feature to the instance of <see cref="CloudEngineHost"/>
 		/// </summary>
 		/// <param name="config">configuration syntax</param>
 		/// <returns>same builder for inling multiple configuration statements</returns>
 		public CloudEngineBuilder AddMessageHandler(Action<HandleMessagesModule> config)
 		{
-			return this.WithModule(config);
+			RegisterModule(config);
+			return this;
 		}
 
 		/// <summary>
-		/// Adds Task Scheduling Feature to the instance of <see cref="ICloudEngineHost"/>
+		/// Adds Task Scheduling Feature to the instance of <see cref="CloudEngineHost"/>
 		/// </summary>
 		/// <param name="config">configuration syntax</param>
 		/// <returns>same builder for inling multiple configuration statements</returns>
 		public CloudEngineBuilder AddScheduler(Action<ScheduledModule> config)
 		{
-			return this.WithModule(config);
+			RegisterModule(config);
+			return this;
 		}
 
 		/// <summary>
-		/// Configures the message domain for the instance of <see cref="ICloudEngineHost"/>.
+		/// Configures the message domain for the instance of <see cref="CloudEngineHost"/>.
 		/// </summary>
 		/// <param name="config">configuration syntax.</param>
 		/// <returns>same builder for inling multiple configuration statements</returns>
 		public CloudEngineBuilder DomainIs(Action<DomainBuildModule> config)
 		{
-			return this.WithModule(config);
+			RegisterModule(config);
+			return this;
 		}
 
 		/// <summary>
-		/// Creates default message sender for the instance of <see cref="ICloudEngineHost"/>
+		/// Creates default message sender for the instance of <see cref="CloudEngineHost"/>
 		/// </summary>
 		/// <param name="config">configuration syntax.</param>
 		/// <returns>same builder for inling multiple configuration statements</returns>
 		public CloudEngineBuilder AddMessageClient(Action<SenderModule> config)
 		{
-			return this.WithModule(config);
-		}
-
-		/// <summary>
-		/// Configures the view mappings for the instance of <see cref="ICloudEngineHost"/> and provides <see cref="IWriteViews"/>
-		/// </summary>
-		/// <param name="config">configuration syntax.</param>
-		/// <returns>same builder for inling multiple configuration statements</returns>
-		public CloudEngineBuilder Views(Action<ViewBuildModule> config)
-		{
-			var module = new ViewBuildModule(ViewModuleRole.Writer);
-			config(module);
-			Target.RegisterModule(module);
+			RegisterModule(config);
 			return this;
 		}
 
 		/// <summary>
-		/// Builds this <see cref="ICloudEngineHost"/>.
+		/// Builds this <see cref="CloudEngineHost"/>.
 		/// </summary>
 		/// <returns>new instance of cloud engine host</returns>
-		public ICloudEngineHost Build()
+		public CloudEngineHost Build()
 		{
-			var container = _builder.Build();
-			return container.Resolve<ICloudEngineHost>(TypedParameter.From(container));
-		}
-
-		public ContainerBuilder Target
-		{
-			get { return _builder; }
+			ILifetimeScope container = Builder.Build();
+			return container.Resolve<CloudEngineHost>(TypedParameter.From(container));
 		}
 	}
 }

@@ -14,7 +14,7 @@ namespace Lokad.Cqrs.Directory
 	/// <summary>
 	/// Default implementation of the message directory builder
 	/// </summary>
-	public sealed class MessageDirectoryBuilder : IMessageDirectoryBuilder
+	public sealed class MessageDirectoryBuilder
 	{
 		readonly IEnumerable<MessageMapping> _mappings;
 		readonly string _methodName;
@@ -30,7 +30,7 @@ namespace Lokad.Cqrs.Directory
 			_methodName = methodName;
 		}
 
-		public IMessageDirectory BuildDirectory(Func<MessageMapping, bool> filter)
+		public MessageDirectory BuildDirectory(Func<MessageMapping, bool> filter)
 		{
 			var mappings = _mappings.Where(filter);
 
@@ -55,7 +55,7 @@ namespace Lokad.Cqrs.Directory
 
 			var messages = mappings
 				.ToLookup(x => x.Message)
-				.ToArray(x =>
+				.Select(x =>
 				{
 					var domainConsumers = x
 						.Where(t => t.Consumer != typeof(MessageMapping.BusSystem))
@@ -65,16 +65,16 @@ namespace Lokad.Cqrs.Directory
 					return new MessageInfo
 						{
 							MessageType = x.Key,
-							IsDomainMessage = x.Exists(t => t.Consumer != typeof (MessageMapping.BusSystem)),
-							IsSystemMessage = x.Exists(t => t.Consumer == typeof (MessageMapping.BusSystem)),
+							IsDomainMessage = x.Any(t => t.Consumer != typeof (MessageMapping.BusSystem)),
+							IsSystemMessage = x.Any(t => t.Consumer == typeof (MessageMapping.BusSystem)),
 							AllConsumers = domainConsumers.Select(m => m.Consumer).Distinct().ToArray(),
 							DerivedConsumers = domainConsumers.Where(m => !m.Direct).Select(m => m.Consumer).Distinct().ToArray(),
 							DirectConsumers = domainConsumers.Where(m => m.Direct).Select(m => m.Consumer).Distinct().ToArray(),
 						};
-				});
+				}).ToList();
 
 			var includedTypes = messages
-				.ToSet(m => m.MessageType);
+				.Select(m => m.MessageType).ToSet();
 
 			// message directory should still include all messages for the serializers
 			var orphanedMessages = _mappings
@@ -88,8 +88,10 @@ namespace Lokad.Cqrs.Directory
 						DerivedConsumers = Type.EmptyTypes,
 						DirectConsumers = Type.EmptyTypes
 					});
+
+			messages.AddRange(orphanedMessages);
 			
-			return new MessageDirectory(_methodName, consumers, messages.Append(orphanedMessages));
+			return new MessageDirectory(_methodName, consumers, messages.ToArray());
 		}
 	}
 }

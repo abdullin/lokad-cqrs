@@ -142,15 +142,24 @@ namespace Lokad.Cqrs.Directory
 
 			var result = new HashSet<MessageMapping>();
 
-			result.AddRange(consumingDirectly);
-			result.AddRange(consumingIndirectly);
-
+			foreach (var m in consumingDirectly)
+			{
+				result.Add(m);
+			}
+			foreach (var m in consumingIndirectly)
+			{
+				result.Add(m);
+			}
+			
 			if (IncludeSystemMessages)
 			{
-				result.AddRange(GetSystemMessages());
+				foreach (var m in GetSystemMessages())
+				{
+					result.Add(m);
+				}
 			}
 
-			var allMessages = result.ToSet(m => m.Message);
+			var allMessages = result.Select(m => m.Message).ToSet();
 
 			foreach (var messageType in messageTypes)
 			{

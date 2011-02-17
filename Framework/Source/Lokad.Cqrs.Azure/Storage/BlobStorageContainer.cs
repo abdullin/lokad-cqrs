@@ -6,6 +6,7 @@
 #endregion
 
 using System;
+using Lokad.Storage;
 using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs.Storage
@@ -26,14 +27,14 @@ namespace Lokad.Cqrs.Storage
 			_directory = directory;
 		}
 
-		public IStorageContainer GetContainer([NotNull] string name)
+		public IStorageContainer GetContainer(string name)
 		{
 			if (name == null) throw new ArgumentNullException("name");
 
 			return new BlobStorageContainer(_directory.GetSubdirectory(name));
 		}
 
-		public IStorageItem GetItem([NotNull] string name)
+		public IStorageItem GetItem(string name)
 		{
 			if (name == null) throw new ArgumentNullException("name");
 			return new BlobStorageItem(_directory.GetBlobReference(name));
