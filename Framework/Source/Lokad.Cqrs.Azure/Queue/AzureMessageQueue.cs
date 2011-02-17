@@ -14,14 +14,14 @@ namespace Lokad.Cqrs.Queue
 {
 	public sealed class AzureMessageQueue
 	{
-		public const string DateFormatInBlobName = "yyyy-MM-dd-HH-mm-ss-ffff";
+		const string DateFormatInBlobName = "yyyy-MM-dd-HH-mm-ss-ffff";
 		readonly CloudBlobContainer _cloudBlob;
 		readonly ILog _log;
 		readonly IMessageSerializer _serializer;
 		readonly CloudQueue _posionQueue;
 		readonly CloudQueue _queue;
 		readonly AzureQueueReference _queueReference;
-		readonly int _retryCount = 4;
+		const int RetryCount = 4;
 
 		public AzureMessageQueue(
 			CloudStorageAccount account,
@@ -84,7 +84,7 @@ namespace Lokad.Cqrs.Queue
 				return GetMessageResult.Wait;
 			}
 
-			if (message.DequeueCount > _retryCount)
+			if (message.DequeueCount > RetryCount)
 			{
 				// we consider this to be poison
 				_log.ErrorFormat("Moving message {0} to poison queue {1}", message.Id, _posionQueue.Name);
