@@ -22,7 +22,7 @@ namespace Lokad.Cqrs.Transport
 		readonly IMessageDispatcher _dispatcher;
 		readonly ILog _log;
 		readonly string[] _queueNames;
-		readonly AzureMessageQueue[] _queues;
+		readonly AzureReadQueue[] _queues;
 		readonly Func<uint, TimeSpan> _threadSleepInterval;
 
 		public ConsumingProcess(
@@ -35,7 +35,7 @@ namespace Lokad.Cqrs.Transport
 			_queueNames = config.QueueNames;
 			_log = logProvider.Get(typeof (ConsumingProcess).Name + "." + _queueNames.Join("|"));
 			_threadSleepInterval = config.SleepWhenNoMessages;
-			_queues = new AzureMessageQueue[_queueNames.Length];
+			_queues = new AzureReadQueue[_queueNames.Length];
 		}
 		
 		public event Action<UnpackedMessage, Exception> MessageHandlerFailed = (message, exception) => { };
@@ -49,7 +49,7 @@ namespace Lokad.Cqrs.Transport
 		{
 			for (int i = 0; i < _queueNames.Length; i++)
 			{
-				_queues[i] = _factory.GetQueue(_queueNames[i]);
+				_queues[i] = _factory.GetReadQueue(_queueNames[i]);
 			}
 		}
 
@@ -62,7 +62,7 @@ namespace Lokad.Cqrs.Transport
 		}
 	
 
-		Maybe<Exception> GetProcessingFailure(AzureMessageQueue queue, UnpackedMessage message)
+		Maybe<Exception> GetProcessingFailure(AzureReadQueue queue, UnpackedMessage message)
 		{
 			try
 			{
@@ -100,7 +100,7 @@ namespace Lokad.Cqrs.Transport
 			// do nothing. Message will show up in the queue with the increased enqueue count.
 		}
 
-		static void FinalizeSuccess(AzureMessageQueue queue, UnpackedMessage message, TransactionScope tx)
+		static void FinalizeSuccess(AzureReadQueue queue, UnpackedMessage message, TransactionScope tx)
 		{
 			queue.AckMessage(message);
 			tx.Complete();
@@ -143,7 +143,7 @@ namespace Lokad.Cqrs.Transport
 			}
 		}
 
-		QueueProcessingResult ProcessQueueForMessage(AzureMessageQueue queue)
+		QueueProcessingResult ProcessQueueForMessage(AzureReadQueue queue)
 		{
 			
 			try

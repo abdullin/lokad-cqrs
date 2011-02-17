@@ -17,7 +17,8 @@ namespace Lokad.Cqrs.Queue
 		readonly CloudStorageAccount _account;
 		readonly ILogProvider _logProvider;
 
-		readonly IDictionary<string, AzureMessageQueue> _queues = new Dictionary<string, AzureMessageQueue>();
+		readonly IDictionary<string, AzureReadQueue> _readQueues = new Dictionary<string, AzureReadQueue>();
+		readonly IDictionary<string,AzureWriteQueue> _writeQueues = new Dictionary<string, AzureWriteQueue>();
 		readonly IMessageSerializer _serializer;
 
 		public AzureQueueFactory(
@@ -32,16 +33,31 @@ namespace Lokad.Cqrs.Queue
 
 		
 
-		public AzureMessageQueue GetQueue(string queueName)
+		public AzureReadQueue GetReadQueue(string queueName)
 		{
-			lock (_queues)
+			lock (_readQueues)
 			{
-				AzureMessageQueue value;
-				if (!_queues.TryGetValue(queueName, out value))
+				AzureReadQueue value;
+				if (!_readQueues.TryGetValue(queueName, out value))
 				{
-					value = new AzureMessageQueue(_account, queueName, _logProvider, _serializer);
+					value = new AzureReadQueue(_account, queueName, _logProvider, _serializer);
 					value.Init();
-					_queues.Add(queueName, value);
+					_readQueues.Add(queueName, value);
+				}
+				return value;
+			}
+		}
+
+		public AzureWriteQueue GetSendQueue(string queueName)
+		{
+			lock (_writeQueues)
+			{
+				AzureWriteQueue value;
+				if (!_writeQueues.TryGetValue(queueName, out value))
+				{
+					value = new AzureWriteQueue(_serializer, _account, queueName);
+					value.Init();
+					_writeQueues.Add(queueName, value);
 				}
 				return value;
 			}
