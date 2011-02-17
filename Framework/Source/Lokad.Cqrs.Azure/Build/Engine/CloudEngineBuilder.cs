@@ -33,7 +33,6 @@ namespace Lokad.Cqrs
 			// System presets
 			Logging.LogToTrace();
 			Serialization.UseDataContractSerializer();
-			Builder.RegisterInstance(SimpleMessageProfiler.Instance);
 
 			// Azure presets
 			Azure.UseDevelopmentStorageAccount();

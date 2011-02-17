@@ -187,12 +187,6 @@ namespace Lokad.Cqrs.Domain
 
 			_builder.RegisterInstance(directoryBuilder).As<MessageDirectoryBuilder>();
 			_builder.RegisterInstance(directory).As<MessageDirectory, IKnowSerializationTypes>();
-
-			_builder
-				.RegisterType<DomainAwareMessageProfiler>()
-				.As<IMessageProfiler>()
-				.SingleInstance();
-
 			_builder.Update(componentRegistry);
 		}
 	}

@@ -21,7 +21,6 @@ namespace Lokad.Cqrs.Transport
 		readonly IQueueManager _factory;
 		readonly IsolationLevel _isolationLevel;
 		readonly ILog _log;
-		readonly IMessageProfiler _messageProfiler;
 		readonly string[] _queueNames;
 		readonly IReadMessageQueue[] _queues;
 		readonly int _degreeOfParallelism;
@@ -30,11 +29,9 @@ namespace Lokad.Cqrs.Transport
 		public AzureQueueTransport(
 			AzureQueueTransportConfig config,
 			ILogProvider logProvider,
-			IQueueManager factory,
-			IMessageProfiler messageProfiler)
+			IQueueManager factory)
 		{
 			_factory = factory;
-			_messageProfiler = messageProfiler;
 			_queueNames = config.QueueNames;
 			_isolationLevel = config.IsolationLevel;
 			_log = logProvider.Get(typeof (AzureQueueTransport).Name + "." + config.LogName);
@@ -85,8 +82,7 @@ namespace Lokad.Cqrs.Transport
 			}
 			catch (Exception ex)
 			{
-				var info = _messageProfiler.GetReadableMessageInfo(message);
-				var text = string.Format("Failed to consume '{0}' from '{1}'", info, queue.Uri);
+				var text = string.Format("Failed to consume '{0}' from '{1}'", message, queue.Uri);
 
 				_log.Error(ex, text);
 				return ex;

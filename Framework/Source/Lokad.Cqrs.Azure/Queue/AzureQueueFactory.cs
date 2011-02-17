@@ -18,7 +18,6 @@ namespace Lokad.Cqrs.Queue
 		const int RetryCount = 4;
 		readonly CloudStorageAccount _account;
 		readonly ILogProvider _logProvider;
-		readonly IMessageProfiler _profiler;
 
 		readonly IDictionary<string, AzureMessageQueue> _queues = new Dictionary<string, AzureMessageQueue>();
 		readonly IMessageSerializer _serializer;
@@ -26,13 +25,11 @@ namespace Lokad.Cqrs.Queue
 		public AzureQueueFactory(
 			CloudStorageAccount account,
 			IMessageSerializer serializer,
-			ILogProvider logProvider,
-			IMessageProfiler profiler)
+			ILogProvider logProvider)
 		{
 			_account = account;
 			_serializer = serializer;
 			_logProvider = logProvider;
-			_profiler = profiler;
 		}
 
 		public IReadMessageQueue GetReadQueue(string queueName)
@@ -87,7 +84,7 @@ namespace Lokad.Cqrs.Queue
 			if (!_queues.TryGetValue(queueName, out value))
 			{
 				
-				value = new AzureMessageQueue(_account, queueName, RetryCount, _logProvider, _serializer, _profiler);
+				value = new AzureMessageQueue(_account, queueName, RetryCount, _logProvider, _serializer);
 				value.Init();
 				_queues.Add(queueName, value);
 			}

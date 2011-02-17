@@ -17,7 +17,6 @@ namespace Lokad.Cqrs.Queue
 	{
 		public const string DateFormatInBlobName = "yyyy-MM-dd-HH-mm-ss-ffff";
 		readonly CloudBlobContainer _cloudBlob;
-		readonly IMessageProfiler _debugger;
 		readonly ILog _log;
 		readonly IMessageSerializer _serializer;
 		readonly CloudQueue _posionQueue;
@@ -30,7 +29,7 @@ namespace Lokad.Cqrs.Queue
 			string queueName,
 			int retryCount,
 			ILogProvider provider,
-			IMessageSerializer serializer, IMessageProfiler debugger)
+			IMessageSerializer serializer)
 		{
 			var blobClient = account.CreateCloudBlobClient();
 			blobClient.RetryPolicy = RetryPolicies.NoRetry();
@@ -45,8 +44,6 @@ namespace Lokad.Cqrs.Queue
 			_posionQueue = queueClient.GetQueueReference(_queueReference.SubQueue("poison").QueueName);
 
 			_log = provider.Get("Queue[" + queueName + "]");
-			
-			_debugger = debugger;
 
 			_serializer = serializer;
 			_retryCount = retryCount;
@@ -140,7 +137,7 @@ namespace Lokad.Cqrs.Queue
 			if (message == null) throw new ArgumentNullException("message");
 
 			var cloud = message.GetState<CloudQueueMessage>().Value;
-			_log.Debug(_debugger.GetReadableMessageInfo(message));
+			_log.Debug(message);
 			
 			TransactionalDeleteMessage(cloud);
 		}
