@@ -18,7 +18,7 @@ namespace Lokad.Cqrs.Transport
 	
 	public sealed class AzureQueueTransport : IDisposable
 	{
-		readonly IQueueManager _factory;
+		readonly AzureQueueFactory _factory;
 		readonly IsolationLevel _isolationLevel;
 		readonly ILog _log;
 		readonly string[] _queueNames;
@@ -29,7 +29,7 @@ namespace Lokad.Cqrs.Transport
 		public AzureQueueTransport(
 			AzureQueueTransportConfig config,
 			ILogProvider logProvider,
-			IQueueManager factory)
+			AzureQueueFactory factory)
 		{
 			_factory = factory;
 			_queueNames = config.QueueNames;

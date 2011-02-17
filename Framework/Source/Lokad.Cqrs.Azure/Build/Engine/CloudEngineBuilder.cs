@@ -36,7 +36,7 @@ namespace Lokad.Cqrs
 
 			// Azure presets
 			Azure.UseDevelopmentStorageAccount();
-			Builder.RegisterType<AzureQueueFactory>().As<IRouteMessages, IQueueManager>().SingleInstance();
+			Builder.RegisterType<AzureQueueFactory>().As<AzureQueueFactory, AzureQueueFactory>().SingleInstance();
 			Builder.RegisterType<AzureQueueTransport>();
 
 			// some defaults

@@ -13,7 +13,7 @@ using Microsoft.WindowsAzure;
 namespace Lokad.Cqrs.Queue
 {
 	
-	public sealed class AzureQueueFactory : IQueueManager, IRouteMessages
+	public sealed class AzureQueueFactory
 	{
 		const int RetryCount = 4;
 		readonly CloudStorageAccount _account;
