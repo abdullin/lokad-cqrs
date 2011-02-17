@@ -72,7 +72,6 @@
     <Compile Include="Durability\Contracts_v1\MessageAttributeContract.cs" />
     <Compile Include="Durability\Contracts_v1\MessageAttributesContract.cs" />
     <Compile Include="Durability\Contracts_v1\MessageAttributeTypeContract.cs" />
-    <Compile Include="Lmf\MessageContext.cs" />
     <Compile Include="Durability\MessageHeader.cs" />
     <Compile Include="Lmf\MessagePrinter.cs" />
     <Compile Include="Durability\MessageUtil.cs" />

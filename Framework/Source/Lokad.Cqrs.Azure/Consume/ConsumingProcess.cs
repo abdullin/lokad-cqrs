@@ -62,8 +62,8 @@ namespace Lokad.Cqrs.Transport
 		{
 			try
 			{
-				MessageContext.OverrideContext(message);
 				_dispatcher.DispatchMessage(message);
+				return Maybe<Exception>.Empty;
 			}
 			catch (Exception ex)
 			{
@@ -71,11 +71,8 @@ namespace Lokad.Cqrs.Transport
 				_log.Error(ex, text);
 				return ex;
 			}
-			finally
-			{
-				MessageContext.ClearContext();
-			}
-			return Maybe<Exception>.Empty;
+			
+			
 		}
 
 		void MessageHandlingProblem(UnpackedMessage message, Exception ex)
