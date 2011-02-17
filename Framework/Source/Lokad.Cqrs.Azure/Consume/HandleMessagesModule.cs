@@ -198,9 +198,10 @@ namespace Lokad.Cqrs.Consume.Build
 
 
 			var dispatcher = _dispatcher(context.Resolve<ILifetimeScope>(), directory);
-
-
-			var transport = new ConsumingProcess(provider, dispatcher, SleepWhenNoMessages, queueNames, context.Resolve<CloudStorageAccount>(), context.Resolve<IMessageSerializer>());
+			var account = context.Resolve<CloudStorageAccount>();
+			var serializer = context.Resolve<IMessageSerializer>();
+			var queues =  queueNames.ToArray(n => new AzureReadQueue(account, n, provider, serializer));
+			var transport = new ConsumingProcess(provider, dispatcher, SleepWhenNoMessages, queues);
 
 			_applyToTransport(transport, context);
 			

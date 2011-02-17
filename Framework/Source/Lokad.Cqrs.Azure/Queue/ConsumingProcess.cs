@@ -6,6 +6,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
@@ -18,27 +19,23 @@ namespace Lokad.Cqrs.Transport
 	
 	public sealed class ConsumingProcess : IEngineProcess
 	{
-		readonly ILogProvider _logProvider;
+		
 		readonly IMessageDispatcher _dispatcher;
 		readonly ILog _log;
-		readonly string[] _queueNames;
+		
 		readonly AzureReadQueue[] _queues;
 		readonly Func<uint, TimeSpan> _threadSleepInterval;
 
-		readonly CloudStorageAccount _account;
-		readonly IMessageSerializer _serializer;
 
 		public ConsumingProcess(ILogProvider logProvider, 
-			IMessageDispatcher dispatcher, Func<uint, TimeSpan> sleepWhenNoMessages, string[] queueNames, CloudStorageAccount account, IMessageSerializer serializer)
+			IMessageDispatcher dispatcher, Func<uint, TimeSpan> sleepWhenNoMessages, AzureReadQueue[] readQueues)
 		{
-			_logProvider = logProvider;
-			_serializer = serializer;
-			_account = account;
+		
+			_queues = readQueues;
 			_dispatcher = dispatcher;
-			_queueNames = queueNames;
-			_log = logProvider.Get(typeof (ConsumingProcess).Name + "." + _queueNames.Join("|"));
+			
+			_log = logProvider.Get(typeof (ConsumingProcess).Name + "." + readQueues.ToArray(q => q.Name).Join(","));
 			_threadSleepInterval = sleepWhenNoMessages;
-			_queues = new AzureReadQueue[_queueNames.Length];
 		}
 		
 		public void Dispose()
@@ -48,10 +45,9 @@ namespace Lokad.Cqrs.Transport
 
 		public void Initialize()
 		{
-			for (int i = 0; i < _queueNames.Length; i++)
+			foreach (var queue in _queues)
 			{
-				_queues[i] = new AzureReadQueue(_account, _queueNames[i], _logProvider, _serializer);
-				_queues[i].Init();
+				queue.Init();
 			}
 		}
 
@@ -59,7 +55,7 @@ namespace Lokad.Cqrs.Transport
 
 		public Task Start(CancellationToken token)
 		{
-			_log.DebugFormat("Starting transport for {0}", _queueNames.Join(";"));
+			_log.DebugFormat("Starting transport for {0}", _queues.ToArray(q=> q.Name).Join(";"));
 			return Task.Factory.StartNew(() => ReceiveMessages(token), token);
 		}
 	
