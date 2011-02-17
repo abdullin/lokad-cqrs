@@ -21,9 +21,6 @@ namespace Lokad
 	[Serializable]
 	public sealed class DebugLog : ILog
 	{
-		/// <summary>  Singleton instance </summary>
-		 public static readonly ILog Instance = new DebugLog("");
-
 		/// <summary>
 		/// Named provider for the <see cref="DebugLog"/>
 		/// </summary>
@@ -36,7 +33,7 @@ namespace Lokad
 		/// Initializes a new instance of the <see cref="DebugLog"/> class.
 		/// </summary>
 		/// <param name="logName">Name of the log.</param>
-		public DebugLog(string logName)
+		DebugLog(string logName)
 		{
 			_logName = logName;
 		}

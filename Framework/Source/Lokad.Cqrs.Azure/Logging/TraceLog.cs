@@ -20,9 +20,6 @@ namespace Lokad
 	
 	public sealed class TraceLog : ILog
 	{
-		/// <summary>  Singleton instance </summary>
-		 public static readonly ILog Instance = new TraceLog("");
-
 		/// <summary>
 		/// Named provider for the <see cref="TraceLog"/>
 		/// </summary>
