@@ -14,7 +14,6 @@ namespace Lokad.Cqrs.Queue
 	
 	public sealed class AzureQueueFactory
 	{
-		const int RetryCount = 4;
 		readonly CloudStorageAccount _account;
 		readonly ILogProvider _logProvider;
 
@@ -53,7 +52,7 @@ namespace Lokad.Cqrs.Queue
 			if (!_queues.TryGetValue(queueName, out value))
 			{
 				
-				value = new AzureMessageQueue(_account, queueName, RetryCount, _logProvider, _serializer);
+				value = new AzureMessageQueue(_account, queueName, _logProvider, _serializer);
 				value.Init();
 				_queues.Add(queueName, value);
 			}

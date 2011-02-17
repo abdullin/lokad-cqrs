@@ -21,12 +21,11 @@ namespace Lokad.Cqrs.Queue
 		readonly CloudQueue _posionQueue;
 		readonly CloudQueue _queue;
 		readonly AzureQueueReference _queueReference;
-		readonly int _retryCount;
+		readonly int _retryCount = 4;
 
 		public AzureMessageQueue(
 			CloudStorageAccount account,
 			string queueName,
-			int retryCount,
 			ILogProvider provider,
 			IMessageSerializer serializer)
 		{
@@ -45,7 +44,6 @@ namespace Lokad.Cqrs.Queue
 			_log = provider.Get("Queue[" + queueName + "]");
 
 			_serializer = serializer;
-			_retryCount = retryCount;
 		}
 
 		public TimeSpan? QueueVisibility { get; set; }

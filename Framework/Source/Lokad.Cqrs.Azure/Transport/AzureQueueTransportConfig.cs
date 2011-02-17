@@ -6,7 +6,6 @@
 #endregion
 
 using System;
-using System.Transactions;
 
 namespace Lokad.Cqrs.Transport
 {
@@ -14,7 +13,6 @@ namespace Lokad.Cqrs.Transport
 	{
 		public readonly string LogName;
 		public readonly string[] QueueNames;
-		// TODO: replace with the thread management policy
 		public readonly Func<uint, TimeSpan> SleepWhenNoMessages;
 
 
