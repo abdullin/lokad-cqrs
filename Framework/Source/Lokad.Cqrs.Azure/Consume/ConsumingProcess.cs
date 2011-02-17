@@ -41,10 +41,7 @@ namespace Lokad.Cqrs.Consume
 		public Task Start(CancellationToken token)
 		{
 			_log.DebugFormat("Starting consumer for {0}", _transport.ToString());
-			var tasks = _transport.Start(token);
-			// started
-			return Task.Factory
-				.ContinueWhenAll(tasks, t => _log.DebugFormat("Stopped consumer for {0}", _transport.ToString()));
+			return _transport.Start(token).ContinueWith(t => _log.DebugFormat("Stopped consumer for {0}", _transport.ToString()));
 		}
 
 		void TransportOnMessageRecieved(UnpackedMessage arg)

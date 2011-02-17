@@ -26,7 +26,6 @@ namespace Lokad.Cqrs.Consume.Build
 
 		public HandleMessagesModule()
 		{
-			NumberOfThreads = 1;
 			SleepWhenNoMessages = AzureQueuePolicy.BuildDecayPolicy(1.Seconds());
 
 			LogName = "Messages";
@@ -84,13 +83,6 @@ namespace Lokad.Cqrs.Consume.Build
 
 			return this;
 		}
-
-		/// <summary>
-		/// Gets or sets the number of threads.
-		/// </summary>
-		/// <value>The number of threads.</value>
-		public int NumberOfThreads { get; set; }
-
 		
 		public Func<uint, TimeSpan> SleepWhenNoMessages { get; set; }
 
@@ -201,7 +193,6 @@ namespace Lokad.Cqrs.Consume.Build
 
 			var transportConfig = new AzureQueueTransportConfig(
 				LogName,
-				NumberOfThreads,
 				queueNames,
 				SleepWhenNoMessages);
 
@@ -225,7 +216,7 @@ namespace Lokad.Cqrs.Consume.Build
 
 
 
-			log.DebugFormat("Use {0} threads to listen to {1}", NumberOfThreads, ExtendIEnumerable.Join(queueNames, "; "));
+			log.DebugFormat("Listen to {0}", queueNames.Join("; "));
 			return consumer;
 		}
 

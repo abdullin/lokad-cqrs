@@ -22,7 +22,6 @@ namespace Lokad.Cqrs.Transport
 		readonly ILog _log;
 		readonly string[] _queueNames;
 		readonly AzureMessageQueue[] _queues;
-		readonly int _degreeOfParallelism;
 		readonly Func<uint, TimeSpan> _threadSleepInterval;
 
 		public AzureQueueTransport(
@@ -34,8 +33,6 @@ namespace Lokad.Cqrs.Transport
 			_queueNames = config.QueueNames;
 			_log = logProvider.Get(typeof (AzureQueueTransport).Name + "." + config.LogName);
 			_threadSleepInterval = config.SleepWhenNoMessages;
-			_degreeOfParallelism = config.DegreeOfParallelism;
-			
 			_queues = new AzureMessageQueue[_queueNames.Length];
 		}
 
@@ -58,16 +55,10 @@ namespace Lokad.Cqrs.Transport
 
 		readonly CancellationTokenSource _disposal = new CancellationTokenSource();
 
-		public Task[] Start(CancellationToken token)
+		public Task Start(CancellationToken token)
 		{
 			_log.DebugFormat("Starting transport for {0}", _queueNames.Join(";"));
-
-			var array = new Task[_degreeOfParallelism];
-			for (int i = 0; i < _degreeOfParallelism; i++)
-			{
-				array[i] = Task.Factory.StartNew(() => ReceiveMessages(token), token);
-			}
-			return array;
+			return Task.Factory.StartNew(() => ReceiveMessages(token), token);
 		}
 	
 
@@ -211,7 +202,7 @@ namespace Lokad.Cqrs.Transport
 
 		public override string ToString()
 		{
-			return string.Format("Queue x {1} ({0})", _queueNames.Join(", "), _degreeOfParallelism);
+			return string.Format("Queue x ({0})", _queueNames.Join(", "));
 		}
 
 		enum QueueProcessingResult

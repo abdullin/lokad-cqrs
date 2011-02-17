@@ -16,13 +16,12 @@ namespace Lokad.Cqrs.Transport
 		public readonly string[] QueueNames;
 		// TODO: replace with the thread management policy
 		public readonly Func<uint, TimeSpan> SleepWhenNoMessages;
-		public readonly int DegreeOfParallelism;
 
 
-		public AzureQueueTransportConfig(string logName, int degreeOfParallelism, string[] queueNames,
+		public AzureQueueTransportConfig(string logName, string[] queueNames,
 			Func<uint, TimeSpan> sleepWhenNoMessages)
 		{
-			DegreeOfParallelism = degreeOfParallelism;
+			
 			LogName = logName;
 			SleepWhenNoMessages = sleepWhenNoMessages;
 			QueueNames = queueNames;
