@@ -51,11 +51,7 @@ namespace Lokad.Cqrs.Consume.Build
 		
 		public HandleMessagesModule WhenMessageArrives(Action<UnpackedMessage> interceptor)
 		{
-			return ApplyToTransport((transport, context) =>
-				{
-					transport.MessageReceived += interceptor;
-					context.WhenDisposed(() => transport.MessageReceived -= interceptor);
-				});
+			throw new NotImplementedException();
 		}
 
 		public HandleMessagesModule WithSingleConsumer()
@@ -191,29 +187,21 @@ namespace Lokad.Cqrs.Consume.Build
 			var transportConfig = new AzureQueueTransportConfig(
 				queueNames,
 				SleepWhenNoMessages);
-
-			var transport = context.Resolve<AzureQueueTransport>(TypedParameter.From(transportConfig));
-
-			_applyToTransport(transport, context);
-
-
 			var builder = context.Resolve<MessageDirectoryBuilder>();
 			var filter = _filter.BuildFilter();
 			var directory = builder.BuildDirectory(filter);
-
 			log.DebugFormat("Discovered {0} messages", directory.Messages.Count);
 
 			DebugPrintIfNeeded(log, directory);
 
+
 			var dispatcher = _dispatcher(context.Resolve<ILifetimeScope>(), directory);
-			var consumer = context.Resolve<ConsumingProcess>(
-				TypedParameter.From(transport),
-				TypedParameter.From(dispatcher));
+			var transport = context.Resolve<AzureQueueTransport>(TypedParameter.From(transportConfig), TypedParameter.From(dispatcher));
 
+			_applyToTransport(transport, context);
+			
 
-
-			log.DebugFormat("Listen to {0}", queueNames.Join("; "));
-			return consumer;
+			return transport;
 		}
 
 		void DebugPrintIfNeeded(ILog log, MessageDirectory directory)
@@ -236,7 +224,6 @@ namespace Lokad.Cqrs.Consume.Build
 
 		protected override void Load(ContainerBuilder builder)
 		{
-			builder.RegisterType<ConsumingProcess>();
 			builder.Register(ConfigureComponent);
 		}
 	}

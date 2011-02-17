@@ -10,15 +10,16 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
-
+using Lokad.Cqrs.Consume;
 using Lokad.Cqrs.Queue;
 
 namespace Lokad.Cqrs.Transport
 {
 	
-	public sealed class AzureQueueTransport : IDisposable
+	public sealed class AzureQueueTransport : IDisposable, IEngineProcess
 	{
 		readonly AzureQueueFactory _factory;
+		readonly IMessageDispatcher _dispatcher;
 		readonly ILog _log;
 		readonly string[] _queueNames;
 		readonly AzureMessageQueue[] _queues;
@@ -27,16 +28,16 @@ namespace Lokad.Cqrs.Transport
 		public AzureQueueTransport(
 			AzureQueueTransportConfig config,
 			ILogProvider logProvider,
-			AzureQueueFactory factory)
+			AzureQueueFactory factory, IMessageDispatcher dispatcher)
 		{
 			_factory = factory;
+			_dispatcher = dispatcher;
 			_queueNames = config.QueueNames;
 			_log = logProvider.Get(typeof (AzureQueueTransport).Name + "." + _queueNames.Join("|"));
 			_threadSleepInterval = config.SleepWhenNoMessages;
 			_queues = new AzureMessageQueue[_queueNames.Length];
 		}
-
-		public event Action<UnpackedMessage> MessageReceived = m => { };
+		
 		public event Action<UnpackedMessage, Exception> MessageHandlerFailed = (message, exception) => { };
 		
 		public void Dispose()
@@ -66,7 +67,7 @@ namespace Lokad.Cqrs.Transport
 		{
 			try
 			{
-				ProcessSingleMessage(message, m => MessageReceived(m));
+				ProcessSingleMessage(message);
 				return Maybe<Exception>.Empty;
 			}
 			catch (Exception ex)
@@ -78,18 +79,13 @@ namespace Lokad.Cqrs.Transport
 			}
 		}
 
-		void ProcessSingleMessage(UnpackedMessage message, Action<UnpackedMessage> messageHandlers)
+		void ProcessSingleMessage(UnpackedMessage message)
 		{
-			if (messageHandlers == null)
-				return;
-
 			try
 			{
 				MessageContext.OverrideContext(message);
-				foreach (Action<UnpackedMessage> func in messageHandlers.GetInvocationList())
-				{
-					func(message);
-				}
+
+				_dispatcher.DispatchMessage(message);
 			}
 			finally
 			{
