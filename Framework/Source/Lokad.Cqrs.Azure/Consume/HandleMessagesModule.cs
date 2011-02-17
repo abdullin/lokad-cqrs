@@ -186,9 +186,7 @@ namespace Lokad.Cqrs.Consume.Build
 			if (queueNames.Length == 0)
 				throw Errors.InvalidOperation("No queue names are specified. Please use ListenTo method");
 
-			var transportConfig = new AzureQueueTransportConfig(
-				queueNames,
-				SleepWhenNoMessages);
+			
 			var builder = context.Resolve<MessageDirectoryBuilder>();
 			var filter = _filter.BuildFilter();
 			var directory = builder.BuildDirectory(filter);
@@ -199,10 +197,9 @@ namespace Lokad.Cqrs.Consume.Build
 
 			var dispatcher = _dispatcher(context.Resolve<ILifetimeScope>(), directory);
 
-			
-			
 
-			var transport = context.Resolve<ConsumingProcess>(TypedParameter.From(transportConfig), TypedParameter.From(dispatcher));
+			var transport = new ConsumingProcess(context.Resolve<ILogProvider>(),
+				context.Resolve<AzureQueueFactory>(), dispatcher, SleepWhenNoMessages, queueNames);
 
 			_applyToTransport(transport, context);
 			

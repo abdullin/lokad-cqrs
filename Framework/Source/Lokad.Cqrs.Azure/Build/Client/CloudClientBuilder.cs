@@ -18,16 +18,15 @@ namespace Lokad.Cqrs
 	/// <summary>
 	/// Fluent API for creating and configuring <see cref="ICloudClient"/>
 	/// </summary>
+// ReSharper disable UnusedMember.Global
 	public sealed class CloudClientBuilder : Syntax
 	{
-
 		public CloudClientBuilder()
 		{
 			Azure.UseDevelopmentStorageAccount();
 			Serialization.UseDataContractSerializer();
 			Logging.LogToTrace();
-			Builder.RegisterType<AzureQueueFactory>().As<AzureQueueFactory, AzureQueueFactory>().SingleInstance();
-			Builder.RegisterType<ConsumingProcess>();
+			Builder.RegisterType<AzureQueueFactory>().As<AzureQueueFactory>().SingleInstance();
 			Builder.RegisterType<CloudClient>().SingleInstance();
 		}
 

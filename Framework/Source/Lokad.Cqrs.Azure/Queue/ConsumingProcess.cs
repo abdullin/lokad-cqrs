@@ -24,17 +24,15 @@ namespace Lokad.Cqrs.Transport
 		readonly AzureReadQueue[] _queues;
 		readonly Func<uint, TimeSpan> _threadSleepInterval;
 
-		public ConsumingProcess(
-			AzureQueueTransportConfig config,
-			ILogProvider logProvider,
+		public ConsumingProcess(ILogProvider logProvider,
 			AzureQueueFactory factory, 
-			IMessageDispatcher dispatcher)
+			IMessageDispatcher dispatcher, Func<uint, TimeSpan> sleepWhenNoMessages, string[] queueNames)
 		{
 			_factory = factory;
 			_dispatcher = dispatcher;
-			_queueNames = config.QueueNames;
+			_queueNames = queueNames;
 			_log = logProvider.Get(typeof (ConsumingProcess).Name + "." + _queueNames.Join("|"));
-			_threadSleepInterval = config.SleepWhenNoMessages;
+			_threadSleepInterval = sleepWhenNoMessages;
 			_queues = new AzureReadQueue[_queueNames.Length];
 		}
 		

@@ -107,7 +107,6 @@
     <Compile Include="Queue\AzureQueueFactory.cs" />
     <Compile Include="Build\Syntax.cs" />
     <Compile Include="Queue\AzureQueuePolicy.cs" />
-    <Compile Include="Queue\AzureQueueTransportConfig.cs" />
     <Compile Include="Queue\AzureReadQueue.cs" />
     <Compile Include="Queue\ConsumingProcess.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
