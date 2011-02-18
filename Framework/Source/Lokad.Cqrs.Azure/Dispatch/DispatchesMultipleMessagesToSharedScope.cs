@@ -39,17 +39,21 @@ namespace Lokad.Cqrs.Consume
 
 		public void DispatchMessage(MessageEnvelope unpacked)
 		{
+			if (unpacked.Items.Length != 1)
+				throw new InvalidOperationException("Batch message arrived to the shared scope. Are you batching events or dispatching commands to shared scope?");
+
 			// we get failure if one of the subscribers fails
 			Type[] consumerTypes;
-			
-			if (_dispatcher.TryGetValue(unpacked.ContractType, out consumerTypes))
+
+			var item = unpacked.Items[0];
+			if (_dispatcher.TryGetValue(item.MappedType, out consumerTypes))
 			{
 				using (var scope = _container.BeginLifetimeScope())
 				{
 					foreach (var consumerType in consumerTypes)
 					{
 						var consumer = scope.Resolve(consumerType);
-						_directory.InvokeConsume(consumer, unpacked.Content);
+						_directory.InvokeConsume(consumer, item.Content);
 					}
 				}
 			}

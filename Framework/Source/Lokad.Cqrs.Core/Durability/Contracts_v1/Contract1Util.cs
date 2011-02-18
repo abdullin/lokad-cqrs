@@ -71,21 +71,30 @@ namespace Lokad.Cqrs.Lmf
 			var type = serializer
 				.GetTypeByContractName(contract)
 				.ExposeException("Unsupported contract name: '{0}'", contract);
-			string identity = attributes
+			string messageId = attributes
 				.GetAttributeString(AttributeTypeContract.Identity)
 				.ExposeException("Protocol violation: message should have ID");
 
-			var dict = new Dictionary<string, object>();
+			var envelope = new Dictionary<string, object>();
+			var itemDict = new Dictionary<string, object>();
 			foreach (var attribute in attributes.Items)
 			{
 
 				switch (attribute.Type)
 				{
+					case AttributeTypeContract.ContractName:
+					case AttributeTypeContract.Identity:
+						// skip these, they already are retrieved
+						break;
 					case AttributeTypeContract.CreatedUtc:
-						dict[EnvelopeAttribute.CreatedUtc] = DateTime.FromBinary(attribute.NumberValue);
+						envelope[MessageAttributes.Envelope.CreatedUtc] = DateTime.FromBinary(attribute.NumberValue);
+						break;
+					case AttributeTypeContract.Sender:
+						envelope[MessageAttributes.Envelope.Sender] = attribute.StringValue;
 						break;
 					default:
-						dict[attribute.GetName()] = attribute.GetValue();
+						envelope[attribute.GetName()] = attribute.GetValue();
+						itemDict[attribute.GetName()] = attribute.GetValue();
 						break;
 				}
 			}
@@ -95,7 +104,8 @@ namespace Lokad.Cqrs.Lmf
 			using (var stream = new MemoryStream(buffer, index, count))
 			{
 				var instance = serializer.Deserialize(stream, type);
-				return new MessageEnvelope(identity, dict, instance, type);
+				var item = new MessageItem(messageId, contract, type, instance, envelope);
+				return new MessageEnvelope(messageId, envelope, new[] {item});
 			}
 		}
 

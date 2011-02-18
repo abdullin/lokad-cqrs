@@ -35,15 +35,20 @@ namespace Lokad.Cqrs.Consume
 			var identity = message.EnvelopeId;
 
 			// get creation time of message, falling back to current date
-			var date = message.GetAttributeValue<DateTime>(EnvelopeAttribute.CreatedUtc).GetValue(DateTime.UtcNow);
+			var date = message.GetAttributeValue<DateTime>(MessageAttributes.Envelope.CreatedUtc).GetValue(DateTime.UtcNow);
 
 			var builder = new StringBuilder();
 			using (var writer = new StringWriter(builder, CultureInfo.InvariantCulture))
 			{
-				writer.WriteLine(message.ContractType.Name);
+				writer.WriteLine(message.EnvelopeId);
 				writer.WriteLine();
 
 				MessagePrinter.PrintAttributes(message.GetAllAttributes(), writer, "  ");
+
+				foreach (var item in message.Items)
+				{
+					MessagePrinter.PrintAttributes(item.GetAllAttributes(), writer, "  ");	
+				}
 
 				RenderDelegates(message, writer, exception);
 

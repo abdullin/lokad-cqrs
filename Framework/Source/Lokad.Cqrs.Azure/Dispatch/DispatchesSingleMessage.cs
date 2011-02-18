@@ -28,13 +28,26 @@ namespace Lokad.Cqrs.Consume
 
 		public void DispatchMessage(MessageEnvelope message)
 		{
-			Type consumerType;
-			if (_messageConsumers.TryGetValue(message.ContractType, out consumerType))
+			// empty message, hm...
+			if (message.Items.Length == 0)
+				return;
+
+			// verify that all consumers are available
+			foreach (var item in message.Items)
 			{
+				if (!_messageConsumers.ContainsKey(item.MappedType))
+				{
+					throw new InvalidOperationException("Couldn't find consumer for " + item.MappedType);
+				}
+			}
+
+			foreach (var item in message.Items)
+			{
+				var consumerType = _messageConsumers[item.MappedType];
 				using (var scope = _container.BeginLifetimeScope())
 				{
 					var consumer = scope.Resolve(consumerType);
-					_messageDirectory.InvokeConsume(consumer, message.Content);
+					_messageDirectory.InvokeConsume(consumer, item.Content);
 				}
 			}
 		}

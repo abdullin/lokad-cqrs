@@ -15,26 +15,17 @@ namespace Lokad.Cqrs
 	/// </summary>
 	public class MessageEnvelope
 	{
-		/// <summary>
-		/// Type of the contract behind the message
-		/// </summary>
-		public readonly Type ContractType;
-		/// <summary>
-		/// Message content
-		/// </summary>
-		public readonly object Content;
-
 		public readonly string EnvelopeId;
 
 		readonly IDictionary<string, object> _attributes = new Dictionary<string, object>();
 
-		public MessageEnvelope(string envelopeId, IDictionary<string,object> attributes, object content, Type contractType)
+		public readonly MessageItem[] Items;
+
+		public MessageEnvelope(string envelopeId, IDictionary<string,object> attributes, MessageItem[] items)
 		{
-		
-			ContractType = contractType;
 			EnvelopeId = envelopeId;
 			_attributes = attributes;
-			Content = content;
+			Items = items;
 		}
 
 		public Maybe<TData> GetAttributeValue<TData>(string name)
@@ -49,10 +40,22 @@ namespace Lokad.Cqrs
 		}
 	}
 
-	public static class EnvelopeAttribute
+	public static class MessageAttributes
 	{
-		public const string CreatedUtc = "CreatedUtc";
-		public const string Sender = "Sender";
+		public static class Envelope
+		{
+			public const string CreatedUtc = "CreatedUtc";
+			public const string Sender = "Sender";
+			//public const string 
+		}
+		public static class Item
+		{
+			public const string Contract = "Contract";
+		}
+		
+		
+
+
 	}
 
 	
@@ -66,12 +69,26 @@ namespace Lokad.Cqrs
 	
 	//}
 
-	//public sealed class MessageItem
-	//{
-	//    public readonly string MessageId;
-	//    public readonly string Contract;
-	//    public readonly Type MappedType;
-	//    public readonly object Content;
-	//    public readonly IDictionary<string, object> Attributes = new Dictionary<string, object>();
-	//}
+	public sealed class MessageItem
+	{
+		public readonly string MessageId;
+		public readonly string Contract;
+		public readonly Type MappedType;
+		public readonly object Content;
+		public readonly IDictionary<string, object> _attributes;
+
+		public ICollection<KeyValuePair<string, object>> GetAllAttributes()
+		{
+			return _attributes;
+		}
+
+		public MessageItem(string messageId, string contract, Type mappedType, object content, IDictionary<string,object > attributes)
+		{
+			MessageId = messageId;
+			Contract = contract;
+			MappedType = mappedType;
+			Content = content;
+			_attributes = attributes;
+		}
+	}
 }
