@@ -41,13 +41,17 @@ namespace Lokad.Cqrs.Consume
 				}
 			}
 
-			foreach (var item in message.Items)
+			// we're dispatching them inside single lifetime scope
+			// meaning same transaction,
+			using (var scope = _container.BeginLifetimeScope())
 			{
-				var consumerType = _messageConsumers[item.MappedType];
-				using (var scope = _container.BeginLifetimeScope())
+				foreach (var item in message.Items)
 				{
-					var consumer = scope.Resolve(consumerType);
-					_messageDirectory.InvokeConsume(consumer, item.Content);
+					var consumerType = _messageConsumers[item.MappedType];
+					{
+						var consumer = scope.Resolve(consumerType);
+						_messageDirectory.InvokeConsume(consumer, item.Content);
+					}
 				}
 			}
 		}
