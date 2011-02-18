@@ -18,7 +18,7 @@ namespace Lokad.Cqrs.Lmf
 		public static string ReadReferenceMessage(byte[] buffer)
 		{
 			var header = MessageUtil.ReadHeader(buffer);
-			if (header.MessageFormatVersion != MessageHeader.ReferenceMessageFormatVersion)
+			if (header.MessageFormatVersion != MessageHeader.Contract1ReferenceFormat)
 				throw new InvalidOperationException("Unexpected message format");
 
 			var attributes = ReadAttributes(buffer, header);
@@ -61,7 +61,7 @@ namespace Lokad.Cqrs.Lmf
 		public static MessageEnvelope ReadDataMessage(byte[] buffer, IMessageSerializer serializer)
 		{
 			var header = MessageUtil.ReadHeader(buffer);
-			if (header.MessageFormatVersion != MessageHeader.DataMessageFormatVersion)
+			if (header.MessageFormatVersion != MessageHeader.Contract1DataFormat)
 				throw new InvalidOperationException("Unexpected message format");
 
 			var attributes = ReadAttributes(buffer, header);

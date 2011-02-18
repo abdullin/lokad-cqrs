@@ -7,8 +7,8 @@ namespace Lokad.Cqrs
 	public sealed class MessageHeader
 	{
 		public const int FixedSize = 28;
-		public const int DataMessageFormatVersion = 2010020701;
-		public const int ReferenceMessageFormatVersion = 2010020702;
+		public const int Contract1DataFormat = 2010020701;
+		public const int Contract1ReferenceFormat = 2010020702;
 
 		[ProtoMember(1, DataFormat = DataFormat.FixedSize, IsRequired = true)] public readonly int MessageFormatVersion;
 		[ProtoMember(2, DataFormat = DataFormat.FixedSize, IsRequired = true)] public readonly long AttributesLength;
@@ -31,12 +31,12 @@ namespace Lokad.Cqrs
 
 		public static MessageHeader ForData(long attributesLength, long contentLength, int checksum)
 		{
-			return new MessageHeader(DataMessageFormatVersion, attributesLength, contentLength, checksum);
+			return new MessageHeader(Contract1DataFormat, attributesLength, contentLength, checksum);
 		}
 
 		public static MessageHeader ForReference(long attributesLength, int checksum)
 		{
-			return new MessageHeader(ReferenceMessageFormatVersion, attributesLength, 0, checksum);
+			return new MessageHeader(Contract1ReferenceFormat, attributesLength, 0, checksum);
 		}
 	}
 }
