@@ -32,32 +32,21 @@ namespace Lokad.Cqrs.Queue
 			var contract = _serializer
 				.GetContractNameByType(messageType)
 				.ExposeException(() => NoContractNameOnSend(messageType, _serializer));
-
 			var referenceId = created.ToString(DateFormatInBlobName) + "-" + messageId;
 
-			var builder = new MessageAttributeBuilder();
-			builder.AddContract(contract);
-			builder.AddSender(_queue.Uri.ToString());
-			builder.AddIdentity(messageId.ToString());
-			builder.AddCreated(created);
-			var attributes = builder.Build();
-
-			using (var stream = MessageUtil.SaveDataMessageToStream(attributes, s => _serializer.Serialize(message, s)))
+			var buffer = MessageUtil.SaveDataMessage(messageId, contract, _queue.Uri, _serializer, message);
+			if (buffer.Length < CloudQueueLimit)
 			{
-				if (stream.Length < CloudQueueLimit)
-				{
-					// write message to queue
-					return new CloudQueueMessage(stream.ToArray());
-				}
-				// write message to blob
-				stream.Seek(0, SeekOrigin.Begin);
-				_cloudBlob
-					.GetBlobReference(referenceId)
-					.UploadFromStream(stream);
+				// write message to queue
+				return new CloudQueueMessage(buffer);
 			}
-
 			// ok, we didn't fit, so create reference message
-			var blob = MessageUtil.SaveReferenceMessageToStream(messageId, contract, _cloudBlob.Uri, referenceId);
+
+			_cloudBlob
+					.GetBlobReference(referenceId)
+					.UploadByteArray(buffer);
+
+			var blob = MessageUtil.SaveReferenceMessage(messageId, contract, _cloudBlob.Uri, referenceId);
 			return new CloudQueueMessage(blob);
 		}
 

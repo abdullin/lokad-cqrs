@@ -6,50 +6,60 @@ namespace Lokad.Cqrs.Lmf
 {
 	public static class MessageUtil
 	{
-		public static byte[] SaveReferenceMessageToStream(Guid messageId, string contract, Uri storageContainer, string storageId)
+		public static byte[] SaveReferenceMessage(Guid messageId, string contract, Uri storageContainer, string storageId)
 		{
-			var stream = new MemoryStream();
-			// skip header
-			stream.Seek(MessageHeader.FixedSize, SeekOrigin.Begin);
-
-
 			var builder = new MessageAttributeBuilder();
 			builder.AddBlobReference(storageContainer, storageId);
 			builder.AddContract(contract);
 			builder.AddIdentity(messageId.ToString());
-			var instance = builder.Build();
+			var attributes = builder.Build();
 
-
-			// write reference
-			Serializer.Serialize(stream, instance);
-			var attributesLength = stream.Position - MessageHeader.FixedSize;
-			// write header
-			stream.Seek(0, SeekOrigin.Begin);
-			Serializer.Serialize(stream, MessageHeader.ForReference(attributesLength, 0));
-			return stream.ToArray();
+			using (var stream = new MemoryStream())
+			{
+				// skip header
+				stream.Seek(MessageHeader.FixedSize, SeekOrigin.Begin);
+				// write reference
+				Serializer.Serialize(stream, attributes);
+				var attributesLength = stream.Position - MessageHeader.FixedSize;
+				// write header
+				stream.Seek(0, SeekOrigin.Begin);
+				Serializer.Serialize(stream, MessageHeader.ForReference(attributesLength, 0));
+				return stream.ToArray();
+			}
 		}
 
-		public static MemoryStream SaveDataMessageToStream(MessageAttributesContract messageAttributes, Action<Stream> message)
+		public static byte[] SaveDataMessage(Guid messageId, string contract, Uri sender, IMessageSerializer serializer, object  content)
 		{
-			var stream = new MemoryStream();
+			var builder = new MessageAttributeBuilder();
 
-			// skip header
-			stream.Seek(MessageHeader.FixedSize, SeekOrigin.Begin);
 
-			// save attributes
+			builder.AddContract(contract);
+			builder.AddSender(sender.ToString());
+			builder.AddIdentity(messageId.ToString());
+			builder.AddCreated(DateTime.UtcNow);
 
-			Serializer.Serialize(stream, messageAttributes);
-			var attributesLength = stream.Position - MessageHeader.FixedSize;
+			var attributes = builder.Build();
 
-			// save message
-			message(stream);
-			// calculate length
-			var bodyLength = stream.Position - attributesLength - MessageHeader.FixedSize;
-			// write the header
-			stream.Seek(0, SeekOrigin.Begin);
-			var messageHeader = MessageHeader.ForData(attributesLength, bodyLength, 0);
-			Serializer.Serialize(stream, messageHeader);
-			return stream;
+
+			using (var stream = new MemoryStream())
+			{
+				// skip header
+				stream.Seek(MessageHeader.FixedSize, SeekOrigin.Begin);
+
+				// save attributes
+
+				Serializer.Serialize(stream, attributes);
+				var attributesLength = stream.Position - MessageHeader.FixedSize;
+				// save message
+				serializer.Serialize(content, stream);
+				// calculate length
+				var bodyLength = stream.Position - attributesLength - MessageHeader.FixedSize;
+				// write the header
+				stream.Seek(0, SeekOrigin.Begin);
+				var messageHeader = MessageHeader.ForData(attributesLength, bodyLength, 0);
+				Serializer.Serialize(stream, messageHeader);
+				return stream.ToArray();
+			}
 		}
 
 		public static MessageHeader ReadHeader(byte[] buffer)
