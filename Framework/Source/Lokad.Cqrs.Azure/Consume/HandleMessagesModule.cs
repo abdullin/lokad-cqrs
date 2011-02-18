@@ -41,7 +41,7 @@ namespace Lokad.Cqrs.Consume.Build
 		}
 
 		
-		public HandleMessagesModule WhenMessageHandlerFails(Action<UnpackedMessage, Exception> handler)
+		public HandleMessagesModule WhenMessageHandlerFails(Action<MessageEnvelope, Exception> handler)
 		{
 			throw new NotImplementedException();
 			//return ApplyToTransport((transport, context) =>
@@ -52,7 +52,7 @@ namespace Lokad.Cqrs.Consume.Build
 		}
 
 		
-		public HandleMessagesModule WhenMessageArrives(Action<UnpackedMessage> interceptor)
+		public HandleMessagesModule WhenMessageArrives(Action<MessageEnvelope> interceptor)
 		{
 			throw new NotImplementedException();
 		}

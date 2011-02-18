@@ -75,7 +75,7 @@
     <Compile Include="Durability\MessageHeader.cs" />
     <Compile Include="Lmf\MessagePrinter.cs" />
     <Compile Include="Durability\MessageUtil.cs" />
-    <Compile Include="Lmf\UnpackedMessage.cs" />
+    <Compile Include="Lmf\MessageEnvelope.cs" />
     <Compile Include="Monads\Maybe.1.cs" />
     <Compile Include="Monads\Maybe.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

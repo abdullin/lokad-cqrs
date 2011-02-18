@@ -37,7 +37,7 @@ namespace Lokad.Cqrs.Consume
 			}
 		}
 
-		public void DispatchMessage(UnpackedMessage unpacked)
+		public void DispatchMessage(MessageEnvelope unpacked)
 		{
 			// we get failure if one of the subscribers fails
 			Type[] consumerTypes;

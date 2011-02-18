@@ -13,14 +13,14 @@ namespace Lokad.Cqrs.Queue
 {
 	public sealed class AzureReadQueue
 	{
-		readonly string _queueName;
 		readonly IMessageSerializer _serializer;
+		readonly ILog _log;
 
 		readonly CloudBlobContainer _cloudBlob;
-		readonly ILog _log;
-		
 		readonly CloudQueue _posionQueue;
 		readonly CloudQueue _queue;
+		readonly string _queueName;
+
 		const int RetryCount = 4;
 
 		public AzureReadQueue(
@@ -112,7 +112,6 @@ namespace Lokad.Cqrs.Queue
 			if (header.MessageFormatVersion == MessageHeader.DataMessageFormatVersion)
 			{
 				var message = MessageUtil.ReadDataMessage(buffer, _serializer);
-
 				return new AzureMessageContext(cloud, message);
 			}
 			if (header.MessageFormatVersion == MessageHeader.ReferenceMessageFormatVersion)
@@ -139,9 +138,9 @@ namespace Lokad.Cqrs.Queue
 	public sealed class AzureMessageContext
 	{
 		public readonly CloudQueueMessage CloudMessage;
-		public readonly UnpackedMessage Unpacked;
+		public readonly MessageEnvelope Unpacked;
 
-		public AzureMessageContext(CloudQueueMessage cloudMessage, UnpackedMessage unpacked)
+		public AzureMessageContext(CloudQueueMessage cloudMessage, MessageEnvelope unpacked)
 		{
 			CloudMessage = cloudMessage;
 			Unpacked = unpacked;

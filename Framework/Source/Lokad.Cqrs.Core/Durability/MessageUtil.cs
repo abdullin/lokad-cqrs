@@ -70,7 +70,7 @@ namespace Lokad.Cqrs.Lmf
 				.ExposeException("Protocol violation: reference message should have storage reference");
 		}
 
-		public static UnpackedMessage ReadDataMessage(byte[] buffer, IMessageSerializer serializer)
+		public static MessageEnvelope ReadDataMessage(byte[] buffer, IMessageSerializer serializer)
 		{
 			var header = ReadHeader(buffer);
 			if (header.MessageFormatVersion != MessageHeader.DataMessageFormatVersion)
@@ -89,7 +89,7 @@ namespace Lokad.Cqrs.Lmf
 			using (var stream = new MemoryStream(buffer, index, count))
 			{
 				var instance = serializer.Deserialize(stream, type);
-				return new UnpackedMessage(attributes, instance, type);
+				return new MessageEnvelope(attributes, instance, type);
 			}
 		}
 	}

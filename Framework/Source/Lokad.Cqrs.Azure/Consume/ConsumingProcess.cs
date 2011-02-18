@@ -6,13 +6,10 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Transactions;
 using Lokad.Cqrs.Consume;
 using Lokad.Cqrs.Queue;
-using Microsoft.WindowsAzure;
 
 namespace Lokad.Cqrs.Transport
 {
@@ -58,7 +55,7 @@ namespace Lokad.Cqrs.Transport
 		}
 	
 
-		Maybe<Exception> GetProcessingFailure(AzureReadQueue queue, UnpackedMessage message)
+		Maybe<Exception> GetProcessingFailure(AzureReadQueue queue, MessageEnvelope message)
 		{
 			try
 			{
@@ -73,7 +70,7 @@ namespace Lokad.Cqrs.Transport
 			}
 		}
 
-		void MessageHandlingProblem(UnpackedMessage message, Exception ex)
+		void MessageHandlingProblem(MessageEnvelope message, Exception ex)
 		{
 			// notify all subscribers
 			// do nothing. Message will show up in the queue with the increased enqueue count.

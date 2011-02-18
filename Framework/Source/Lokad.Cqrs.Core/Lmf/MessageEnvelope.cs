@@ -6,14 +6,13 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 
 namespace Lokad.Cqrs
 {
 	/// <summary>
 	/// Deserialized message representation
 	/// </summary>
-	public class UnpackedMessage
+	public class MessageEnvelope
 	{
 		/// <summary>
 		/// Type of the contract behind the message
@@ -29,7 +28,7 @@ namespace Lokad.Cqrs
 		/// </summary>
 		public readonly object Content;
 
-		public UnpackedMessage(MessageAttributesContract attributes, object content, Type contractType)
+		public MessageEnvelope(MessageAttributesContract attributes, object content, Type contractType)
 		{
 		
 			ContractType = contractType;
@@ -46,9 +45,7 @@ namespace Lokad.Cqrs
 	//    public readonly MessageItem[] Messages;
 	//    public readonly IDictionary<string, object> Attributes = new Dictionary<string, object>();
 
-	//    // can retrieve original message via the state
-	//    // to replace with Azure Message Context
-	//    readonly IDictionary<string, object> _dynamicState = new Dictionary<string, object>();
+	
 	//}
 
 	//public sealed class MessageItem

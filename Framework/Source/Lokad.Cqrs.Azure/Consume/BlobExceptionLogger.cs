@@ -16,7 +16,7 @@ using Microsoft.WindowsAzure.StorageClient;
 namespace Lokad.Cqrs.Consume
 {
 
-	public delegate void PrintMessageErrorDelegate(UnpackedMessage message, Exception ex, TextWriter writer);
+	public delegate void PrintMessageErrorDelegate(MessageEnvelope message, Exception ex, TextWriter writer);
 	public sealed class BlobExceptionLogger
 	{
 		readonly CloudBlobContainer _container;
@@ -29,7 +29,7 @@ namespace Lokad.Cqrs.Consume
 
 		public event PrintMessageErrorDelegate OnRender = (message, exception, arg3) => { };
 
-		public void Handle(UnpackedMessage message, Exception exception)
+		public void Handle(MessageEnvelope message, Exception exception)
 		{
 			// get identity of the message or just unknown string
 			var identity = message.Attributes
@@ -68,7 +68,7 @@ namespace Lokad.Cqrs.Consume
 			blob.UploadText(builder.ToString());
 		}
 
-		void RenderDelegates(UnpackedMessage message, StringWriter writer, Exception exception)
+		void RenderDelegates(MessageEnvelope message, StringWriter writer, Exception exception)
 		{
 			foreach (PrintMessageErrorDelegate @delegate in OnRender.GetInvocationList())
 			{

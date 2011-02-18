@@ -26,7 +26,7 @@ namespace Lokad.Cqrs.Consume
 			_messageDirectory = messageDirectory;
 		}
 
-		public void DispatchMessage(UnpackedMessage message)
+		public void DispatchMessage(MessageEnvelope message)
 		{
 			Type consumerType;
 			if (_messageConsumers.TryGetValue(message.ContractType, out consumerType))
