@@ -28,10 +28,11 @@ namespace Lokad.Cqrs
 
 		readonly IDictionary<string, object> _attributes = new Dictionary<string, object>();
 
-		public MessageEnvelope(IDictionary<string,object> attributes, object content, Type contractType)
+		public MessageEnvelope(string envelopeId, IDictionary<string,object> attributes, object content, Type contractType)
 		{
 		
 			ContractType = contractType;
+			EnvelopeId = envelopeId;
 			_attributes = attributes;
 			Content = content;
 		}
@@ -51,6 +52,7 @@ namespace Lokad.Cqrs
 	public static class EnvelopeAttribute
 	{
 		public const string CreatedUtc = "CreatedUtc";
+		public const string Sender = "Sender";
 	}
 
 	

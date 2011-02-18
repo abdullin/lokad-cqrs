@@ -26,6 +26,38 @@ namespace Lokad.Cqrs.Lmf
 				.ExposeException("Protocol violation: reference message should have storage reference");
 		}
 
+		public static byte[] SaveData(string contract, Guid messageId, Uri sender, IMessageSerializer serializer, object content)
+		{
+			var attribs = new List<AttributesItemContract>
+				{
+					new AttributesItemContract(AttributeTypeContract.ContractName, contract),
+					new AttributesItemContract(AttributeTypeContract.Identity, messageId.ToString()),
+					new AttributesItemContract(AttributeTypeContract.Sender, sender.ToString()),
+					new AttributesItemContract(AttributeTypeContract.CreatedUtc, DateTime.UtcNow.ToBinary())
+				};
+
+			var attributes = new AttributesContract(attribs.ToArray());
+			using (var stream = new MemoryStream())
+			{
+				// skip header
+				stream.Seek(MessageHeader.FixedSize, SeekOrigin.Begin);
+
+				// save attributes
+
+				Serializer.Serialize(stream, attributes);
+				var attributesLength = stream.Position - MessageHeader.FixedSize;
+				// save message
+				serializer.Serialize(content, stream);
+				// calculate length
+				var bodyLength = stream.Position - attributesLength - MessageHeader.FixedSize;
+				// write the header
+				stream.Seek(0, SeekOrigin.Begin);
+				var messageHeader = MessageHeader.ForData(attributesLength, bodyLength, 0);
+				Serializer.Serialize(stream, messageHeader);
+				return stream.ToArray();
+			}
+		}
+
 		public static MessageEnvelope ReadDataMessage(byte[] buffer, IMessageSerializer serializer)
 		{
 			var header = MessageUtil.ReadHeader(buffer);
@@ -39,11 +71,23 @@ namespace Lokad.Cqrs.Lmf
 			var type = serializer
 				.GetTypeByContractName(contract)
 				.ExposeException("Unsupported contract name: '{0}'", contract);
+			string identity = attributes
+				.GetAttributeString(AttributeTypeContract.Identity)
+				.ExposeException("Protocol violation: message should have ID");
 
 			var dict = new Dictionary<string, object>();
 			foreach (var attribute in attributes.Items)
 			{
-				dict[attribute.GetName()] = attribute.GetValue();
+
+				switch (attribute.Type)
+				{
+					case AttributeTypeContract.CreatedUtc:
+						dict[EnvelopeAttribute.CreatedUtc] = DateTime.FromBinary(attribute.NumberValue);
+						break;
+					default:
+						dict[attribute.GetName()] = attribute.GetValue();
+						break;
+				}
 			}
 
 			var index = MessageHeader.FixedSize + (int)header.AttributesLength;
@@ -51,7 +95,33 @@ namespace Lokad.Cqrs.Lmf
 			using (var stream = new MemoryStream(buffer, index, count))
 			{
 				var instance = serializer.Deserialize(stream, type);
-				return new MessageEnvelope(dict, instance, type);
+				return new MessageEnvelope(identity, dict, instance, type);
+			}
+		}
+
+		public static byte[] SaveReference(Uri storageContainer, string storageId, string contract, Guid messageId)
+		{
+			var attribs = new List<AttributesItemContract>
+				{
+					new AttributesItemContract(AttributeTypeContract.StorageContainer, storageContainer.ToString()),
+					new AttributesItemContract(AttributeTypeContract.StorageReference, storageId),
+					new AttributesItemContract(AttributeTypeContract.ContractName, contract),
+					new AttributesItemContract(AttributeTypeContract.Identity, messageId.ToString())
+				};
+			
+			var attributes = new AttributesContract(attribs.ToArray());
+
+			using (var stream = new MemoryStream())
+			{
+				// skip header
+				stream.Seek(MessageHeader.FixedSize, SeekOrigin.Begin);
+				// write reference
+				Serializer.Serialize(stream, attributes);
+				var attributesLength = stream.Position - MessageHeader.FixedSize;
+				// write header
+				stream.Seek(0, SeekOrigin.Begin);
+				Serializer.Serialize(stream, MessageHeader.ForReference(attributesLength, 0));
+				return stream.ToArray();
 			}
 		}
 	}

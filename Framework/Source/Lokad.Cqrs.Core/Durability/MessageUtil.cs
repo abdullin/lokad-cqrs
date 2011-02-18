@@ -9,64 +9,12 @@ namespace Lokad.Cqrs.Lmf
 	{
 		public static byte[] SaveReferenceMessage(Guid messageId, string contract, Uri storageContainer, string storageId)
 		{
-			var attribs = new List<AttributesItemContract>
-				{
-					new AttributesItemContract(AttributeTypeContract.StorageContainer, storageContainer.ToString()),
-					new AttributesItemContract(AttributeTypeContract.StorageReference, storageId),
-					new AttributesItemContract(AttributeTypeContract.ContractName, contract),
-					new AttributesItemContract(AttributeTypeContract.Identity, messageId.ToString())
-				};
-			
-			var attributes = new AttributesContract(attribs.ToArray());
-
-			using (var stream = new MemoryStream())
-			{
-				// skip header
-				stream.Seek(MessageHeader.FixedSize, SeekOrigin.Begin);
-				// write reference
-				Serializer.Serialize(stream, attributes);
-				var attributesLength = stream.Position - MessageHeader.FixedSize;
-				// write header
-				stream.Seek(0, SeekOrigin.Begin);
-				Serializer.Serialize(stream, MessageHeader.ForReference(attributesLength, 0));
-				return stream.ToArray();
-			}
+			return Contract1Util.SaveReference(storageContainer, storageId, contract, messageId);
 		}
 
 		public static byte[] SaveDataMessage(Guid messageId, string contract, Uri sender, IMessageSerializer serializer, object  content)
 		{
-			var attribs = new List<AttributesItemContract>
-				{
-					new AttributesItemContract(AttributeTypeContract.ContractName, contract),
-					new AttributesItemContract(AttributeTypeContract.Identity, messageId.ToString()),
-					new AttributesItemContract(AttributeTypeContract.Sender, sender.ToString()),
-					new AttributesItemContract(AttributeTypeContract.CreatedUtc, DateTime.UtcNow.ToBinary())
-				};
-
-			
-
-			var attributes = new AttributesContract(attribs.ToArray());
-
-
-			using (var stream = new MemoryStream())
-			{
-				// skip header
-				stream.Seek(MessageHeader.FixedSize, SeekOrigin.Begin);
-
-				// save attributes
-
-				Serializer.Serialize(stream, attributes);
-				var attributesLength = stream.Position - MessageHeader.FixedSize;
-				// save message
-				serializer.Serialize(content, stream);
-				// calculate length
-				var bodyLength = stream.Position - attributesLength - MessageHeader.FixedSize;
-				// write the header
-				stream.Seek(0, SeekOrigin.Begin);
-				var messageHeader = MessageHeader.ForData(attributesLength, bodyLength, 0);
-				Serializer.Serialize(stream, messageHeader);
-				return stream.ToArray();
-			}
+			return Contract1Util.SaveData(contract, messageId, sender, serializer, content);
 		}
 
 		public static MessageHeader ReadHeader(byte[] buffer)
