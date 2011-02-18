@@ -15,15 +15,48 @@ namespace Lokad.Cqrs.Lmf
 			}
 		}
 
-		public static string ReadReferenceMessage(byte[] buffer)
+		public static byte[] SaveReference(Uri storageContainer, string storageId, string contract, Guid messageId)
+		{
+			var attribs = new List<AttributesItemContract>
+				{
+					new AttributesItemContract(AttributeTypeContract.StorageContainer, storageContainer.ToString()),
+					new AttributesItemContract(AttributeTypeContract.StorageReference, storageId),
+					new AttributesItemContract(AttributeTypeContract.ContractName, contract),
+					new AttributesItemContract(AttributeTypeContract.Identity, messageId.ToString())
+				};
+			
+			var attributes = new AttributesContract(attribs.ToArray());
+
+			using (var stream = new MemoryStream())
+			{
+				// skip header
+				stream.Seek(MessageHeader.FixedSize, SeekOrigin.Begin);
+				// write reference
+				Serializer.Serialize(stream, attributes);
+				var attributesLength = stream.Position - MessageHeader.FixedSize;
+				// write header
+				stream.Seek(0, SeekOrigin.Begin);
+				Serializer.Serialize(stream, MessageHeader.ForSchema1Reference(attributesLength, 0));
+				return stream.ToArray();
+			}
+		}
+
+		public static MessageReference ReadReferenceMessage(byte[] buffer)
 		{
 			var header = MessageUtil.ReadHeader(buffer);
 			if (header.MessageFormatVersion != MessageHeader.Contract1ReferenceFormat)
 				throw new InvalidOperationException("Unexpected message format");
 
 			var attributes = ReadAttributes(buffer, header);
-			return attributes.GetAttributeString(AttributeTypeContract.StorageReference)
+			var refernce = attributes.GetAttributeString(AttributeTypeContract.StorageReference)
 				.ExposeException("Protocol violation: reference message should have storage reference");
+
+			var container = attributes.GetAttributeString(AttributeTypeContract.StorageContainer)
+				.ExposeException("Protocol violation: reference message should have storage container");
+
+			var identity = attributes.GetAttributeString(AttributeTypeContract.Identity)
+				.ExposeException("Protocol violation: reference message should have storage container");
+			return new MessageReference(identity, refernce, container);
 		}
 
 		public static byte[] SaveData(string contract, Guid messageId, Uri sender, IMessageSerializer serializer, object content)
@@ -106,32 +139,6 @@ namespace Lokad.Cqrs.Lmf
 				var instance = serializer.Deserialize(stream, type);
 				var item = new MessageItem(messageId, contract, type, instance, envelope);
 				return new MessageEnvelope(messageId, envelope, new[] {item});
-			}
-		}
-
-		public static byte[] SaveReference(Uri storageContainer, string storageId, string contract, Guid messageId)
-		{
-			var attribs = new List<AttributesItemContract>
-				{
-					new AttributesItemContract(AttributeTypeContract.StorageContainer, storageContainer.ToString()),
-					new AttributesItemContract(AttributeTypeContract.StorageReference, storageId),
-					new AttributesItemContract(AttributeTypeContract.ContractName, contract),
-					new AttributesItemContract(AttributeTypeContract.Identity, messageId.ToString())
-				};
-			
-			var attributes = new AttributesContract(attribs.ToArray());
-
-			using (var stream = new MemoryStream())
-			{
-				// skip header
-				stream.Seek(MessageHeader.FixedSize, SeekOrigin.Begin);
-				// write reference
-				Serializer.Serialize(stream, attributes);
-				var attributesLength = stream.Position - MessageHeader.FixedSize;
-				// write header
-				stream.Seek(0, SeekOrigin.Begin);
-				Serializer.Serialize(stream, MessageHeader.ForReference(attributesLength, 0));
-				return stream.ToArray();
 			}
 		}
 	}

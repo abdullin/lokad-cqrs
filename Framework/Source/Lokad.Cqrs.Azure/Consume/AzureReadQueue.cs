@@ -106,9 +106,11 @@ namespace Lokad.Cqrs.Queue
 			}
 		}
 
-		byte[] DownloadPackage(string reference)
+		byte[] DownloadPackage(MessageReference reference)
 		{
-			var blob = _cloudBlob.GetBlobReference(reference);
+			if (reference.StorageContainer != _cloudBlob.Uri.ToString())
+				throw new InvalidOperationException("Wrong container used!");
+			var blob = _cloudBlob.GetBlobReference(reference.StorageReference);
 			return blob.DownloadByteArray();
 		}
 

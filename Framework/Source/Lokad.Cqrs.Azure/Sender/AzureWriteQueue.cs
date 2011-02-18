@@ -46,7 +46,8 @@ namespace Lokad.Cqrs.Queue
 					.GetBlobReference(referenceId)
 					.UploadByteArray(buffer);
 
-			var blob = MessageUtil.SaveReferenceMessage(messageId, contract, _cloudBlob.Uri, referenceId);
+			var reference = new MessageReference(messageId.ToString(), _cloudBlob.Uri.ToString(), referenceId);
+			var blob = MessageUtil.SaveReferenceMessage(reference);
 			return new CloudQueueMessage(blob);
 		}
 

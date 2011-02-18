@@ -104,7 +104,9 @@
     <Compile Include="Storage\StorageWriteOptions.cs" />
     <Compile Include="Storage\StreamUtil.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Durability\Contracts_v2\" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="..\..\SharedKey.snk">
       <Link>SharedKey.snk</Link>
