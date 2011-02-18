@@ -6,6 +6,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 
 namespace Lokad.Cqrs
 {
@@ -19,22 +20,39 @@ namespace Lokad.Cqrs
 		/// </summary>
 		public readonly Type ContractType;
 		
-		/// <summary>
-		/// Available message attributes
-		/// </summary>
-		public readonly MessageAttributesContract Attributes;
+		
 		/// <summary>
 		/// Message content
 		/// </summary>
 		public readonly object Content;
 
-		public MessageEnvelope(MessageAttributesContract attributes, object content, Type contractType)
+		public readonly string EnvelopeId;
+
+		readonly IDictionary<string, object> _attributes = new Dictionary<string, object>();
+
+		public MessageEnvelope(IDictionary<string,object> attributes, object content, Type contractType)
 		{
 		
 			ContractType = contractType;
-			Attributes = attributes;
+			_attributes = attributes;
 			Content = content;
 		}
+
+		public Maybe<TData> GetAttributeValue<TData>(string name)
+			where TData : struct
+		{
+			return _attributes.GetValue(name).Convert(o => (TData)o);
+		}
+
+		public ICollection<KeyValuePair<string,object>> GetAllAttributes()
+		{
+			return _attributes;
+		}
+	}
+
+	public static class EnvelopeAttribute
+	{
+		public const string CreatedUtc = "CreatedUtc";
 	}
 
 	

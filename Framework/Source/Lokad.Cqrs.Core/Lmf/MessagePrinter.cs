@@ -6,6 +6,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Text;
@@ -20,25 +21,14 @@ namespace Lokad.Cqrs
 		/// <param name="attributes">The attributes.</param>
 		/// <param name="writer">The writer.</param>
 		/// <param name="indent">The indent.</param>
-		public static void PrintAttributes(MessageAttributesContract attributes, TextWriter writer, string indent = "")
+		public static void PrintAttributes(IEnumerable<KeyValuePair<string, object>> attributes, TextWriter writer, string indent = "")
 		{
-			var max = attributes.Items.Max(a => a.GetName().Length);
+			var max = attributes.Max(a => a.Key.Length);
 
-			foreach (var item in attributes.Items)
+			foreach (var item in attributes)
 			{
 				writer.Write(indent);
-				writer.WriteLine("{0,-" + (max + 2) + "} : {1}", item.GetName(), GetNiceValue(item));
-			}
-		}
-
-		static object GetNiceValue(MessageAttributeContract attrib)
-		{
-			switch (attrib.Type)
-			{
-				case MessageAttributeTypeContract.CreatedUtc:
-					return DateTime.FromBinary(attrib.NumberValue);
-				default:
-					return attrib.GetValue();
+				writer.WriteLine("{0,-" + (max + 2) + "} : {1}", item.Key, item.Value);
 			}
 		}
 	}

@@ -32,14 +32,10 @@ namespace Lokad.Cqrs.Consume
 		public void Handle(MessageEnvelope message, Exception exception)
 		{
 			// get identity of the message or just unknown string
-			var identity = message.Attributes
-				.GetAttributeString(MessageAttributeTypeContract.Identity)
-				.GetValue(() => Guid.Empty.ToString());
+			var identity = message.EnvelopeId;
 
 			// get creation time of message, falling back to current date
-			var date = message.Attributes
-				.GetAttributeDate(MessageAttributeTypeContract.CreatedUtc)
-				.GetValue(DateTime.UtcNow);
+			var date = message.GetAttributeValue<DateTime>(EnvelopeAttribute.CreatedUtc).GetValue(DateTime.UtcNow);
 
 			var builder = new StringBuilder();
 			using (var writer = new StringWriter(builder, CultureInfo.InvariantCulture))
@@ -47,7 +43,7 @@ namespace Lokad.Cqrs.Consume
 				writer.WriteLine(message.ContractType.Name);
 				writer.WriteLine();
 
-				MessagePrinter.PrintAttributes(message.Attributes, writer, "  ");
+				MessagePrinter.PrintAttributes(message.GetAllAttributes(), writer, "  ");
 
 				RenderDelegates(message, writer, exception);
 

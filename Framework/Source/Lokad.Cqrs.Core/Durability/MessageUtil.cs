@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using ProtoBuf;
 
@@ -84,12 +85,18 @@ namespace Lokad.Cqrs.Lmf
 				.GetTypeByContractName(contract)
 				.ExposeException("Unsupported contract name: '{0}'", contract);
 
+			var dict = new Dictionary<string, object>();
+			foreach (var attribute in attributes.Items)
+			{
+				dict[attribute.GetName()] = attribute.GetValue();
+			}
+
 			var index = MessageHeader.FixedSize + (int)header.AttributesLength;
 			var count = (int)header.ContentLength;
 			using (var stream = new MemoryStream(buffer, index, count))
 			{
 				var instance = serializer.Deserialize(stream, type);
-				return new MessageEnvelope(attributes, instance, type);
+				return new MessageEnvelope(dict, instance, type);
 			}
 		}
 	}
