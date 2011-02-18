@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using ProtoBuf;
 
@@ -8,11 +9,15 @@ namespace Lokad.Cqrs.Lmf
 	{
 		public static byte[] SaveReferenceMessage(Guid messageId, string contract, Uri storageContainer, string storageId)
 		{
-			var builder = new MessageAttributeBuilder();
-			builder.AddBlobReference(storageContainer, storageId);
-			builder.AddContract(contract);
-			builder.AddIdentity(messageId.ToString());
-			var attributes = builder.Build();
+			var attribs = new List<AttributesItemContract>
+				{
+					new AttributesItemContract(AttributeTypeContract.StorageContainer, storageContainer.ToString()),
+					new AttributesItemContract(AttributeTypeContract.StorageReference, storageId),
+					new AttributesItemContract(AttributeTypeContract.ContractName, contract),
+					new AttributesItemContract(AttributeTypeContract.Identity, messageId.ToString())
+				};
+			
+			var attributes = new AttributesContract(attribs.ToArray());
 
 			using (var stream = new MemoryStream())
 			{
@@ -30,15 +35,17 @@ namespace Lokad.Cqrs.Lmf
 
 		public static byte[] SaveDataMessage(Guid messageId, string contract, Uri sender, IMessageSerializer serializer, object  content)
 		{
-			var builder = new MessageAttributeBuilder();
+			var attribs = new List<AttributesItemContract>
+				{
+					new AttributesItemContract(AttributeTypeContract.ContractName, contract),
+					new AttributesItemContract(AttributeTypeContract.Identity, messageId.ToString()),
+					new AttributesItemContract(AttributeTypeContract.Sender, sender.ToString()),
+					new AttributesItemContract(AttributeTypeContract.CreatedUtc, DateTime.UtcNow.ToBinary())
+				};
 
+			
 
-			builder.AddContract(contract);
-			builder.AddSender(sender.ToString());
-			builder.AddIdentity(messageId.ToString());
-			builder.AddCreated(DateTime.UtcNow);
-
-			var attributes = builder.Build();
+			var attributes = new AttributesContract(attribs.ToArray());
 
 
 			using (var stream = new MemoryStream())

@@ -7,11 +7,11 @@ namespace Lokad.Cqrs.Lmf
 {
 	static class Contract1Util
 	{
-		static MessageAttributesContract ReadAttributes(byte[] message, MessageHeader header)
+		static AttributesContract ReadAttributes(byte[] message, MessageHeader header)
 		{
 			using (var stream = new MemoryStream(message, MessageHeader.FixedSize, (int) header.AttributesLength))
 			{
-				return Serializer.Deserialize<MessageAttributesContract>(stream);
+				return Serializer.Deserialize<AttributesContract>(stream);
 			}
 		}
 
@@ -22,7 +22,7 @@ namespace Lokad.Cqrs.Lmf
 				throw new InvalidOperationException("Unexpected message format");
 
 			var attributes = ReadAttributes(buffer, header);
-			return attributes.GetAttributeString(MessageAttributeTypeContract.StorageReference)
+			return attributes.GetAttributeString(AttributeTypeContract.StorageReference)
 				.ExposeException("Protocol violation: reference message should have storage reference");
 		}
 
@@ -34,7 +34,7 @@ namespace Lokad.Cqrs.Lmf
 
 			var attributes = ReadAttributes(buffer, header);
 			string contract = attributes
-				.GetAttributeString(MessageAttributeTypeContract.ContractName)
+				.GetAttributeString(AttributeTypeContract.ContractName)
 				.ExposeException("Protocol violation: message should have contract name");
 			var type = serializer
 				.GetTypeByContractName(contract)

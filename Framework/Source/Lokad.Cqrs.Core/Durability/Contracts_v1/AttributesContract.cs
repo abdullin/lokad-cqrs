@@ -5,23 +5,23 @@ using ProtoBuf;
 namespace Lokad.Cqrs
 {
 	[ProtoContract]
-	public sealed class MessageAttributesContract
+	public sealed class AttributesContract
 	{
 		[ProtoMember(1, DataFormat = DataFormat.Default)]
-		public readonly MessageAttributeContract[] Items;
+		public readonly AttributesItemContract[] Items;
 
-		public MessageAttributesContract(MessageAttributeContract[] items)
+		public AttributesContract(AttributesItemContract[] items)
 		{
 			Items = items;
 		}
 
 		
-		MessageAttributesContract()
+		AttributesContract()
 		{
-			Items = new MessageAttributeContract[0];
+			Items = new AttributesItemContract[0];
 		}
 
-		public Maybe<string> GetAttributeString(MessageAttributeTypeContract type)
+		public Maybe<string> GetAttributeString(AttributeTypeContract type)
 		{
 			for (int i = Items.Length - 1; i >= 0; i--)
 			{
@@ -37,7 +37,7 @@ namespace Lokad.Cqrs
 			return Maybe<string>.Empty;
 		}
 
-		public Maybe<DateTime> GetAttributeDate(MessageAttributeTypeContract type)
+		public Maybe<DateTime> GetAttributeDate(AttributeTypeContract type)
 		{
 			for (int i = Items.Length - 1; i >= 0; i--)
 			{
