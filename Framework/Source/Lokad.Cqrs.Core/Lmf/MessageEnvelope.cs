@@ -19,8 +19,6 @@ namespace Lokad.Cqrs
 		/// Type of the contract behind the message
 		/// </summary>
 		public readonly Type ContractType;
-		
-		
 		/// <summary>
 		/// Message content
 		/// </summary>

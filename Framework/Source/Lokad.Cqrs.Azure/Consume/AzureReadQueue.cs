@@ -87,7 +87,8 @@ namespace Lokad.Cqrs.Queue
 
 			try
 			{
-				var unpacked = GetMessageFromCloud(message, message.AsBytes);
+				var m = MessageUtil.ReadMessage(message.AsBytes, _serializer, DownloadPackage);
+				var unpacked = new AzureMessageContext(message, m);
 				return GetMessageResult.Success(unpacked);
 			}
 			catch (StorageClientException ex)
@@ -105,24 +106,10 @@ namespace Lokad.Cqrs.Queue
 			}
 		}
 
-		AzureMessageContext GetMessageFromCloud(CloudQueueMessage cloud, byte[] buffer)
+		byte[] DownloadPackage(string reference)
 		{
-			// unefficient reading for now, since protobuf-net does not support reading parts
-			var header = MessageUtil.ReadHeader(buffer);
-			if (header.MessageFormatVersion == MessageHeader.DataMessageFormatVersion)
-			{
-				var message = MessageUtil.ReadDataMessage(buffer, _serializer);
-				return new AzureMessageContext(cloud, message);
-			}
-			if (header.MessageFormatVersion == MessageHeader.ReferenceMessageFormatVersion)
-			{
-				var reference = MessageUtil.ReadReferenceMessage(buffer);
-
-				var blob = _cloudBlob.GetBlobReference(reference);
-				var currentBuffer = blob.DownloadByteArray();
-				return GetMessageFromCloud(cloud, currentBuffer);
-			}
-			throw Errors.InvalidOperation("Unknown message format: {0}", header.MessageFormatVersion);
+			var blob = _cloudBlob.GetBlobReference(reference);
+			return blob.DownloadByteArray();
 		}
 
 		public void AckMessage(AzureMessageContext message)

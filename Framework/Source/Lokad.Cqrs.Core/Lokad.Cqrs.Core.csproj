@@ -59,6 +59,7 @@
     <Compile Include="Directory\MessageInfo.cs" />
     <Compile Include="Directory\MessageMapping.cs" />
     <Compile Include="Directory\MessageReflectionUtil.cs" />
+    <Compile Include="Durability\Contracts_v1\Contract1Util.cs" />
     <Compile Include="Errors.cs" />
     <Compile Include="Extensions\ExtendIDictionary.cs" />
     <Compile Include="Extensions\ExtendIEnumerable.cs" />

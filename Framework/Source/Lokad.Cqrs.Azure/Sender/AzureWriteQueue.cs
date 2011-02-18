@@ -36,7 +36,6 @@ namespace Lokad.Cqrs.Queue
 			var referenceId = created.ToString(DateFormatInBlobName) + "-" + messageId;
 
 			var builder = new MessageAttributeBuilder();
-			builder.AddTopic(contract);
 			builder.AddContract(contract);
 			builder.AddSender(_queue.Uri.ToString());
 			builder.AddIdentity(messageId.ToString());
@@ -58,16 +57,8 @@ namespace Lokad.Cqrs.Queue
 			}
 
 			// ok, we didn't fit, so create reference message
-			var reference = new MessageAttributeBuilder();
-			reference.AddBlobReference(_cloudBlob.Uri, referenceId);
-			reference.AddTopic(contract);
-			reference.AddContract(contract);
-
-			// write reference message
-			using (var stream = MessageUtil.SaveReferenceMessageToStream(reference.Build()))
-			{
-				return new CloudQueueMessage(stream.ToArray());
-			}
+			var blob = MessageUtil.SaveReferenceMessageToStream(messageId, contract, _cloudBlob.Uri, referenceId);
+			return new CloudQueueMessage(blob);
 		}
 
 		public AzureWriteQueue(IMessageSerializer serializer, CloudStorageAccount account, string queueName)
