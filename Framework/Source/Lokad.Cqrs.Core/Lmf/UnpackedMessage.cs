@@ -28,8 +28,6 @@ namespace Lokad.Cqrs
 		/// Message content
 		/// </summary>
 		public readonly object Content;
-		
-		readonly IDictionary<string, object> _dynamicState = new Dictionary<string, object>();
 
 		public UnpackedMessage(MessageAttributesContract attributes, object content, Type contractType)
 		{
@@ -38,23 +36,27 @@ namespace Lokad.Cqrs
 			Attributes = attributes;
 			Content = content;
 		}
-
-		public Maybe<TValue> GetState<TValue>()
-		{
-			return _dynamicState
-				.GetValue(typeof(TValue).Name)
-				.Convert(o => (TValue)o);
-		}
-
-		public UnpackedMessage WithState<TValue>(TValue value)
-		{
-			_dynamicState.Add(typeof(TValue).Name, value);
-			return this;
-		}
-		
-		public override string ToString()
-		{
-			return Content == null ? "NULL" : Content.ToString();
-		}
 	}
+
+	
+
+	//public sealed class MessageEnvelope
+	//{
+	//    public readonly string EnvelopeId;
+	//    public readonly MessageItem[] Messages;
+	//    public readonly IDictionary<string, object> Attributes = new Dictionary<string, object>();
+
+	//    // can retrieve original message via the state
+	//    // to replace with Azure Message Context
+	//    readonly IDictionary<string, object> _dynamicState = new Dictionary<string, object>();
+	//}
+
+	//public sealed class MessageItem
+	//{
+	//    public readonly string MessageId;
+	//    public readonly string Contract;
+	//    public readonly Type MappedType;
+	//    public readonly object Content;
+	//    public readonly IDictionary<string, object> Attributes = new Dictionary<string, object>();
+	//}
 }

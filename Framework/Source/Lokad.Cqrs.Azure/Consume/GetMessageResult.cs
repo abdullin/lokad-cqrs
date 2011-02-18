@@ -15,9 +15,9 @@ namespace Lokad.Cqrs.Queue
 		public static readonly GetMessageResult Retry = new GetMessageResult(null, GetMessageResultState.Retry, null);
 		public readonly GetMessageResultState State;
 		readonly Exception _exception;
-		readonly UnpackedMessage _message;
+		readonly AzureMessageContext _message;
 
-		GetMessageResult(UnpackedMessage message, GetMessageResultState state, Exception exception)
+		GetMessageResult(AzureMessageContext message, GetMessageResultState state, Exception exception)
 		{
 			_message = message;
 			State = state;
@@ -34,7 +34,7 @@ namespace Lokad.Cqrs.Queue
 			}
 		}
 
-		public UnpackedMessage Message
+		public AzureMessageContext Message
 		{
 			get
 			{
@@ -44,7 +44,7 @@ namespace Lokad.Cqrs.Queue
 			}
 		}
 
-		public static GetMessageResult Success(UnpackedMessage message)
+		public static GetMessageResult Success(AzureMessageContext message)
 		{
 			return new GetMessageResult(message, GetMessageResultState.Success, null);
 		}

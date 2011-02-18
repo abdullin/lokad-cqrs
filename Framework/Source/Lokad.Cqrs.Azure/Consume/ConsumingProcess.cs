@@ -79,7 +79,7 @@ namespace Lokad.Cqrs.Transport
 			// do nothing. Message will show up in the queue with the increased enqueue count.
 		}
 
-		static void FinalizeSuccess(AzureReadQueue queue, UnpackedMessage message)
+		static void FinalizeSuccess(AzureReadQueue queue, AzureMessageContext message)
 		{
 			queue.AckMessage(message);
 			//tx.Complete();
@@ -129,8 +129,8 @@ namespace Lokad.Cqrs.Transport
 			switch (result.State)
 			{
 				case GetMessageResultState.Success:
-					GetProcessingFailure(queue, result.Message)
-						.Apply(ex => MessageHandlingProblem(result.Message, ex))
+					GetProcessingFailure(queue, result.Message.Unpacked)
+						.Apply(ex => MessageHandlingProblem(result.Message.Unpacked, ex))
 						.Handle(() => FinalizeSuccess(queue, result.Message));
 					return QueueProcessingResult.MoreWork;
 

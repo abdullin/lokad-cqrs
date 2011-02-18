@@ -105,13 +105,15 @@ namespace Lokad.Cqrs.Queue
 			}
 		}
 
-		UnpackedMessage GetMessageFromCloud(CloudQueueMessage cloud, byte[] buffer)
+		AzureMessageContext GetMessageFromCloud(CloudQueueMessage cloud, byte[] buffer)
 		{
 			// unefficient reading for now, since protobuf-net does not support reading parts
 			var header = MessageUtil.ReadHeader(buffer);
 			if (header.MessageFormatVersion == MessageHeader.DataMessageFormatVersion)
 			{
-				return MessageUtil.ReadDataMessage(buffer, _serializer).WithState(cloud);
+				var message = MessageUtil.ReadDataMessage(buffer, _serializer);
+
+				return new AzureMessageContext(cloud, message);
 			}
 			if (header.MessageFormatVersion == MessageHeader.ReferenceMessageFormatVersion)
 			{
@@ -124,13 +126,27 @@ namespace Lokad.Cqrs.Queue
 			throw Errors.InvalidOperation("Unknown message format: {0}", header.MessageFormatVersion);
 		}
 
-		public void AckMessage(UnpackedMessage message)
+		public void AckMessage(AzureMessageContext message)
 		{
 			if (message == null) throw new ArgumentNullException("message");
 
-			var cloud = message.GetState<CloudQueueMessage>().Value;
+			
 			_log.Debug(message);
-			_queue.DeleteMessage(cloud);
+			_queue.DeleteMessage(message.CloudMessage);
 		}
 	}
+
+	public sealed class AzureMessageContext
+	{
+		public readonly CloudQueueMessage CloudMessage;
+		public readonly UnpackedMessage Unpacked;
+
+		public AzureMessageContext(CloudQueueMessage cloudMessage, UnpackedMessage unpacked)
+		{
+			CloudMessage = cloudMessage;
+			Unpacked = unpacked;
+		}
+	}
+
+
 }
