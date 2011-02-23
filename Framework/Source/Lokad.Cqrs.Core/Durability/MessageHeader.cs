@@ -11,7 +11,8 @@ namespace Lokad.Cqrs
 		public const int Contract1DataFormat = 2010020701;
 		public const int Contract1ReferenceFormat = 2010020702;
 
-		public const int Schema2ReferenceFormat = 2011021801;
+		public const int Schema2ReferenceFormat = 2011021802;
+		public const int Schema2DataFormat = 2011021801;
 
 		[ProtoMember(1, DataFormat = DataFormat.FixedSize, IsRequired = true)] public readonly int MessageFormatVersion;
 		[ProtoMember(2, DataFormat = DataFormat.FixedSize, IsRequired = true)] public readonly long AttributesLength;
@@ -50,13 +51,34 @@ namespace Lokad.Cqrs
 	[ProtoContract]
 	public sealed class MessageEnvelopeContract
 	{
+		[ProtoMember(1)]
 		public readonly string MessageId;
+
+		public readonly Schema2AttributeContract[] EnvelopeAttributes;
+
+		public readonly MessageItemContract[] Items;
 
 	}
 
 	public sealed class MessageItemContract
 	{
-		public readonly string ContractType;
+		public readonly string ContractName;
+		public readonly int ContentSize;
+		public Schema2AttributeContract[] Attributes;
+
+		MessageItemContract()
+		{
+			Attributes = Empty;
+		}
+
+		public MessageItemContract(string contractName, long contentSize, Schema2AttributeContract[] attributes)
+		{
+			ContractName = contractName;
+			ContentSize = contentSize;
+			Attributes = attributes;
+		}
+
+		static readonly Schema2AttributeContract[] Empty = new Schema2AttributeContract[0];
 	}
 
 	[ProtoContract]
@@ -85,6 +107,12 @@ namespace Lokad.Cqrs
 
 	public sealed class Schema2AttributeContract
 	{
+		[ProtoMember(1)]
+		public Schema2AttributeType Type { get; set; }
+		[ProtoMember(2)]
+		public string CustomName { get; set; }
+
+
 
 		[ProtoMember(3)]
 		private string StringValue { get; set; }
@@ -93,11 +121,15 @@ namespace Lokad.Cqrs
 		[ProtoMember(5)]
 		private Decimal DecimalValue { get; set; }
 		[ProtoMember(6)]
-		private byte[] BufferValue { get; set; }
+		private byte[] ByteValue { get; set; }
 	}
+
+
 
 	public enum Schema2AttributeType
 	{
-		
+		CreatedUtc,
+		CustomString,
+		CustomNumber
 	}
 }

@@ -137,7 +137,7 @@ namespace Lokad.Cqrs.Lmf
 			using (var stream = new MemoryStream(buffer, index, count))
 			{
 				var instance = serializer.Deserialize(stream, type);
-				var item = new MessageItem(messageId, contract, type, instance, envelope);
+				var item = new MessageItem(contract, type, instance, envelope);
 				return new MessageEnvelope(messageId, envelope, new[] {item});
 			}
 		}

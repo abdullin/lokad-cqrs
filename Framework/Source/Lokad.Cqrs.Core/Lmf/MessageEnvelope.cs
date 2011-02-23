@@ -66,9 +66,6 @@ namespace Lokad.Cqrs
 		{
 			public const string Contract = "Contract";
 		}
-		
-		
-
 
 	}
 
@@ -85,24 +82,53 @@ namespace Lokad.Cqrs
 
 	public sealed class MessageItem
 	{
-		public readonly string MessageId;
 		public readonly string Contract;
 		public readonly Type MappedType;
 		public readonly object Content;
-		public readonly IDictionary<string, object> _attributes;
+		readonly IDictionary<string, object> _attributes;
 
 		public ICollection<KeyValuePair<string, object>> GetAllAttributes()
 		{
 			return _attributes;
 		}
 
-		public MessageItem(string messageId, string contract, Type mappedType, object content, IDictionary<string,object > attributes)
+		public MessageItem(string contract, Type mappedType, object content, IDictionary<string,object > attributes)
 		{
-			MessageId = messageId;
 			Contract = contract;
 			MappedType = mappedType;
 			Content = content;
 			_attributes = attributes;
+		}
+	}
+
+	public sealed class MessageItemToSave
+	{
+		public readonly IDictionary<string, object> Attributes = new Dictionary<string, object>();
+		public readonly Type MappedType;
+		public readonly object Content;
+
+		public MessageItemToSave(Type mappedType, object content)
+		{
+			MappedType = mappedType;
+			Content = content;
+		}
+	}
+
+	public sealed class MessageEnvelopeBuilder
+	{
+		public readonly Guid EnvelopeId;
+		public readonly IDictionary<string, object> Attributes = new Dictionary<string, object>();
+
+		public readonly IList<MessageItemToSave> Items = new List<MessageItemToSave>();
+
+		public MessageEnvelopeBuilder(Guid envelopeId)
+		{
+			EnvelopeId = envelopeId;
+		}
+
+		public void AddItem<T>(T item)
+		{
+			Items.Add(new MessageItemToSave(typeof(T), item));
 		}
 	}
 }
