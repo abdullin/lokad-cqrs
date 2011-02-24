@@ -131,7 +131,7 @@ namespace Lokad.Cqrs.Tests
 			var r = new Random();
 			using (var mem = new MemoryStream())
 			{
-				var fix = MessageHeader.ForData(r.Next(0,1000), r.Next(0, 12), 0);
+				var fix = MessageHeader.ForSchema1Data(r.Next(0,1000), r.Next(0, 12));
 				Serializer.Serialize(mem, fix);
 				Assert.AreEqual(MessageHeader.FixedSize, mem.Position);
 			}

@@ -44,7 +44,7 @@ namespace Lokad.Cqrs.Durability.Contracts_v1
 		public static MessageReference ReadReferenceMessage(byte[] buffer)
 		{
 			var header = MessageUtil.ReadHeader(buffer);
-			if (header.MessageFormatVersion != MessageHeader.Contract1ReferenceFormat)
+			if (header.MessageFormatVersion != MessageHeader.Schema1ReferenceFormat)
 				throw new InvalidOperationException("Unexpected message format");
 
 			var attributes = ReadAttributes(buffer, header);
@@ -85,7 +85,7 @@ namespace Lokad.Cqrs.Durability.Contracts_v1
 				var bodyLength = stream.Position - attributesLength - MessageHeader.FixedSize;
 				// write the header
 				stream.Seek(0, SeekOrigin.Begin);
-				var messageHeader = MessageHeader.ForData(attributesLength, bodyLength, 0);
+				var messageHeader = MessageHeader.ForSchema1Data(attributesLength, bodyLength);
 				Serializer.Serialize(stream, messageHeader);
 				return stream.ToArray();
 			}
@@ -94,7 +94,7 @@ namespace Lokad.Cqrs.Durability.Contracts_v1
 		public static MessageEnvelope ReadDataMessage(byte[] buffer, IMessageSerializer serializer)
 		{
 			var header = MessageUtil.ReadHeader(buffer);
-			if (header.MessageFormatVersion != MessageHeader.Contract1DataFormat)
+			if (header.MessageFormatVersion != MessageHeader.Schema1DataFormat)
 				throw new InvalidOperationException("Unexpected message format");
 
 			var attributes = ReadAttributes(buffer, header);

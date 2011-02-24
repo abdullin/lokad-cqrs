@@ -47,9 +47,9 @@ namespace Lokad.Cqrs.Durability
 			var header = ReadHeader(buffer);
 			switch (header.MessageFormatVersion)
 			{
-				case MessageHeader.Contract1DataFormat:
+				case MessageHeader.Schema1DataFormat:
 					return Schema1Util.ReadDataMessage(buffer, serializer);
-				case MessageHeader.Contract1ReferenceFormat:
+				case MessageHeader.Schema1ReferenceFormat:
 					var reference = Schema1Util.ReadReferenceMessage(buffer);
 					var blob = loadPackage(reference);
 					return ReadMessage(blob, serializer, loadPackage);

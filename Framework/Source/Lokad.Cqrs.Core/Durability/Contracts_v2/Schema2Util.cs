@@ -198,9 +198,7 @@ namespace Lokad.Cqrs.Durability.Contracts_v2
 
 		public static byte[] SaveData(MessageEnvelopeBuilder envelope, IMessageSerializer serializer)
 		{
-
 			//  string contract, Guid messageId, Uri sender, 
-
 			var itemContracts = new Schema2ItemContract[envelope.Items.Count];
 			using (var content = new MemoryStream())
 			{
@@ -230,12 +228,9 @@ namespace Lokad.Cqrs.Durability.Contracts_v2
 					var attributesLength = stream.Position - MessageHeader.FixedSize;
 					// copy data
 					content.WriteTo(stream);
-					// calculate length
-					var bodyLength = stream.Position - attributesLength - MessageHeader.FixedSize;
-
 					// write the header
 					stream.Seek(0, SeekOrigin.Begin);
-					var messageHeader = MessageHeader.ForData(attributesLength, bodyLength, 0);
+					var messageHeader = MessageHeader.ForSchema2Data(attributesLength, content.Position);
 					Serializer.Serialize(stream, messageHeader);
 					return stream.ToArray();
 				}

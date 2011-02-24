@@ -18,5 +18,16 @@ namespace Lokad.Cqrs.Durability.Contracts_v2
 			EnvelopeAttributes = envelopeAttributes;
 			Items = items;
 		}
+
+// ReSharper disable UnusedMember.Local
+		Schema2EnvelopeContract()
+// ReSharper restore UnusedMember.Local
+		{
+			Items = NoItems;
+			EnvelopeAttributes = NoAttributes;
+		}
+
+		static readonly Schema2ItemContract[] NoItems = new Schema2ItemContract[0];
+		static readonly Schema2EnvelopeAttributeContract[] NoAttributes = new Schema2EnvelopeAttributeContract[0];
 	}
 }
