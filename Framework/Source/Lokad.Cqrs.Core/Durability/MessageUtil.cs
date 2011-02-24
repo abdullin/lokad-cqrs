@@ -35,8 +35,14 @@ namespace Lokad.Cqrs.Durability
 		}
 
 		public static MessageEnvelope ReadMessage(byte[] buffer, IMessageSerializer serializer,
-			Func<MessageReference, byte[]> loadPackage)
+			Func<MessageReference, byte[]> loadPackage = null)
 		{
+			if (null == loadPackage)
+			{
+				loadPackage = reference => { throw Errors.InvalidOperation("Package loading not supported"); };
+			}
+
+
 			// unefficient reading for now, since protobuf-net does not support reading parts
 			var header = ReadHeader(buffer);
 			switch (header.MessageFormatVersion)

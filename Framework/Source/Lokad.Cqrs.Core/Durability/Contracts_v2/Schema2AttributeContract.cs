@@ -2,6 +2,7 @@
 
 namespace Lokad.Cqrs.Durability.Contracts_v2
 {
+	[ProtoContract]
 	public sealed class Schema2ItemAttributeContract
 	{
 		[ProtoMember(1)]
@@ -32,6 +33,7 @@ namespace Lokad.Cqrs.Durability.Contracts_v2
 
 	public enum Schema2EnvelopeAttributeTypeContract
 	{
+		Undefined = 0,
 		CreatedUtc = 1,
 		Sender = 2,
 		CustomNumber = 3,

@@ -45,7 +45,7 @@ namespace Lokad.Cqrs.Serialization
 		/// </summary>
 		/// <param name="types">The types.</param>
 		
-		public ProtoBufMessageSerializer(IEnumerable<IKnowSerializationTypes> types) : this (ExtendIEnumerable.ToSet<Type>(types.SelectMany(t => t.GetKnownTypes())))
+		public ProtoBufMessageSerializer(IEnumerable<IKnowSerializationTypes> types) : this (types.SelectMany(t => t.GetKnownTypes()).ToSet())
 		{
 		}
 

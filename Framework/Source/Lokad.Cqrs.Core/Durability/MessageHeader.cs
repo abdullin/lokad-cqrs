@@ -17,13 +17,7 @@ namespace Lokad.Cqrs.Durability
 		[ProtoMember(3, DataFormat = DataFormat.FixedSize, IsRequired = true)] public readonly long ContentLength;
 		[ProtoMember(4, DataFormat = DataFormat.FixedSize, IsRequired = true)] public readonly int Checksum;
 
-		//public long GetTotalLength()
-		//{
-		//    return FixedSize + AttributesLength + ContentLength;
-		//}
-
 		public long TotalLength { get { return FixedSize + AttributesLength + ContentLength; } }
-
 
 		MessageHeader(int messageFormatVersion, long attributesLength, long contentLength, int checksum)
 		{
@@ -45,6 +39,12 @@ namespace Lokad.Cqrs.Durability
 		public static MessageHeader ForSchema2Reference(long attributesLength, int checksum)
 		{
 			return new MessageHeader(Schema2ReferenceFormat, attributesLength, 0, checksum);
+		}
+
+// ReSharper disable UnusedMember.Local
+		MessageHeader()
+// ReSharper restore UnusedMember.Local
+		{
 		}
 	}
 }
