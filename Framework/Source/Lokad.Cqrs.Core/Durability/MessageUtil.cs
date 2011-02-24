@@ -30,7 +30,7 @@ namespace Lokad.Cqrs.Lmf
 
 		public static byte[] SaveDataMessage(MessageEnvelopeBuilder builder, IMessageSerializer serializer)
 		{
-			return Contract2Util.SaveData(contract, messageId, sender, serializer, content);
+			return Contract2Util.SaveData(builder, serializer);
 		}
 
 		public static MessageEnvelope ReadMessage(byte[] buffer, IMessageSerializer serializer,
@@ -187,45 +187,33 @@ namespace Lokad.Cqrs.Lmf
 						.ExposeException("Failed to find contract name for {0}", item.MappedType);
 					serializer.Serialize(item.Content, content);
 					var size = (int) content.Position - position;
-					itemContracts[i] = new MessageItemContract(name, size, );
+					var attribContracts = AttributesToContract(item.Attributes);
+					itemContracts[i] = new MessageItemContract(name, size, attribContracts);
+
+					position += size;
 				}
-				foreach (var item in envelope.Items)
+
+				var envelopeAttribs = AttributesToContract(envelope.Attributes);
+				var contract = new MessageEnvelopeContract(envelope.EnvelopeId.ToString(), envelopeAttribs, itemContracts);
+
+				using (var stream = new MemoryStream())
 				{
-					
-					
+					// skip header
+					stream.Seek(MessageHeader.FixedSize, SeekOrigin.Begin);
+					// save envelope attributes
+					Serializer.Serialize(stream, contract);
+					var attributesLength = stream.Position - MessageHeader.FixedSize;
+					// copy data
+					content.WriteTo(stream);
+					// calculate length
+					var bodyLength = stream.Position - attributesLength - MessageHeader.FixedSize;
+
+					// write the header
+					stream.Seek(0, SeekOrigin.Begin);
+					var messageHeader = MessageHeader.ForData(attributesLength, bodyLength, 0);
+					Serializer.Serialize(stream, messageHeader);
+					return stream.ToArray();
 				}
-			}
-
-
-			
-
-			var attribs = new List<AttributesItemContract>
-				{
-					new AttributesItemContract(AttributeTypeContract.ContractName, contract),
-					new AttributesItemContract(AttributeTypeContract.Identity, messageId.ToString()),
-					new AttributesItemContract(AttributeTypeContract.Sender, sender.ToString()),
-					new AttributesItemContract(AttributeTypeContract.CreatedUtc, DateTime.UtcNow.ToBinary())
-				};
-
-			var attributes = new AttributesContract(attribs.ToArray());
-			using (var stream = new MemoryStream())
-			{
-				// skip header
-				stream.Seek(MessageHeader.FixedSize, SeekOrigin.Begin);
-
-				// save attributes
-
-				Serializer.Serialize(stream, attributes);
-				var attributesLength = stream.Position - MessageHeader.FixedSize;
-				// save message
-				serializer.Serialize(content, stream);
-				// calculate length
-				var bodyLength = stream.Position - attributesLength - MessageHeader.FixedSize;
-				// write the header
-				stream.Seek(0, SeekOrigin.Begin);
-				var messageHeader = MessageHeader.ForData(attributesLength, bodyLength, 0);
-				Serializer.Serialize(stream, messageHeader);
-				return stream.ToArray();
 			}
 		}
 	}

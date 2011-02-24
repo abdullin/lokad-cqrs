@@ -128,7 +128,15 @@ namespace Lokad.Cqrs
 
 		public void AddItem<T>(T item)
 		{
-			Items.Add(new MessageItemToSave(typeof(T), item));
+			var t = typeof (T);
+			if (t == typeof(object))
+			{
+				t = item.GetType();
+			}
+
+			Items.Add(new MessageItemToSave(t, item));
 		}
+
+
 	}
 }

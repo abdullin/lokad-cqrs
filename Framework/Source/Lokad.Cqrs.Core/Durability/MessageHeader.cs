@@ -58,6 +58,12 @@ namespace Lokad.Cqrs
 
 		public readonly MessageItemContract[] Items;
 
+		public MessageEnvelopeContract(string messageId, Schema2AttributeContract[] envelopeAttributes, MessageItemContract[] items)
+		{
+			MessageId = messageId;
+			EnvelopeAttributes = envelopeAttributes;
+			Items = items;
+		}
 	}
 
 	public sealed class MessageItemContract
@@ -71,7 +77,7 @@ namespace Lokad.Cqrs
 			Attributes = Empty;
 		}
 
-		public MessageItemContract(string contractName, long contentSize, Schema2AttributeContract[] attributes)
+		public MessageItemContract(string contractName, int contentSize, Schema2AttributeContract[] attributes)
 		{
 			ContractName = contractName;
 			ContentSize = contentSize;

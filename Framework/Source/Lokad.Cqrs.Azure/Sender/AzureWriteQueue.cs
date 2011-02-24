@@ -12,40 +12,37 @@ namespace Lokad.Cqrs.Queue
 		{
 			if (messages.Length == 0)
 				return;
-			foreach (var message in messages)
-			{
-				var packed = PackNewMessage(message);
-				_queue.AddMessage(packed);
-			}
+
+			var packed = PackNewMessage(messages);
+			_queue.AddMessage(packed);
 		}
 
 		//http://abdullin.com/journal/2010/6/4/azure-queue-messages-cannot-be-larger-than-8192-bytes.html
 		const int CloudQueueLimit = 6144;
 
 
-		CloudQueueMessage PackNewMessage(object message)
+		CloudQueueMessage PackNewMessage(object[] items)
 		{
 			var messageId = Guid.NewGuid();
-			var created = DateTime.UtcNow;
 
-			var messageType = message.GetType();
-			var contract = _serializer
-				.GetContractNameByType(messageType)
-				.ExposeException(() => NoContractNameOnSend(messageType, _serializer));
-			var referenceId = created.ToString(DateFormatInBlobName) + "-" + messageId;
-
-			var buffer = MessageUtil.SaveDataMessage(messageId, contract, _queue.Uri, _serializer, message);
+			var builder = new MessageEnvelopeBuilder(messageId);
+			foreach (var item in items)
+			{
+				builder.AddItem(item);
+			}
+			var created = DateTimeOffset.UtcNow;
+			builder.Attributes.Add(MessageAttributes.Envelope.CreatedUtc, created);
+			var buffer = MessageUtil.SaveDataMessage(builder, _serializer);
 			if (buffer.Length < CloudQueueLimit)
 			{
 				// write message to queue
 				return new CloudQueueMessage(buffer);
 			}
+
+
 			// ok, we didn't fit, so create reference message
-
-			_cloudBlob
-					.GetBlobReference(referenceId)
-					.UploadByteArray(buffer);
-
+			var referenceId = created.ToString(DateFormatInBlobName) + "-" + messageId;
+			_cloudBlob.GetBlobReference(referenceId).UploadByteArray(buffer);
 			var reference = new MessageReference(messageId.ToString(), _cloudBlob.Uri.ToString(), referenceId);
 			var blob = MessageUtil.SaveReferenceMessage(reference);
 			return new CloudQueueMessage(blob);
