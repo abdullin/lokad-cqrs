@@ -5,27 +5,27 @@ using ProtoBuf;
 
 namespace Lokad.Cqrs.Lmf
 {
-	static class Contract1Util
+	static class Schema1Util
 	{
-		static AttributesContract ReadAttributes(byte[] message, MessageHeader header)
+		static Schema1AttributesContract ReadAttributes(byte[] message, MessageHeader header)
 		{
 			using (var stream = new MemoryStream(message, MessageHeader.FixedSize, (int) header.AttributesLength))
 			{
-				return Serializer.Deserialize<AttributesContract>(stream);
+				return Serializer.Deserialize<Schema1AttributesContract>(stream);
 			}
 		}
 
 		public static byte[] SaveReference(Uri storageContainer, string storageId, string contract, Guid messageId)
 		{
-			var attribs = new List<AttributesItemContract>
+			var attribs = new List<Schema1AttributesItemContract>
 				{
-					new AttributesItemContract(AttributeTypeContract.StorageContainer, storageContainer.ToString()),
-					new AttributesItemContract(AttributeTypeContract.StorageReference, storageId),
-					new AttributesItemContract(AttributeTypeContract.ContractName, contract),
-					new AttributesItemContract(AttributeTypeContract.Identity, messageId.ToString())
+					new Schema1AttributesItemContract(Schema1AttributeTypeContract.StorageContainer, storageContainer.ToString()),
+					new Schema1AttributesItemContract(Schema1AttributeTypeContract.StorageReference, storageId),
+					new Schema1AttributesItemContract(Schema1AttributeTypeContract.ContractName, contract),
+					new Schema1AttributesItemContract(Schema1AttributeTypeContract.Identity, messageId.ToString())
 				};
 			
-			var attributes = new AttributesContract(attribs.ToArray());
+			var attributes = new Schema1AttributesContract(attribs.ToArray());
 
 			using (var stream = new MemoryStream())
 			{
@@ -48,28 +48,28 @@ namespace Lokad.Cqrs.Lmf
 				throw new InvalidOperationException("Unexpected message format");
 
 			var attributes = ReadAttributes(buffer, header);
-			var refernce = attributes.GetAttributeString(AttributeTypeContract.StorageReference)
+			var refernce = attributes.GetAttributeString(Schema1AttributeTypeContract.StorageReference)
 				.ExposeException("Protocol violation: reference message should have storage reference");
 
-			var container = attributes.GetAttributeString(AttributeTypeContract.StorageContainer)
+			var container = attributes.GetAttributeString(Schema1AttributeTypeContract.StorageContainer)
 				.ExposeException("Protocol violation: reference message should have storage container");
 
-			var identity = attributes.GetAttributeString(AttributeTypeContract.Identity)
+			var identity = attributes.GetAttributeString(Schema1AttributeTypeContract.Identity)
 				.ExposeException("Protocol violation: reference message should have storage container");
 			return new MessageReference(identity, refernce, container);
 		}
 
 		public static byte[] SaveData(string contract, Guid messageId, Uri sender, IMessageSerializer serializer, object content)
 		{
-			var attribs = new List<AttributesItemContract>
+			var attribs = new List<Schema1AttributesItemContract>
 				{
-					new AttributesItemContract(AttributeTypeContract.ContractName, contract),
-					new AttributesItemContract(AttributeTypeContract.Identity, messageId.ToString()),
-					new AttributesItemContract(AttributeTypeContract.Sender, sender.ToString()),
-					new AttributesItemContract(AttributeTypeContract.CreatedUtc, DateTime.UtcNow.ToBinary())
+					new Schema1AttributesItemContract(Schema1AttributeTypeContract.ContractName, contract),
+					new Schema1AttributesItemContract(Schema1AttributeTypeContract.Identity, messageId.ToString()),
+					new Schema1AttributesItemContract(Schema1AttributeTypeContract.Sender, sender.ToString()),
+					new Schema1AttributesItemContract(Schema1AttributeTypeContract.CreatedUtc, DateTime.UtcNow.ToBinary())
 				};
 
-			var attributes = new AttributesContract(attribs.ToArray());
+			var attributes = new Schema1AttributesContract(attribs.ToArray());
 			using (var stream = new MemoryStream())
 			{
 				// skip header
@@ -99,13 +99,13 @@ namespace Lokad.Cqrs.Lmf
 
 			var attributes = ReadAttributes(buffer, header);
 			string contract = attributes
-				.GetAttributeString(AttributeTypeContract.ContractName)
+				.GetAttributeString(Schema1AttributeTypeContract.ContractName)
 				.ExposeException("Protocol violation: message should have contract name");
 			var type = serializer
 				.GetTypeByContractName(contract)
 				.ExposeException("Unsupported contract name: '{0}'", contract);
 			string messageId = attributes
-				.GetAttributeString(AttributeTypeContract.Identity)
+				.GetAttributeString(Schema1AttributeTypeContract.Identity)
 				.ExposeException("Protocol violation: message should have ID");
 
 			var envelope = new Dictionary<string, object>();
@@ -115,14 +115,14 @@ namespace Lokad.Cqrs.Lmf
 
 				switch (attribute.Type)
 				{
-					case AttributeTypeContract.ContractName:
-					case AttributeTypeContract.Identity:
+					case Schema1AttributeTypeContract.ContractName:
+					case Schema1AttributeTypeContract.Identity:
 						// skip these, they already are retrieved
 						break;
-					case AttributeTypeContract.CreatedUtc:
+					case Schema1AttributeTypeContract.CreatedUtc:
 						envelope[MessageAttributes.Envelope.CreatedUtc] = DateTime.FromBinary(attribute.NumberValue);
 						break;
-					case AttributeTypeContract.Sender:
+					case Schema1AttributeTypeContract.Sender:
 						envelope[MessageAttributes.Envelope.Sender] = attribute.StringValue;
 						break;
 					default:

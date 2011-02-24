@@ -1,6 +1,6 @@
 ﻿namespace Lokad.Cqrs
 {
-	public enum AttributeTypeContract : uint 
+	public enum Schema1AttributeTypeContract : uint 
 	{
 		Undefined = 0,
 		ContractName = 1,

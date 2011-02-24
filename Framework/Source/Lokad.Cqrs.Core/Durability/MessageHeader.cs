@@ -1,6 +1,4 @@
-﻿
-using System;
-using ProtoBuf;
+﻿using ProtoBuf;
 
 namespace Lokad.Cqrs
 {
@@ -24,6 +22,8 @@ namespace Lokad.Cqrs
 		//    return FixedSize + AttributesLength + ContentLength;
 		//}
 
+		public long TotalLength { get { return FixedSize + AttributesLength + ContentLength; } }
+
 
 		MessageHeader(int messageFormatVersion, long attributesLength, long contentLength, int checksum)
 		{
@@ -46,96 +46,5 @@ namespace Lokad.Cqrs
 		{
 			return new MessageHeader(Schema2ReferenceFormat, attributesLength, 0, checksum);
 		}
-	}
-
-	[ProtoContract]
-	public sealed class MessageEnvelopeContract
-	{
-		[ProtoMember(1)]
-		public readonly string MessageId;
-
-		public readonly Schema2AttributeContract[] EnvelopeAttributes;
-
-		public readonly MessageItemContract[] Items;
-
-		public MessageEnvelopeContract(string messageId, Schema2AttributeContract[] envelopeAttributes, MessageItemContract[] items)
-		{
-			MessageId = messageId;
-			EnvelopeAttributes = envelopeAttributes;
-			Items = items;
-		}
-	}
-
-	public sealed class MessageItemContract
-	{
-		public readonly string ContractName;
-		public readonly int ContentSize;
-		public Schema2AttributeContract[] Attributes;
-
-		MessageItemContract()
-		{
-			Attributes = Empty;
-		}
-
-		public MessageItemContract(string contractName, int contentSize, Schema2AttributeContract[] attributes)
-		{
-			ContractName = contractName;
-			ContentSize = contentSize;
-			Attributes = attributes;
-		}
-
-		static readonly Schema2AttributeContract[] Empty = new Schema2AttributeContract[0];
-	}
-
-	[ProtoContract]
-	public sealed class MessageReferenceContract
-	{
-		[ProtoMember(1)]
-		public readonly string EnvelopeId;
-		[ProtoMember(2)]
-		public readonly string StorageContainer;
-		[ProtoMember(3)]
-		public readonly string StorageReference;
-
-		public MessageReferenceContract(string envelopeId, string storageContainer, string storageReference)
-		{
-			EnvelopeId = envelopeId;
-			StorageContainer = storageContainer;
-			StorageReference = storageReference;
-		}
-
-
-		MessageReferenceContract()
-		{
-		}
-
-	}
-
-	public sealed class Schema2AttributeContract
-	{
-		[ProtoMember(1)]
-		public Schema2AttributeType Type { get; set; }
-		[ProtoMember(2)]
-		public string CustomName { get; set; }
-
-
-
-		[ProtoMember(3)]
-		private string StringValue { get; set; }
-		[ProtoMember(4)]
-		private long NumberValue { get; set; }
-		[ProtoMember(5)]
-		private Decimal DecimalValue { get; set; }
-		[ProtoMember(6)]
-		private byte[] ByteValue { get; set; }
-	}
-
-
-
-	public enum Schema2AttributeType
-	{
-		CreatedUtc,
-		CustomString,
-		CustomNumber
 	}
 }

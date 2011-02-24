@@ -59,7 +59,13 @@
     <Compile Include="Directory\MessageInfo.cs" />
     <Compile Include="Directory\MessageMapping.cs" />
     <Compile Include="Directory\MessageReflectionUtil.cs" />
-    <Compile Include="Durability\Contracts_v1\Contract1Util.cs" />
+    <Compile Include="Durability\Contracts_v2\Schema2Util.cs" />
+    <Compile Include="Durability\Contracts_v1\Schema1Util.cs" />
+    <Compile Include="Durability\Contracts_v2\Schema2AttributeContract.cs" />
+    <Compile Include="Durability\Contracts_v2\Schema2AttributeType.cs" />
+    <Compile Include="Durability\Contracts_v2\Schema2EnvelopeContract.cs" />
+    <Compile Include="Durability\Contracts_v2\Schema2ItemContract.cs" />
+    <Compile Include="Durability\Contracts_v2\Schema2ReferenceContract.cs" />
     <Compile Include="Errors.cs" />
     <Compile Include="Extensions\ExtendIDictionary.cs" />
     <Compile Include="Extensions\ExtendIEnumerable.cs" />
@@ -69,13 +75,18 @@
     <Compile Include="Infrastructure\IEngineProcess.cs" />
     <Compile Include="Infrastructure\IMessageClient.cs" />
     <Compile Include="Infrastructure\IMessageSerializer.cs" />
-    <Compile Include="Durability\Contracts_v1\AttributesItemContract.cs" />
-    <Compile Include="Durability\Contracts_v1\AttributesContract.cs" />
-    <Compile Include="Durability\Contracts_v1\AttributeTypeContract.cs" />
+    <Compile Include="Durability\Contracts_v1\Schema1AttributesItemContract.cs" />
+    <Compile Include="Durability\Contracts_v1\Schema1AttributesContract.cs" />
+    <Compile Include="Durability\Contracts_v1\Schema1AttributeTypeContract.cs" />
     <Compile Include="Durability\MessageHeader.cs" />
-    <Compile Include="Lmf\MessagePrinter.cs" />
+    <Compile Include="Durability\MessageAttributes.cs" />
+    <Compile Include="Durability\MessageEnvelopeBuilder.cs" />
+    <Compile Include="Durability\MessageItem.cs" />
+    <Compile Include="Durability\MessageItemToSave.cs" />
+    <Compile Include="Durability\MessagePrinter.cs" />
     <Compile Include="Durability\MessageUtil.cs" />
-    <Compile Include="Lmf\MessageEnvelope.cs" />
+    <Compile Include="Durability\MessageEnvelope.cs" />
+    <Compile Include="Durability\MessageReference.cs" />
     <Compile Include="Monads\Maybe.1.cs" />
     <Compile Include="Monads\Maybe.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -104,9 +115,7 @@
     <Compile Include="Storage\StorageWriteOptions.cs" />
     <Compile Include="Storage\StreamUtil.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Durability\Contracts_v2\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="..\..\SharedKey.snk">
       <Link>SharedKey.snk</Link>

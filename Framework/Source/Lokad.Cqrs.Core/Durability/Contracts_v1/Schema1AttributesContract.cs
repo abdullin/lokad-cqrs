@@ -3,22 +3,22 @@
 namespace Lokad.Cqrs
 {
 	[ProtoContract]
-	public sealed class AttributesContract
+	public sealed class Schema1AttributesContract
 	{
 		[ProtoMember(1, DataFormat = DataFormat.Default)]
-		public readonly AttributesItemContract[] Items;
+		public readonly Schema1AttributesItemContract[] Items;
 
-		public AttributesContract(AttributesItemContract[] items)
+		public Schema1AttributesContract(Schema1AttributesItemContract[] items)
 		{
 			Items = items;
 		}
 		// ReSharper disable UnusedMember.Local
-		AttributesContract()
+		Schema1AttributesContract()
 		{
-			Items = new AttributesItemContract[0];
+			Items = new Schema1AttributesItemContract[0];
 		}
 
-		public Maybe<string> GetAttributeString(AttributeTypeContract type)
+		public Maybe<string> GetAttributeString(Schema1AttributeTypeContract type)
 		{
 			for (int i = Items.Length - 1; i >= 0; i--)
 			{

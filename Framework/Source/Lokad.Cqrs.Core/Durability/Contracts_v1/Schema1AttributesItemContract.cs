@@ -13,9 +13,9 @@ namespace Lokad.Cqrs
 {
 	[ProtoContract]
 	[Serializable]
-	public class AttributesItemContract
+	public class Schema1AttributesItemContract
 	{
-		[ProtoMember(1, IsRequired = true)] public readonly AttributeTypeContract Type;
+		[ProtoMember(1, IsRequired = true)] public readonly Schema1AttributeTypeContract Type;
 		[ProtoMember(2)] public readonly string CustomAttributeName;
 
 		[ProtoMember(3)]
@@ -26,41 +26,41 @@ namespace Lokad.Cqrs
 		public readonly long NumberValue;
 
 		
-		AttributesItemContract()
+		Schema1AttributesItemContract()
 		{
 		}
 
-		public AttributesItemContract(AttributeTypeContract type, string stringValue)
+		public Schema1AttributesItemContract(Schema1AttributeTypeContract type, string stringValue)
 		{
 			Type = type;
 			StringValue = stringValue;
 		}
 
-		public AttributesItemContract(AttributeTypeContract type, byte[] binaryValue)
+		public Schema1AttributesItemContract(Schema1AttributeTypeContract type, byte[] binaryValue)
 		{
 			Type = type;
 			BinaryValue = binaryValue;
 		}
 
-		public AttributesItemContract(AttributeTypeContract type, long numberValue)
+		public Schema1AttributesItemContract(Schema1AttributeTypeContract type, long numberValue)
 		{
 			Type = type;
 			NumberValue = numberValue;
 		}
 
-		public AttributesItemContract(string customAttributeName, byte[] binaryValue)
+		public Schema1AttributesItemContract(string customAttributeName, byte[] binaryValue)
 		{
 			CustomAttributeName = customAttributeName;
 			BinaryValue = binaryValue;
 		}
 
-		public AttributesItemContract(string customAttributeName, string stringValue)
+		public Schema1AttributesItemContract(string customAttributeName, string stringValue)
 		{
 			CustomAttributeName = customAttributeName;
 			StringValue = stringValue;
 		}
 
-		public AttributesItemContract(string customAttributeName, long numberValue)
+		public Schema1AttributesItemContract(string customAttributeName, long numberValue)
 		{
 			CustomAttributeName = customAttributeName;
 			NumberValue = numberValue;
@@ -75,9 +75,9 @@ namespace Lokad.Cqrs
 		{
 			switch(Type)
 			{
-				case AttributeTypeContract.CustomBinary:
-				case AttributeTypeContract.CustomNumber:
-				case AttributeTypeContract.CustomString:
+				case Schema1AttributeTypeContract.CustomBinary:
+				case Schema1AttributeTypeContract.CustomNumber:
+				case Schema1AttributeTypeContract.CustomString:
 					return CustomAttributeName;
 				default:
 					return Type.ToString();
