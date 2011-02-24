@@ -1,4 +1,4 @@
-﻿namespace Lokad.Cqrs
+﻿namespace Lokad.Cqrs.Durability.Contracts_v1
 {
 	public enum Schema1AttributeTypeContract : uint 
 	{

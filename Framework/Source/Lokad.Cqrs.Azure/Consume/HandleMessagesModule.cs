@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Transactions;
 using Autofac;
 using Lokad.Cqrs.Directory;
+using Lokad.Cqrs.Durability;
 using Lokad.Cqrs.Queue;
 using Lokad.Cqrs.Transport;
 using System.Linq;

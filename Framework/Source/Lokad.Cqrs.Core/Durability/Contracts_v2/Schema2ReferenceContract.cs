@@ -1,6 +1,6 @@
 ﻿using ProtoBuf;
 
-namespace Lokad.Cqrs
+namespace Lokad.Cqrs.Durability.Contracts_v2
 {
 	[ProtoContract]
 	public sealed class Schema2ReferenceContract

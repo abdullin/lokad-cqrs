@@ -1,24 +1,41 @@
-﻿using System;
-using ProtoBuf;
+﻿using ProtoBuf;
 
-namespace Lokad.Cqrs
+namespace Lokad.Cqrs.Durability.Contracts_v2
 {
-	public sealed class Schema2AttributeContract
+	public sealed class Schema2ItemAttributeContract
 	{
 		[ProtoMember(1)]
-		public Schema2AttributeType Type { get; set; }
+		public Schema2ItemAttributeTypeContract Type { get; set; }
 		[ProtoMember(2)]
 		public string CustomName { get; set; }
-
-
-
 		[ProtoMember(3)]
-		private string StringValue { get; set; }
+		public string StringValue { get; set; }
 		[ProtoMember(4)]
-		private long NumberValue { get; set; }
-		[ProtoMember(5)]
-		private Decimal DecimalValue { get; set; }
-		[ProtoMember(6)]
-		private byte[] ByteValue { get; set; }
+		public long NumberValue { get; set; }
+	}
+
+	[ProtoContract]
+	public sealed class Schema2EnvelopeAttributeContract
+	{
+		[ProtoMember(1)]
+		public Schema2EnvelopeAttributeTypeContract Type { get; set; }
+		[ProtoMember(2)]
+		public string CustomName { get; set; }
+		[ProtoMember(3)]
+		public string StringValue { get; set; }
+		[ProtoMember(4)]
+		public long NumberValue { get; set; }
+		
+		
+
+	}
+
+	public enum Schema2EnvelopeAttributeTypeContract
+	{
+		CreatedUtc = 1,
+		Sender = 2,
+		CustomNumber = 3,
+		CustomString = 4,
+		
 	}
 }

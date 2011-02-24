@@ -1,4 +1,4 @@
-﻿namespace Lokad.Cqrs
+﻿namespace Lokad.Cqrs.Durability
 {
 	public static class MessageAttributes
 	{
@@ -10,7 +10,7 @@
 		}
 		public static class Item
 		{
-			public const string Contract = "Contract";
+			//public const string Contract = "Contract";
 		}
 
 	}

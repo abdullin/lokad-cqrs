@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using Lokad.Cqrs.Lmf;
+using Lokad.Cqrs.Durability;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
 

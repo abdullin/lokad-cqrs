@@ -6,10 +6,9 @@
 #endregion
 
 using System;
-
 using ProtoBuf;
 
-namespace Lokad.Cqrs
+namespace Lokad.Cqrs.Durability.Contracts_v1
 {
 	[ProtoContract]
 	[Serializable]

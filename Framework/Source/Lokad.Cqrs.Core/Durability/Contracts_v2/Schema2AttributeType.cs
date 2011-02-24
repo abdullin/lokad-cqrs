@@ -1,8 +1,7 @@
-﻿namespace Lokad.Cqrs
+﻿namespace Lokad.Cqrs.Durability.Contracts_v2
 {
-	public enum Schema2AttributeType
+	public enum Schema2ItemAttributeTypeContract
 	{
-		CreatedUtc,
 		CustomString,
 		CustomNumber
 	}

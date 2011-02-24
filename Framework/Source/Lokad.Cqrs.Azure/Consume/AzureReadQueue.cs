@@ -6,7 +6,7 @@
 #endregion
 
 using System;
-using Lokad.Cqrs.Lmf;
+using Lokad.Cqrs.Durability;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
 namespace Lokad.Cqrs.Queue

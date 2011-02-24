@@ -5,6 +5,7 @@
 
 #endregion
 
+using Lokad.Cqrs.Durability;
 using Lokad.Cqrs.Queue;
 
 namespace Lokad.Cqrs.Consume

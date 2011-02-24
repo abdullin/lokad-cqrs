@@ -1,4 +1,4 @@
-﻿namespace Lokad.Cqrs
+﻿namespace Lokad.Cqrs.Durability
 {
 	public sealed class MessageReference
 	{

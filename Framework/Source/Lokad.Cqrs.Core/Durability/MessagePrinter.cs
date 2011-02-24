@@ -5,13 +5,11 @@
 
 #endregion
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
-using System.Text;
 
-namespace Lokad.Cqrs
+namespace Lokad.Cqrs.Durability
 {
 	public static class MessagePrinter
 	{

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using ProtoBuf;
 
-namespace Lokad.Cqrs.Lmf
+namespace Lokad.Cqrs.Durability.Contracts_v1
 {
 	static class Schema1Util
 	{

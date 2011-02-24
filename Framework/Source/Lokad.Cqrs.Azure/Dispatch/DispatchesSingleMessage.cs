@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Autofac;
 using Lokad.Cqrs.Directory;
+using Lokad.Cqrs.Durability;
 
 namespace Lokad.Cqrs.Consume
 {

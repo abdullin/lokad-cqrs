@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using ProtoBuf;
 
-namespace Lokad.Cqrs.Lmf
+namespace Lokad.Cqrs.Durability.Contracts_v2
 {
 	public static class Schema2Util
 	{
@@ -40,7 +40,7 @@ namespace Lokad.Cqrs.Lmf
 			}
 		}
 
-		static IDictionary<string,object> AttributesFromContract(Schema2AttributeContract[] attributes)
+		static IDictionary<string,object> AttributesFromContract(IEnumerable<Schema2EnvelopeAttributeContract> attributes)
 		{
 			var dict = new Dictionary<string, object>();
 
@@ -48,7 +48,18 @@ namespace Lokad.Cqrs.Lmf
 			{
 				switch (attribute.Type)
 				{
-					
+					case Schema2EnvelopeAttributeTypeContract.CreatedUtc:
+						dict[MessageAttributes.Envelope.CreatedUtc] = new DateTime(attribute.NumberValue,DateTimeKind.Utc);
+						break;
+					case Schema2EnvelopeAttributeTypeContract.Sender:
+						dict[MessageAttributes.Envelope.Sender] = attribute.CustomName;
+						break;
+					case Schema2EnvelopeAttributeTypeContract.CustomString:
+						dict[attribute.CustomName] = attribute.StringValue;
+						break;
+					case Schema2EnvelopeAttributeTypeContract.CustomNumber:
+						dict[attribute.CustomName] = attribute.NumberValue;
+						break;
 					default:
 						throw new ArgumentOutOfRangeException();
 				}
@@ -56,14 +67,83 @@ namespace Lokad.Cqrs.Lmf
 			return dict;
 		}
 
-		static Schema2AttributeContract[] AttributesToContract(IDictionary<string,object > attributes)
+		static IDictionary<string,object> AttributesFromContract(IEnumerable<Schema2ItemAttributeContract> attributes)
 		{
-			var contracts = new Schema2AttributeContract[attributes.Count];
+			var dict = new Dictionary<string, object>();
+
+			foreach (var attribute in attributes)
+			{
+				switch (attribute.Type)
+				{
+					case Schema2ItemAttributeTypeContract.CustomString:
+						dict[attribute.CustomName] = attribute.StringValue;
+						break;
+					case Schema2ItemAttributeTypeContract.CustomNumber:
+						dict[attribute.CustomName] = attribute.NumberValue;
+						break;
+					default:
+						throw new ArgumentOutOfRangeException();
+				}
+			}
+			return dict;
+		}
+
+		static Schema2ItemAttributeContract[] ItemAttributesToContract(IDictionary<string, object> attributes)
+		{
+			var contracts = new Schema2ItemAttributeContract[attributes.Count];
 			var pos = 0;
 
 			foreach (var attrib in attributes)
 			{
-				contracts[pos] =new Schema2AttributeContract();
+				switch (attrib.Key)
+				{
+					default:
+						contracts[pos] = new Schema2ItemAttributeContract();
+						throw new NotImplementedException("serializing item attributes is not supported now");
+				}
+
+				pos += 1;
+			}
+
+			return contracts;
+		}
+
+		/// <summary>
+		/// Envelopes the attributes to contract.
+		/// </summary>
+		/// <param name="attributes">The attributes.</param>
+		/// <returns></returns>
+		static Schema2EnvelopeAttributeContract[] EnvelopeAttributesToContract(IDictionary<string, object> attributes)
+		{
+			var contracts = new Schema2EnvelopeAttributeContract[attributes.Count];
+			var pos = 0;
+
+			foreach (var attrib in attributes)
+			{
+				
+
+				switch (attrib.Key)
+				{
+					case MessageAttributes.Envelope.CreatedUtc:
+						contracts[pos] = new Schema2EnvelopeAttributeContract
+							{
+								Type = Schema2EnvelopeAttributeTypeContract.CreatedUtc,
+								NumberValue = ((DateTime)attrib.Value).ToUniversalTime().Ticks
+							};
+						break;
+					case MessageAttributes.Envelope.Sender:
+						contracts[pos] = new Schema2EnvelopeAttributeContract
+							{
+								Type = Schema2EnvelopeAttributeTypeContract.Sender,
+								StringValue = (string) attrib.Value
+							};
+						break;
+					default:
+						throw new NotSupportedException("serialization of generic attributes is not supported yet");
+				}
+				pos += 1;
+
+
 			}
 
 			return contracts;
@@ -82,7 +162,7 @@ namespace Lokad.Cqrs.Lmf
 				envelope = Serializer.Deserialize<Schema2EnvelopeContract>(stream);
 			}
 			var index = MessageHeader.FixedSize + (int)header.AttributesLength;
-			var count = (int)header.ContentLength;
+			//var count = (int)header.ContentLength;
 
 			var items = new MessageItem[envelope.Items.Length];
 
@@ -132,13 +212,13 @@ namespace Lokad.Cqrs.Lmf
 						.ExposeException("Failed to find contract name for {0}", item.MappedType);
 					serializer.Serialize(item.Content, content);
 					var size = (int) content.Position - position;
-					var attribContracts = AttributesToContract(item.Attributes);
+					var attribContracts = ItemAttributesToContract(item.Attributes);
 					itemContracts[i] = new Schema2ItemContract(name, size, attribContracts);
 
 					position += size;
 				}
 
-				var envelopeAttribs = AttributesToContract(envelope.Attributes);
+				var envelopeAttribs = EnvelopeAttributesToContract(envelope.Attributes);
 				var contract = new Schema2EnvelopeContract(envelope.EnvelopeId.ToString(), envelopeAttribs, itemContracts);
 
 				using (var stream = new MemoryStream())

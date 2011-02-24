@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Lokad.Cqrs
+namespace Lokad.Cqrs.Durability
 {
 	public sealed class MessageItemToSave
 	{
