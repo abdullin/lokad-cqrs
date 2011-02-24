@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DomainTests.cs" />
+    <Compile Include="Durability\LegacyCompatibilityTests.cs" />
     <Compile Include="Durability\TestSerializer.cs" />
     <Compile Include="ExtendMaybe.cs" />
     <Compile Include="Fixture.cs" />

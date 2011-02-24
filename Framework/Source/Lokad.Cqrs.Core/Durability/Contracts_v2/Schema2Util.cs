@@ -120,8 +120,6 @@ namespace Lokad.Cqrs.Durability.Contracts_v2
 
 			foreach (var attrib in attributes)
 			{
-				
-
 				switch (attrib.Key)
 				{
 					case MessageAttributes.Envelope.CreatedUtc:
@@ -139,7 +137,29 @@ namespace Lokad.Cqrs.Durability.Contracts_v2
 							};
 						break;
 					default:
-						throw new NotSupportedException("serialization of generic attributes is not supported yet");
+						if (attrib.Value is string)
+						{
+							contracts[pos] = new Schema2EnvelopeAttributeContract
+								{
+									Type = Schema2EnvelopeAttributeTypeContract.CustomString,
+									CustomName = attrib.Key,
+									StringValue = (string) attrib.Value
+								};
+						}
+						else if ((attrib.Value is long) || (attrib.Value is int) || (attrib.Value is short))
+						{
+							contracts[pos] = new Schema2EnvelopeAttributeContract
+							{
+								Type = Schema2EnvelopeAttributeTypeContract.CustomNumber,
+								CustomName = attrib.Key,
+								NumberValue = Convert.ToInt64(attrib.Value)
+							};
+						}
+						else
+						{
+							throw new NotSupportedException("serialization of generic attributes is not supported yet");
+						}
+						break;
 				}
 				pos += 1;
 

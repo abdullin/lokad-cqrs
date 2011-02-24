@@ -5,17 +5,17 @@ namespace Lokad.Cqrs.Durability
 {
 	public sealed class MessageEnvelopeBuilder
 	{
-		public readonly Guid EnvelopeId;
+		public readonly string EnvelopeId;
 		public readonly IDictionary<string, object> Attributes = new Dictionary<string, object>();
 
 		public readonly IList<MessageItemToSave> Items = new List<MessageItemToSave>();
 
-		public MessageEnvelopeBuilder(Guid envelopeId)
+		public MessageEnvelopeBuilder(string envelopeId)
 		{
 			EnvelopeId = envelopeId;
 		}
 
-		public void AddItem<T>(T item)
+		public MessageItemToSave AddItem<T>(T item)
 		{
 			var t = typeof (T);
 			if (t == typeof(object))
@@ -23,7 +23,9 @@ namespace Lokad.Cqrs.Durability
 				t = item.GetType();
 			}
 
-			Items.Add(new MessageItemToSave(t, item));
+			var messageItemToSave = new MessageItemToSave(t, item);
+			Items.Add(messageItemToSave);
+			return messageItemToSave;
 		}
 
 

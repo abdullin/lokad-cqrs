@@ -23,7 +23,7 @@ namespace Lokad.Cqrs.Sender
 
 		CloudQueueMessage PackNewMessage(object[] items)
 		{
-			var messageId = Guid.NewGuid();
+			var messageId = Guid.NewGuid().ToString().ToLowerInvariant();
 
 			var builder = new MessageEnvelopeBuilder(messageId);
 			foreach (var item in items)

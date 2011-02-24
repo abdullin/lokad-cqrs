@@ -35,6 +35,11 @@ namespace Lokad.Cqrs.Durability
 			return _attributes.GetValue(name).Convert(o => (TData)o);
 		}
 
+		public object GetAttribute(string name)
+		{
+			return _attributes[name];
+		}
+
 		public ICollection<KeyValuePair<string,object>> GetAllAttributes()
 		{
 			return _attributes;

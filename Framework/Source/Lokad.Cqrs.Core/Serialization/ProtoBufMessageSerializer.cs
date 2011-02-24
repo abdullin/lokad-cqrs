@@ -49,6 +49,11 @@ namespace Lokad.Cqrs.Serialization
 		{
 		}
 
+		public static ProtoBufMessageSerializer For<T>()
+		{
+			return new ProtoBufMessageSerializer(new[] { typeof(T)});
+		}
+
 		public void Serialize(object instance, Stream destination)
 		{
 			_type2Formatter
