@@ -38,7 +38,7 @@ namespace Lokad
 		/// <param name="strings">The strings.</param>
 		/// <param name="separator">The separator.</param>
 		/// <returns>concatenated string</returns>
-		public static string Join(this IEnumerable<string> strings, string separator)
+		public static string JoinStrings(this IEnumerable<string> strings, string separator)
 		{
 			if (strings == null) throw new ArgumentNullException("strings");
 

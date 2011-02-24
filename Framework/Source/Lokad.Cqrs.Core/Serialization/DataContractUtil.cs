@@ -21,7 +21,7 @@ namespace Lokad.Cqrs.Serialization
 
 			if (failures.Any())
 			{
-				var list = ExtendIEnumerable.Join(failures.Select(f => f.FullName), Environment.NewLine);
+				var list = ExtendIEnumerable.JoinStrings(failures.Select(f => f.FullName), Environment.NewLine);
 
 				throw new InvalidOperationException(
 					"All messages must be marked with the DataContract attribute in order to be used with DCS: " + list);

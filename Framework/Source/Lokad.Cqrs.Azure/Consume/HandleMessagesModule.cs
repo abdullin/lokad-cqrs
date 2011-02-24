@@ -216,14 +216,14 @@ namespace Lokad.Cqrs.Consume.Build
 			{
 				foreach (var info in directory.Messages)
 				{
-					log.DebugFormat("{0} : {1}", info.MessageType.Name, ExtendIEnumerable.Join(info.AllConsumers.Select(c => c.FullName), "; "));
+					log.DebugFormat("{0} : {1}", info.MessageType.Name, ExtendIEnumerable.JoinStrings(info.AllConsumers.Select(c => c.FullName), "; "));
 				}
 			}
 			if (DebugPrintsConsumerTree)
 			{
 				foreach (var info in directory.Consumers)
 				{
-					log.DebugFormat("{0} : {1}", info.ConsumerType.FullName, ExtendIEnumerable.Join(info.MessageTypes.Select(c => c.Name), "; "));
+					log.DebugFormat("{0} : {1}", info.ConsumerType.FullName, ExtendIEnumerable.JoinStrings(info.MessageTypes.Select(c => c.Name), "; "));
 				}
 			}
 		}

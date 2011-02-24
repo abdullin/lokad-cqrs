@@ -66,7 +66,7 @@ namespace Lokad.Cqrs.Consume
 			{
 				throw new InvalidOperationException(
 					"These messages have multiple consumers. Did you intend to declare them as events? " +
-						multipleConsumers.Join(Environment.NewLine));
+						multipleConsumers.JoinStrings(Environment.NewLine));
 			}
 		}
 

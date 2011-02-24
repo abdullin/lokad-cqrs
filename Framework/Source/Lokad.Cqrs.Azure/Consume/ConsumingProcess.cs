@@ -30,7 +30,7 @@ namespace Lokad.Cqrs.Transport
 		
 			_queues = readQueues;
 			_dispatcher = dispatcher;
-			_log = logProvider.Get(typeof (ConsumingProcess).Name + "." + readQueues.ToArray(q => q.Name).Join(","));
+			_log = logProvider.Get(typeof (ConsumingProcess).Name + "." + readQueues.ToArray(q => q.Name).JoinStrings(","));
 			_threadSleepInterval = sleepWhenNoMessages;
 		}
 		
@@ -51,7 +51,7 @@ namespace Lokad.Cqrs.Transport
 
 		public Task Start(CancellationToken token)
 		{
-			_log.DebugFormat("Starting transport for {0}", _queues.ToArray(q=> q.Name).Join(";"));
+			_log.DebugFormat("Starting transport for {0}", _queues.ToArray(q=> q.Name).JoinStrings(";"));
 			return Task.Factory.StartNew(() => ReceiveMessages(token), token);
 		}
 	
