@@ -56,34 +56,7 @@ namespace Lokad.Cqrs.Consume
 			_log.DebugFormat("Starting transport for {0}", _queues.ToArray(q=> q.Name).JoinStrings(";"));
 			return Task.Factory.StartNew(() => ReceiveMessages(token), token);
 		}
-	
 
-		Maybe<Exception> GetProcessingFailure(AzureReadQueue queue, MessageEnvelope message)
-		{
-			try
-			{
-				_dispatcher.DispatchMessage(message);
-				return Maybe<Exception>.Empty;
-			}
-			catch (Exception ex)
-			{
-				var text = string.Format("Failed to consume '{0}' from '{1}'", message, queue.Name);
-				_log.Error(ex, text);
-				return ex;
-			}
-		}
-
-		void MessageHandlingProblem(MessageEnvelope message, Exception ex)
-		{
-			// notify all subscribers
-			// do nothing. Message will show up in the queue with the increased enqueue count.
-		}
-
-		static void FinalizeSuccess(AzureReadQueue queue, AzureMessageContext message)
-		{
-			queue.AckMessage(message);
-			//tx.Complete();
-		}
 
 		void ReceiveMessages(CancellationToken outer)
 		{
@@ -129,9 +102,17 @@ namespace Lokad.Cqrs.Consume
 			switch (result.State)
 			{
 				case GetMessageResultState.Success:
-					GetProcessingFailure(queue, result.Message.Unpacked)
-						.Apply(ex => MessageHandlingProblem(result.Message.Unpacked, ex))
-						.Handle(() => FinalizeSuccess(queue, result.Message));
+					try
+					{
+						_dispatcher.DispatchMessage(result.Message.Unpacked);
+						queue.AckMessage(result.Message);
+					}
+					catch (Exception ex)
+					{
+						var text = string.Format("Failed to consume '{0}' from '{1}'", result.Message.Unpacked, queue.Name);
+						_log.Error(ex, text);
+					}
+					
 					return QueueProcessingResult.MoreWork;
 
 				case GetMessageResultState.Wait:

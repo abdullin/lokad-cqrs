@@ -29,8 +29,8 @@ namespace Lokad.Cqrs.Tests
 		CloudEngineHost BuildHost()
 		{
 			var engine = new CloudEngineBuilder();
-			
 			engine.Azure.UseDevelopmentStorageAccount();
+			
 			engine.Serialization.UseDataContractSerializer();
 
 			engine.DomainIs(m =>
@@ -41,7 +41,7 @@ namespace Lokad.Cqrs.Tests
 
 			engine.AddMessageHandler(x =>
 				{
-					x.ListenToQueue("test-hi", "test-bye");
+					x.ListenToQueue("test-in");
 					x.Dispatch<DispatchSingleEventToMultipleConsumers>();
 				});
 
