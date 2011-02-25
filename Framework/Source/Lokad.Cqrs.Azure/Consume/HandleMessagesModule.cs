@@ -63,7 +63,7 @@ namespace Lokad.Cqrs.Consume
 		{
 			_dispatcher = (context, directory) =>
 				{
-					var d = new DispatchesSingleMessage(context, directory);
+					var d = new DispatchCommandMessages(context, directory);
 					d.Init();
 					return d;
 				};

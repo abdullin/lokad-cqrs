@@ -70,8 +70,9 @@
     <Compile Include="Consume\BlobExceptionLogger.cs" />
     <Compile Include="Consume\ConfigureBlobSavingOnException.cs" />
     <Compile Include="Dispatch\DispatchesMultipleMessagesToSharedScope.cs" />
-    <Compile Include="Dispatch\DispatchesSingleMessage.cs" />
+    <Compile Include="Dispatch\DispatchCommandMessages.cs" />
     <Compile Include="Dispatch\IMessageDispatcher.cs" />
+    <Compile Include="Dispatch\MessageDispatch.cs" />
     <Compile Include="Logging\DebugLog.cs" />
     <Compile Include="Logging\ExtendILogProvider.cs" />
     <Compile Include="Logging\ILog.cs" />

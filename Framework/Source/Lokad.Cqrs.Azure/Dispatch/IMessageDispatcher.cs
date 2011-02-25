@@ -9,6 +9,9 @@ using Lokad.Cqrs.Durability;
 
 namespace Lokad.Cqrs.Dispatch
 {
+	/// <summary>
+	/// Generic message dispatch interface
+	/// </summary>
 	public interface IMessageDispatcher
 	{
 		void DispatchMessage(MessageEnvelope message);
