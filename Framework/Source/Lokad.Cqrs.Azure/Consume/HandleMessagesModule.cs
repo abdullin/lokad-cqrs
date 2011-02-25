@@ -16,14 +16,16 @@ using Lokad.Cqrs.Extensions;
 using System.Linq;
 using Lokad.Cqrs.Logging;
 using Microsoft.WindowsAzure;
-
+// ReSharper disable MemberCanBePrivate.Global
 namespace Lokad.Cqrs.Consume
 {
+
 	public sealed class HandleMessagesModule : Module
 	{
 		readonly Filter<MessageMapping> _filter = new Filter<MessageMapping>();
 		HashSet<string> _queueNames = new HashSet<string>();
-		Func<ILifetimeScope, MessageDirectory, IMessageDispatcher> _dispatcher;
+
+		Tuple<Type, Action<IMessageDispatcher>> _dispatcher;
 
 
 		Action<ConsumingProcess, IComponentContext> _applyToTransport = (transport, context) => { };
@@ -33,7 +35,7 @@ namespace Lokad.Cqrs.Consume
 			SleepWhenNoMessages = BuildDecayPolicy(1.Seconds());
 			ListenToQueue("azure-messages");
 
-			WithSingleConsumer();
+			Dispatch<DispatchCommandBatchToSingleConsumer>();
 		}
 
 		public HandleMessagesModule ApplyToTransport(Action<ConsumingProcess, IComponentContext> config)
@@ -59,28 +61,18 @@ namespace Lokad.Cqrs.Consume
 			throw new NotImplementedException();
 		}
 
-		public HandleMessagesModule WithSingleConsumer()
-		{
-			_dispatcher = (context, directory) =>
-				{
-					var d = new DispatchCommandMessages(context, directory);
-					d.Init();
-					return d;
-				};
 
+		public HandleMessagesModule Dispatch<TDispatcher>(Action<TDispatcher> configure)
+			where TDispatcher : class,IMessageDispatcher
+		{
+			_dispatcher = Tuple.Create(typeof (TDispatcher), new Action<IMessageDispatcher>(d => configure((TDispatcher) d)));
 			return this;
 		}
 
-		public HandleMessagesModule WithMultipleConsumers()
+		public HandleMessagesModule Dispatch<TDispatcher>()
+			where TDispatcher : class, IMessageDispatcher
 		{
-			_dispatcher = (scope, directory) =>
-				{
-					var d = new DispatchesMultipleMessagesToSharedScope(scope, directory);
-					d.Init();
-					return d;
-				};
-
-			return this;
+			return Dispatch<TDispatcher>(dispatcher => { });
 		}
 		
 		public Func<uint, TimeSpan> SleepWhenNoMessages { get; set; }
@@ -199,7 +191,11 @@ namespace Lokad.Cqrs.Consume
 			DebugPrintIfNeeded(log, directory);
 
 
-			var dispatcher = _dispatcher(context.Resolve<ILifetimeScope>(), directory);
+			var dispatcher = (IMessageDispatcher)context.Resolve(_dispatcher.Item1, TypedParameter.From(directory));
+			_dispatcher.Item2(dispatcher);
+			dispatcher.Init();
+
+
 			var account = context.Resolve<CloudStorageAccount>();
 			var serializer = context.Resolve<IMessageSerializer>();
 			var queues =  queueNames.ToArray(n => new AzureReadQueue(account, n, provider, serializer));
@@ -231,6 +227,13 @@ namespace Lokad.Cqrs.Consume
 
 		protected override void Load(ContainerBuilder builder)
 		{
+			builder
+				.RegisterAssemblyTypes(typeof (IMessageDispatcher).Assembly)
+				.AssignableTo<IMessageDispatcher>()
+				.AsSelf()
+				.OnActivated(ia => ((IMessageDispatcher)ia.Instance).Init());
+
+
 			builder.Register(ConfigureComponent);
 		}
 

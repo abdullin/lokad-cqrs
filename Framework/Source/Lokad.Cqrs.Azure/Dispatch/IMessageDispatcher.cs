@@ -15,5 +15,6 @@ namespace Lokad.Cqrs.Dispatch
 	public interface IMessageDispatcher
 	{
 		void DispatchMessage(MessageEnvelope message);
+		void Init();
 	}
 }

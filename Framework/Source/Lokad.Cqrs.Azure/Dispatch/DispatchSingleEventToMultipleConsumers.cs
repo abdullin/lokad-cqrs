@@ -13,13 +13,13 @@ using Lokad.Cqrs.Durability;
 
 namespace Lokad.Cqrs.Dispatch
 {
-	public sealed class DispatchesMultipleMessagesToSharedScope : IMessageDispatcher
+	public sealed class DispatchSingleEventToMultipleConsumers : IMessageDispatcher
 	{
 		readonly ILifetimeScope _container;
 		readonly MessageDirectory _directory;
 		readonly IDictionary<Type, Type[]> _dispatcher = new Dictionary<Type, Type[]>();
 
-		public DispatchesMultipleMessagesToSharedScope(ILifetimeScope container, MessageDirectory directory)
+		public DispatchSingleEventToMultipleConsumers(ILifetimeScope container, MessageDirectory directory)
 		{
 			_container = container;
 			_directory = directory;
@@ -47,12 +47,15 @@ namespace Lokad.Cqrs.Dispatch
 			var item = unpacked.Items[0];
 			if (_dispatcher.TryGetValue(item.MappedType, out consumerTypes))
 			{
-				using (var scope = _container.BeginLifetimeScope())
+				using (var unit = _container.BeginLifetimeScope(MessageDispatch.UnitOfWorkTag))
 				{
 					foreach (var consumerType in consumerTypes)
 					{
-						var consumer = scope.Resolve(consumerType);
-						_directory.InvokeConsume(consumer, item.Content);
+						using (var scope = unit.BeginLifetimeScope(MessageDispatch.ScopeTag))
+						{
+							var consumer = scope.Resolve(consumerType);
+							_directory.InvokeConsume(consumer, item.Content);
+						}
 					}
 				}
 			}

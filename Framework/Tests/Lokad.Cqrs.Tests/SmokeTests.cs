@@ -11,6 +11,7 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Threading;
 using Lokad.Cqrs.Default;
+using Lokad.Cqrs.Dispatch;
 using Lokad.Cqrs.Durability;
 using Lokad.Cqrs.Extensions;
 using NUnit.Framework;
@@ -41,7 +42,7 @@ namespace Lokad.Cqrs.Tests
 			engine.AddMessageHandler(x =>
 				{
 					x.ListenToQueue("test-hi", "test-bye");
-					x.WithMultipleConsumers();
+					x.Dispatch<DispatchSingleEventToMultipleConsumers>();
 				});
 
 			engine.AddMessageClient(x => x.DefaultToQueue("test-in"));
