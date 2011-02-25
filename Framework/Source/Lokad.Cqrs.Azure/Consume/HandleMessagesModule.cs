@@ -230,8 +230,7 @@ namespace Lokad.Cqrs.Consume
 			builder
 				.RegisterAssemblyTypes(typeof (IMessageDispatcher).Assembly)
 				.AssignableTo<IMessageDispatcher>()
-				.AsSelf()
-				.OnActivated(ia => ((IMessageDispatcher)ia.Instance).Init());
+				.AsSelf();
 
 
 			builder.Register(ConfigureComponent);
