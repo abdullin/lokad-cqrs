@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using ProtoBuf;
 
@@ -49,7 +50,7 @@ namespace Lokad.Cqrs.Durability.Contracts_v2
 				switch (attribute.Type)
 				{
 					case Schema2EnvelopeAttributeTypeContract.CreatedUtc:
-						dict[MessageAttributes.Envelope.CreatedUtc] = new DateTime(attribute.NumberValue,DateTimeKind.Utc);
+						dict[MessageAttributes.Envelope.CreatedUtc] = DateTimeOffset.Parse(attribute.StringValue);
 						break;
 					case Schema2EnvelopeAttributeTypeContract.Sender:
 						dict[MessageAttributes.Envelope.Sender] = attribute.CustomName;
@@ -126,7 +127,7 @@ namespace Lokad.Cqrs.Durability.Contracts_v2
 						contracts[pos] = new Schema2EnvelopeAttributeContract
 							{
 								Type = Schema2EnvelopeAttributeTypeContract.CreatedUtc,
-								NumberValue = ((DateTime)attrib.Value).ToUniversalTime().Ticks
+								StringValue = ((DateTimeOffset) attrib.Value).ToString("o")
 							};
 						break;
 					case MessageAttributes.Envelope.Sender:

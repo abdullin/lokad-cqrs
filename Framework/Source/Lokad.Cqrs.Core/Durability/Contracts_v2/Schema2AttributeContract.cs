@@ -26,9 +26,6 @@ namespace Lokad.Cqrs.Durability.Contracts_v2
 		public string StringValue { get; set; }
 		[ProtoMember(4)]
 		public long NumberValue { get; set; }
-		
-		
-
 	}
 
 	public enum Schema2EnvelopeAttributeTypeContract

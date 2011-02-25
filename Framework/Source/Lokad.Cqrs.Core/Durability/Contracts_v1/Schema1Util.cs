@@ -120,7 +120,9 @@ namespace Lokad.Cqrs.Durability.Contracts_v1
 						// skip these, they already are retrieved
 						break;
 					case Schema1AttributeTypeContract.CreatedUtc:
-						envelope[MessageAttributes.Envelope.CreatedUtc] = DateTime.FromBinary(attribute.NumberValue);
+						var time = DateTime.FromBinary(attribute.NumberValue);
+						var offset = new DateTimeOffset(time);
+						envelope[MessageAttributes.Envelope.CreatedUtc] =  offset;
 						break;
 					case Schema1AttributeTypeContract.Sender:
 						envelope[MessageAttributes.Envelope.Sender] = attribute.StringValue;
