@@ -25,10 +25,10 @@ namespace Lokad.Cqrs.Consume
 		readonly Filter<MessageMapping> _filter = new Filter<MessageMapping>();
 		HashSet<string> _queueNames = new HashSet<string>();
 
-		Tuple<Type, Action<IMessageDispatcher>> _dispatcher;
+		Tuple<Type, Action<ISingleThreadMessageDispatcher>> _dispatcher;
 
 
-		Action<ConsumingProcess, IComponentContext> _applyToTransport = (transport, context) => { };
+		Action<SingleThreadConsumingProcess, IComponentContext> _applyToTransport = (transport, context) => { };
 
 		public HandleMessagesModule()
 		{
@@ -38,7 +38,7 @@ namespace Lokad.Cqrs.Consume
 			Dispatch<DispatchCommandBatchToSingleConsumer>();
 		}
 
-		public HandleMessagesModule ApplyToTransport(Action<ConsumingProcess, IComponentContext> config)
+		public HandleMessagesModule ApplyToTransport(Action<SingleThreadConsumingProcess, IComponentContext> config)
 		{
 			_applyToTransport += config;
 			return this;
@@ -63,14 +63,14 @@ namespace Lokad.Cqrs.Consume
 
 
 		public HandleMessagesModule Dispatch<TDispatcher>(Action<TDispatcher> configure)
-			where TDispatcher : class,IMessageDispatcher
+			where TDispatcher : class,ISingleThreadMessageDispatcher
 		{
-			_dispatcher = Tuple.Create(typeof (TDispatcher), new Action<IMessageDispatcher>(d => configure((TDispatcher) d)));
+			_dispatcher = Tuple.Create(typeof (TDispatcher), new Action<ISingleThreadMessageDispatcher>(d => configure((TDispatcher) d)));
 			return this;
 		}
 
 		public HandleMessagesModule Dispatch<TDispatcher>()
-			where TDispatcher : class, IMessageDispatcher
+			where TDispatcher : class, ISingleThreadMessageDispatcher
 		{
 			return Dispatch<TDispatcher>(dispatcher => { });
 		}
@@ -191,7 +191,7 @@ namespace Lokad.Cqrs.Consume
 			DebugPrintIfNeeded(log, directory);
 
 
-			var dispatcher = (IMessageDispatcher)context.Resolve(_dispatcher.Item1, TypedParameter.From(directory));
+			var dispatcher = (ISingleThreadMessageDispatcher)context.Resolve(_dispatcher.Item1, TypedParameter.From(directory));
 			_dispatcher.Item2(dispatcher);
 			dispatcher.Init();
 
@@ -199,7 +199,7 @@ namespace Lokad.Cqrs.Consume
 			var account = context.Resolve<CloudStorageAccount>();
 			var serializer = context.Resolve<IMessageSerializer>();
 			var queues =  queueNames.ToArray(n => new AzureReadQueue(account, n, provider, serializer));
-			var transport = new ConsumingProcess(provider, dispatcher, SleepWhenNoMessages, queues);
+			var transport = new SingleThreadConsumingProcess(provider, dispatcher, SleepWhenNoMessages, queues);
 
 			_applyToTransport(transport, context);
 			

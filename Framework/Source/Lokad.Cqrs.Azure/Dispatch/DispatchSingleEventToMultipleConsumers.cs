@@ -18,16 +18,18 @@ namespace Lokad.Cqrs.Dispatch
 	/// Dispatcher that sends a single event to multiple consumers within this worker.
 	/// No transactions are used here.
 	///</summary>
-	public sealed class DispatchSingleEventToMultipleConsumers : IMessageDispatcher
+	public sealed class DispatchSingleEventToMultipleConsumers : ISingleThreadMessageDispatcher
 	{
 		readonly ILifetimeScope _container;
 		readonly MessageDirectory _directory;
 		readonly IDictionary<Type, Type[]> _dispatcher = new Dictionary<Type, Type[]>();
+		readonly SlidingDispatchMemory.DispatchMemory _dispatchMemory;
 
-		public DispatchSingleEventToMultipleConsumers(ILifetimeScope container, MessageDirectory directory)
+		public DispatchSingleEventToMultipleConsumers(ILifetimeScope container, MessageDirectory directory, SlidingDispatchMemory memory)
 		{
 			_container = container;
 			_directory = directory;
+			_dispatchMemory = memory.AcquireMemory(this);
 		}
 
 		public void Init()
@@ -43,6 +45,9 @@ namespace Lokad.Cqrs.Dispatch
 
 		public void DispatchMessage(MessageEnvelope unpacked)
 		{
+			if (_dispatchMemory.DoWeRemember(unpacked.EnvelopeId))
+				return;
+
 			if (unpacked.Items.Length != 1)
 				throw new InvalidOperationException("Batch message arrived to the shared scope. Are you batching events or dispatching commands to shared scope?");
 
@@ -64,13 +69,15 @@ namespace Lokad.Cqrs.Dispatch
 					}
 				}
 			}
+			// else -> we don't have consumers. It's OK for the event
+
+			_dispatchMemory.RegisterMemory(unpacked.EnvelopeId);
 		}
 	}
 
-	public sealed class DispatchMessagesToRoute : IMessageDispatcher
+	public sealed class DispatchMessagesToRoute : ISingleThreadMessageDispatcher
 	{
-
-		AzureWriteQueueFactory _queueFactory;
+		readonly AzureWriteQueueFactory _queueFactory;
 		Func<MessageEnvelope, string> _routerRule;
 
 		public DispatchMessagesToRoute(AzureWriteQueueFactory queueFactory)

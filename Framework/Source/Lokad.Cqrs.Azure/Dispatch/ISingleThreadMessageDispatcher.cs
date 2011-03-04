@@ -12,7 +12,7 @@ namespace Lokad.Cqrs.Dispatch
 	/// <summary>
 	/// Generic message dispatch interface
 	/// </summary>
-	public interface IMessageDispatcher
+	public interface ISingleThreadMessageDispatcher
 	{
 		void DispatchMessage(MessageEnvelope message);
 		void Init();

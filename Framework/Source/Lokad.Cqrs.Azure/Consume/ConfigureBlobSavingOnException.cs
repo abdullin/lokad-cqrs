@@ -21,7 +21,7 @@ namespace Lokad.Cqrs.Consume
 			ContainerName = "errors";
 		}
 
-		internal void Apply(ConsumingProcess transport, IComponentContext context)
+		internal void Apply(SingleThreadConsumingProcess transport, IComponentContext context)
 		{
 			var account = context.Resolve<CloudStorageAccount>();
 			var logger = new BlobExceptionLogger(account, ContainerName);

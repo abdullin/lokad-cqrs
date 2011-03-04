@@ -75,8 +75,9 @@
     <Compile Include="Consume\ConfigureBlobSavingOnException.cs" />
     <Compile Include="Dispatch\DispatchSingleEventToMultipleConsumers.cs" />
     <Compile Include="Dispatch\DispatchCommandBatchToSingleConsumer.cs" />
-    <Compile Include="Dispatch\IMessageDispatcher.cs" />
+    <Compile Include="Dispatch\ISingleThreadMessageDispatcher.cs" />
     <Compile Include="Dispatch\MessageDispatch.cs" />
+    <Compile Include="Dispatch\SlidingDispatchMemory.cs" />
     <Compile Include="Logging\DebugLog.cs" />
     <Compile Include="Logging\ExtendILogProvider.cs" />
     <Compile Include="Logging\ILog.cs" />
@@ -111,7 +112,7 @@
     <Compile Include="Sender\AzureWriteQueueFactory.cs" />
     <Compile Include="Build\Syntax.cs" />
     <Compile Include="Consume\AzureReadQueue.cs" />
-    <Compile Include="Consume\ConsumingProcess.cs" />
+    <Compile Include="Consume\SingleThreadConsumingProcess.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

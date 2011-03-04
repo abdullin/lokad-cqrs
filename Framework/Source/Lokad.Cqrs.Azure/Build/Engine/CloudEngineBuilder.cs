@@ -36,7 +36,7 @@ namespace Lokad.Cqrs
 			// Azure presets
 			Azure.UseDevelopmentStorageAccount();
 			Builder.RegisterType<AzureWriteQueueFactory>().As<AzureWriteQueueFactory, AzureWriteQueueFactory>().SingleInstance();
-			Builder.RegisterType<ConsumingProcess>();
+			Builder.RegisterType<SingleThreadConsumingProcess>();
 
 			// some defaults
 			Builder.RegisterType<CloudEngineHost>().SingleInstance();

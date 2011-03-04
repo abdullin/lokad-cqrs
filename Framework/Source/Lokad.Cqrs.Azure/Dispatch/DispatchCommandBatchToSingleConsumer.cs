@@ -16,12 +16,12 @@ namespace Lokad.Cqrs.Dispatch
 	/// <summary>
 	/// Dispatch commands to lifetime scope
 	/// </summary>
-	public sealed class DispatchCommandBatchToSingleConsumer : IMessageDispatcher
+	public sealed class DispatchCommandBatchToSingleConsumer : ISingleThreadMessageDispatcher
 	{
 		readonly ILifetimeScope _container;
 		readonly IDictionary<Type, Type> _messageConsumers = new Dictionary<Type, Type>();
 		readonly MessageDirectory _messageDirectory;
-
+		//readonly Con
 
 		public DispatchCommandBatchToSingleConsumer(ILifetimeScope container, MessageDirectory messageDirectory)
 		{
@@ -34,7 +34,7 @@ namespace Lokad.Cqrs.Dispatch
 			// empty message, hm...
 			if (message.Items.Length == 0)
 				return;
-
+			
 			// verify that all consumers are available
 			foreach (var item in message.Items)
 			{

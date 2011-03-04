@@ -6,6 +6,7 @@
 #endregion
 
 using System;
+using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 using Lokad.Cqrs.Dispatch;
@@ -17,22 +18,21 @@ using Lokad.Cqrs.Logging;
 namespace Lokad.Cqrs.Consume
 {
 	
-	public sealed class ConsumingProcess : IEngineProcess
+	public sealed class SingleThreadConsumingProcess : IEngineProcess
 	{
 		
-		readonly IMessageDispatcher _dispatcher;
+		readonly ISingleThreadMessageDispatcher _dispatcher;
 		readonly ILog _log;
 		readonly AzureReadQueue[] _queues;
 		readonly Func<uint, TimeSpan> _threadSleepInterval;
 
 
-		public ConsumingProcess(ILogProvider logProvider, 
-			IMessageDispatcher dispatcher, Func<uint, TimeSpan> sleepWhenNoMessages, AzureReadQueue[] readQueues)
+		public SingleThreadConsumingProcess(ILogProvider logProvider, 
+			ISingleThreadMessageDispatcher dispatcher, Func<uint, TimeSpan> sleepWhenNoMessages, AzureReadQueue[] readQueues)
 		{
-		
 			_queues = readQueues;
 			_dispatcher = dispatcher;
-			_log = logProvider.Get(typeof (ConsumingProcess).Name + "." + readQueues.ToArray(q => q.Name).JoinStrings(","));
+			_log = logProvider.Get(typeof (SingleThreadConsumingProcess).Name + "." + readQueues.ToArray(q => q.Name).JoinStrings(","));
 			_threadSleepInterval = sleepWhenNoMessages;
 		}
 		
@@ -97,19 +97,21 @@ namespace Lokad.Cqrs.Consume
 
 		QueueProcessingResult ProcessQueueForMessage(AzureReadQueue queue)
 		{
+			
 			var result = queue.GetMessage();
 
 			switch (result.State)
 			{
 				case GetMessageResultState.Success:
+					var envelope = result.Message.Unpacked;
 					try
 					{
-						_dispatcher.DispatchMessage(result.Message.Unpacked);
+						_dispatcher.DispatchMessage(envelope);
 						queue.AckMessage(result.Message);
 					}
 					catch (Exception ex)
 					{
-						var text = string.Format("Failed to consume '{0}' from '{1}'", result.Message.Unpacked, queue.Name);
+						var text = string.Format("Failed to consume '{0}' from '{1}'", envelope, queue.Name);
 						_log.Error(ex, text);
 					}
 					
