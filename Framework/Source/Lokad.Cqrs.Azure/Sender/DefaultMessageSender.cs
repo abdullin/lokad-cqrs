@@ -59,7 +59,5 @@ namespace Lokad.Cqrs.Sender
 				Transaction.Current.EnlistVolatile(action, EnlistmentOptions.None);
 			}
 		}
-
-
 	}
 }
