@@ -22,8 +22,7 @@ namespace Lokad.Cqrs.Dispatch
 		readonly ILifetimeScope _container;
 		readonly IDictionary<Type, Type> _messageConsumers = new Dictionary<Type, Type>();
 		readonly MessageDirectory _messageDirectory;
-		MessageDuplicationMemory _memory;
-
+		readonly MessageDuplicationMemory _memory;
 
 		public DispatchCommandBatchToSingleConsumer(ILifetimeScope container, MessageDirectory messageDirectory, MessageDuplicationManager manager)
 		{

@@ -99,6 +99,7 @@
     <Compile Include="Scheduled\ScheduledProcess.cs" />
     <Compile Include="Scheduled\ScheduledState.cs" />
     <Compile Include="Scheduled\ScheduledTaskInfo.cs" />
+    <Compile Include="Sender\CommitActionEnlistment.cs" />
     <Compile Include="SimpleStorage\BlobStorageRoot.cs" />
     <Compile Include="SimpleStorage\BlobStorageUtil.cs" />
     <Compile Include="SimpleStorage\SuppressFlushForStream.cs" />

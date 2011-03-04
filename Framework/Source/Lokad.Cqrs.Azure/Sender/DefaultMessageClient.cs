@@ -5,7 +5,7 @@
 
 #endregion
 
-using System;
+using System.Transactions;
 
 namespace Lokad.Cqrs.Sender
 {
@@ -23,18 +23,43 @@ namespace Lokad.Cqrs.Sender
 			if (messages.Length == 0)
 				return;
 
-			foreach (var message in messages)
+			if (Transaction.Current == null)
 			{
-				_queue.AddAsSingleMessage(new[] { message});
+				foreach (var message in messages)
+				{
+					_queue.SendAsSingleMessage(new[] { message });
+				}
+			}
+			else
+			{
+				var action = new CommitActionEnlistment(() =>
+					{
+						foreach (var message in messages)
+						{
+							_queue.SendAsSingleMessage(new[] {message});
+						}
+					});
+				Transaction.Current.EnlistVolatile(action, EnlistmentOptions.None);
 			}
 		}
+		
 
 		public void SendAsBatch(params object[] messageItems)
 		{
 			if (messageItems.Length == 0)
 				return;
 
-			_queue.AddAsSingleMessage(messageItems);
+			if (Transaction.Current==null)
+			{
+				_queue.SendAsSingleMessage(messageItems);
+			}
+			else
+			{
+				var action = new CommitActionEnlistment(() => _queue.SendAsSingleMessage(messageItems));
+				Transaction.Current.EnlistVolatile(action, EnlistmentOptions.None);
+			}
 		}
+
+
 	}
 }

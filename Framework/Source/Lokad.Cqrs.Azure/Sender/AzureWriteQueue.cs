@@ -1,6 +1,5 @@
 ﻿using System;
 using Lokad.Cqrs.Durability;
-using Lokad.Cqrs.Evil;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
 
@@ -8,7 +7,7 @@ namespace Lokad.Cqrs.Sender
 {
 	public sealed class AzureWriteQueue
 	{
-		public void AddAsSingleMessage(object[] items)
+		public void SendAsSingleMessage(object[] items)
 		{
 			if (items.Length == 0)
 				return;
@@ -103,12 +102,5 @@ namespace Lokad.Cqrs.Sender
 		readonly IMessageSerializer _serializer;
 		readonly CloudBlobContainer _cloudBlob;
 		readonly CloudQueue _queue;
-
-		public static Exception NoContractNameOnSend(Type messageType, IMessageSerializer serializer)
-		{
-			return Errors.InvalidOperation(
-				"Can't find contract name to serialize message: '{0}'. Make sure that your message types are loaded by domain and are compatible with '{1}'.",
-				messageType, serializer.GetType().Name);
-		}
 	}
 }
