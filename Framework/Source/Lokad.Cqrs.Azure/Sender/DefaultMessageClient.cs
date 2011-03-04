@@ -5,6 +5,8 @@
 
 #endregion
 
+using System;
+
 namespace Lokad.Cqrs.Sender
 {
 	sealed class DefaultMessageClient : IMessageClient
@@ -21,7 +23,18 @@ namespace Lokad.Cqrs.Sender
 			if (messages.Length == 0)
 				return;
 
-			_queue.SendMessages(messages);
+			foreach (var message in messages)
+			{
+				_queue.AddAsSingleMessage(new[] { message});
+			}
+		}
+
+		public void SendAsBatch(params object[] messageItems)
+		{
+			if (messageItems.Length == 0)
+				return;
+
+			_queue.AddAsSingleMessage(messageItems);
 		}
 	}
 }

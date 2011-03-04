@@ -108,7 +108,7 @@
     <Compile Include="Scheduled\ScheduledModule.cs" />
     <Compile Include="Sender\SenderModule.cs" />
     <Compile Include="Domain\DomainBuildModule.cs" />
-    <Compile Include="Sender\AzureQueueFactory.cs" />
+    <Compile Include="Sender\AzureWriteQueueFactory.cs" />
     <Compile Include="Build\Syntax.cs" />
     <Compile Include="Consume\AzureReadQueue.cs" />
     <Compile Include="Consume\ConsumingProcess.cs" />

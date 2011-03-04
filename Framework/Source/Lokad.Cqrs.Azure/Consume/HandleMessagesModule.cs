@@ -227,11 +227,8 @@ namespace Lokad.Cqrs.Consume
 
 		protected override void Load(ContainerBuilder builder)
 		{
-			builder
-				.RegisterAssemblyTypes(typeof (IMessageDispatcher).Assembly)
-				.AssignableTo<IMessageDispatcher>()
-				.AsSelf();
-
+			// make sure the dispatcher is registered
+			builder.RegisterType(_dispatcher.Item1);
 
 			builder.Register(ConfigureComponent);
 		}

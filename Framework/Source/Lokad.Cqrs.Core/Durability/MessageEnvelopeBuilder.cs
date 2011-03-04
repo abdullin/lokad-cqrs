@@ -15,8 +15,9 @@ namespace Lokad.Cqrs.Durability
 			EnvelopeId = envelopeId;
 		}
 
-		public MessageItemToSave AddItem<T>(T item)
+		public void AddItem<T>(T item)
 		{
+			// add KVPs after
 			var t = typeof (T);
 			if (t == typeof(object))
 			{
@@ -25,9 +26,6 @@ namespace Lokad.Cqrs.Durability
 
 			var messageItemToSave = new MessageItemToSave(t, item);
 			Items.Add(messageItemToSave);
-			return messageItemToSave;
 		}
-
-
 	}
 }

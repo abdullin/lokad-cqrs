@@ -8,12 +8,20 @@ namespace Lokad.Cqrs.Sender
 {
 	public sealed class AzureWriteQueue
 	{
-		public void SendMessages(object[] messages)
+		public void AddAsSingleMessage(object[] items)
 		{
-			if (messages.Length == 0)
+			if (items.Length == 0)
 				return;
 
-			var packed = PackNewMessage(messages);
+			var builder = BuildEnvelopeFromItems(items);
+			var packed = PrepareCloudMessage(builder);
+			_queue.AddMessage(packed);
+		}
+
+		public void ForwardMessage(MessageEnvelope envelope)
+		{
+			var builder = CopyEnvelope(envelope);
+			var packed = PrepareCloudMessage(builder);
 			_queue.AddMessage(packed);
 		}
 
@@ -21,7 +29,23 @@ namespace Lokad.Cqrs.Sender
 		const int CloudQueueLimit = 6144;
 
 
-		CloudQueueMessage PackNewMessage(object[] items)
+		CloudQueueMessage PrepareCloudMessage(MessageEnvelopeBuilder builder)
+		{
+			var buffer = MessageUtil.SaveDataMessage(builder, _serializer);
+			if (buffer.Length < CloudQueueLimit)
+			{
+				// write message to queue
+				return new CloudQueueMessage(buffer);
+			}
+			// ok, we didn't fit, so create reference message
+			var referenceId = DateTimeOffset.UtcNow.ToString(DateFormatInBlobName) + "-" + builder.EnvelopeId;
+			_cloudBlob.GetBlobReference(referenceId).UploadByteArray(buffer);
+			var reference = new MessageReference(builder.EnvelopeId, _cloudBlob.Uri.ToString(), referenceId);
+			var blob = MessageUtil.SaveReferenceMessage(reference);
+			return new CloudQueueMessage(blob);
+		}
+
+		static MessageEnvelopeBuilder BuildEnvelopeFromItems(object[] items)
 		{
 			var messageId = Guid.NewGuid().ToString().ToLowerInvariant();
 
@@ -32,20 +56,27 @@ namespace Lokad.Cqrs.Sender
 			}
 			var created = DateTimeOffset.UtcNow;
 			builder.Attributes.Add(MessageAttributes.Envelope.CreatedUtc, created);
-			var buffer = MessageUtil.SaveDataMessage(builder, _serializer);
-			if (buffer.Length < CloudQueueLimit)
+			return builder;
+		}
+
+		static MessageEnvelopeBuilder CopyEnvelope(MessageEnvelope envelope)
+		{
+			var builder = new MessageEnvelopeBuilder(envelope.EnvelopeId);
+
+			foreach (var item in envelope.Items)
 			{
-				// write message to queue
-				return new CloudQueueMessage(buffer);
+				var save = new MessageItemToSave(item.MappedType, item.Content);
+				foreach (var attribute in item.GetAllAttributes())
+				{
+					save.Attributes.Add(attribute);
+				}
+				builder.Items.Add(save);
 			}
-
-
-			// ok, we didn't fit, so create reference message
-			var referenceId = created.ToString(DateFormatInBlobName) + "-" + messageId;
-			_cloudBlob.GetBlobReference(referenceId).UploadByteArray(buffer);
-			var reference = new MessageReference(messageId.ToString(), _cloudBlob.Uri.ToString(), referenceId);
-			var blob = MessageUtil.SaveReferenceMessage(reference);
-			return new CloudQueueMessage(blob);
+			foreach (var attribute in envelope.GetAllAttributes())
+			{
+				builder.Attributes.Add(attribute);
+			}
+			return builder;
 		}
 
 		public AzureWriteQueue(IMessageSerializer serializer, CloudStorageAccount account, string queueName)
@@ -59,7 +90,6 @@ namespace Lokad.Cqrs.Sender
 			var queueClient = account.CreateCloudQueueClient();
 			queueClient.RetryPolicy = RetryPolicies.NoRetry();
 			_queue = queueClient.GetQueueReference(queueName);
-
 		}
 
 		public void Init()

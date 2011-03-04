@@ -53,7 +53,7 @@ namespace Lokad.Cqrs.Consume
 
 		public Task Start(CancellationToken token)
 		{
-			_log.DebugFormat("Starting transport for {0}", _queues.ToArray(q=> q.Name).JoinStrings(";"));
+			_log.DebugFormat("Listening '{0}' for {1}", _queues.ToArray(q=> q.Name).JoinStrings(";"), _dispatcher);
 			return Task.Factory.StartNew(() => ReceiveMessages(token), token);
 		}
 

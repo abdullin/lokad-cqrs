@@ -23,7 +23,7 @@ namespace Lokad.Cqrs
 			Azure.UseDevelopmentStorageAccount();
 			Serialization.UseDataContractSerializer();
 			Logging.LogToTrace();
-			Builder.RegisterType<AzureQueueFactory>().As<AzureQueueFactory>().SingleInstance();
+			Builder.RegisterType<AzureWriteQueueFactory>().As<AzureWriteQueueFactory>().SingleInstance();
 			Builder.RegisterType<CloudClient>().SingleInstance();
 		}
 
@@ -74,7 +74,7 @@ namespace Lokad.Cqrs
 
 			var lazy = new Lazy<IMessageClient>(() =>
 				{
-					var queue = container.Resolve<AzureQueueFactory>().GetSendQueue(queueName);
+					var queue = container.Resolve<AzureWriteQueueFactory>().GetWriteQueue(queueName);
 					return new DefaultMessageClient(queue);
 				},false);
 

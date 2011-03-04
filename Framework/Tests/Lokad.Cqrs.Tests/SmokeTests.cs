@@ -14,8 +14,10 @@ using Lokad.Cqrs.Default;
 using Lokad.Cqrs.Dispatch;
 using Lokad.Cqrs.Durability;
 using Lokad.Cqrs.Extensions;
+using Lokad.Cqrs.SimpleStorage.Files;
 using NUnit.Framework;
 using ProtoBuf;
+using System.Linq;
 
 namespace Lokad.Cqrs.Tests
 {
@@ -26,11 +28,11 @@ namespace Lokad.Cqrs.Tests
 
 		#region Setup/Teardown
 
-		CloudEngineHost BuildHost()
+		static CloudEngineHost BuildHost()
 		{
 			var engine = new CloudEngineBuilder();
+
 			engine.Azure.UseDevelopmentStorageAccount();
-			
 			engine.Serialization.UseDataContractSerializer();
 
 			engine.DomainIs(m =>
@@ -42,6 +44,22 @@ namespace Lokad.Cqrs.Tests
 			engine.AddMessageHandler(x =>
 				{
 					x.ListenToQueue("test-in");
+					x.Dispatch<DispatchMessagesToRoute>(r =>
+						{
+							r.SpecifyRouter(e =>
+								{
+									if (e.Items.Any(i => i.MappedType == typeof(Hello)))
+										return "test-hi";
+									if (e.Items.Any(i => i.MappedType == typeof(Bye)))
+										return "test-bye";
+									return "test-what";
+								});
+						});
+				});
+
+			engine.AddMessageHandler(x =>
+				{
+					x.ListenToQueue("test-hi", "test-bye");
 					x.Dispatch<DispatchSingleEventToMultipleConsumers>();
 				});
 

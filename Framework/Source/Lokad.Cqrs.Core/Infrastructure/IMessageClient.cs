@@ -18,5 +18,8 @@ namespace Lokad.Cqrs
 		/// </summary>
 		/// <param name="messages">The messages to send.</param>
 		void Send(params object[] messages);
+
+
+		void SendAsBatch(params object[] messageItems);
 	}
 }

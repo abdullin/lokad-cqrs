@@ -10,14 +10,14 @@ using Microsoft.WindowsAzure;
 
 namespace Lokad.Cqrs.Sender
 {
-	public sealed class AzureQueueFactory
+	public sealed class AzureWriteQueueFactory
 	{
 		readonly CloudStorageAccount _account;
 		readonly IMessageSerializer _serializer;
 		
 		readonly IDictionary<string, AzureWriteQueue> _writeQueues = new Dictionary<string, AzureWriteQueue>();
 
-		public AzureQueueFactory(
+		public AzureWriteQueueFactory(
 			CloudStorageAccount account,
 			IMessageSerializer serializer)
 		{
@@ -26,7 +26,7 @@ namespace Lokad.Cqrs.Sender
 		}
 
 
-		public AzureWriteQueue GetSendQueue(string queueName)
+		public AzureWriteQueue GetWriteQueue(string queueName)
 		{
 			lock (_writeQueues)
 			{
