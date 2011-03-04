@@ -14,23 +14,30 @@ using Lokad.Cqrs.Durability;
 namespace Lokad.Cqrs.Dispatch
 {
 	/// <summary>
-	/// Dispatch commands to lifetime scope
+	/// Dispatch command batches to a single consumer. Uses sliding cache to 
+	/// reduce message duplication
 	/// </summary>
 	public sealed class DispatchCommandBatchToSingleConsumer : ISingleThreadMessageDispatcher
 	{
 		readonly ILifetimeScope _container;
 		readonly IDictionary<Type, Type> _messageConsumers = new Dictionary<Type, Type>();
 		readonly MessageDirectory _messageDirectory;
-		//readonly Con
+		MessageDuplicationMemory _memory;
 
-		public DispatchCommandBatchToSingleConsumer(ILifetimeScope container, MessageDirectory messageDirectory)
+
+		public DispatchCommandBatchToSingleConsumer(ILifetimeScope container, MessageDirectory messageDirectory, MessageDuplicationManager manager)
 		{
 			_container = container;
 			_messageDirectory = messageDirectory;
+			_memory = manager.GetOrAdd(this);
 		}
 
 		public void DispatchMessage(MessageEnvelope message)
 		{
+			// already dispatched
+			if (_memory.DoWeRemember(message.EnvelopeId))
+				return;
+
 			// empty message, hm...
 			if (message.Items.Length == 0)
 				return;
@@ -60,6 +67,7 @@ namespace Lokad.Cqrs.Dispatch
 					}
 				}
 			}
+			_memory.Memorize(message.EnvelopeId);
 		}
 
 	

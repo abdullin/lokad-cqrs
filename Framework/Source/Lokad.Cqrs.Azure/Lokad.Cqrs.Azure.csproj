@@ -73,11 +73,13 @@
     <Compile Include="Build\Engine\CloudEngineHost.cs" />
     <Compile Include="Consume\BlobExceptionLogger.cs" />
     <Compile Include="Consume\ConfigureBlobSavingOnException.cs" />
-    <Compile Include="Dispatch\DispatchSingleEventToMultipleConsumers.cs" />
+    <Compile Include="Dispatch\DispatchEventToMultipleConsumers.cs" />
     <Compile Include="Dispatch\DispatchCommandBatchToSingleConsumer.cs" />
+    <Compile Include="Dispatch\DispatchMessagesToRoute.cs" />
     <Compile Include="Dispatch\ISingleThreadMessageDispatcher.cs" />
     <Compile Include="Dispatch\MessageDispatch.cs" />
-    <Compile Include="Dispatch\SlidingDispatchMemory.cs" />
+    <Compile Include="Dispatch\MessageDuplicationManager.cs" />
+    <Compile Include="Dispatch\MessageDuplicationMemory.cs" />
     <Compile Include="Logging\DebugLog.cs" />
     <Compile Include="Logging\ExtendILogProvider.cs" />
     <Compile Include="Logging\ILog.cs" />

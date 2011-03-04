@@ -10,26 +10,25 @@ using System.Collections.Generic;
 using Autofac;
 using Lokad.Cqrs.Directory;
 using Lokad.Cqrs.Durability;
-using Lokad.Cqrs.Sender;
 
 namespace Lokad.Cqrs.Dispatch
 {
 	///<summary>
 	/// Dispatcher that sends a single event to multiple consumers within this worker.
-	/// No transactions are used here.
+	/// No transactions are used here, we keep track of duplication.
 	///</summary>
-	public sealed class DispatchSingleEventToMultipleConsumers : ISingleThreadMessageDispatcher
+	public sealed class DispatchEventToMultipleConsumers : ISingleThreadMessageDispatcher
 	{
 		readonly ILifetimeScope _container;
 		readonly MessageDirectory _directory;
 		readonly IDictionary<Type, Type[]> _dispatcher = new Dictionary<Type, Type[]>();
-		readonly SlidingDispatchMemory.DispatchMemory _dispatchMemory;
+		readonly MessageDuplicationMemory _dispatchMemory;
 
-		public DispatchSingleEventToMultipleConsumers(ILifetimeScope container, MessageDirectory directory, SlidingDispatchMemory memory)
+		public DispatchEventToMultipleConsumers(ILifetimeScope container, MessageDirectory directory, MessageDuplicationManager memory)
 		{
 			_container = container;
 			_directory = directory;
-			_dispatchMemory = memory.AcquireMemory(this);
+			_dispatchMemory = memory.GetOrAdd(this);
 		}
 
 		public void Init()
@@ -71,39 +70,7 @@ namespace Lokad.Cqrs.Dispatch
 			}
 			// else -> we don't have consumers. It's OK for the event
 
-			_dispatchMemory.RegisterMemory(unpacked.EnvelopeId);
-		}
-	}
-
-	public sealed class DispatchMessagesToRoute : ISingleThreadMessageDispatcher
-	{
-		readonly AzureWriteQueueFactory _queueFactory;
-		Func<MessageEnvelope, string> _routerRule;
-
-		public DispatchMessagesToRoute(AzureWriteQueueFactory queueFactory)
-		{
-			_queueFactory = queueFactory;
-		}
-
-
-		public void DispatchMessage(MessageEnvelope message)
-		{
-			var route = _routerRule(message);
-			var queue = _queueFactory.GetWriteQueue(route);
-			queue.ForwardMessage(message);
-		}
-
-		public void SpecifyRouter(Func<MessageEnvelope, string>  router)
-		{
-			_routerRule = router;
-		}
-
-		public void Init()
-		{
-			if (null == _routerRule)
-			{
-				throw new InvalidOperationException("Message router must be configured!");
-			}
+			_dispatchMemory.Memorize(unpacked.EnvelopeId);
 		}
 	}
 }

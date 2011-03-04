@@ -60,7 +60,7 @@ namespace Lokad.Cqrs.Tests
 			engine.AddMessageHandler(x =>
 				{
 					x.ListenToQueue("test-hi", "test-bye");
-					x.Dispatch<DispatchSingleEventToMultipleConsumers>();
+					x.Dispatch<DispatchEventToMultipleConsumers>();
 				});
 
 			engine.AddMessageClient(x => x.DefaultToQueue("test-in"));
