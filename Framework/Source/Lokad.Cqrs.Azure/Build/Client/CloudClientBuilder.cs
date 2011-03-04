@@ -72,10 +72,10 @@ namespace Lokad.Cqrs
 		{
 			var container = Builder.Build();
 
-			var lazy = new Lazy<IMessageClient>(() =>
+			var lazy = new Lazy<IMessageSender>(() =>
 				{
 					var queue = container.Resolve<AzureWriteQueueFactory>().GetWriteQueue(queueName);
-					return new DefaultMessageClient(queue);
+					return new DefaultMessageSender(queue);
 				},false);
 
 			

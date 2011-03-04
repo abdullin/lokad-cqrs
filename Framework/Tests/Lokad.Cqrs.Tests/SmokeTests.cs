@@ -109,7 +109,7 @@ namespace Lokad.Cqrs.Tests
 			{
 				host.Initialize();
 
-				var client = host.Resolve<IMessageClient>();
+				var client = host.Resolve<IMessageSender>();
 
 				client.Send(new Hello { Word = "World" });
 				client.Send(new Hello { Word = new string('1',9000) });

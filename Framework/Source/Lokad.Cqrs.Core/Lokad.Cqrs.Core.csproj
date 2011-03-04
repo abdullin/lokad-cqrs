@@ -73,7 +73,7 @@
     <Compile Include="Evil\Filter.cs" />
     <Compile Include="Infrastructure\IKnowSerializationTypes.cs" />
     <Compile Include="Infrastructure\IEngineProcess.cs" />
-    <Compile Include="Infrastructure\IMessageClient.cs" />
+    <Compile Include="Infrastructure\IMessageSender.cs" />
     <Compile Include="Infrastructure\IMessageSerializer.cs" />
     <Compile Include="Durability\Contracts_v1\Schema1AttributesItemContract.cs" />
     <Compile Include="Durability\Contracts_v1\Schema1AttributesContract.cs" />

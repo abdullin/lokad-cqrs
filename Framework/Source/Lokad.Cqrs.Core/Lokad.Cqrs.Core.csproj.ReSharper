@@ -1,6 +1,5 @@
 <Configuration>
   <NamespaceFolders>
     <SkipFolder>CE441C5A-2DC1-4639-81ED-5B4CAC649BD9/d:Infrastructure</SkipFolder>
-    <SkipFolder>CE441C5A-2DC1-4639-81ED-5B4CAC649BD9/d:SyntaxSugar</SkipFolder>
   </NamespaceFolders>
 </Configuration>

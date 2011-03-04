@@ -107,7 +107,7 @@
     <Compile Include="SimpleStorage\BlobStorageItem.cs" />
     <Compile Include="Consume\HandleMessagesModule.cs" />
     <Compile Include="Domain\DomainAwareMessageProfiler.cs" />
-    <Compile Include="Sender\DefaultMessageClient.cs" />
+    <Compile Include="Sender\DefaultMessageSender.cs" />
     <Compile Include="Scheduled\TransactionalTaskDispatcher.cs" />
     <Compile Include="Scheduled\ScheduledModule.cs" />
     <Compile Include="Sender\SenderModule.cs" />

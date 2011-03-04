@@ -11,7 +11,7 @@ namespace Lokad.Cqrs
 	/// <summary>
 	/// Generic message publishing interface that is provided by the infrastructure, should user configure it for publishing
 	/// </summary>
-	public interface IMessageClient
+	public interface IMessageSender
 	{
 		/// <summary>
 		/// Sends the specified messages to the designated recipient.

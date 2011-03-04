@@ -15,16 +15,16 @@ namespace Lokad.Cqrs
 {
 	public class CloudClient : IDisposable
 	{
-		readonly Lazy<IMessageClient> _client;
+		readonly Lazy<IMessageSender> _client;
 		readonly ILifetimeScope _resolver;
 
 		public CloudClient(ILifetimeScope resolver)
 		{
 			_resolver = resolver;
-			_client = new Lazy<IMessageClient>(GetClient, LazyThreadSafetyMode.ExecutionAndPublication);
+			_client = new Lazy<IMessageSender>(GetClient, LazyThreadSafetyMode.ExecutionAndPublication);
 		}
 
-		public CloudClient(ILifetimeScope resolver, Lazy<IMessageClient> client)
+		public CloudClient(ILifetimeScope resolver, Lazy<IMessageSender> client)
 		{
 			_resolver = resolver;
 			_client = client;
@@ -47,11 +47,11 @@ namespace Lokad.Cqrs
 			}
 		}
 
-		IMessageClient GetClient()
+		IMessageSender GetClient()
 		{
 			try
 			{
-				return _resolver.Resolve<IMessageClient>();
+				return _resolver.Resolve<IMessageSender>();
 			}
 			catch (Exception e)
 			{

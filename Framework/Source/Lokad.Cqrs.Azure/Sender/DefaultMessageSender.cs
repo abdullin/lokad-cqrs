@@ -9,11 +9,11 @@ using System.Transactions;
 
 namespace Lokad.Cqrs.Sender
 {
-	sealed class DefaultMessageClient : IMessageClient
+	sealed class DefaultMessageSender : IMessageSender
 	{
 		readonly AzureWriteQueue _queue;
 
-		public DefaultMessageClient(AzureWriteQueue queue)
+		public DefaultMessageSender(AzureWriteQueue queue)
 		{
 			_queue = queue;
 		}
