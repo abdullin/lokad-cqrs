@@ -87,11 +87,9 @@ namespace Lokad.Cqrs.Consume
 
 			if (message.DequeueCount > RetryCount)
 			{
-				var queue = _posionQueue.Value;
-				// we consider this to be poison
-				_log.ErrorFormat("Moving message {0} to poison queue {1}", message.Id, queue.Name);
-				// Move to poison
-				queue.AddMessage(message);
+				_log.Log(new RetrievedPoisonMessage(_queue.Name, message.Id));
+				
+				_posionQueue.Value.AddMessage(message);
 				_queue.DeleteMessage(message);
 				return GetMessageResult.Retry;
 			}
@@ -135,6 +133,20 @@ namespace Lokad.Cqrs.Consume
 			_queue.DeleteMessage(message.CloudMessage);
 		}
 	}
+
+	public sealed class RetrievedPoisonMessage : ILogEvent
+
+	{
+		public string QueueName { get; private set; }
+		public string MessageId { get; private set; }
+
+		public RetrievedPoisonMessage(string queueName, string messageId)
+		{
+			QueueName = queueName;
+			MessageId = messageId;
+		}
+	}
+
 
 	public sealed class FailedToAccessStorage : ILogEvent
 	{

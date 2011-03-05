@@ -128,11 +128,22 @@ namespace Lokad.Cqrs.Scheduled
 			}
 			catch (Exception ex)
 			{
+				_log.Log(new FailedToExecuteScheduledTask(ex, state.Name));
 				ExceptionEncountered(ex);
-				_log.ErrorFormat(ex, "Exception while processing {0}", state.Name);
-
 				state.ScheduleIn(_sleepOnFailure);
 			}
+		}
+	}
+
+	public sealed class FailedToExecuteScheduledTask : ILogEvent
+	{
+		public Exception Exception { get; private set; }
+		public string TaskName { get; private set; }
+
+		public FailedToExecuteScheduledTask(Exception exception, string taskName)
+		{
+			Exception = exception;
+			TaskName = taskName;
 		}
 	}
 }

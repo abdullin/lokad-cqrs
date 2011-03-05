@@ -111,8 +111,7 @@ namespace Lokad.Cqrs.Consume
 					}
 					catch (Exception ex)
 					{
-						var text = string.Format("Failed to consume '{0}' from '{1}'", envelope, queue.Name);
-						_log.Error(ex, text);
+						_log.Log(new FailedToConsumeMessage(ex, envelope.EnvelopeId, queue.Name));
 					}
 					
 					return QueueProcessingResult.MoreWork;
@@ -137,6 +136,21 @@ namespace Lokad.Cqrs.Consume
 		{
 			MoreWork,
 			Sleep
+		}
+	}
+
+
+	public sealed class FailedToConsumeMessage : ILogEvent
+	{
+		public Exception Exception { get; private set; }
+		public string EnvelopeId { get; private set; }
+		public string QueueName { get; private set; }
+
+		public FailedToConsumeMessage(Exception exception, string envelopeId, string queueName)
+		{
+			Exception = exception;
+			EnvelopeId = envelopeId;
+			QueueName = queueName;
 		}
 	}
 }
