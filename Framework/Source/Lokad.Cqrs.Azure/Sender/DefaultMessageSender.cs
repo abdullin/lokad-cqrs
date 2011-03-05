@@ -18,27 +18,16 @@ namespace Lokad.Cqrs.Sender
 			_queue = queue;
 		}
 
-		public void Send(params object[] messages)
+		public void Send(object message)
 		{
-			if (messages.Length == 0)
-				return;
 
 			if (Transaction.Current == null)
 			{
-				foreach (var message in messages)
-				{
-					_queue.SendAsSingleMessage(new[] { message });
-				}
+				_queue.SendAsSingleMessage(new[] { message });
 			}
 			else
 			{
-				var action = new CommitActionEnlistment(() =>
-					{
-						foreach (var message in messages)
-						{
-							_queue.SendAsSingleMessage(new[] {message});
-						}
-					});
+				var action = new CommitActionEnlistment(() => _queue.SendAsSingleMessage(new[] { message }));
 				Transaction.Current.EnlistVolatile(action, EnlistmentOptions.None);
 			}
 		}

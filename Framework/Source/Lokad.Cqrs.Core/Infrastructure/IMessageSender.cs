@@ -16,8 +16,8 @@ namespace Lokad.Cqrs
 		/// <summary>
 		/// Sends the specified messages to the designated recipient.
 		/// </summary>
-		/// <param name="messages">The messages to send.</param>
-		void Send(params object[] messages);
+		/// <param name="message">The message to send.</param>
+		void Send(object message);
 
 
 		void SendAsBatch(params object[] messageItems);
