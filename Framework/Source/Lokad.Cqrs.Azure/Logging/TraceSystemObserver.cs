@@ -12,14 +12,14 @@ using System.Diagnostics;
 namespace Lokad.Cqrs.Logging
 {
 	/// <summary>
-	/// Simple <see cref="ILog"/> that writes to the <see cref="Trace.Listeners"/>
+	/// Simple <see cref="ISystemObserver"/> that writes to the <see cref="Trace.Listeners"/>
 	/// </summary>
 	/// <remarks>Use Logging stack, if more flexibility is needed</remarks>
 	[Serializable]
 	
-	public sealed class TraceLog : ILog
+	public sealed class TraceSystemObserver : ISystemObserver
 	{
-		public void Log(ILogEvent @event)
+		public void Notify(ISystemEvent @event)
 		{
 			Trace.WriteLine(@event);
 			Trace.Flush();

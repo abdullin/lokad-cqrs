@@ -11,12 +11,12 @@ using System;
 namespace Lokad.Cqrs.Logging
 {
 	/// <summary>
-	/// <see cref="ILog"/> that does not do anything
+	/// <see cref="ISystemObserver"/> that does not do anything
 	/// </summary>
 	[Serializable]
-	public sealed class NullLog : ILog
+	public sealed class NullSystemObserver : ISystemObserver
 	{
-		public void Log(ILogEvent @event)
+		public void Notify(ISystemEvent @event)
 		{
 			
 		}
