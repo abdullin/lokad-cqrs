@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using Autofac;
 using Lokad.Cqrs.Directory;
 using Lokad.Cqrs.Dispatch;
@@ -27,6 +28,8 @@ namespace Lokad.Cqrs.Consume
 
 		Tuple<Type, Action<ISingleThreadMessageDispatcher>> _dispatcher;
 
+		public string ModuleName { get; private set; }
+		
 
 		Action<SingleThreadConsumingProcess, IComponentContext> _applyToTransport = (transport, context) => { };
 
@@ -34,6 +37,8 @@ namespace Lokad.Cqrs.Consume
 		{
 			SleepWhenNoMessages = BuildDecayPolicy(1.Seconds());
 			ListenToQueue("azure-messages");
+
+			ModuleName = "Handler-" + GetHashCode().ToString("X8");
 
 			Dispatch<DispatchCommandBatchToSingleConsumer>();
 		}
@@ -77,9 +82,7 @@ namespace Lokad.Cqrs.Consume
 		
 		public Func<uint, TimeSpan> SleepWhenNoMessages { get; set; }
 
-		public bool DebugPrintsMessageTree { get; set; }
-		public bool DebugPrintsConsumerTree { get; set; }
-
+		
 		/// <summary>
 		/// Adds custom filters for <see cref="MessageMapping"/>, that will be used
 		/// for configuring this message handler.
@@ -185,9 +188,8 @@ namespace Lokad.Cqrs.Consume
 			var builder = context.Resolve<MessageDirectoryBuilder>();
 			var filter = _filter.BuildFilter();
 			var directory = builder.BuildDirectory(filter);
-			log.DebugFormat("Discovered {0} messages", directory.Messages.Count);
 
-			DebugPrintIfNeeded(log, directory);
+			log.Log(new MessageDirectoryCreated(ModuleName, directory.Messages.ToArray(), directory.Consumers.ToArray()));
 
 
 			var dispatcher = (ISingleThreadMessageDispatcher)context.Resolve(_dispatcher.Item1, TypedParameter.From(directory));
@@ -204,24 +206,6 @@ namespace Lokad.Cqrs.Consume
 			
 
 			return transport;
-		}
-
-		void DebugPrintIfNeeded(ILog log, MessageDirectory directory)
-		{
-			if (DebugPrintsMessageTree)
-			{
-				foreach (var info in directory.Messages)
-				{
-					log.DebugFormat("{0} : {1}", info.MessageType.Name, ExtendIEnumerable.JoinStrings(info.AllConsumers.Select(c => c.FullName), "; "));
-				}
-			}
-			if (DebugPrintsConsumerTree)
-			{
-				foreach (var info in directory.Consumers)
-				{
-					log.DebugFormat("{0} : {1}", info.ConsumerType.FullName, ExtendIEnumerable.JoinStrings(info.MessageTypes.Select(c => c.Name), "; "));
-				}
-			}
 		}
 
 		protected override void Load(ContainerBuilder builder)
@@ -247,6 +231,20 @@ namespace Lokad.Cqrs.Consume
 
 					return TimeSpan.FromSeconds(foo);
 				};
+		}
+	}
+
+	public sealed class MessageDirectoryCreated : ILogEvent
+	{
+		public string Origin { get; private set; }
+		public MessageInfo[] Messages { get; private set; }
+		public ConsumerInfo[] Consumers { get; private set; }
+
+		public MessageDirectoryCreated(string origin, MessageInfo[] messages, ConsumerInfo[] consumers)
+		{
+			Origin = origin;
+			Messages = messages;
+			Consumers = consumers;
 		}
 	}
 }

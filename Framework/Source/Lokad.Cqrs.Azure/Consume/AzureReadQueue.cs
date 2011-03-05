@@ -77,7 +77,8 @@ namespace Lokad.Cqrs.Consume
 			}
 			catch (Exception ex)
 			{
-				return GetMessageResult.Error(ex);
+				_log.Log(new FailedToReadMessage(ex, _queueName));
+				return GetMessageResult.Error();
 			}
 
 			if (null == message)
@@ -127,10 +128,20 @@ namespace Lokad.Cqrs.Consume
 		public void AckMessage(AzureMessageContext message)
 		{
 			if (message == null) throw new ArgumentNullException("message");
-
-			
-			_log.Debug(message);
 			_queue.DeleteMessage(message.CloudMessage);
+			_log.Log( new MessageAcked(_queueName, message.Unpacked.EnvelopeId));
+		}
+	}
+
+	public sealed class MessageAcked : ILogEvent
+	{
+		public string QueueName { get; private set; }
+		public string EnvelopeId { get; private set; }
+
+		public MessageAcked(string queueName, string envelopeId)
+		{
+			QueueName = queueName;
+			EnvelopeId = envelopeId;
 		}
 	}
 
@@ -144,6 +155,18 @@ namespace Lokad.Cqrs.Consume
 		{
 			QueueName = queueName;
 			MessageId = messageId;
+		}
+	}
+
+	public sealed class FailedToReadMessage : ILogEvent
+	{
+		public Exception Exception { get; private set; }
+		public string QueueName { get; private set; }
+
+		public FailedToReadMessage(Exception exception, string queueName)
+		{
+			Exception = exception;
+			QueueName = queueName;
 		}
 	}
 

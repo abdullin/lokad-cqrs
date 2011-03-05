@@ -83,8 +83,6 @@ namespace Lokad.Cqrs.Scheduled
 
 		IEngineProcess ConfigureComponent(IComponentContext context, ScheduledTaskInfo[] tasks)
 		{
-			var logger = context.Resolve<ILog>();
-			logger.DebugFormat("{0} task available", tasks.Length);
 			var dispatcher = _dispatcher(context.Resolve<ILifetimeScope>());
 
 			return context.Resolve<ScheduledProcess>(

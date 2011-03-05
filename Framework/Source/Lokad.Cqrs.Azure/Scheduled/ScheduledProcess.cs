@@ -54,6 +54,7 @@ namespace Lokad.Cqrs.Scheduled
 
 		public void Initialize()
 		{
+			_log.Log(new ScheduledProcessInitialized(_tasks.Length));
 		}
 
 
@@ -85,7 +86,6 @@ namespace Lokad.Cqrs.Scheduled
 					// do we need to run this command now?
 					if (command.NextRun <= DateTime.UtcNow)
 					{
-						_log.DebugFormat("Executing {0}", command.Name);
 						executed = true;
 						RunCommand(command, token);
 					}
@@ -114,7 +114,6 @@ namespace Lokad.Cqrs.Scheduled
 					state.ScheduleIn(result);
 					return;
 				}
-				_log.Debug("Repeat");
 				state.ScheduleIn(0.Seconds());
 			}
 		}
@@ -144,6 +143,16 @@ namespace Lokad.Cqrs.Scheduled
 		{
 			Exception = exception;
 			TaskName = taskName;
+		}
+	}
+
+	public sealed class ScheduledProcessInitialized : ILogEvent
+	{
+		public int TaskCount { get; private set; }
+
+		public ScheduledProcessInitialized(int taskCount)
+		{
+			TaskCount = taskCount;
 		}
 	}
 }

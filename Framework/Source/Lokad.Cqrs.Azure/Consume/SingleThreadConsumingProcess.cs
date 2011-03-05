@@ -53,7 +53,6 @@ namespace Lokad.Cqrs.Consume
 
 		public Task Start(CancellationToken token)
 		{
-			_log.DebugFormat("Listening '{0}' for {1}", _queues.ToArray(q=> q.Name).JoinStrings(";"), _dispatcher);
 			return Task.Factory.StartNew(() => ReceiveMessages(token), token);
 		}
 
@@ -120,7 +119,6 @@ namespace Lokad.Cqrs.Consume
 					return QueueProcessingResult.Sleep;
 
 				case GetMessageResultState.Exception:
-					_log.DebugFormat(result.Exception, "Exception, while trying to get message");
 					return QueueProcessingResult.MoreWork;
 
 				case GetMessageResultState.Retry:

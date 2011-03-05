@@ -11,28 +11,17 @@ namespace Lokad.Cqrs.Consume
 {
 	public sealed class GetMessageResult
 	{
-		public static readonly GetMessageResult Wait = new GetMessageResult(null, GetMessageResultState.Wait, null);
-		public static readonly GetMessageResult Retry = new GetMessageResult(null, GetMessageResultState.Retry, null);
+		public static readonly GetMessageResult Wait = new GetMessageResult(null, GetMessageResultState.Wait);
+		public static readonly GetMessageResult Retry = new GetMessageResult(null, GetMessageResultState.Retry);
 		public readonly GetMessageResultState State;
-		readonly Exception _exception;
 		readonly AzureMessageContext _message;
 
-		GetMessageResult(AzureMessageContext message, GetMessageResultState state, Exception exception)
+		GetMessageResult(AzureMessageContext message, GetMessageResultState state)
 		{
 			_message = message;
 			State = state;
-			_exception = exception;
 		}
 
-		public Exception Exception
-		{
-			get
-			{
-				if (State != GetMessageResultState.Exception)
-					throw new InvalidOperationException("State should be in error mode");
-				return _exception;
-			}
-		}
 
 		public AzureMessageContext Message
 		{
@@ -46,12 +35,12 @@ namespace Lokad.Cqrs.Consume
 
 		public static GetMessageResult Success(AzureMessageContext message)
 		{
-			return new GetMessageResult(message, GetMessageResultState.Success, null);
+			return new GetMessageResult(message, GetMessageResultState.Success);
 		}
 
-		public static GetMessageResult Error(Exception ex)
+		public static GetMessageResult Error()
 		{
-			return new GetMessageResult(null, GetMessageResultState.Exception, ex);
+			return new GetMessageResult(null, GetMessageResultState.Exception);
 		}
 	}
 }
