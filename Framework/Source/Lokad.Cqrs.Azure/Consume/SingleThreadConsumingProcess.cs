@@ -27,12 +27,12 @@ namespace Lokad.Cqrs.Consume
 		readonly Func<uint, TimeSpan> _threadSleepInterval;
 
 
-		public SingleThreadConsumingProcess(ILogProvider logProvider, 
+		public SingleThreadConsumingProcess(ILog logProvider, 
 			ISingleThreadMessageDispatcher dispatcher, Func<uint, TimeSpan> sleepWhenNoMessages, AzureReadQueue[] readQueues)
 		{
 			_queues = readQueues;
 			_dispatcher = dispatcher;
-			_log = logProvider.Get(typeof (SingleThreadConsumingProcess).Name + "." + readQueues.ToArray(q => q.Name).JoinStrings(","));
+			_log = logProvider;
 			_threadSleepInterval = sleepWhenNoMessages;
 		}
 		

@@ -28,7 +28,7 @@ namespace Lokad.Cqrs.Tests.Storage
 			
 			client.RetryPolicy = RetryPolicies.NoRetry();
 
-			var root = new BlobStorageRoot(client, DebugLog.Provider);
+			var root = new BlobStorageRoot(client);
 			var cont = root.GetContainer("tests").Create();
 
 			var storageItem = cont.GetItem("test");

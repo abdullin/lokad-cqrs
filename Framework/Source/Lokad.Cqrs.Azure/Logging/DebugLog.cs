@@ -19,33 +19,9 @@ namespace Lokad.Cqrs.Logging
 	[Serializable]
 	public sealed class DebugLog : ILog
 	{
-		/// <summary>
-		/// Named provider for the <see cref="DebugLog"/>
-		/// </summary>
-		 public static readonly ILogProvider Provider =
-			new LambdaLogProvider(s => new DebugLog(s));
-
-		readonly string _logName;
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="DebugLog"/> class.
-		/// </summary>
-		/// <param name="logName">Name of the log.</param>
-		DebugLog(string logName)
+		public void Log(ILogEvent @event)
 		{
-			_logName = logName;
-		}
-
-		void ILog.Log(LogLevel level, object message)
-		{
-			Debug.WriteLine("[" + level + "] " + message, _logName);
-			Debug.Flush();
-		}
-
-		void ILog.Log(LogLevel level, Exception ex, object message)
-		{
-			Debug.WriteLine("[" + level + "] " + message, _logName);
-			Debug.WriteLine("[" + level + "] " + ex, _logName);
+			Debug.WriteLine(@event);
 			Debug.Flush();
 		}
 	}

@@ -27,12 +27,12 @@ namespace Lokad.Cqrs
 
 		public CloudEngineHost(
 			ILifetimeScope container,
-			ILogProvider provider,
+			ILog log,
 			IEnumerable<IEngineProcess> serverProcesses)
 		{
 			Container = container;
 			_serverProcesses = serverProcesses;
-			_log = provider.LogForName(this);
+			_log = log;
 		}
 
 		public Task Start(CancellationToken token)

@@ -174,8 +174,7 @@ namespace Lokad.Cqrs.Consume
 
 		IEngineProcess ConfigureComponent(IComponentContext context)
 		{
-			var provider = context.Resolve<ILogProvider>();
-			var log = provider.CreateLog<HandleMessagesModule>();
+			var log = context.Resolve<ILog>();
 
 			var queueNames = _queueNames.ToArray();
 
@@ -198,8 +197,8 @@ namespace Lokad.Cqrs.Consume
 
 			var account = context.Resolve<CloudStorageAccount>();
 			var serializer = context.Resolve<IMessageSerializer>();
-			var queues =  queueNames.ToArray(n => new AzureReadQueue(account, n, provider, serializer));
-			var transport = new SingleThreadConsumingProcess(provider, dispatcher, SleepWhenNoMessages, queues);
+			var queues =  queueNames.ToArray(n => new AzureReadQueue(account, n, log, serializer));
+			var transport = new SingleThreadConsumingProcess(log, dispatcher, SleepWhenNoMessages, queues);
 
 			_applyToTransport(transport, context);
 			

@@ -9,17 +9,14 @@ namespace Lokad.Cqrs.SimpleStorage
 	public sealed class BlobStorageRoot : IStorageRoot
 	{
 		readonly CloudBlobClient _client;
-		readonly ILogProvider _provider;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="BlobStorageRoot"/> class.
 		/// </summary>
 		/// <param name="client">The client.</param>
-		/// <param name="provider">The provider.</param>
-		public BlobStorageRoot(CloudBlobClient client, ILogProvider provider)
+		public BlobStorageRoot(CloudBlobClient client)
 		{
 			_client = client;
-			_provider = provider;
 		}
 
 		public IStorageContainer GetContainer(string name)

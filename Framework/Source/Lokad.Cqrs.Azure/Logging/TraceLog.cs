@@ -19,34 +19,9 @@ namespace Lokad.Cqrs.Logging
 	
 	public sealed class TraceLog : ILog
 	{
-		/// <summary>
-		/// Named provider for the <see cref="TraceLog"/>
-		/// </summary>
-		 public static readonly ILogProvider Provider =
-			new LambdaLogProvider(s => new TraceLog(s));
-
-		readonly string _logName;
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="TraceLog"/> class.
-		/// </summary>
-		/// <param name="logName">Name of the log.</param>
-		public TraceLog(string logName)
+		public void Log(ILogEvent @event)
 		{
-			_logName = logName;
-		}
-
-
-		void ILog.Log(LogLevel level, object message)
-		{
-			Trace.WriteLine("[" + level + "] " + message, _logName);
-			Trace.Flush();
-		}
-
-		void ILog.Log(LogLevel level, Exception ex, object message)
-		{
-			Trace.WriteLine("[" + level + "] " + message, _logName);
-			Trace.WriteLine("[" + level + "] " + ex, _logName);
+			Trace.WriteLine(@event);
 			Trace.Flush();
 		}
 	}

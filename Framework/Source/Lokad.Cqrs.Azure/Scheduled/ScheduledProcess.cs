@@ -32,12 +32,12 @@ namespace Lokad.Cqrs.Scheduled
 		readonly CancellationTokenSource _disposal = new CancellationTokenSource();
 
 		public ScheduledProcess(
-			ILogProvider provider,
+			ILog log,
 			ScheduledTaskInfo[] commands,
 			ScheduledConfig config,
 			IScheduledTaskDispatcher dispatcher)
 		{
-			_log = provider.CreateLog<ScheduledProcess>();
+			_log = log;
 
 			_tasks = commands.ToArray(c => new ScheduledState(c.Name, c));
 			_sleepBetweenCommands = config.SleepBetweenCommands;

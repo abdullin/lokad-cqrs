@@ -81,11 +81,8 @@
     <Compile Include="Dispatch\MessageDuplicationManager.cs" />
     <Compile Include="Dispatch\MessageDuplicationMemory.cs" />
     <Compile Include="Logging\DebugLog.cs" />
-    <Compile Include="Logging\ExtendILogProvider.cs" />
     <Compile Include="Logging\ILog.cs" />
     <Compile Include="Logging\ExtendILog.cs" />
-    <Compile Include="Logging\ILogProvider.cs" />
-    <Compile Include="Logging\LambdaLogProvider.cs" />
     <Compile Include="Logging\LogLevel.cs" />
     <Compile Include="Logging\NullLog.cs" />
     <Compile Include="Logging\TraceLog.cs" />

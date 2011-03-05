@@ -14,30 +14,11 @@ namespace Lokad.Cqrs.Logging
 	/// <see cref="ILog"/> that does not do anything
 	/// </summary>
 	[Serializable]
-	
 	public sealed class NullLog : ILog
 	{
-		/// <summary>
-		/// Singleton instance of the <see cref="ILog"/>
-		/// </summary>
-		public static readonly ILog Instance = new NullLog();
-
-		/// <summary>
-		/// Named provider for the <see cref="NullLog"/>
-		/// </summary>
-		 public static readonly ILogProvider Provider =
-			new LambdaLogProvider(s => Instance);
-
-		NullLog()
+		public void Log(ILogEvent @event)
 		{
-		}
-
-		void ILog.Log(LogLevel level, object message)
-		{
-		}
-
-		void ILog.Log(LogLevel level, Exception ex, object message)
-		{
+			
 		}
 	}
 }

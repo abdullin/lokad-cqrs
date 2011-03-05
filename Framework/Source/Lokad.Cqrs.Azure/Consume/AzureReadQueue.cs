@@ -29,7 +29,7 @@ namespace Lokad.Cqrs.Consume
 		public AzureReadQueue(
 			CloudStorageAccount account,
 			string queueName,
-			ILogProvider provider,
+			ILog provider,
 			IMessageSerializer serializer)
 		{
 			var blobClient = account.CreateCloudBlobClient();
@@ -47,7 +47,7 @@ namespace Lokad.Cqrs.Consume
 					return queue;
 				}, LazyThreadSafetyMode.ExecutionAndPublication); 
 
-			_log = provider.Get("Queue[" + queueName + "]");
+			_log = provider;
 
 			_queueName = queueName;
 			_serializer = serializer;
