@@ -34,12 +34,6 @@ namespace Lokad.Cqrs.Logging
 			log.Log(LogLevel.Debug, ex, string.Format(Culture, format, args));
 		}
 
-
-		public static void WarnFormat(this ILog log, Exception ex, string format, params object[] args)
-		{
-			log.Log(LogLevel.Warn, ex, string.Format(Culture, format, args));
-		}
-
 		public static void ErrorFormat(this ILog log, string format, params object[] args)
 		{
 			log.Log(LogLevel.Error, string.Format(Culture, format, args));

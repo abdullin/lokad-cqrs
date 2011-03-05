@@ -104,14 +104,14 @@ namespace Lokad.Cqrs.Consume
 			}
 			catch (StorageClientException ex)
 			{
-				_log.WarnFormat(ex, "Storage access problems for {0}", message.Id);
+				_log.Log(new FailedToAccessStorage(ex, _queue.Name, message.Id));
 				return GetMessageResult.Retry;
 			}
 			catch (Exception ex)
 			{
-				_log.ErrorFormat(ex, "Failed to deserialize envelope {0}. Moving to poison", message.Id);
+				_log.Log(new FailedToDeserializeMessage(ex, _queue.Name, message.Id));
+				
 				// new poison details
-
 				_posionQueue.Value.AddMessage(message);
 				_queue.DeleteMessage(message);
 				return GetMessageResult.Retry;
@@ -133,6 +133,34 @@ namespace Lokad.Cqrs.Consume
 			
 			_log.Debug(message);
 			_queue.DeleteMessage(message.CloudMessage);
+		}
+	}
+
+	public sealed class FailedToAccessStorage : ILogEvent
+	{
+		public StorageClientException Exception { get; private set; }
+		public string QueueName { get; private set; }
+		public string MessageId { get; private set; }
+
+		public FailedToAccessStorage(StorageClientException exception, string queueName, string messageId)
+		{
+			Exception = exception;
+			QueueName = queueName;
+			MessageId = messageId;
+		}
+	}
+
+	public sealed class FailedToDeserializeMessage : ILogEvent
+	{
+		public Exception Exception { get; private set; }
+		public string QueueName { get; private set; }
+		public string MessageId { get; private set; }
+
+		public FailedToDeserializeMessage(Exception exception, string queueName, string messageId)
+		{
+			Exception = exception;
+			QueueName = queueName;
+			MessageId = messageId;
 		}
 	}
 
