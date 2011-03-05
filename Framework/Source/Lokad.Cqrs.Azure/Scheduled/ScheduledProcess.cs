@@ -21,7 +21,7 @@ namespace Lokad.Cqrs.Scheduled
 	{
 		public delegate void ChainProcessedDelegate(ScheduledState[] state, bool emptyChain);
 
-		readonly ILog _log;
+		readonly ISystemObserver _observer;
 		readonly TimeSpan _sleepBetweenCommands;
 		readonly TimeSpan _sleepOnEmptyChain;
 		readonly TimeSpan _sleepOnFailure;
@@ -32,12 +32,12 @@ namespace Lokad.Cqrs.Scheduled
 		readonly CancellationTokenSource _disposal = new CancellationTokenSource();
 
 		public ScheduledProcess(
-			ILog log,
+			ISystemObserver observer,
 			ScheduledTaskInfo[] commands,
 			ScheduledConfig config,
 			IScheduledTaskDispatcher dispatcher)
 		{
-			_log = log;
+			_observer = observer;
 
 			_tasks = commands.ToArray(c => new ScheduledState(c.Name, c));
 			_sleepBetweenCommands = config.SleepBetweenCommands;
@@ -54,7 +54,7 @@ namespace Lokad.Cqrs.Scheduled
 
 		public void Initialize()
 		{
-			_log.Log(new ScheduledProcessInitialized(_tasks.Length));
+			_observer.Notify(new ScheduledProcessInitialized(_tasks.Length));
 		}
 
 
@@ -127,14 +127,14 @@ namespace Lokad.Cqrs.Scheduled
 			}
 			catch (Exception ex)
 			{
-				_log.Log(new FailedToExecuteScheduledTask(ex, state.Name));
+				_observer.Notify(new FailedToExecuteScheduledTask(ex, state.Name));
 				ExceptionEncountered(ex);
 				state.ScheduleIn(_sleepOnFailure);
 			}
 		}
 	}
 
-	public sealed class FailedToExecuteScheduledTask : ILogEvent
+	public sealed class FailedToExecuteScheduledTask : ISystemEvent
 	{
 		public Exception Exception { get; private set; }
 		public string TaskName { get; private set; }
@@ -146,7 +146,7 @@ namespace Lokad.Cqrs.Scheduled
 		}
 	}
 
-	public sealed class ScheduledProcessInitialized : ILogEvent
+	public sealed class ScheduledProcessInitialized : ISystemEvent
 	{
 		public int TaskCount { get; private set; }
 

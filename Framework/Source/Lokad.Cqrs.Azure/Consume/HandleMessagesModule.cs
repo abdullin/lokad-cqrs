@@ -177,7 +177,7 @@ namespace Lokad.Cqrs.Consume
 
 		IEngineProcess ConfigureComponent(IComponentContext context)
 		{
-			var log = context.Resolve<ILog>();
+			var log = context.Resolve<ISystemObserver>();
 
 			var queueNames = _queueNames.ToArray();
 
@@ -189,7 +189,7 @@ namespace Lokad.Cqrs.Consume
 			var filter = _filter.BuildFilter();
 			var directory = builder.BuildDirectory(filter);
 
-			log.Log(new MessageDirectoryCreated(ModuleName, directory.Messages.ToArray(), directory.Consumers.ToArray()));
+			log.Notify(new MessageDirectoryCreated(ModuleName, directory.Messages.ToArray(), directory.Consumers.ToArray()));
 
 
 			var dispatcher = (ISingleThreadMessageDispatcher)context.Resolve(_dispatcher.Item1, TypedParameter.From(directory));
@@ -234,7 +234,7 @@ namespace Lokad.Cqrs.Consume
 		}
 	}
 
-	public sealed class MessageDirectoryCreated : ILogEvent
+	public sealed class MessageDirectoryCreated : ISystemEvent
 	{
 		public string Origin { get; private set; }
 		public MessageInfo[] Messages { get; private set; }

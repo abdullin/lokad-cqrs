@@ -80,9 +80,10 @@
     <Compile Include="Dispatch\MessageDispatch.cs" />
     <Compile Include="Dispatch\MessageDuplicationManager.cs" />
     <Compile Include="Dispatch\MessageDuplicationMemory.cs" />
-    <Compile Include="Logging\ILog.cs" />
-    <Compile Include="Logging\NullLog.cs" />
-    <Compile Include="Logging\TraceLog.cs" />
+    <Compile Include="ISystemEvent.cs" />
+    <Compile Include="ISystemObserver.cs" />
+    <Compile Include="Logging\NullSystemObserver.cs" />
+    <Compile Include="Logging\TraceSystemObserver.cs" />
     <Compile Include="Sender\AzureWriteQueue.cs" />
     <Compile Include="Consume\GetMessageResult.cs" />
     <Compile Include="Consume\GetMessageResultState.cs" />

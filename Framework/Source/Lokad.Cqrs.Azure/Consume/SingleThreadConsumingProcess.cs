@@ -22,17 +22,17 @@ namespace Lokad.Cqrs.Consume
 	{
 		
 		readonly ISingleThreadMessageDispatcher _dispatcher;
-		readonly ILog _log;
+		readonly ISystemObserver _observer;
 		readonly AzureReadQueue[] _queues;
 		readonly Func<uint, TimeSpan> _threadSleepInterval;
 
 
-		public SingleThreadConsumingProcess(ILog logProvider, 
+		public SingleThreadConsumingProcess(ISystemObserver observer, 
 			ISingleThreadMessageDispatcher dispatcher, Func<uint, TimeSpan> sleepWhenNoMessages, AzureReadQueue[] readQueues)
 		{
 			_queues = readQueues;
 			_dispatcher = dispatcher;
-			_log = logProvider;
+			_observer = observer;
 			_threadSleepInterval = sleepWhenNoMessages;
 		}
 		
@@ -110,7 +110,7 @@ namespace Lokad.Cqrs.Consume
 					}
 					catch (Exception ex)
 					{
-						_log.Log(new FailedToConsumeMessage(ex, envelope.EnvelopeId, queue.Name));
+						_observer.Notify(new FailedToConsumeMessage(ex, envelope.EnvelopeId, queue.Name));
 					}
 					
 					return QueueProcessingResult.MoreWork;
@@ -138,7 +138,7 @@ namespace Lokad.Cqrs.Consume
 	}
 
 
-	public sealed class FailedToConsumeMessage : ILogEvent
+	public sealed class FailedToConsumeMessage : ISystemEvent
 	{
 		public Exception Exception { get; private set; }
 		public string EnvelopeId { get; private set; }

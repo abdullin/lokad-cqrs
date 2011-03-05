@@ -8,6 +8,7 @@
 using System;
 using Autofac;
 using Lokad.Cqrs.Consume;
+using Lokad.Cqrs.Dispatch;
 using Lokad.Cqrs.Domain;
 using Lokad.Cqrs.Scheduled;
 using Lokad.Cqrs.Sender;
@@ -37,6 +38,7 @@ namespace Lokad.Cqrs
 			Azure.UseDevelopmentStorageAccount();
 			Builder.RegisterType<AzureWriteQueueFactory>().As<AzureWriteQueueFactory, AzureWriteQueueFactory>().SingleInstance();
 			Builder.RegisterType<SingleThreadConsumingProcess>();
+			Builder.RegisterType<MessageDuplicationManager>().SingleInstance();
 
 			// some defaults
 			Builder.RegisterType<CloudEngineHost>().SingleInstance();

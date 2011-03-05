@@ -12,15 +12,15 @@ namespace Lokad.Cqrs
 
 		public void LogToNull()
 		{
-			RegisterLogProvider(new NullLog());
+			RegisterLogProvider(new NullSystemObserver());
 		}
 
 		public void LogToTrace()
 		{
-			RegisterLogProvider(new TraceLog());
+			RegisterLogProvider(new TraceSystemObserver());
 		}
 
-		public void RegisterLogProvider(ILog provider)
+		public void RegisterLogProvider(ISystemObserver provider)
 		{
 			Builder.RegisterInstance(provider);
 		}

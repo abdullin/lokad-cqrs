@@ -17,7 +17,7 @@ namespace Lokad.Cqrs.Consume
 	public sealed class AzureReadQueue
 	{
 		readonly IMessageSerializer _serializer;
-		readonly ILog _log;
+		readonly ISystemObserver _observer;
 
 		readonly CloudBlobContainer _cloudBlob;
 		readonly Lazy<CloudQueue> _posionQueue;
@@ -29,7 +29,7 @@ namespace Lokad.Cqrs.Consume
 		public AzureReadQueue(
 			CloudStorageAccount account,
 			string queueName,
-			ILog provider,
+			ISystemObserver provider,
 			IMessageSerializer serializer)
 		{
 			var blobClient = account.CreateCloudBlobClient();
@@ -47,7 +47,7 @@ namespace Lokad.Cqrs.Consume
 					return queue;
 				}, LazyThreadSafetyMode.ExecutionAndPublication); 
 
-			_log = provider;
+			_observer = provider;
 
 			_queueName = queueName;
 			_serializer = serializer;
@@ -77,7 +77,7 @@ namespace Lokad.Cqrs.Consume
 			}
 			catch (Exception ex)
 			{
-				_log.Log(new FailedToReadMessage(ex, _queueName));
+				_observer.Notify(new FailedToReadMessage(ex, _queueName));
 				return GetMessageResult.Error();
 			}
 
@@ -88,7 +88,7 @@ namespace Lokad.Cqrs.Consume
 
 			if (message.DequeueCount > RetryCount)
 			{
-				_log.Log(new RetrievedPoisonMessage(_queue.Name, message.Id));
+				_observer.Notify(new RetrievedPoisonMessage(_queue.Name, message.Id));
 				
 				_posionQueue.Value.AddMessage(message);
 				_queue.DeleteMessage(message);
@@ -103,12 +103,12 @@ namespace Lokad.Cqrs.Consume
 			}
 			catch (StorageClientException ex)
 			{
-				_log.Log(new FailedToAccessStorage(ex, _queue.Name, message.Id));
+				_observer.Notify(new FailedToAccessStorage(ex, _queue.Name, message.Id));
 				return GetMessageResult.Retry;
 			}
 			catch (Exception ex)
 			{
-				_log.Log(new FailedToDeserializeMessage(ex, _queue.Name, message.Id));
+				_observer.Notify(new FailedToDeserializeMessage(ex, _queue.Name, message.Id));
 				
 				// new poison details
 				_posionQueue.Value.AddMessage(message);
@@ -129,11 +129,11 @@ namespace Lokad.Cqrs.Consume
 		{
 			if (message == null) throw new ArgumentNullException("message");
 			_queue.DeleteMessage(message.CloudMessage);
-			_log.Log( new MessageAcked(_queueName, message.Unpacked.EnvelopeId));
+			_observer.Notify( new MessageAcked(_queueName, message.Unpacked.EnvelopeId));
 		}
 	}
 
-	public sealed class MessageAcked : ILogEvent
+	public sealed class MessageAcked : ISystemEvent
 	{
 		public string QueueName { get; private set; }
 		public string EnvelopeId { get; private set; }
@@ -145,7 +145,7 @@ namespace Lokad.Cqrs.Consume
 		}
 	}
 
-	public sealed class RetrievedPoisonMessage : ILogEvent
+	public sealed class RetrievedPoisonMessage : ISystemEvent
 
 	{
 		public string QueueName { get; private set; }
@@ -158,7 +158,7 @@ namespace Lokad.Cqrs.Consume
 		}
 	}
 
-	public sealed class FailedToReadMessage : ILogEvent
+	public sealed class FailedToReadMessage : ISystemEvent
 	{
 		public Exception Exception { get; private set; }
 		public string QueueName { get; private set; }
@@ -171,7 +171,7 @@ namespace Lokad.Cqrs.Consume
 	}
 
 
-	public sealed class FailedToAccessStorage : ILogEvent
+	public sealed class FailedToAccessStorage : ISystemEvent
 	{
 		public StorageClientException Exception { get; private set; }
 		public string QueueName { get; private set; }
@@ -185,7 +185,7 @@ namespace Lokad.Cqrs.Consume
 		}
 	}
 
-	public sealed class FailedToDeserializeMessage : ILogEvent
+	public sealed class FailedToDeserializeMessage : ISystemEvent
 	{
 		public Exception Exception { get; private set; }
 		public string QueueName { get; private set; }
