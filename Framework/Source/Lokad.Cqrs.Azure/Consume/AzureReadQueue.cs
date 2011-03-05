@@ -6,6 +6,7 @@
 #endregion
 
 using System;
+using System.Threading;
 using Lokad.Cqrs.Durability;
 using Lokad.Cqrs.Logging;
 using Microsoft.WindowsAzure;
@@ -19,7 +20,7 @@ namespace Lokad.Cqrs.Consume
 		readonly ILog _log;
 
 		readonly CloudBlobContainer _cloudBlob;
-		readonly CloudQueue _posionQueue;
+		readonly Lazy<CloudQueue> _posionQueue;
 		readonly CloudQueue _queue;
 		readonly string _queueName;
 
@@ -39,7 +40,12 @@ namespace Lokad.Cqrs.Consume
 			var queueClient = account.CreateCloudQueueClient();
 			queueClient.RetryPolicy = RetryPolicies.NoRetry();
 			_queue = queueClient.GetQueueReference(queueName);
-			_posionQueue = queueClient.GetQueueReference(queueName + "-poison");
+			_posionQueue = new Lazy<CloudQueue>(() =>
+				{
+					var queue = queueClient.GetQueueReference(queueName + "-poison");
+					queue.CreateIfNotExist();
+					return queue;
+				}, LazyThreadSafetyMode.ExecutionAndPublication); 
 
 			_log = provider.Get("Queue[" + queueName + "]");
 
@@ -56,8 +62,10 @@ namespace Lokad.Cqrs.Consume
 		public void Init()
 		{
 			_queue.CreateIfNotExist();
-			_posionQueue.CreateIfNotExist();
 			_cloudBlob.CreateIfNotExist();
+			
+			// this one will be initilized on-demand
+			//_posionQueue.CreateIfNotExist();
 		}
 
 		public GetMessageResult GetMessage()
@@ -79,10 +87,11 @@ namespace Lokad.Cqrs.Consume
 
 			if (message.DequeueCount > RetryCount)
 			{
+				var queue = _posionQueue.Value;
 				// we consider this to be poison
-				_log.ErrorFormat("Moving message {0} to poison queue {1}", message.Id, _posionQueue.Name);
+				_log.ErrorFormat("Moving message {0} to poison queue {1}", message.Id, queue.Name);
 				// Move to poison
-				_posionQueue.AddMessage(message);
+				queue.AddMessage(message);
 				_queue.DeleteMessage(message);
 				return GetMessageResult.Retry;
 			}
@@ -102,7 +111,8 @@ namespace Lokad.Cqrs.Consume
 			{
 				_log.ErrorFormat(ex, "Failed to deserialize envelope {0}. Moving to poison", message.Id);
 				// new poison details
-				_posionQueue.AddMessage(message);
+
+				_posionQueue.Value.AddMessage(message);
 				_queue.DeleteMessage(message);
 				return GetMessageResult.Retry;
 			}
