@@ -24,4 +24,24 @@ namespace Lokad.Cqrs.Logging
 	{
 		
 	}
+
+	public sealed class HostStarted : ILogEvent
+	{
+		
+	}
+	public sealed class HostStopped : ILogEvent
+	{
+		
+	}
+
+	public sealed class HostInitialized : ILogEvent
+	{
+		
+
+	}
+
+	public sealed class HostInitializationStarted : ILogEvent
+	{
+		
+	}
 }

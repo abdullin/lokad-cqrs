@@ -37,21 +37,19 @@ namespace Lokad.Cqrs
 
 		public Task Start(CancellationToken token)
 		{
-			_log.Info("Starting host");
-
 			var tasks = _serverProcesses.ToArray(p => p.Start(token));
-
-			return Task.Factory.ContinueWhenAll(tasks, t => _log.Info("Stopped host"));
+			_log.Log(new HostStarted());
+			return Task.Factory.ContinueWhenAll(tasks, t => _log.Log(new HostStopped()));
 		}
 
 		public void Initialize()
 		{
-			_log.Info("Initializing host");
-
+			_log.Log(new HostInitializationStarted());
 			foreach (var process in _serverProcesses)
 			{
 				process.Initialize();
 			}
+			_log.Log(new HostInitialized());
 		}
 
 		public TService Resolve<TService>()

@@ -83,7 +83,6 @@
     <Compile Include="Logging\DebugLog.cs" />
     <Compile Include="Logging\ILog.cs" />
     <Compile Include="Logging\ExtendILog.cs" />
-    <Compile Include="Logging\LogLevel.cs" />
     <Compile Include="Logging\NullLog.cs" />
     <Compile Include="Logging\TraceLog.cs" />
     <Compile Include="Sender\AzureWriteQueue.cs" />
