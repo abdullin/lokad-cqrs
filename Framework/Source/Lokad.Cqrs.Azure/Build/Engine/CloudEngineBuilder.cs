@@ -59,7 +59,7 @@ namespace Lokad.Cqrs
 		/// Adds Task Scheduling Feature to the instance of <see cref="CloudEngineHost"/>
 		/// </summary>
 		/// <param name="config">configuration syntax</param>
-		/// <returns>same builder for inling multiple configuration statements</returns>
+		/// <returns>same builder for inline multiple configuration statements</returns>
 		public CloudEngineBuilder AddScheduler(Action<ScheduledModule> config)
 		{
 			RegisterModule(config);
@@ -70,7 +70,7 @@ namespace Lokad.Cqrs
 		/// Configures the message domain for the instance of <see cref="CloudEngineHost"/>.
 		/// </summary>
 		/// <param name="config">configuration syntax.</param>
-		/// <returns>same builder for inling multiple configuration statements</returns>
+		/// <returns>same builder for inline multiple configuration statements</returns>
 		public CloudEngineBuilder DomainIs(Action<DomainBuildModule> config)
 		{
 			RegisterModule(config);
@@ -81,7 +81,7 @@ namespace Lokad.Cqrs
 		/// Creates default message sender for the instance of <see cref="CloudEngineHost"/>
 		/// </summary>
 		/// <param name="config">configuration syntax.</param>
-		/// <returns>same builder for inling multiple configuration statements</returns>
+		/// <returns>same builder for inline multiple configuration statements</returns>
 		public CloudEngineBuilder AddMessageClient(Action<SenderModule> config)
 		{
 			RegisterModule(config);

@@ -13,7 +13,7 @@ using Lokad.Cqrs.Sender;
 namespace Lokad.Cqrs
 {
 	/// <summary>
-	/// Fluent API for creating and configuring <see cref="ICloudClient"/>
+	/// Fluent API for creating and configuring <see cref="CloudClient"/>
 	/// </summary>
 // ReSharper disable UnusedMember.Global
 	public sealed class CloudClientBuilder : Syntax
@@ -46,10 +46,10 @@ namespace Lokad.Cqrs
 		
 
 		/// <summary>
-		/// Creates default message sender for the instance of <see cref="ICloudClient"/>
+		/// Creates default message sender for the instance of <see cref="CloudClient"/>
 		/// </summary>
 		/// <param name="config">configuration syntax.</param>
-		/// <returns>same builder for inling multiple configuration statements</returns>
+		/// <returns>same builder for inline multiple configuration statements</returns>
 		public CloudClientBuilder AddMessageClient(Action<SenderModule> config)
 		{
 			RegisterModule(config);
@@ -57,10 +57,10 @@ namespace Lokad.Cqrs
 		}
 
 		/// <summary>
-		/// Configures the message domain for the instance of <see cref="ICloudClient"/>.
+		/// Configures the message domain for the instance of <see cref="CloudClient"/>.
 		/// </summary>
 		/// <param name="config">configuration syntax.</param>
-		/// <returns>same builder for inling multiple configuration statements</returns>
+		/// <returns>same builder for inline multiple configuration statements</returns>
 		public CloudClientBuilder Domain(Action<DomainBuildModule> config)
 		{
 			RegisterModule(config);
