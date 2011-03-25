@@ -12,7 +12,7 @@ using System.Collections.Generic;
 namespace Lokad.Cqrs
 {
 	/// <summary>
-	/// Provides collection of known serialization types (for prebuilt serializers)
+	/// Provides collection of known serialization types (for prebuilt serializers).
 	/// </summary>
 	public interface IKnowSerializationTypes
 	{
