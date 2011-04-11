@@ -8,7 +8,7 @@
 namespace Lokad.Cqrs.SimpleStorage
 {
 	/// <summary>
-	/// Represents storage container regefence
+	/// Represents storage container reference.
 	/// </summary>
 	public interface IStorageContainer
 	{
