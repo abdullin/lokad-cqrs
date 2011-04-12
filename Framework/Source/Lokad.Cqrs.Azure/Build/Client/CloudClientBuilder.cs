@@ -16,7 +16,7 @@ namespace Lokad.Cqrs
 	/// Fluent API for creating and configuring <see cref="CloudClient"/>
 	/// </summary>
 // ReSharper disable UnusedMember.Global
-	public sealed class CloudClientBuilder : Syntax
+	public sealed class CloudClientBuilder : AutofacBuilderBase
 	{
 		public CloudClientBuilder()
 		{

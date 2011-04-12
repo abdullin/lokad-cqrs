@@ -10,7 +10,7 @@ using Lokad.Cqrs.Serialization;
 
 namespace Lokad.Cqrs
 {
-	public sealed class AutofacBuilderForSerialization : Syntax
+	public sealed class AutofacBuilderForSerialization : AutofacBuilderBase
 	{
 		public AutofacBuilderForSerialization(ContainerBuilder builder) : base(builder)
 		{

@@ -3,7 +3,7 @@ using Lokad.Cqrs.Logging;
 
 namespace Lokad.Cqrs
 {
-	public sealed class AutofacBuilderForLogging : Syntax
+	public sealed class AutofacBuilderForLogging : AutofacBuilderBase
 	{
 		public AutofacBuilderForLogging(ContainerBuilder builder) : base(builder)
 		{

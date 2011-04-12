@@ -19,7 +19,7 @@ namespace Lokad.Cqrs
 	/// <summary>
 	/// Autofac syntax for configuring Azure storage
 	/// </summary>
-	public sealed class AutofacBuilderForAzure : Syntax
+	public sealed class AutofacBuilderForAzure : AutofacBuilderBase
 	{
 		Action<CloudBlobClient> _configureClient = client => { };
 		

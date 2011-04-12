@@ -21,7 +21,7 @@ namespace Lokad.Cqrs
 	/// <summary>
 	/// Fluent API for creating and configuring <see cref="CloudEngineHost"/>
 	/// </summary>
-	public class CloudEngineBuilder : Syntax
+	public class CloudEngineBuilder : AutofacBuilderBase
 	{
 
 		public AutofacBuilderForLogging Logging { get { return new AutofacBuilderForLogging(Builder); } }

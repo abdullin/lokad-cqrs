@@ -109,7 +109,7 @@
     <Compile Include="Sender\SenderModule.cs" />
     <Compile Include="Domain\DomainBuildModule.cs" />
     <Compile Include="Sender\AzureWriteQueueFactory.cs" />
-    <Compile Include="Build\Syntax.cs" />
+    <Compile Include="Build\AutofacBuilderBase.cs" />
     <Compile Include="Consume\AzureReadQueue.cs" />
     <Compile Include="Consume\SingleThreadConsumingProcess.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

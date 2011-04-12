@@ -17,16 +17,16 @@ namespace Lokad.Cqrs
 	/// Helper class for creating fluent APIs, that hides unused signatures
 	/// </summary>
 	[Serializable]
-	public abstract class Syntax
+	public abstract class AutofacBuilderBase
 	{
 		public readonly ContainerBuilder Builder;
 
-		protected Syntax()
+		protected AutofacBuilderBase()
 		{
 			Builder = new ContainerBuilder();
 		}
 
-		protected Syntax(ContainerBuilder builder)
+		protected AutofacBuilderBase(ContainerBuilder builder)
 		{
 			Builder = builder;
 		}
