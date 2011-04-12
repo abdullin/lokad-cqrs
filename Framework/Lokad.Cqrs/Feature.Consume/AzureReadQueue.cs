@@ -14,43 +14,6 @@ using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs.Feature.Consume
 {
-	public interface IReadQueue
-	{
-		string Name { get; }
-		void Init();
-		GetMessageResult GetMessage();
-
-		/// <summary>
-		/// ACKs the message by deleting it from the queue.
-		/// </summary>
-		/// <param name="message">The message context to ACK.</param>
-		void AckMessage(MessageContext message);
-	}
-
-	public interface IReadQueueFactory
-	{
-		IReadQueue GetReadQueue(string name);
-	}
-
-	public sealed class AzureReadQueueFactory : IReadQueueFactory
-	{
-		readonly CloudStorageAccount _account;
-		readonly IMessageSerializer _serializer;
-		readonly ISystemObserver _observer;
-
-		public AzureReadQueueFactory(CloudStorageAccount account, IMessageSerializer serializer, ISystemObserver observer)
-		{
-			_account = account;
-			_serializer = serializer;
-			_observer = observer;
-		}
-
-		public IReadQueue GetReadQueue(string name)
-		{
-			return new AzureReadQueue(_account, name, _observer, _serializer);
-		}
-	}
-
 	public sealed class AzureReadQueue : IReadQueue
 	{
 		readonly IMessageSerializer _serializer;

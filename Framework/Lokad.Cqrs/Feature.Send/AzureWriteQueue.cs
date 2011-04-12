@@ -5,13 +5,6 @@ using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs.Feature.Send
 {
-	public interface IWriteQueue
-	{
-		void SendAsSingleMessage(object[] items);
-		void ForwardMessage(MessageEnvelope envelope);
-		void Init();
-	}
-
 	public sealed class AzureWriteQueue : IWriteQueue
 	{
 		public void SendAsSingleMessage(object[] items)

@@ -103,6 +103,9 @@
     <Compile Include="Evil\Filter.cs" />
     <Compile Include="Evil\Maybe.1.cs" />
     <Compile Include="Evil\Maybe.cs" />
+    <Compile Include="Feature.Consume\AzureReadQueueFactory.cs" />
+    <Compile Include="Feature.Consume\IReadQueue.cs" />
+    <Compile Include="Feature.Consume\IReadQueueFactory.cs" />
     <Compile Include="Feature.DefaultInterfaces\IConsume.cs" />
     <Compile Include="Feature.DefaultInterfaces\IConsumeMessage.cs" />
     <Compile Include="Feature.DefaultInterfaces\IMessage.cs" />
@@ -125,6 +128,8 @@
     <Compile Include="Feature.Consume\SingleThreadConsumingProcess.cs" />
     <Compile Include="Feature.Logging\NullSystemObserver.cs" />
     <Compile Include="Feature.Logging\TraceSystemObserver.cs" />
+    <Compile Include="Feature.Send\IWriteQueue.cs" />
+    <Compile Include="Feature.Send\IWriteQueueFactory.cs" />
     <Compile Include="Feature.SimpleStorage\Extend\ExtendStorageItem.cs" />
     <Compile Include="Feature.SimpleStorage\Files\FileStorageContainer.cs" />
     <Compile Include="Feature.SimpleStorage\Files\FileStorageItem.cs" />
