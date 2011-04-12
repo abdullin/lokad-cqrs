@@ -67,7 +67,7 @@ namespace Lokad.Cqrs.Consume
 							return;
 
 						// selector policy goes here
-						if (ProcessQueueForMessage(messageQueue) == QueueProcessingResult.MoreWork)
+						if (ProcessQueueForMessage(messageQueue) == QueueProcessingResult.Continue)
 						{
 							messageFound = true;
 						}
@@ -105,18 +105,16 @@ namespace Lokad.Cqrs.Consume
 						_observer.Notify(new FailedToConsumeMessage(ex, envelope.EnvelopeId, queue.Name));
 					}
 
-					return QueueProcessingResult.MoreWork;
+					return QueueProcessingResult.Continue;
 
 				case GetMessageResultState.Wait:
 					return QueueProcessingResult.Sleep;
 
 				case GetMessageResultState.Exception:
-					return QueueProcessingResult.MoreWork;
+					return QueueProcessingResult.Continue;
 
 				case GetMessageResultState.Retry:
-					//tx.Complete();
-					// retry immediately
-					return QueueProcessingResult.MoreWork;
+					return QueueProcessingResult.Continue;
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
@@ -124,7 +122,7 @@ namespace Lokad.Cqrs.Consume
 
 		enum QueueProcessingResult
 		{
-			MoreWork,
+			Continue,
 			Sleep
 		}
 	}

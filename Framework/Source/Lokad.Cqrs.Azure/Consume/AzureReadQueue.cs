@@ -8,7 +8,6 @@
 using System;
 using System.Threading;
 using Lokad.Cqrs.Durability;
-using Lokad.Cqrs.Logging;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
 
@@ -63,9 +62,6 @@ namespace Lokad.Cqrs.Consume
 		{
 			_queue.CreateIfNotExist();
 			_cloudBlob.CreateIfNotExist();
-			
-			// this one will be initilized on-demand
-			//_posionQueue.CreateIfNotExist();
 		}
 
 		public GetMessageResult GetMessage()
