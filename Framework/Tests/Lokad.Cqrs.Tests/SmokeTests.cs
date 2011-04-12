@@ -14,7 +14,6 @@ using Lokad.Cqrs.Default;
 using Lokad.Cqrs.Dispatch;
 using Lokad.Cqrs.Durability;
 using Lokad.Cqrs.Extensions;
-using Lokad.Cqrs.SimpleStorage.Files;
 using NUnit.Framework;
 using ProtoBuf;
 using System.Linq;
