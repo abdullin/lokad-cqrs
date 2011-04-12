@@ -59,15 +59,12 @@ namespace Lokad.Cqrs.Directory
 				.Select(x =>
 				{
 					var domainConsumers = x
-						.Where(t => t.Consumer != typeof(MessageMapping.BusSystem))
 						.Where(t => t.Consumer != typeof(MessageMapping.BusNull))
 						.ToArray();
 
 					return new MessageInfo
 						{
 							MessageType = x.Key,
-							IsDomainMessage = x.Any(t => t.Consumer != typeof (MessageMapping.BusSystem)),
-							IsSystemMessage = x.Any(t => t.Consumer == typeof (MessageMapping.BusSystem)),
 							AllConsumers = domainConsumers.Select(m => m.Consumer).Distinct().ToArray(),
 							DerivedConsumers = domainConsumers.Where(m => !m.Direct).Select(m => m.Consumer).Distinct().ToArray(),
 							DirectConsumers = domainConsumers.Where(m => m.Direct).Select(m => m.Consumer).Distinct().ToArray(),
@@ -84,7 +81,6 @@ namespace Lokad.Cqrs.Directory
 					{
 						MessageType = m.Message,
 						IsDomainMessage = false,
-						IsSystemMessage = false,
 						AllConsumers = Type.EmptyTypes,
 						DerivedConsumers = Type.EmptyTypes,
 						DirectConsumers = Type.EmptyTypes

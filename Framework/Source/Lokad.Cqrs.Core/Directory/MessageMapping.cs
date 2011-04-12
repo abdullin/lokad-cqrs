@@ -50,9 +50,5 @@ namespace Lokad.Cqrs.Directory
 		/// Indicates that the message is orphaned (not consumed)
 		/// </summary>
 		public abstract class BusNull{}
-		/// <summary>
-		/// Indicates that the message is consumed by the bus infrastructure
-		/// </summary>
-		public abstract class BusSystem{}
 	}
 }

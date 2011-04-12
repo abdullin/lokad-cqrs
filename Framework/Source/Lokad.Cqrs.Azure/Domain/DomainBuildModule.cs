@@ -169,7 +169,6 @@ namespace Lokad.Cqrs.Domain
 
 		void IModule.Configure(IComponentRegistry componentRegistry)
 		{
-			_scanner.IncludeSystemMessages = true;
 			var mappings = _scanner.Build();
 
 			var directoryBuilder = new MessageDirectoryBuilder(mappings, _scanner.ConsumingMethod.Name);

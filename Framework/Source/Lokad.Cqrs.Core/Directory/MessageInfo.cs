@@ -19,6 +19,5 @@ namespace Lokad.Cqrs.Directory
 		public Type[] AllConsumers { get; internal set; }
 
 		public bool IsDomainMessage { get; internal set; }
-		public bool IsSystemMessage { get; internal set; }
 	}
 }

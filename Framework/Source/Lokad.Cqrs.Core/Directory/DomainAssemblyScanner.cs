@@ -22,8 +22,7 @@ namespace Lokad.Cqrs.Directory
 		readonly Filter<Type> _handlerSelector = new Filter<Type>();
 		readonly Filter<Type> _serializableSelector = new Filter<Type>();
 		MethodInfo _consumingMethod;
-		public bool IncludeSystemMessages { get; set; }
-
+		
 		public MethodInfo ConsumingMethod
 		{
 			get { return _consumingMethod; }
@@ -96,17 +95,6 @@ namespace Lokad.Cqrs.Directory
 			return this;
 		}
 
-		public IEnumerable<MessageMapping> GetSystemMessages()
-		{
-			return Assembly
-				.GetExecutingAssembly()
-				.GetTypes()
-				.Where(t => t.IsPublic)
-				.Where(t => t.IsDefined(typeof (DataContractAttribute), false))
-				.Select(message => new MessageMapping(typeof (MessageMapping.BusSystem), message, false));
-		}
-
-
 		public IEnumerable<MessageMapping> Build()
 		{
 			if (null == _consumingMethod)
@@ -153,14 +141,6 @@ namespace Lokad.Cqrs.Directory
 				result.Add(m);
 			}
 			
-			if (IncludeSystemMessages)
-			{
-				foreach (var m in GetSystemMessages())
-				{
-					result.Add(m);
-				}
-			}
-
 			var allMessages = result.Select(m => m.Message).ToSet();
 
 			foreach (var messageType in messageTypes)

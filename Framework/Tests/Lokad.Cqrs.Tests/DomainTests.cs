@@ -103,10 +103,7 @@ namespace Lokad.Cqrs.Tests
 		[TestFixtureSetUp]
 		public void FixtureSetUp()
 		{
-			var scanner = new DomainAssemblyScanner
-				{
-					IncludeSystemMessages = true
-				};
+			var scanner = new DomainAssemblyScanner();
 
 			Mappings = scanner
 				.ConsumerMethodSample<IConsumeMessage<IMessage>>(m => m.Consume(null))
