@@ -35,7 +35,7 @@ namespace Lokad.Cqrs.Build.Engine
 
 			// Azure presets
 			Azure.UseDevelopmentStorageAccount();
-			Builder.RegisterType<AzureWriteQueueFactory>().As<AzureWriteQueueFactory, AzureWriteQueueFactory>().SingleInstance();
+			Builder.RegisterType<AzureWriteQueueFactory>().SingleInstance();
 			Builder.RegisterType<SingleThreadConsumingProcess>();
 			Builder.RegisterType<MessageDuplicationManager>().SingleInstance();
 

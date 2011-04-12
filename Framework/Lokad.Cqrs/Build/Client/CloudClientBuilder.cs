@@ -22,7 +22,7 @@ namespace Lokad.Cqrs.Build.Client
 			Azure.UseDevelopmentStorageAccount();
 			Serialization.AutoDetectSerializer();
 			Logging.LogToTrace();
-			Builder.RegisterType<AzureWriteQueueFactory>().As<AzureWriteQueueFactory>().SingleInstance();
+			Builder.RegisterType<AzureWriteQueueFactory>().SingleInstance();
 			Builder.RegisterType<CloudClient>().SingleInstance();
 		}
 
