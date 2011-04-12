@@ -134,26 +134,4 @@ namespace Lokad.Cqrs.Scheduled
 			}
 		}
 	}
-
-	public sealed class FailedToExecuteScheduledTask : ISystemEvent
-	{
-		public Exception Exception { get; private set; }
-		public string TaskName { get; private set; }
-
-		public FailedToExecuteScheduledTask(Exception exception, string taskName)
-		{
-			Exception = exception;
-			TaskName = taskName;
-		}
-	}
-
-	public sealed class ScheduledProcessInitialized : ISystemEvent
-	{
-		public int TaskCount { get; private set; }
-
-		public ScheduledProcessInitialized(int taskCount)
-		{
-			TaskCount = taskCount;
-		}
-	}
 }

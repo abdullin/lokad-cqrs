@@ -70,25 +70,4 @@ namespace Lokad.Cqrs
 			Container.Dispose();
 		}
 	}
-
-	public sealed class HostStarted : ISystemEvent
-	{
-
-	}
-	public sealed class HostStopped : ISystemEvent
-	{
-
-	}
-
-	public sealed class HostInitialized : ISystemEvent
-	{
-
-
-	}
-
-	public sealed class HostInitializationStarted : ISystemEvent
-	{
-
-	}
-
 }

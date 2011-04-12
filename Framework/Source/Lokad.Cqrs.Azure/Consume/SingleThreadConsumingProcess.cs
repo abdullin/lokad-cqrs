@@ -1,33 +1,26 @@
-#region (c) 2010 Lokad Open Source - New BSD License 
+#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
 
-// Copyright (c) Lokad 2010, http://www.lokad.com
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
 // This code is released as Open Source under the terms of the New BSD Licence
 
 #endregion
 
 using System;
-using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 using Lokad.Cqrs.Dispatch;
-using Lokad.Cqrs.Durability;
-using Lokad.Cqrs.Evil;
-using Lokad.Cqrs.Extensions;
-using Lokad.Cqrs.Logging;
 
 namespace Lokad.Cqrs.Consume
 {
-	
 	public sealed class SingleThreadConsumingProcess : IEngineProcess
 	{
-		
 		readonly ISingleThreadMessageDispatcher _dispatcher;
 		readonly ISystemObserver _observer;
 		readonly AzureReadQueue[] _queues;
 		readonly Func<uint, TimeSpan> _threadSleepInterval;
 
 
-		public SingleThreadConsumingProcess(ISystemObserver observer, 
+		public SingleThreadConsumingProcess(ISystemObserver observer,
 			ISingleThreadMessageDispatcher dispatcher, Func<uint, TimeSpan> sleepWhenNoMessages, AzureReadQueue[] readQueues)
 		{
 			_queues = readQueues;
@@ -35,7 +28,7 @@ namespace Lokad.Cqrs.Consume
 			_observer = observer;
 			_threadSleepInterval = sleepWhenNoMessages;
 		}
-		
+
 		public void Dispose()
 		{
 			_disposal.Dispose();
@@ -96,7 +89,6 @@ namespace Lokad.Cqrs.Consume
 
 		QueueProcessingResult ProcessQueueForMessage(AzureReadQueue queue)
 		{
-			
 			var result = queue.GetMessage();
 
 			switch (result.State)
@@ -112,7 +104,7 @@ namespace Lokad.Cqrs.Consume
 					{
 						_observer.Notify(new FailedToConsumeMessage(ex, envelope.EnvelopeId, queue.Name));
 					}
-					
+
 					return QueueProcessingResult.MoreWork;
 
 				case GetMessageResultState.Wait:
@@ -134,21 +126,6 @@ namespace Lokad.Cqrs.Consume
 		{
 			MoreWork,
 			Sleep
-		}
-	}
-
-
-	public sealed class FailedToConsumeMessage : ISystemEvent
-	{
-		public Exception Exception { get; private set; }
-		public string EnvelopeId { get; private set; }
-		public string QueueName { get; private set; }
-
-		public FailedToConsumeMessage(Exception exception, string envelopeId, string queueName)
-		{
-			Exception = exception;
-			EnvelopeId = envelopeId;
-			QueueName = queueName;
 		}
 	}
 }
