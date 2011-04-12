@@ -26,7 +26,6 @@ namespace Lokad.Cqrs.Feature.Consume
 		Tuple<Type, Action<ISingleThreadMessageDispatcher>> _dispatcher;
 
 		public string ModuleName { get; private set; }
-		
 
 		Action<SingleThreadConsumingProcess, IComponentContext> _applyToTransport = (transport, context) => { };
 

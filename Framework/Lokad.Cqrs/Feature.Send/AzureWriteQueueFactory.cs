@@ -15,7 +15,7 @@ namespace Lokad.Cqrs.Feature.Send
 		readonly CloudStorageAccount _account;
 		readonly IMessageSerializer _serializer;
 		
-		readonly IDictionary<string, AzureWriteQueue> _writeQueues = new Dictionary<string, AzureWriteQueue>();
+		readonly IDictionary<string, IWriteQueue> _writeQueues = new Dictionary<string, IWriteQueue>();
 
 		public AzureWriteQueueFactory(
 			CloudStorageAccount account,
@@ -26,11 +26,11 @@ namespace Lokad.Cqrs.Feature.Send
 		}
 
 
-		public AzureWriteQueue GetWriteQueue(string queueName)
+		public IWriteQueue GetWriteQueue(string queueName)
 		{
 			lock (_writeQueues)
 			{
-				AzureWriteQueue value;
+				IWriteQueue value;
 				if (!_writeQueues.TryGetValue(queueName, out value))
 				{
 					value = new AzureWriteQueue(_serializer, _account, queueName);

@@ -11,9 +11,9 @@ namespace Lokad.Cqrs.Feature.Send
 {
 	sealed class DefaultMessageSender : IMessageSender
 	{
-		readonly AzureWriteQueue _queue;
+		readonly IWriteQueue _queue;
 
-		public DefaultMessageSender(AzureWriteQueue queue)
+		public DefaultMessageSender(IWriteQueue queue)
 		{
 			_queue = queue;
 		}
