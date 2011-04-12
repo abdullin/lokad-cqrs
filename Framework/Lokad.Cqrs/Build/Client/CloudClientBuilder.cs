@@ -24,6 +24,7 @@ namespace Lokad.Cqrs.Build.Client
 			Logging.LogToTrace();
 
 			Builder.RegisterType<AzureWriteQueueFactory>().As<IWriteQueueFactory>().SingleInstance();
+			
 
 			Builder.RegisterType<CloudClient>().SingleInstance();
 		}

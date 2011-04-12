@@ -12,7 +12,6 @@ using System.Linq;
 using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Core.Durability;
-using Microsoft.WindowsAzure;
 
 // ReSharper disable MemberCanBePrivate.Global
 namespace Lokad.Cqrs.Feature.Consume
@@ -36,10 +35,6 @@ namespace Lokad.Cqrs.Feature.Consume
 
 			ModuleName = "Handler-" + GetHashCode().ToString("X8");
 
-			_queueFactory = (context, s) =>
-				{
-					return context.Resolve<AzureReadQueue>(TypedParameter.From(s));
-				};
 
 			Dispatch<DispatchCommandBatchToSingleConsumer>();
 		}
@@ -197,9 +192,8 @@ namespace Lokad.Cqrs.Feature.Consume
 			_dispatcher.Item2(dispatcher);
 			dispatcher.Init();
 
-
-			
-			var queues =  queueNames.Select(n => _queueFactory(context,n)).ToArray();
+			var factory = context.Resolve<IReadQueueFactory>();
+			var queues =  queueNames.Select(factory.GetReadQueue).ToArray();
 			var transport = new SingleThreadConsumingProcess(log, dispatcher, SleepWhenNoMessages, queues);
 
 			_applyToTransport(transport, context);
@@ -207,8 +201,6 @@ namespace Lokad.Cqrs.Feature.Consume
 
 			return transport;
 		}
-
-		Func<IComponentContext, string, IReadQueue> _queueFactory;
 
 		protected override void Load(ContainerBuilder builder)
 		{
