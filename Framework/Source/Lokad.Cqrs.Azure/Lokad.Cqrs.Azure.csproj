@@ -84,6 +84,7 @@
     <Compile Include="ISystemObserver.cs" />
     <Compile Include="Logging\NullSystemObserver.cs" />
     <Compile Include="Logging\TraceSystemObserver.cs" />
+    <Compile Include="Scheduled\ScheduledTaskDispatcher.cs" />
     <Compile Include="Sender\AzureWriteQueue.cs" />
     <Compile Include="Consume\GetMessageResult.cs" />
     <Compile Include="Consume\GetMessageResultState.cs" />
@@ -103,7 +104,7 @@
     <Compile Include="Consume\HandleMessagesModule.cs" />
     <Compile Include="Domain\DomainAwareMessageProfiler.cs" />
     <Compile Include="Sender\DefaultMessageSender.cs" />
-    <Compile Include="Scheduled\TransactionalTaskDispatcher.cs" />
+    <Compile Include="Scheduled\ScheduledTaskDispatcherWithTransactions.cs" />
     <Compile Include="Scheduled\ScheduledModule.cs" />
     <Compile Include="Sender\SenderModule.cs" />
     <Compile Include="Domain\DomainBuildModule.cs" />

@@ -8,12 +8,16 @@ using Lokad.Cqrs.Extensions;
 
 namespace Lokad.Cqrs.Scheduled
 {
-	public sealed class TransactionalTaskDispatcher : IScheduledTaskDispatcher
+
+	/// <summary>
+	/// Scheduled task executor that uses transactions.
+	/// </summary>
+	public sealed class ScheduledTaskDispatcherWithTransactions : IScheduledTaskDispatcher
 	{
 		readonly ILifetimeScope _scope;
 		const IsolationLevel _isolationLevel = IsolationLevel.ReadCommitted;
 
-		public TransactionalTaskDispatcher(ILifetimeScope scope)
+		public ScheduledTaskDispatcherWithTransactions(ILifetimeScope scope)
 		{
 			_scope = scope;
 		}

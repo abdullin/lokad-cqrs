@@ -60,7 +60,13 @@ namespace Lokad.Cqrs.Scheduled
 
 		public ScheduledModule WithDefaultDispatcher()
 		{
-			_dispatcher = scope => new TransactionalTaskDispatcher(scope);
+			_dispatcher = scope => new ScheduledTaskDispatcherWithTransactions(scope);
+			return this;
+		}
+
+		public ScheduledModule WithDispatcher<TDispatcher>() where TDispatcher : IScheduledTaskDispatcher
+		{
+			_dispatcher = scope => scope.Resolve<TDispatcher>();
 			return this;
 		}
 
