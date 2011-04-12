@@ -17,7 +17,6 @@ namespace Lokad.Cqrs.Feature.Recurrent
 	public sealed class RecurrentModule : Module
 	{
 		readonly RecurrentConfig _config;
-
 		readonly IList<IRecurrentTaskBuilder> _builders = new List<IRecurrentTaskBuilder>();
 		Func<ILifetimeScope, IRecurrentTaskDispatcher> _dispatcher;
 
@@ -56,15 +55,13 @@ namespace Lokad.Cqrs.Feature.Recurrent
 			return this;
 		}
 
+		/// <summary>
+		/// Registers the default dispatcher (actually called by default)
+		/// </summary>
+		/// <returns></returns>
 		public RecurrentModule WithDefaultDispatcher()
 		{
 			_dispatcher = scope => new RecurrentTaskDispatcherWithTransactions(scope);
-			return this;
-		}
-
-		public RecurrentModule WithDispatcher<TDispatcher>() where TDispatcher : IRecurrentTaskDispatcher
-		{
-			_dispatcher = scope => scope.Resolve<TDispatcher>();
 			return this;
 		}
 
