@@ -8,7 +8,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{C5183B3E-3155-466A-BEC3-B7EBDCFB4BEF}"
 	ProjectSection(SolutionItems) = preProject
 		go.cmd = go.cmd
-		Lokad.Cqrs.build = Lokad.Cqrs.build
 		SharedKey.snk = SharedKey.snk
 	EndProjectSection
 EndProject
@@ -61,8 +60,8 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{24DA9150-1C7E-45B3-8A75-EA529081237F} = {CBB0EA40-FEC5-48D9-A04D-782440D9D693}
 		{CE441C5A-2DC1-4639-81ED-5B4CAC649BD9} = {CBB0EA40-FEC5-48D9-A04D-782440D9D693}
 		{FD6C8202-F530-4C09-8889-28DC383965AA} = {CBB0EA40-FEC5-48D9-A04D-782440D9D693}
-		{24DA9150-1C7E-45B3-8A75-EA529081237F} = {CBB0EA40-FEC5-48D9-A04D-782440D9D693}
 	EndGlobalSection
 EndGlobal

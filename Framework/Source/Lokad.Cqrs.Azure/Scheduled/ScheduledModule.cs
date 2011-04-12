@@ -12,7 +12,6 @@ using System.Linq.Expressions;
 using Autofac;
 using Lokad.Cqrs.Default;
 using Lokad.Cqrs.Extensions;
-using Lokad.Cqrs.Logging;
 
 namespace Lokad.Cqrs.Scheduled
 {
