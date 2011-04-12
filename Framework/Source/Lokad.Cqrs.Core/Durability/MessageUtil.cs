@@ -63,7 +63,5 @@ namespace Lokad.Cqrs.Durability
 					throw Errors.InvalidOperation("Unknown message format: {0}", header.MessageFormatVersion);
 			}
 		}
-
-
 	}
 }

@@ -121,6 +121,10 @@ namespace Lokad.Cqrs.Consume
 			return blob.DownloadByteArray();
 		}
 
+		/// <summary>
+		/// ACKs the message by deleting it from the queue.
+		/// </summary>
+		/// <param name="message">The message context to ACK.</param>
 		public void AckMessage(AzureMessageContext message)
 		{
 			if (message == null) throw new ArgumentNullException("message");

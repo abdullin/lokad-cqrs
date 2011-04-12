@@ -7,7 +7,7 @@ namespace Lokad.Cqrs.Consume
 	{
 		public readonly CloudQueueMessage CloudMessage;
 		public readonly MessageEnvelope Unpacked;
-
+		
 		public AzureMessageContext(CloudQueueMessage cloudMessage, MessageEnvelope unpacked)
 		{
 			CloudMessage = cloudMessage;

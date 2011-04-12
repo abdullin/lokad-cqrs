@@ -45,14 +45,4 @@ namespace Lokad.Cqrs.Durability
 			return _attributes;
 		}
 	}
-
-
-	//public sealed class MessageEnvelope
-	//{
-	//    public readonly string EnvelopeId;
-	//    public readonly MessageItem[] Messages;
-	//    public readonly IDictionary<string, object> Attributes = new Dictionary<string, object>();
-
-	
-	//}
 }
