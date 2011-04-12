@@ -8,13 +8,13 @@
 using System;
 using Autofac;
 
-namespace Lokad.Cqrs.Feature.Sender
+namespace Lokad.Cqrs.Feature.Send
 {
-	public sealed class SenderModule : Module
+	public sealed class SendMessageModule : Module
 	{
 		Action<ContainerBuilder> _builders = builder => { };
 
-		public SenderModule DefaultToQueue(string queueName)
+		public SendMessageModule DefaultToQueue(string queueName)
 		{
 			_builders += builder => builder.Register(c =>
 				{

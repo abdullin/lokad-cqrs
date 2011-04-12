@@ -10,7 +10,7 @@ using Autofac;
 using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Feature.Consume;
 using Lokad.Cqrs.Feature.Recurrent;
-using Lokad.Cqrs.Feature.Sender;
+using Lokad.Cqrs.Feature.Send;
 
 // ReSharper disable UnusedMethodReturnValue.Global
 namespace Lokad.Cqrs.Build.Engine
@@ -81,7 +81,7 @@ namespace Lokad.Cqrs.Build.Engine
 		/// </summary>
 		/// <param name="config">configuration syntax.</param>
 		/// <returns>same builder for inline multiple configuration statements</returns>
-		public CloudEngineBuilder AddMessageClient(Action<SenderModule> config)
+		public CloudEngineBuilder AddMessageClient(Action<SendMessageModule> config)
 		{
 			RegisterModule(config);
 			return this;

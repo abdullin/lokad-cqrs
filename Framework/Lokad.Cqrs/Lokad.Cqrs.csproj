@@ -160,11 +160,11 @@
     <Compile Include="Feature.SimpleStorage\Blob\BlobStorageRoot.cs" />
     <Compile Include="Feature.SimpleStorage\Blob\BlobStorageUtil.cs" />
     <Compile Include="Feature.SimpleStorage\Blob\SuppressFlushForStream.cs" />
-    <Compile Include="Feature.Sender\AzureWriteQueue.cs" />
-    <Compile Include="Feature.Sender\AzureWriteQueueFactory.cs" />
-    <Compile Include="Feature.Sender\CommitActionEnlistment.cs" />
-    <Compile Include="Feature.Sender\DefaultMessageSender.cs" />
-    <Compile Include="Feature.Sender\SenderModule.cs" />
+    <Compile Include="Feature.Send\AzureWriteQueue.cs" />
+    <Compile Include="Feature.Send\AzureWriteQueueFactory.cs" />
+    <Compile Include="Feature.Send\CommitActionEnlistment.cs" />
+    <Compile Include="Feature.Send\DefaultMessageSender.cs" />
+    <Compile Include="Feature.Send\SendMessageModule.cs" />
     <Compile Include="Feature.Recurrent\Events\FailedToExecuteScheduledTask.cs" />
     <Compile Include="Feature.Recurrent\Events\ScheduledProcessInitialized.cs" />
     <Compile Include="Feature.Recurrent\ExpressionTaskBuilder.cs" />

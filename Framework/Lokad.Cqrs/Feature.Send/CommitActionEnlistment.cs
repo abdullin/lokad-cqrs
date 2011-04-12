@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Transactions;
 
-namespace Lokad.Cqrs.Feature.Sender
+namespace Lokad.Cqrs.Feature.Send
 {
 	sealed class CommitActionEnlistment : IEnlistmentNotification
 	{

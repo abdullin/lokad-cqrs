@@ -1,6 +1,6 @@
 ﻿using System;
 using Lokad.Cqrs.Core.Durability;
-using Lokad.Cqrs.Feature.Sender;
+using Lokad.Cqrs.Feature.Send;
 
 namespace Lokad.Cqrs.Core.Dispatch
 {

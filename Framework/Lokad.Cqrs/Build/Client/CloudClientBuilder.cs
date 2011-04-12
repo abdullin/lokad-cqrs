@@ -7,7 +7,7 @@
 
 using System;
 using Autofac;
-using Lokad.Cqrs.Feature.Sender;
+using Lokad.Cqrs.Feature.Send;
 
 namespace Lokad.Cqrs.Build.Client
 {
@@ -49,7 +49,7 @@ namespace Lokad.Cqrs.Build.Client
 		/// </summary>
 		/// <param name="config">configuration syntax.</param>
 		/// <returns>same builder for inline multiple configuration statements</returns>
-		public CloudClientBuilder AddMessageClient(Action<SenderModule> config)
+		public CloudClientBuilder AddMessageClient(Action<SendMessageModule> config)
 		{
 			RegisterModule(config);
 			return this;

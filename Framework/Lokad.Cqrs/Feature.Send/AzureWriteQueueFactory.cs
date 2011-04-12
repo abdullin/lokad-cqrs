@@ -8,7 +8,7 @@
 using System.Collections.Generic;
 using Microsoft.WindowsAzure;
 
-namespace Lokad.Cqrs.Feature.Sender
+namespace Lokad.Cqrs.Feature.Send
 {
 	public sealed class AzureWriteQueueFactory
 	{

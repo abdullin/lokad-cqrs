@@ -3,7 +3,7 @@ using Lokad.Cqrs.Core.Durability;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
 
-namespace Lokad.Cqrs.Feature.Sender
+namespace Lokad.Cqrs.Feature.Send
 {
 	public sealed class AzureWriteQueue
 	{
