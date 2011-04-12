@@ -10,7 +10,12 @@ using Microsoft.WindowsAzure;
 
 namespace Lokad.Cqrs.Feature.Send
 {
-	public sealed class AzureWriteQueueFactory
+	public interface IWriteQueueFactory
+	{
+		IWriteQueue GetWriteQueue(string queueName);
+	}
+
+	public sealed class AzureWriteQueueFactory : IWriteQueueFactory
 	{
 		readonly CloudStorageAccount _account;
 		readonly IMessageSerializer _serializer;

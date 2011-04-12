@@ -10,10 +10,10 @@ namespace Lokad.Cqrs.Core.Dispatch
 	///</summary>
 	public sealed class DispatchMessagesToRoute : ISingleThreadMessageDispatcher
 	{
-		readonly AzureWriteQueueFactory _queueFactory;
+		readonly IWriteQueueFactory _queueFactory;
 		Func<MessageEnvelope, string> _routerRule;
 
-		public DispatchMessagesToRoute(AzureWriteQueueFactory queueFactory)
+		public DispatchMessagesToRoute(IWriteQueueFactory queueFactory)
 		{
 			_queueFactory = queueFactory;
 		}

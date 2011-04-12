@@ -18,7 +18,7 @@ namespace Lokad.Cqrs.Feature.Send
 		{
 			_builders += builder => builder.Register(c =>
 				{
-					var queue = c.Resolve<AzureWriteQueueFactory>().GetWriteQueue(queueName);
+					var queue = c.Resolve<IWriteQueueFactory>().GetWriteQueue(queueName);
 					return new DefaultMessageSender(queue);
 				}).SingleInstance().As<IMessageSender>();
 			return this;
