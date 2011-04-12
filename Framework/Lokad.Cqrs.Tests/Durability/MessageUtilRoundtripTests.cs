@@ -6,7 +6,7 @@
 #endregion
 
 using System;
-using Lokad.Cqrs.Core.Durability;
+using Lokad.Cqrs.Core.Transport;
 using Lokad.Cqrs.Tests;
 using NUnit.Framework;
 

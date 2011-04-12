@@ -6,6 +6,7 @@
 #endregion
 
 using System.Collections.Generic;
+using Lokad.Cqrs.Core.Transport;
 using Microsoft.WindowsAzure;
 
 namespace Lokad.Cqrs.Feature.Send

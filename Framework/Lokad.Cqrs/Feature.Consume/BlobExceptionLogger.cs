@@ -10,7 +10,7 @@ using System.Collections;
 using System.Globalization;
 using System.IO;
 using System.Text;
-using Lokad.Cqrs.Core.Durability;
+using Lokad.Cqrs.Core.Transport;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
 

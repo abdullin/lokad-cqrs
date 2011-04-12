@@ -7,6 +7,7 @@
 
 using System;
 using Autofac;
+using Lokad.Cqrs.Core.Transport;
 
 namespace Lokad.Cqrs.Feature.Send
 {

@@ -5,17 +5,14 @@
 
 #endregion
 
-using Lokad.Cqrs.Core.Durability;
-using Microsoft.WindowsAzure.StorageClient;
-
-namespace Lokad.Cqrs.Feature.Consume
+namespace Lokad.Cqrs.Core.Transport
 {
 	public sealed class MessageContext
 	{
 		public readonly object TransportMessage;
 		public readonly MessageEnvelope Unpacked;
 
-		public MessageContext(CloudQueueMessage transportMessage, MessageEnvelope unpacked)
+		public MessageContext(object transportMessage, MessageEnvelope unpacked)
 		{
 			TransportMessage = transportMessage;
 			Unpacked = unpacked;

@@ -12,7 +12,6 @@ using System.Runtime.Serialization;
 using System.Threading;
 using Lokad.Cqrs.Build.Engine;
 using Lokad.Cqrs.Core.Dispatch;
-using Lokad.Cqrs.Core.Durability;
 using Lokad.Cqrs.Durability;
 using Lokad.Cqrs.Feature.DefaultInterfaces;
 using NUnit.Framework;

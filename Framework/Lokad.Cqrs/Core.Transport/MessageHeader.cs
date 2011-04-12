@@ -1,6 +1,6 @@
 ﻿using ProtoBuf;
 
-namespace Lokad.Cqrs.Core.Durability
+namespace Lokad.Cqrs.Core.Transport
 {
 	[ProtoContract]
 	public sealed class MessageHeader

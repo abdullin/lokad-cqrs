@@ -1,6 +1,4 @@
-﻿using Lokad.Cqrs.Core.Durability;
-
-namespace Lokad.Cqrs.Feature.Send
+﻿namespace Lokad.Cqrs.Core.Transport
 {
 	public interface IWriteQueue
 	{

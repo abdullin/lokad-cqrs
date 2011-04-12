@@ -7,7 +7,7 @@
 
 using System;
 using System.Threading;
-using Lokad.Cqrs.Core.Durability;
+using Lokad.Cqrs.Core.Transport;
 using Lokad.Cqrs.Feature.Consume.Events;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;

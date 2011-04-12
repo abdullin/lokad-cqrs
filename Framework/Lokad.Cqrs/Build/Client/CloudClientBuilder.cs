@@ -7,6 +7,7 @@
 
 using System;
 using Autofac;
+using Lokad.Cqrs.Core.Transport;
 using Lokad.Cqrs.Feature.Send;
 
 namespace Lokad.Cqrs.Build.Client

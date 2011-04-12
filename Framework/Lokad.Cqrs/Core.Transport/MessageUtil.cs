@@ -7,10 +7,10 @@
 
 using System;
 using System.IO;
-using Lokad.Cqrs.Core.Durability.Contracts_v2;
+using Lokad.Cqrs.Core.Transport.Contracts_v2;
 using ProtoBuf;
 
-namespace Lokad.Cqrs.Core.Durability
+namespace Lokad.Cqrs.Core.Transport
 {
 	public static class MessageUtil
 	{

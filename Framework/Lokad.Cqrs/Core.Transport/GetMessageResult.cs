@@ -7,7 +7,7 @@
 
 using System;
 
-namespace Lokad.Cqrs.Feature.Consume
+namespace Lokad.Cqrs.Core.Transport
 {
 	public sealed class GetMessageResult
 	{

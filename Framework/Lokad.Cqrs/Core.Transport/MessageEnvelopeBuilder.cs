@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Lokad.Cqrs.Core.Durability
+namespace Lokad.Cqrs.Core.Transport
 {
 	public sealed class MessageEnvelopeBuilder
 	{

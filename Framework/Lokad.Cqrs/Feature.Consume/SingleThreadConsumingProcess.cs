@@ -9,6 +9,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Lokad.Cqrs.Core.Dispatch;
+using Lokad.Cqrs.Core.Transport;
 using Lokad.Cqrs.Feature.Consume.Events;
 
 namespace Lokad.Cqrs.Feature.Consume

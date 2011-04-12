@@ -6,8 +6,8 @@
 #endregion
 
 using System;
-using Lokad.Cqrs.Core.Durability;
 using Lokad.Cqrs.Core.Serialization;
+using Lokad.Cqrs.Core.Transport;
 using NUnit.Framework;
 using ProtoBuf;
 // ReSharper disable UnusedMember.Global

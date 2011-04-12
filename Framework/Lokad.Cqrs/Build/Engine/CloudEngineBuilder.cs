@@ -8,6 +8,7 @@
 using System;
 using Autofac;
 using Lokad.Cqrs.Core.Dispatch;
+using Lokad.Cqrs.Core.Transport;
 using Lokad.Cqrs.Feature.Consume;
 using Lokad.Cqrs.Feature.Recurrent;
 using Lokad.Cqrs.Feature.Send;

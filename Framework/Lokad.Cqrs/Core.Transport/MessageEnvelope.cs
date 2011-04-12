@@ -7,7 +7,7 @@
 
 using System.Collections.Generic;
 
-namespace Lokad.Cqrs.Core.Durability
+namespace Lokad.Cqrs.Core.Transport
 {
 	/// <summary>
 	/// Deserialized message representation

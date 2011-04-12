@@ -1,4 +1,4 @@
-﻿namespace Lokad.Cqrs.Feature.Consume
+﻿namespace Lokad.Cqrs.Core.Transport
 {
 	public interface IReadQueueFactory
 	{

@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 
-namespace Lokad.Cqrs.Core.Durability
+namespace Lokad.Cqrs.Core.Transport
 {
 	public static class MessagePrinter
 	{

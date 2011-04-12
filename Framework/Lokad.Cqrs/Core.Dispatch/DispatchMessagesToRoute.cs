@@ -1,5 +1,5 @@
 ﻿using System;
-using Lokad.Cqrs.Core.Durability;
+using Lokad.Cqrs.Core.Transport;
 using Lokad.Cqrs.Feature.Send;
 
 namespace Lokad.Cqrs.Core.Dispatch

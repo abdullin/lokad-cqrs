@@ -1,4 +1,5 @@
-﻿using Microsoft.WindowsAzure;
+﻿using Lokad.Cqrs.Core.Transport;
+using Microsoft.WindowsAzure;
 
 namespace Lokad.Cqrs.Feature.Consume
 {

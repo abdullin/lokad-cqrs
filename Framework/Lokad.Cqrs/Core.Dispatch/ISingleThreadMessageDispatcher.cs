@@ -5,7 +5,7 @@
 
 #endregion
 
-using Lokad.Cqrs.Core.Durability;
+using Lokad.Cqrs.Core.Transport;
 
 namespace Lokad.Cqrs.Core.Dispatch
 {

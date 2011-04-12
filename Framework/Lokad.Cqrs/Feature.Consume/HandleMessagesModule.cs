@@ -11,7 +11,7 @@ using Autofac;
 using System.Linq;
 using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Dispatch;
-using Lokad.Cqrs.Core.Durability;
+using Lokad.Cqrs.Core.Transport;
 
 // ReSharper disable MemberCanBePrivate.Global
 namespace Lokad.Cqrs.Feature.Consume

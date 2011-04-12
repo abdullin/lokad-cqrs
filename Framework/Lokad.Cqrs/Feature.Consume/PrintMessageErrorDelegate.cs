@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using Lokad.Cqrs.Core.Durability;
+using Lokad.Cqrs.Core.Transport;
 
 namespace Lokad.Cqrs.Feature.Consume
 {

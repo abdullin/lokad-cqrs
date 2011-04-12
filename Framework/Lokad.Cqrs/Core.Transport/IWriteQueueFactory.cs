@@ -1,4 +1,4 @@
-﻿namespace Lokad.Cqrs.Feature.Send
+﻿namespace Lokad.Cqrs.Core.Transport
 {
 	public interface IWriteQueueFactory
 	{
