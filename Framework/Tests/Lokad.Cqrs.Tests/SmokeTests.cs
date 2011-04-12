@@ -31,10 +31,6 @@ namespace Lokad.Cqrs.Tests
 		static CloudEngineHost BuildHost()
 		{
 			var engine = new CloudEngineBuilder();
-
-			engine.Azure.UseDevelopmentStorageAccount();
-			
-
 			engine.DomainIs(m =>
 				{
 					m.WithDefaultInterfaces();
