@@ -7,6 +7,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
@@ -39,7 +40,7 @@ namespace Lokad.Cqrs.Scheduled
 		{
 			_observer = observer;
 
-			_tasks = commands.ToArray(c => new ScheduledState(c.Name, c));
+			_tasks = commands.Select(c => new ScheduledState(c.Name, c)).ToArray();
 			_sleepBetweenCommands = config.SleepBetweenCommands;
 			_sleepOnEmptyChain = config.SleepOnEmptyChain;
 			_sleepOnFailure = config.SleepOnFailure;

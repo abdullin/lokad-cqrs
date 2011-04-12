@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,7 +38,7 @@ namespace Lokad.Cqrs
 
 		public Task Start(CancellationToken token)
 		{
-			var tasks = _serverProcesses.ToArray(p => p.Start(token));
+			var tasks = _serverProcesses.Select(p => p.Start(token)).ToArray();
 			_observer.Notify(new HostStarted());
 			return Task.Factory.ContinueWhenAll(tasks, t => _observer.Notify(new HostStopped()));
 		}

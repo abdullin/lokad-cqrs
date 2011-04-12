@@ -145,7 +145,7 @@ namespace Lokad.Cqrs.Tests
 		{
 			var directory = Builder.BuildDirectory(mm => typeof (ListenToAll) != mm.Consumer);
 
-			CollectionAssert.Contains(directory.Messages.ToArray(m => m.MessageType), typeof (OrphanCommand));
+			CollectionAssert.Contains(directory.Messages.Select(m => m.MessageType).ToArray(), typeof (OrphanCommand));
 		}
 	}
 }

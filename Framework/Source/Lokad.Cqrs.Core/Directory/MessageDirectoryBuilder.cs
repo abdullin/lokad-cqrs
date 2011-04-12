@@ -77,7 +77,7 @@ namespace Lokad.Cqrs.Directory
 			// message directory should still include all messages for the serializers
 			var orphanedMessages = _mappings
 				.Where(m => !includedTypes.Contains(m.Message))
-				.ToArray(m => new MessageInfo
+				.Select(m => new MessageInfo
 					{
 						MessageType = m.Message,
 						AllConsumers = Type.EmptyTypes,

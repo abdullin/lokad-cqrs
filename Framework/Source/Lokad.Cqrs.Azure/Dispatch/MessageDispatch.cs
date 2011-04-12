@@ -21,7 +21,8 @@ namespace Lokad.Cqrs.Dispatch
 		public static void ThrowIfCommandHasMultipleConsumers(IEnumerable<MessageInfo> commands)
 		{
 			var multipleConsumers = commands
-				.Where(c => c.AllConsumers.Length > 1).ToArray(c => c.MessageType.FullName);
+				.Where(c => c.AllConsumers.Length > 1)
+				.Select(c => c.MessageType.FullName);
 
 			if (multipleConsumers.Any())
 			{

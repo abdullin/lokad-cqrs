@@ -26,7 +26,9 @@ namespace Lokad.Cqrs.Directory
 			_messages = messages;
 
 			_knownTypes = messages
-				.Where(m => false == m.MessageType.IsAbstract).ToArray(m => m.MessageType);
+				.Where(m => false == m.MessageType.IsAbstract)
+				.Select(m => m.MessageType)
+				.ToArray();
 		}
 
 		public ICollection<ConsumerInfo> Consumers

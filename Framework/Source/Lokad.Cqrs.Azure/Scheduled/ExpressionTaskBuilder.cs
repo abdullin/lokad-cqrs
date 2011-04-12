@@ -79,7 +79,9 @@ namespace Lokad.Cqrs.Scheduled
 				.SelectMany(a => a.GetTypes())
 				.Where(t => !t.IsAbstract)
 				.Where(t => typeof (TTask).IsAssignableFrom(t))
-				.Where(_taskFilter.BuildFilter()).ToArray(t => new ScheduledTaskInfo(Naming(t), t, _info));
+				.Where(_taskFilter.BuildFilter())
+				.Select(t => new ScheduledTaskInfo(Naming(t), t, _info))
+				.ToArray();
 
 			if (scheduledTaskInfos.Length == 0 && !_allowEmptyBuilder)
 			{

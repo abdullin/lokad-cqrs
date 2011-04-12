@@ -44,24 +44,5 @@ namespace Lokad.Cqrs.Extensions
 
 			return string.Join(separator, strings.ToArray());
 		}
-
-
-		
-		/// <summary>
-		/// Shorthand extension method for converting enumerables into the arrays
-		/// </summary>
-		/// <typeparam name="TSource">The type of the source array.</typeparam>
-		/// <typeparam name="TTarget">The type of the target array.</typeparam>
-		/// <param name="self">The collection to convert.</param>
-		/// <param name="converter">The converter.</param>
-		/// <returns>target array instance</returns>
-		public static TTarget[] ToArray<TSource, TTarget>(this IEnumerable<TSource> self,
-			Func<TSource, TTarget> converter)
-		{
-			if (self == null) throw new ArgumentNullException("self");
-			if (converter == null) throw new ArgumentNullException("converter");
-
-			return self.Select(converter).ToArray();
-		}
 	}
 }

@@ -199,7 +199,7 @@ namespace Lokad.Cqrs.Consume
 
 			var account = context.Resolve<CloudStorageAccount>();
 			var serializer = context.Resolve<IMessageSerializer>();
-			var queues =  queueNames.ToArray(n => new AzureReadQueue(account, n, log, serializer));
+			var queues =  queueNames.Select(n => new AzureReadQueue(account, n, log, serializer)).ToArray();
 			var transport = new SingleThreadConsumingProcess(log, dispatcher, SleepWhenNoMessages, queues);
 
 			_applyToTransport(transport, context);
