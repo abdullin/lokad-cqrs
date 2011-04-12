@@ -17,9 +17,7 @@ namespace Lokad.Cqrs.Durability
 	public class MessageEnvelope
 	{
 		public readonly string EnvelopeId;
-
 		readonly IDictionary<string, object> _attributes = new Dictionary<string, object>();
-
 		public readonly MessageItem[] Items;
 
 		public MessageEnvelope(string envelopeId, IDictionary<string,object> attributes, MessageItem[] items)
