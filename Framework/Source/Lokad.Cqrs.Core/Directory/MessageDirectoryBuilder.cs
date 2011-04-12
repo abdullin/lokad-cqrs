@@ -80,7 +80,6 @@ namespace Lokad.Cqrs.Directory
 				.ToArray(m => new MessageInfo
 					{
 						MessageType = m.Message,
-						IsDomainMessage = false,
 						AllConsumers = Type.EmptyTypes,
 						DerivedConsumers = Type.EmptyTypes,
 						DirectConsumers = Type.EmptyTypes
