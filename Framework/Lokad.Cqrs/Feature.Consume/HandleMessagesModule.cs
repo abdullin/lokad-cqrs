@@ -37,6 +37,11 @@ namespace Lokad.Cqrs.Feature.Consume
 
 			ModuleName = "Handler-" + GetHashCode().ToString("X8");
 
+			_queueFactory = (context, s) =>
+				{
+					return context.Resolve<AzureReadQueue>(TypedParameter.From(s));
+				};
+
 			Dispatch<DispatchCommandBatchToSingleConsumer>();
 		}
 
@@ -194,9 +199,8 @@ namespace Lokad.Cqrs.Feature.Consume
 			dispatcher.Init();
 
 
-			var account = context.Resolve<CloudStorageAccount>();
-			var serializer = context.Resolve<IMessageSerializer>();
-			var queues =  queueNames.Select(n => new AzureReadQueue(account, n, log, serializer)).ToArray();
+			
+			var queues =  queueNames.Select(n => _queueFactory(context,n)).ToArray();
 			var transport = new SingleThreadConsumingProcess(log, dispatcher, SleepWhenNoMessages, queues);
 
 			_applyToTransport(transport, context);
@@ -205,8 +209,12 @@ namespace Lokad.Cqrs.Feature.Consume
 			return transport;
 		}
 
+		Func<IComponentContext, string, IReadQueue> _queueFactory;
+
 		protected override void Load(ContainerBuilder builder)
 		{
+			builder.RegisterType<AzureReadQueue>();
+
 			// make sure the dispatcher is registered
 			builder.RegisterType(_dispatcher.Item1);
 

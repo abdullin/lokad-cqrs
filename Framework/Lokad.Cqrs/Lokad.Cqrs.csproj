@@ -107,7 +107,7 @@
     <Compile Include="Feature.DefaultInterfaces\IConsumeMessage.cs" />
     <Compile Include="Feature.DefaultInterfaces\IMessage.cs" />
     <Compile Include="Feature.DefaultInterfaces\IScheduledTask.cs" />
-    <Compile Include="Feature.Consume\AzureMessageContext.cs" />
+    <Compile Include="Feature.Consume\MessageContext.cs" />
     <Compile Include="Feature.Consume\AzureReadQueue.cs" />
     <Compile Include="Feature.Consume\BlobExceptionLogger.cs" />
     <Compile Include="Feature.Consume\ConfigureBlobSavingOnException.cs" />

@@ -14,7 +14,20 @@ using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs.Feature.Consume
 {
-	public sealed class AzureReadQueue
+	public interface IReadQueue
+	{
+		string Name { get; }
+		void Init();
+		GetMessageResult GetMessage();
+
+		/// <summary>
+		/// ACKs the message by deleting it from the queue.
+		/// </summary>
+		/// <param name="message">The message context to ACK.</param>
+		void AckMessage(MessageContext message);
+	}
+
+	public sealed class AzureReadQueue : IReadQueue
 	{
 		readonly IMessageSerializer _serializer;
 		readonly ISystemObserver _observer;
@@ -95,7 +108,7 @@ namespace Lokad.Cqrs.Feature.Consume
 			try
 			{
 				var m = MessageUtil.ReadMessage(message.AsBytes, _serializer, DownloadPackage);
-				var unpacked = new AzureMessageContext(message, m);
+				var unpacked = new MessageContext(message, m);
 				return GetMessageResult.Success(unpacked);
 			}
 			catch (StorageClientException ex)
@@ -126,10 +139,10 @@ namespace Lokad.Cqrs.Feature.Consume
 		/// ACKs the message by deleting it from the queue.
 		/// </summary>
 		/// <param name="message">The message context to ACK.</param>
-		public void AckMessage(AzureMessageContext message)
+		public void AckMessage(MessageContext message)
 		{
 			if (message == null) throw new ArgumentNullException("message");
-			_queue.DeleteMessage(message.CloudMessage);
+			_queue.DeleteMessage((CloudQueueMessage)message.TransportMessage);
 			_observer.Notify( new MessageAcked(_queueName, message.Unpacked.EnvelopeId));
 		}
 	}

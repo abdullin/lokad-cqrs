@@ -17,12 +17,12 @@ namespace Lokad.Cqrs.Feature.Consume
 	{
 		readonly ISingleThreadMessageDispatcher _dispatcher;
 		readonly ISystemObserver _observer;
-		readonly AzureReadQueue[] _queues;
+		readonly IReadQueue[] _queues;
 		readonly Func<uint, TimeSpan> _threadSleepInterval;
 
 
 		public SingleThreadConsumingProcess(ISystemObserver observer,
-			ISingleThreadMessageDispatcher dispatcher, Func<uint, TimeSpan> sleepWhenNoMessages, AzureReadQueue[] readQueues)
+			ISingleThreadMessageDispatcher dispatcher, Func<uint, TimeSpan> sleepWhenNoMessages, IReadQueue[] readQueues)
 		{
 			_queues = readQueues;
 			_dispatcher = dispatcher;
@@ -88,7 +88,7 @@ namespace Lokad.Cqrs.Feature.Consume
 			}
 		}
 
-		QueueProcessingResult ProcessQueueForMessage(AzureReadQueue queue)
+		QueueProcessingResult ProcessQueueForMessage(IReadQueue queue)
 		{
 			var result = queue.GetMessage();
 

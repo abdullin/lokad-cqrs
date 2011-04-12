@@ -10,14 +10,14 @@ using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs.Feature.Consume
 {
-	public sealed class AzureMessageContext
+	public sealed class MessageContext
 	{
-		public readonly CloudQueueMessage CloudMessage;
+		public readonly object TransportMessage;
 		public readonly MessageEnvelope Unpacked;
 
-		public AzureMessageContext(CloudQueueMessage cloudMessage, MessageEnvelope unpacked)
+		public MessageContext(CloudQueueMessage transportMessage, MessageEnvelope unpacked)
 		{
-			CloudMessage = cloudMessage;
+			TransportMessage = transportMessage;
 			Unpacked = unpacked;
 		}
 	}

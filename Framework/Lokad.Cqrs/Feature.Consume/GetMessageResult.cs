@@ -14,16 +14,16 @@ namespace Lokad.Cqrs.Feature.Consume
 		public static readonly GetMessageResult Wait = new GetMessageResult(null, GetMessageResultState.Wait);
 		public static readonly GetMessageResult Retry = new GetMessageResult(null, GetMessageResultState.Retry);
 		public readonly GetMessageResultState State;
-		readonly AzureMessageContext _message;
+		readonly MessageContext _message;
 
-		GetMessageResult(AzureMessageContext message, GetMessageResultState state)
+		GetMessageResult(MessageContext message, GetMessageResultState state)
 		{
 			_message = message;
 			State = state;
 		}
 
 
-		public AzureMessageContext Message
+		public MessageContext Message
 		{
 			get
 			{
@@ -33,7 +33,7 @@ namespace Lokad.Cqrs.Feature.Consume
 			}
 		}
 
-		public static GetMessageResult Success(AzureMessageContext message)
+		public static GetMessageResult Success(MessageContext message)
 		{
 			return new GetMessageResult(message, GetMessageResultState.Success);
 		}
