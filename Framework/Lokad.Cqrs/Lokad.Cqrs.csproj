@@ -67,10 +67,6 @@
     <Compile Include="Build\Engine\Events\HostInitialized.cs" />
     <Compile Include="Build\Engine\Events\HostStarted.cs" />
     <Compile Include="Build\Engine\Events\HostStopped.cs" />
-    <Compile Include="Core.Durability\Contracts_v1\Schema1AttributesContract.cs" />
-    <Compile Include="Core.Durability\Contracts_v1\Schema1AttributesItemContract.cs" />
-    <Compile Include="Core.Durability\Contracts_v1\Schema1AttributeTypeContract.cs" />
-    <Compile Include="Core.Durability\Contracts_v1\Schema1Util.cs" />
     <Compile Include="Core.Durability\Contracts_v2\Schema2AttributeContract.cs" />
     <Compile Include="Core.Durability\Contracts_v2\Schema2AttributeType.cs" />
     <Compile Include="Core.Durability\Contracts_v2\Schema2EnvelopeContract.cs" />

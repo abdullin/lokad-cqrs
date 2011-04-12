@@ -7,7 +7,6 @@
 
 using System;
 using System.IO;
-using Lokad.Cqrs.Core.Durability.Contracts_v1;
 using Lokad.Cqrs.Core.Durability.Contracts_v2;
 using ProtoBuf;
 
@@ -46,12 +45,6 @@ namespace Lokad.Cqrs.Core.Durability
 			var header = ReadHeader(buffer);
 			switch (header.MessageFormatVersion)
 			{
-				case MessageHeader.Schema1DataFormat:
-					return Schema1Util.ReadDataMessage(buffer, serializer);
-				case MessageHeader.Schema1ReferenceFormat:
-					var reference = Schema1Util.ReadReferenceMessage(buffer);
-					var blob = loadPackage(reference);
-					return ReadMessage(blob, serializer, loadPackage);
 				case MessageHeader.Schema2ReferenceFormat:
 					var s2Reference = Schema2Util.ReadReference(buffer);
 					var s2Blob = loadPackage(s2Reference);
