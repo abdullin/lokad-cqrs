@@ -91,6 +91,7 @@
     <Compile Include="Evil\Maybe.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Serialization\AttributeHelper.cs" />
+    <Compile Include="Serialization\AutoDetectingMessageSerializer.cs" />
     <Compile Include="Serialization\DataContractMessageSerializer.cs" />
     <Compile Include="Serialization\DataContractUtil.cs" />
     <Compile Include="Serialization\ProtoBufMessageSerializer.cs" />

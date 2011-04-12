@@ -28,6 +28,11 @@ namespace Lokad.Cqrs
 			RegisterSerializer<DataContractMessageSerializer>();
 		}
 
+		public void AutoDetectSerializer()
+		{
+			RegisterSerializer<AutoDetectingMessageSerializer>();
+		}
+
 		public void UseProtoBufMessageSerializer()
 		{
 			RegisterSerializer<ProtoBufMessageSerializer>();

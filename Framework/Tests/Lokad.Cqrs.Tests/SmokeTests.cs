@@ -33,7 +33,7 @@ namespace Lokad.Cqrs.Tests
 			var engine = new CloudEngineBuilder();
 
 			engine.Azure.UseDevelopmentStorageAccount();
-			engine.Serialization.UseDataContractSerializer();
+			
 
 			engine.DomainIs(m =>
 				{

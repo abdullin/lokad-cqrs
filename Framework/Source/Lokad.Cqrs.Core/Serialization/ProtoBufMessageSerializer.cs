@@ -13,11 +13,9 @@ using System.Linq;
 using System.Runtime.Serialization;
 using Lokad.Cqrs.Evil;
 using Lokad.Cqrs.Extensions;
-using ExtendIEnumerable = Lokad.Cqrs.Extensions.ExtendIEnumerable;
 
 namespace Lokad.Cqrs.Serialization
 {
-	
 	public class ProtoBufMessageSerializer : IMessageSerializer
 	{
 		readonly IDictionary<string, Type> _contract2Type = new Dictionary<string, Type>();
