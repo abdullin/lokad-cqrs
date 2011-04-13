@@ -18,12 +18,4 @@ namespace Lokad.Cqrs.Feature.DefaultInterfaces
 	public interface IMessage
 	{
 	}
-
-	/// <summary>
-	/// Default CQRS entity
-	/// </summary>
-	public interface IEntity
-	{
-		
-	}
 }
