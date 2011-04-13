@@ -67,6 +67,14 @@
     <Compile Include="Build\Engine\Events\HostInitialized.cs" />
     <Compile Include="Build\Engine\Events\HostStarted.cs" />
     <Compile Include="Build\Engine\Events\HostStopped.cs" />
+    <Compile Include="Feature.AtomicState\ExtendIAtomicSingletonReader.cs" />
+    <Compile Include="Feature.AtomicState\ExtendIAtomicSingletonWriter.cs" />
+    <Compile Include="Feature.AtomicState\IAtomicEntity.cs" />
+    <Compile Include="Feature.AtomicState\IAtomicEntityReader.cs" />
+    <Compile Include="Feature.AtomicState\IAtomicSingleton.cs" />
+    <Compile Include="Feature.AtomicState\IAtomicSingletonReader.cs" />
+    <Compile Include="Feature.AtomicState\IAtomicSingletonWriter.cs" />
+    <Compile Include="Feature.AtomicState\IAtomicEntityWriter.cs" />
     <Compile Include="Core.Transport\Contracts_v2\Schema2AttributeContract.cs" />
     <Compile Include="Core.Transport\Contracts_v2\Schema2AttributeType.cs" />
     <Compile Include="Core.Transport\Contracts_v2\Schema2EnvelopeContract.cs" />
@@ -159,6 +167,7 @@
     <Compile Include="ISystemEvent.cs" />
     <Compile Include="ISystemObserver.cs" />
     <Compile Include="Feature.TestTransport\MemoryQueueFactory.cs" />
+    <Compile Include="Feature.AtomicState\IAtomicStateBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Feature.AzureStreamingStorage\Blob\BlobStorageContainer.cs" />
     <Compile Include="Feature.AzureStreamingStorage\Blob\BlobStorageItem.cs" />
