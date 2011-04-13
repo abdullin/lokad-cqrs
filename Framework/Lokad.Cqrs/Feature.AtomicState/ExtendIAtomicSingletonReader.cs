@@ -1,4 +1,4 @@
-﻿namespace Lokad.Cqrs.Feature.ConcurrentState
+﻿namespace Lokad.Cqrs.Feature.AtomicState
 {
 	public static class ExtendIAtomicSingletonReader
 	{

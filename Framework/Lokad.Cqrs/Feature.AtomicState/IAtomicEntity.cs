@@ -1,4 +1,4 @@
-﻿namespace Lokad.Cqrs.Feature.ConcurrentState
+﻿namespace Lokad.Cqrs.Feature.AtomicState
 {
 	/// <summary>
 	/// View entity that has an identity (there can be many views

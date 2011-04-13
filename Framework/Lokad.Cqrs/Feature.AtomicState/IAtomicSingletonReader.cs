@@ -1,6 +1,6 @@
 ﻿using Lokad.Cqrs.Evil;
 
-namespace Lokad.Cqrs.Feature.ConcurrentState
+namespace Lokad.Cqrs.Feature.AtomicState
 {
 	/// <summary>
 	/// Strongly-typed reader for the view singletons.

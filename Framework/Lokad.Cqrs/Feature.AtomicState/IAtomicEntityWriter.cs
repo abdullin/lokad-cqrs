@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Lokad.Cqrs.Feature.ConcurrentState
+namespace Lokad.Cqrs.Feature.AtomicState
 {
 	/// <summary>
 	/// View writer interface, used by the event handlers

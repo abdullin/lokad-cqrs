@@ -5,7 +5,7 @@
 
 #endregion
 
-namespace Lokad.Cqrs.Feature.ConcurrentState
+namespace Lokad.Cqrs.Feature.AtomicState
 {
 	/// <summary>
 	/// View singleton (there can be only one document).

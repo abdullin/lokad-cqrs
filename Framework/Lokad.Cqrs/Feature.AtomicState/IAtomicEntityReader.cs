@@ -7,7 +7,7 @@
 
 using Lokad.Cqrs.Evil;
 
-namespace Lokad.Cqrs.Feature.ConcurrentState
+namespace Lokad.Cqrs.Feature.AtomicState
 {
 	public interface IAtomicEntityReader<in TKey, TView>
 		where TView : IAtomicEntity<TKey>

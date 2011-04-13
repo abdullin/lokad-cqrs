@@ -7,7 +7,7 @@
 
 using System;
 
-namespace Lokad.Cqrs.Feature.ConcurrentState
+namespace Lokad.Cqrs.Feature.AtomicState
 {
 	/// <summary>
 	/// Strongly-typed view singleton writer
