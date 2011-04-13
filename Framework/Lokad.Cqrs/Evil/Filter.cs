@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Lokad.Cqrs
+namespace Lokad.Cqrs.Evil
 {
 	public sealed class Filter<TItem>
 	{

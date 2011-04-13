@@ -6,6 +6,7 @@
 #endregion
 
 using System.Collections.Generic;
+using Lokad.Cqrs.Evil;
 
 namespace Lokad.Cqrs.Core.Transport
 {

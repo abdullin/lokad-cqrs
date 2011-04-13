@@ -10,6 +10,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
+using Lokad.Cqrs.Evil;
 
 namespace Lokad.Cqrs.Core.Directory
 {

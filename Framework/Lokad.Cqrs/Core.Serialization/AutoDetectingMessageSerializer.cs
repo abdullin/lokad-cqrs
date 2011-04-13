@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
+using Lokad.Cqrs.Evil;
 using ProtoBuf;
 
 namespace Lokad.Cqrs.Core.Serialization

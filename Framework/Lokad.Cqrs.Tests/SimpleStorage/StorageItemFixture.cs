@@ -6,7 +6,7 @@
 #endregion
 
 using System;
-using Lokad.Cqrs.Feature.SimpleStorage;
+using Lokad.Cqrs.Feature.AzureStreamingStorage;
 using NUnit.Framework;
 using NUnit.Framework.SyntaxHelpers;
 

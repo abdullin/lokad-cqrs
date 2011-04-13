@@ -8,7 +8,7 @@
 
 using System;
 
-namespace Lokad.Cqrs
+namespace Lokad.Cqrs.Evil
 {
 	/// <summary>
 	/// Helper class that indicates nullable value in a good-citizenship code

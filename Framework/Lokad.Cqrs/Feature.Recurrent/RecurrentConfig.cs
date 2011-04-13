@@ -6,6 +6,7 @@
 #endregion
 
 using System;
+using Lokad.Cqrs.Evil;
 
 namespace Lokad.Cqrs.Feature.Recurrent
 {

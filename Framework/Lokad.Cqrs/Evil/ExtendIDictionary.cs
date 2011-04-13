@@ -7,7 +7,7 @@
 
 using System.Collections.Generic;
 
-namespace Lokad.Cqrs
+namespace Lokad.Cqrs.Evil
 {
 	/// <summary>
 	/// Extensions for <see cref="IDictionary{TKey,TValue}"/>

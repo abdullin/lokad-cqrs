@@ -8,6 +8,7 @@
 using System;
 using System.IO;
 using Lokad.Cqrs.Core.Transport.Contracts_v2;
+using Lokad.Cqrs.Evil;
 using ProtoBuf;
 
 namespace Lokad.Cqrs.Core.Transport

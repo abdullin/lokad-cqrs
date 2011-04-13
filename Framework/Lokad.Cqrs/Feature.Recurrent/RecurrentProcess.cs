@@ -9,6 +9,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Lokad.Cqrs.Evil;
 using Lokad.Cqrs.Feature.Recurrent.Events;
 
 namespace Lokad.Cqrs.Feature.Recurrent

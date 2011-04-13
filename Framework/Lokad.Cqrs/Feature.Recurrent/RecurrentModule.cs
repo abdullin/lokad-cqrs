@@ -10,6 +10,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using Autofac;
+using Lokad.Cqrs.Evil;
 using Lokad.Cqrs.Feature.DefaultInterfaces;
 
 namespace Lokad.Cqrs.Feature.Recurrent

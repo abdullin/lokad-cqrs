@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using Lokad.Cqrs.Evil;
 
 namespace Lokad.Cqrs.Durability
 {

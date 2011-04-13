@@ -10,7 +10,7 @@ using System;
 using System.Globalization;
 using System.Reflection;
 
-namespace Lokad.Cqrs
+namespace Lokad.Cqrs.Evil
 {
 	/// <summary>
 	/// Helper class for generating exceptions

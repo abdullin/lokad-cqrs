@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+using Lokad.Cqrs.Evil;
 
 namespace Lokad.Cqrs
 {

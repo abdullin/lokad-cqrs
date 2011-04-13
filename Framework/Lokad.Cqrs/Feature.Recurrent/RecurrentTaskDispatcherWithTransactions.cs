@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Transactions;
 using Autofac;
+using Lokad.Cqrs.Evil;
 
 namespace Lokad.Cqrs.Feature.Recurrent
 {

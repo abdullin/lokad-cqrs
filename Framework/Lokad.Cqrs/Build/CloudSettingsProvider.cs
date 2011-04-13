@@ -6,6 +6,7 @@
 #endregion
 
 using System.Configuration;
+using Lokad.Cqrs.Evil;
 using Microsoft.WindowsAzure.ServiceRuntime;
 
 namespace Lokad.Cqrs.Build

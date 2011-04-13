@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using Lokad.Cqrs.Core.Transport;
 
-namespace Lokad.Cqrs
+namespace Lokad.Cqrs.Feature.TestTransport
 {
 	public sealed class MemoryReadQueue : IReadQueue
 	{

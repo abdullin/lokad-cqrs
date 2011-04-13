@@ -8,8 +8,8 @@
 using System;
 using System.Net;
 using Autofac;
-using Lokad.Cqrs.Feature.SimpleStorage;
-using Lokad.Cqrs.Feature.SimpleStorage.Blob;
+using Lokad.Cqrs.Feature.AzureStreamingStorage;
+using Lokad.Cqrs.Feature.AzureStreamingStorage.Blob;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
 

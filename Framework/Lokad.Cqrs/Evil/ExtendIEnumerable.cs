@@ -10,7 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Lokad.Cqrs
+namespace Lokad.Cqrs.Evil
 {
 	/// <summary>
 	/// Helper methods for the <see cref="IEnumerable{T}"/>

@@ -1,7 +1,7 @@
 
 using System;
 
-namespace Lokad.Cqrs
+namespace Lokad.Cqrs.Evil
 {
 	/// <summary> Extensions to the <see cref="int"/> </summary>
 	public static class ExtendInt32

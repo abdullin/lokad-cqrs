@@ -8,6 +8,7 @@
 using System;
 using System.Reflection;
 using Autofac;
+using Lokad.Cqrs.Evil;
 
 namespace Lokad.Cqrs.Feature.Recurrent
 {
