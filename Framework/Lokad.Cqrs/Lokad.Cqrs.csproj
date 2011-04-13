@@ -106,6 +106,7 @@
     <Compile Include="Feature.AzureConsumer\AzureReadQueueFactory.cs" />
     <Compile Include="Core.Transport\IReadQueue.cs" />
     <Compile Include="Core.Transport\IReadQueueFactory.cs" />
+    <Compile Include="Feature.AzureConsumer\Events\FailedToAckMessage.cs" />
     <Compile Include="Feature.DefaultInterfaces\IConsume.cs" />
     <Compile Include="Feature.DefaultInterfaces\IConsumeMessage.cs" />
     <Compile Include="Feature.DefaultInterfaces\IMessage.cs" />
@@ -150,6 +151,7 @@
     <Compile Include="Feature.AzureStreamingStorage\StorageWriteOptions.cs" />
     <Compile Include="Feature.AzureStreamingStorage\StreamUtil.cs" />
     <Compile Include="Feature.TestTransport\MemoryReadQueue.cs" />
+    <Compile Include="Feature.TestTransport\MemoryWriteQueue.cs" />
     <Compile Include="IEngineProcess.cs" />
     <Compile Include="IKnowSerializationTypes.cs" />
     <Compile Include="IMessageSender.cs" />
