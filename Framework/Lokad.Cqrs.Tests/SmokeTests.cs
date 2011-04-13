@@ -26,6 +26,7 @@ namespace Lokad.Cqrs.Tests
 		static CloudEngineHost BuildHost()
 		{
 			var engine = new CloudEngineBuilder();
+			engine.UseMemoryQueues();
 			engine.DomainIs(m =>
 				{
 					m.WithDefaultInterfaces();

@@ -149,12 +149,14 @@
     <Compile Include="Feature.SimpleStorage\StorageItemNotFoundException.cs" />
     <Compile Include="Feature.SimpleStorage\StorageWriteOptions.cs" />
     <Compile Include="Feature.SimpleStorage\StreamUtil.cs" />
+    <Compile Include="Feature.TestTransport\MemoryReadQueue.cs" />
     <Compile Include="IEngineProcess.cs" />
     <Compile Include="IKnowSerializationTypes.cs" />
     <Compile Include="IMessageSender.cs" />
     <Compile Include="IMessageSerializer.cs" />
     <Compile Include="ISystemEvent.cs" />
     <Compile Include="ISystemObserver.cs" />
+    <Compile Include="Feature.TestTransport\MemoryQueueFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Feature.SimpleStorage\Blob\BlobStorageContainer.cs" />
     <Compile Include="Feature.SimpleStorage\Blob\BlobStorageItem.cs" />

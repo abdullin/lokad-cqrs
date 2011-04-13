@@ -132,5 +132,10 @@ namespace Lokad.Cqrs.Feature.Consume
 			_queue.DeleteMessage((CloudQueueMessage)message.TransportMessage);
 			_observer.Notify( new MessageAcked(_queueName, message.Unpacked.EnvelopeId));
 		}
+
+		public void TryNotifyNack(MessageContext context)
+		{
+			// we don't do anything. Azure queues have visibility
+		}
 	}
 }

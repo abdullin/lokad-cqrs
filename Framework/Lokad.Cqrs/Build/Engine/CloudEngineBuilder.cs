@@ -12,6 +12,7 @@ using Lokad.Cqrs.Core.Transport;
 using Lokad.Cqrs.Feature.Consume;
 using Lokad.Cqrs.Feature.Recurrent;
 using Lokad.Cqrs.Feature.Send;
+using Lokad.Cqrs.Feature.TestTransport;
 
 // ReSharper disable UnusedMethodReturnValue.Global
 namespace Lokad.Cqrs.Build.Engine
@@ -45,6 +46,12 @@ namespace Lokad.Cqrs.Build.Engine
 
 			// some defaults
 			Builder.RegisterType<CloudEngineHost>().SingleInstance();
+		}
+
+		public CloudEngineBuilder UseMemoryQueues()
+		{
+			Builder.RegisterType<MemoryQueueFactory>().As<IReadQueueFactory, IWriteQueueFactory>().SingleInstance();
+			return this;
 		}
 	
 		/// <summary>
