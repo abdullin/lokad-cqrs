@@ -88,7 +88,7 @@ namespace Lokad.Cqrs.Core.Transport.Contracts_v2
 			return dict;
 		}
 
-		static Schema2ItemAttributeContract[] ItemAttributesToContract(IDictionary<string, object> attributes)
+		static Schema2ItemAttributeContract[] ItemAttributesToContract(ICollection<KeyValuePair<string, object>> attributes)
 		{
 			var contracts = new Schema2ItemAttributeContract[attributes.Count];
 			var pos = 0;
@@ -113,7 +113,7 @@ namespace Lokad.Cqrs.Core.Transport.Contracts_v2
 		/// </summary>
 		/// <param name="attributes">The attributes.</param>
 		/// <returns></returns>
-		static Schema2EnvelopeAttributeContract[] EnvelopeAttributesToContract(IDictionary<string, object> attributes)
+		static Schema2EnvelopeAttributeContract[] EnvelopeAttributesToContract(ICollection<KeyValuePair<string, object>> attributes)
 		{
 			var contracts = new Schema2EnvelopeAttributeContract[attributes.Count];
 			var pos = 0;
@@ -198,7 +198,7 @@ namespace Lokad.Cqrs.Core.Transport.Contracts_v2
 					{
 						var instance = serializer.Deserialize(stream, type.Value);
 						
-						items[i] = new MessageItem(itemContract.ContractName, type.Value, instance, attributes);
+						items[i] = new MessageItem(type.Value, instance, attributes);
 					}
 				}
 				else
@@ -206,7 +206,7 @@ namespace Lokad.Cqrs.Core.Transport.Contracts_v2
 					// we can't deserialize. Keep it as buffer
 					var bufferInstance = new byte[itemContract.ContentSize];
 					Buffer.BlockCopy(buffer, index, bufferInstance, 0, itemContract.ContentSize);
-					items[i] = new MessageItem(itemContract.ContractName, null, bufferInstance, attributes);
+					items[i] = new MessageItem(null, bufferInstance, attributes);
 				}
 
 				index += itemContract.ContentSize;
@@ -216,27 +216,27 @@ namespace Lokad.Cqrs.Core.Transport.Contracts_v2
 			return new MessageEnvelope(envelope.MessageId, envelopeAttributes, items);
 		}
 
-		public static byte[] SaveData(MessageEnvelopeBuilder envelope, IMessageSerializer serializer)
+		public static byte[] SaveData(MessageEnvelope envelope, IMessageSerializer serializer)
 		{
 			//  string contract, Guid messageId, Uri sender, 
-			var itemContracts = new Schema2ItemContract[envelope.Items.Count];
+			var itemContracts = new Schema2ItemContract[envelope.Items.Length];
 			using (var content = new MemoryStream())
 			{
 				var position = 0;
-				for (int i = 0; i < envelope.Items.Count; i++)
+				for (int i = 0; i < envelope.Items.Length; i++)
 				{
 					var item = envelope.Items[i];
 					var name = serializer.GetContractNameByType(item.MappedType)
 						.ExposeException("Failed to find contract name for {0}", item.MappedType);
 					serializer.Serialize(item.Content, content);
 					var size = (int) content.Position - position;
-					var attribContracts = ItemAttributesToContract(item.Attributes);
+					var attribContracts = ItemAttributesToContract(item.GetAllAttributes());
 					itemContracts[i] = new Schema2ItemContract(name, size, attribContracts);
 
 					position += size;
 				}
 
-				var envelopeAttribs = EnvelopeAttributesToContract(envelope.Attributes);
+				var envelopeAttribs = EnvelopeAttributesToContract(envelope.GetAllAttributes());
 				var contract = new Schema2EnvelopeContract(envelope.EnvelopeId.ToString(), envelopeAttribs, itemContracts);
 
 				using (var stream = new MemoryStream())

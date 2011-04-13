@@ -2,8 +2,11 @@
 {
 	public interface IWriteQueue
 	{
-		void SendAsSingleMessage(object[] items);
-		void ForwardMessage(MessageEnvelope envelope);
+		//void SendAsSingleMessage(object[] items);
+		//void ForwardMessage(MessageEnvelope envelope);
+
+
+		void SendMessage(MessageEnvelope envelope);
 		void Init();
 	}
 }

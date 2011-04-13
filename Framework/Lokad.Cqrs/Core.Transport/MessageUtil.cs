@@ -27,7 +27,7 @@ namespace Lokad.Cqrs.Core.Transport
 			return Schema2Util.SaveReference(reference);
 		}
 
-		public static byte[] SaveDataMessage(MessageEnvelopeBuilder builder, IMessageSerializer serializer)
+		public static byte[] SaveDataMessage(MessageEnvelope builder, IMessageSerializer serializer)
 		{
 			return Schema2Util.SaveData(builder, serializer);
 		}

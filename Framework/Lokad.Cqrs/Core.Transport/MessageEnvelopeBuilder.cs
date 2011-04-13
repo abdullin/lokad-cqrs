@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Lokad.Cqrs.Core.Transport
 {
@@ -25,6 +26,33 @@ namespace Lokad.Cqrs.Core.Transport
 
 			var messageItemToSave = new MessageItemToSave(t, item);
 			Items.Add(messageItemToSave);
+		}
+
+		public static MessageEnvelopeBuilder FromItems(string envelopeId, params object[] items)
+		{
+			var builder = new MessageEnvelopeBuilder(envelopeId);
+			foreach (var item in items)
+			{
+				builder.AddItem(item);
+			}
+			var created = DateTimeOffset.UtcNow;
+			builder.Attributes.Add(MessageAttributes.Envelope.CreatedUtc, created);
+			return builder;
+		}
+
+		public MessageEnvelope Build()
+		{
+			var attributes = new Dictionary<string, object>(Attributes);
+			var items = new MessageItem[this.Items.Count];
+
+			for (int i = 0; i < items.Length; i++)
+			{
+				var save = Items[0];
+				var attribs = new Dictionary<string, object>(save.Attributes);
+				items[i] = new MessageItem(save.MappedType, save.Content, attribs);
+			}
+
+			return new MessageEnvelope(EnvelopeId,attributes, items);
 		}
 	}
 }

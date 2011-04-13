@@ -5,6 +5,7 @@
 
 #endregion
 
+using System;
 using System.Transactions;
 using Lokad.Cqrs.Core.Transport;
 
@@ -21,16 +22,7 @@ namespace Lokad.Cqrs.Feature.Send
 
 		public void Send(object message)
 		{
-
-			if (Transaction.Current == null)
-			{
-				_queue.SendAsSingleMessage(new[] { message });
-			}
-			else
-			{
-				var action = new CommitActionEnlistment(() => _queue.SendAsSingleMessage(new[] { message }));
-				Transaction.Current.EnlistVolatile(action, EnlistmentOptions.None);
-			}
+			SendAsBatch(message);
 		}
 		
 
@@ -39,13 +31,17 @@ namespace Lokad.Cqrs.Feature.Send
 			if (messageItems.Length == 0)
 				return;
 
+			var id = Guid.NewGuid().ToString().ToLowerInvariant();
+			var builder = MessageEnvelopeBuilder.FromItems(id, messageItems);
+			var envelope = builder.Build();
+
 			if (Transaction.Current==null)
 			{
-				_queue.SendAsSingleMessage(messageItems);
+				_queue.SendMessage(envelope);
 			}
 			else
 			{
-				var action = new CommitActionEnlistment(() => _queue.SendAsSingleMessage(messageItems));
+				var action = new CommitActionEnlistment(() =>_queue.SendMessage(envelope));
 				Transaction.Current.EnlistVolatile(action, EnlistmentOptions.None);
 			}
 		}

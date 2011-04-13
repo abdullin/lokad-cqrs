@@ -7,20 +7,26 @@ namespace Lokad.Cqrs.Feature.Send
 {
 	public sealed class AzureWriteQueue : IWriteQueue
 	{
-		public void SendAsSingleMessage(object[] items)
-		{
-			if (items.Length == 0)
-				return;
+		//public void SendAsSingleMessage(object[] items)
+		//{
+		//    if (items.Length == 0)
+		//        return;
 
-			var builder = BuildEnvelopeFromItems(items);
-			var packed = PrepareCloudMessage(builder);
-			_queue.AddMessage(packed);
-		}
+		//    var builder = BuildEnvelopeFromItems(items);
+		//    var packed = PrepareCloudMessage(builder);
+		//    _queue.AddMessage(packed);
+		//}
 
-		public void ForwardMessage(MessageEnvelope envelope)
+		//public void ForwardMessage(MessageEnvelope envelope)
+		//{
+		//    var builder = CopyEnvelope(envelope);
+		//    var packed = PrepareCloudMessage(builder);
+		//    _queue.AddMessage(packed);
+		//}
+
+		public void SendMessage(MessageEnvelope envelope)
 		{
-			var builder = CopyEnvelope(envelope);
-			var packed = PrepareCloudMessage(builder);
+			var packed = PrepareCloudMessage(envelope);
 			_queue.AddMessage(packed);
 		}
 
@@ -28,7 +34,7 @@ namespace Lokad.Cqrs.Feature.Send
 		const int CloudQueueLimit = 6144;
 
 
-		CloudQueueMessage PrepareCloudMessage(MessageEnvelopeBuilder builder)
+		CloudQueueMessage PrepareCloudMessage(MessageEnvelope builder)
 		{
 			var buffer = MessageUtil.SaveDataMessage(builder, _serializer);
 			if (buffer.Length < CloudQueueLimit)
@@ -44,39 +50,25 @@ namespace Lokad.Cqrs.Feature.Send
 			return new CloudQueueMessage(blob);
 		}
 
-		static MessageEnvelopeBuilder BuildEnvelopeFromItems(object[] items)
-		{
-			var messageId = Guid.NewGuid().ToString().ToLowerInvariant();
+		//static MessageEnvelopeBuilder CopyEnvelope(MessageEnvelope envelope)
+		//{
+		//    var builder = new MessageEnvelopeBuilder(envelope.EnvelopeId);
 
-			var builder = new MessageEnvelopeBuilder(messageId);
-			foreach (var item in items)
-			{
-				builder.AddItem(item);
-			}
-			var created = DateTimeOffset.UtcNow;
-			builder.Attributes.Add(MessageAttributes.Envelope.CreatedUtc, created);
-			return builder;
-		}
-
-		static MessageEnvelopeBuilder CopyEnvelope(MessageEnvelope envelope)
-		{
-			var builder = new MessageEnvelopeBuilder(envelope.EnvelopeId);
-
-			foreach (var item in envelope.Items)
-			{
-				var save = new MessageItemToSave(item.MappedType, item.Content);
-				foreach (var attribute in item.GetAllAttributes())
-				{
-					save.Attributes.Add(attribute);
-				}
-				builder.Items.Add(save);
-			}
-			foreach (var attribute in envelope.GetAllAttributes())
-			{
-				builder.Attributes.Add(attribute);
-			}
-			return builder;
-		}
+		//    foreach (var item in envelope.Items)
+		//    {
+		//        var save = new MessageItemToSave(item.MappedType, item.Content);
+		//        foreach (var attribute in item.GetAllAttributes())
+		//        {
+		//            save.Attributes.Add(attribute);
+		//        }
+		//        builder.Items.Add(save);
+		//    }
+		//    foreach (var attribute in envelope.GetAllAttributes())
+		//    {
+		//        builder.Attributes.Add(attribute);
+		//    }
+		//    return builder;
+		//}
 
 		public AzureWriteQueue(IMessageSerializer serializer, CloudStorageAccount account, string queueName)
 		{

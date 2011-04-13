@@ -20,7 +20,7 @@ namespace Lokad.Cqrs.Durability
 		[Test]
 		public void EmptyRoundtrip()
 		{
-			var builder = new MessageEnvelopeBuilder("my-id");
+			var builder = new MessageEnvelopeBuilder("my-id").Build();
 			var bytes = MessageUtil.SaveDataMessage(builder, TestSerializer.Instance);
 			var envelope = MessageUtil.ReadMessage(bytes, TestSerializer.Instance);
 			Assert.AreEqual(envelope.EnvelopeId, "my-id");
@@ -36,7 +36,7 @@ namespace Lokad.Cqrs.Durability
 			builder.AddItem(new MyMessage(42));
 
 
-			var bytes = MessageUtil.SaveDataMessage(builder, TestSerializer.Instance);
+			var bytes = MessageUtil.SaveDataMessage(builder.Build(), TestSerializer.Instance);
 			var envelope = MessageUtil.ReadMessage(bytes, TestSerializer.Instance);
 			Assert.AreEqual(1, envelope.GetAttribute("Custom"));
 			Assert.AreEqual(1, envelope.Items.Length);
