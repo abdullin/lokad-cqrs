@@ -100,12 +100,26 @@ namespace Lokad.Cqrs.Feature.Consume
 					try
 					{
 						_dispatcher.DispatchMessage(envelope);
-						queue.AckMessage(result.Message);
 					}
 					catch (Exception ex)
 					{
 						_observer.Notify(new FailedToConsumeMessage(ex, envelope.EnvelopeId, queue.Name));
+						// not a big deal
+						queue.TryNotifyNack(result.Message);
+						return QueueProcessingResult.Continue;
 					}
+					try
+					{
+						queue.AckMessage(result.Message);
+					}
+					catch (Exception ex)
+					{
+						// not a big deal. Message will be processed again.
+						_observer.Notify(new FailedToAckMessage(ex, envelope.EnvelopeId, queue.Name));
+					}
+
+
+					
 
 					return QueueProcessingResult.Continue;
 
