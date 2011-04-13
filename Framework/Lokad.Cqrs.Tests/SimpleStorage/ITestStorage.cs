@@ -1,4 +1,4 @@
-﻿using Lokad.Cqrs.Feature.AzureStreamingStorage;
+﻿using Lokad.Cqrs.Feature.StreamingStorage;
 
 namespace Lokad.Cqrs.Tests.Storage
 {

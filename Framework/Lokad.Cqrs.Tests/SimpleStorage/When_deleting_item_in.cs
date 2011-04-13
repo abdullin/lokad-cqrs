@@ -1,5 +1,5 @@
 ﻿using System;
-using Lokad.Cqrs.Feature.AzureStreamingStorage;
+using Lokad.Cqrs.Feature.StreamingStorage;
 using Lokad.Testing;
 using NUnit.Framework;
 

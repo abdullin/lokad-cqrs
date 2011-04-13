@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
-using Lokad.Cqrs.Feature.AzureStreamingStorage;
-using Lokad.Cqrs.Feature.AzureStreamingStorage.Files;
+using Lokad.Cqrs.Feature.StreamingStorage;
+using Lokad.Cqrs.Feature.StreamingStorage.Files;
 using NUnit.Framework;
 
 // ReSharper disable InconsistentNaming

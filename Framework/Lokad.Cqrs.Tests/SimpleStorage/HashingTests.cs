@@ -8,8 +8,8 @@
 using System;
 using System.IO;
 using Lokad.Cqrs.Evil;
-using Lokad.Cqrs.Feature.AzureStreamingStorage;
-using Lokad.Cqrs.Feature.AzureStreamingStorage.Blob;
+using Lokad.Cqrs.Feature.StreamingStorage;
+using Lokad.Cqrs.Feature.StreamingStorage.Azure;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
 using NUnit.Framework;

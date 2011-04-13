@@ -8,7 +8,7 @@
 using System;
 using System.Threading;
 using Lokad.Cqrs.Evil;
-using Lokad.Cqrs.Feature.AzureStreamingStorage;
+using Lokad.Cqrs.Feature.StreamingStorage;
 using NUnit.Framework;
 
 // ReSharper disable InconsistentNaming
