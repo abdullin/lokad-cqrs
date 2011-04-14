@@ -67,6 +67,9 @@
     <Compile Include="Build\Engine\Events\HostInitialized.cs" />
     <Compile Include="Build\Engine\Events\HostStarted.cs" />
     <Compile Include="Build\Engine\Events\HostStopped.cs" />
+    <Compile Include="Core.Transport\Contracts_v2\Schema2EnvelopeAttributeContract.cs" />
+    <Compile Include="Core.Transport\Contracts_v2\Schema2EnvelopeAttributeTypeContract.cs" />
+    <Compile Include="Core.Transport\IPartitionScheduler.cs" />
     <Compile Include="Feature.AtomicStorage\Azure\AzureAtomicEntityWriter.cs" />
     <Compile Include="Feature.AtomicStorage\Azure\AzureAtomicSingletonReader.cs" />
     <Compile Include="Feature.AtomicStorage\Azure\AzureAtomicEntityReader.cs" />
@@ -82,8 +85,8 @@
     <Compile Include="Feature.AtomicStorage\IAtomicSingletonReader.cs" />
     <Compile Include="Feature.AtomicStorage\IAtomicSingletonWriter.cs" />
     <Compile Include="Feature.AtomicStorage\IAtomicEntityWriter.cs" />
-    <Compile Include="Core.Transport\Contracts_v2\Schema2AttributeContract.cs" />
-    <Compile Include="Core.Transport\Contracts_v2\Schema2AttributeType.cs" />
+    <Compile Include="Core.Transport\Contracts_v2\Schema2ItemAttributeContract.cs" />
+    <Compile Include="Core.Transport\Contracts_v2\Schema2ItemAttributeTypeContract.cs" />
     <Compile Include="Core.Transport\Contracts_v2\Schema2EnvelopeContract.cs" />
     <Compile Include="Core.Transport\Contracts_v2\Schema2ItemContract.cs" />
     <Compile Include="Core.Transport\Contracts_v2\Schema2ReferenceContract.cs" />
@@ -120,8 +123,8 @@
     <Compile Include="Evil\Maybe.cs" />
     <Compile Include="Feature.AtomicStorage\Azure\IAzureAtomicStorageStrategy.cs" />
     <Compile Include="Feature.AzureConsumer\AzurePartitionNotifier.cs" />
-    <Compile Include="Feature.AzureConsumer\AzurePartitionFactory.cs" />
-    <Compile Include="Core.Transport\IReadQueueFactory.cs" />
+    <Compile Include="Feature.AzureConsumer\AzurePartitionSchedulerFactory.cs" />
+    <Compile Include="Core.Transport\IPartitionSchedulerFactory.cs" />
     <Compile Include="Feature.AzureConsumer\Events\FailedToAckMessage.cs" />
     <Compile Include="Feature.DefaultInterfaces\IConsume.cs" />
     <Compile Include="Feature.DefaultInterfaces\IConsumeMessage.cs" />
@@ -166,7 +169,7 @@
     <Compile Include="Feature.StreamingStorage\StorageItemNotFoundException.cs" />
     <Compile Include="Feature.StreamingStorage\StorageWriteOptions.cs" />
     <Compile Include="Feature.StreamingStorage\StreamUtil.cs" />
-    <Compile Include="Feature.TestTransport\MemoryReadQueue.cs" />
+    <Compile Include="Feature.TestTransport\MemoryPartition.cs" />
     <Compile Include="Feature.TestTransport\MemoryWriteQueue.cs" />
     <Compile Include="IEngineProcess.cs" />
     <Compile Include="IKnowSerializationTypes.cs" />
@@ -174,7 +177,7 @@
     <Compile Include="IMessageSerializer.cs" />
     <Compile Include="ISystemEvent.cs" />
     <Compile Include="ISystemObserver.cs" />
-    <Compile Include="Feature.TestTransport\MemoryQueueFactory.cs" />
+    <Compile Include="Feature.TestTransport\MemoryPartitionSchedulerFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Feature.StreamingStorage\Azure\BlobStorageContainer.cs" />
     <Compile Include="Feature.StreamingStorage\Azure\BlobStorageItem.cs" />

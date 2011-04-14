@@ -1,11 +1,17 @@
-﻿using System;
+﻿#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
+
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
 using System.Collections.Concurrent;
 using System.Threading;
 using Lokad.Cqrs.Core.Transport;
 
 namespace Lokad.Cqrs.Feature.TestTransport
 {
-	public sealed class MemoryPartition : IPartitionNotifier
+	public sealed class MemoryPartition : IPartitionScheduler
 	{
 		readonly BlockingCollection<MessageEnvelope>[] _queues;
 		readonly string[] _names;
@@ -40,8 +46,8 @@ namespace Lokad.Cqrs.Feature.TestTransport
 
 		public void TryNotifyNack(MessageContext context)
 		{
-			var id = (int)context.TransportMessage;
-			
+			var id = (int) context.TransportMessage;
+
 			_queues[id].Add(context.Unpacked);
 		}
 	}

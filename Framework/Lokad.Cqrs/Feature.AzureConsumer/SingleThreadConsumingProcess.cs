@@ -18,10 +18,10 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 	{
 		readonly ISingleThreadMessageDispatcher _dispatcher;
 		readonly ISystemObserver _observer;
-		readonly IPartitionNotifier _notifier;
+		readonly IPartitionScheduler _notifier;
 
 		public SingleThreadConsumingProcess(ISystemObserver observer,
-			ISingleThreadMessageDispatcher dispatcher, IPartitionNotifier notifier)
+			ISingleThreadMessageDispatcher dispatcher, IPartitionScheduler notifier)
 		{
 			
 			_dispatcher = dispatcher;

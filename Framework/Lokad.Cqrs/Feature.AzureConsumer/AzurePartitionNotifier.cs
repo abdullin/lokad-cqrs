@@ -7,7 +7,7 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 	/// <summary>
 	/// Handles deserialization, joins multiple queues and notifications
 	/// </summary>
-	public sealed class AzurePartitionNotifier : IPartitionNotifier
+	public sealed class AzurePartitionNotifier : IPartitionScheduler
 	{
 		readonly AzureReadQueue[] _azureQueues;
 

@@ -10,5 +10,10 @@
 			QueueName = queueName;
 			EnvelopeId = envelopeId;
 		}
+
+		public override string ToString()
+		{
+			return string.Format("Message {0} acked at {1}", EnvelopeId, QueueName);
+		}
 	}
 }

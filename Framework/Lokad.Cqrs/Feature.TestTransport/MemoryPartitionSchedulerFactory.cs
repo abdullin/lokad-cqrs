@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Lokad.Cqrs.Feature.TestTransport
 {
-	public sealed class MemoryQueueFactory : IPartitionFactory, IWriteQueueFactory
+	public sealed class MemoryPartitionSchedulerFactory : IPartitionSchedulerFactory, IWriteQueueFactory
 	{
 		readonly ConcurrentDictionary<string, BlockingCollection<MessageEnvelope>> _factory = new ConcurrentDictionary<string, BlockingCollection<MessageEnvelope>>();
 
@@ -16,7 +16,7 @@ namespace Lokad.Cqrs.Feature.TestTransport
 			return new MemoryWriteQueue(queue);
 		}
 
-		public IPartitionNotifier GetNotifier(string[] queueNames)
+		public IPartitionScheduler GetNotifier(string[] queueNames)
 		{
 			var blockers = queueNames
 				.Select(n => _factory.GetOrAdd(n, s => new BlockingCollection<MessageEnvelope>()))
