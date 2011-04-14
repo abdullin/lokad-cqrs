@@ -31,7 +31,6 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 
 		public HandleMessagesModule()
 		{
-			SleepWhenNoMessages = BuildDecayPolicy(1.Seconds());
 			ListenToQueue("azure-messages");
 
 			ModuleName = "Handler-" + GetHashCode().ToString("X8");
@@ -77,8 +76,6 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 			return Dispatch<TDispatcher>(dispatcher => { });
 		}
 		
-		public Func<uint, TimeSpan> SleepWhenNoMessages { get; set; }
-
 		
 		/// <summary>
 		/// Adds custom filters for <see cref="MessageMapping"/>, that will be used
@@ -193,9 +190,10 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 			_dispatcher.Item2(dispatcher);
 			dispatcher.Init();
 
-			var factory = context.Resolve<IReadQueueFactory>();
-			var queues = queueNames.Select(n => Tuple.Create(factory.GetReadQueue(n),n)).ToArray();
-			var transport = new SingleThreadConsumingProcess(log, dispatcher, SleepWhenNoMessages, queues);
+			var factory = context.Resolve<IPartitionFactory>();
+			var notifier = factory.GetNotifier(queueNames);
+			
+			var transport = new SingleThreadConsumingProcess(log, dispatcher, notifier);
 
 			_applyToTransport(transport, context);
 			
@@ -211,23 +209,6 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 			builder.RegisterType(_dispatcher.Item1);
 
 			builder.Register(ConfigureComponent);
-		}
-
-		public static Func<uint, TimeSpan> BuildDecayPolicy(TimeSpan maxDecay)
-		{
-			//var seconds = (Rand.Next(0, 1000) / 10000d).Seconds();
-			var seconds = maxDecay.TotalSeconds;
-			return l =>
-				{
-					if (l >= 31)
-					{
-						return maxDecay;
-					}
-
-					var foo = Math.Pow(2, (l - 1)/5.0)/64d*seconds;
-
-					return TimeSpan.FromSeconds(foo);
-				};
 		}
 	}
 }

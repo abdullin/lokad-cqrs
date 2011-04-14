@@ -79,7 +79,7 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 
 			if (null == message)
 			{
-				return GetMessageResult.Wait;
+				return GetMessageResult.Empty;
 			}
 
 			if (message.DequeueCount > RetryCount)

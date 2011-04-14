@@ -10,7 +10,7 @@ namespace Lokad.Cqrs.Core.Transport
 	public enum GetMessageResultState
 	{
 		Success,
-		Wait,
+		Empty,
 		Exception,
 		Retry
 	}

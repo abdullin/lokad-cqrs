@@ -11,7 +11,7 @@ namespace Lokad.Cqrs.Core.Transport
 {
 	public sealed class GetMessageResult
 	{
-		public static readonly GetMessageResult Wait = new GetMessageResult(null, GetMessageResultState.Wait);
+		public static readonly GetMessageResult Empty = new GetMessageResult(null, GetMessageResultState.Empty);
 		public static readonly GetMessageResult Retry = new GetMessageResult(null, GetMessageResultState.Retry);
 		public readonly GetMessageResultState State;
 		readonly MessageContext _message;

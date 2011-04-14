@@ -39,7 +39,7 @@ namespace Lokad.Cqrs.Build.Engine
 			Azure.UseDevelopmentStorageAccount();
 
 			Builder.RegisterType<AzureWriteQueueFactory>().As<IWriteQueueFactory>().SingleInstance();
-			Builder.RegisterType<AzureReadQueueFactory>().As<IReadQueueFactory>().SingleInstance();
+			Builder.RegisterType<AzurePartitionFactory>().As<IPartitionFactory>().SingleInstance();
 
 			Builder.RegisterType<SingleThreadConsumingProcess>();
 			Builder.RegisterType<MessageDuplicationManager>().SingleInstance();
@@ -50,7 +50,7 @@ namespace Lokad.Cqrs.Build.Engine
 
 		public CloudEngineBuilder UseMemoryQueues()
 		{
-			Builder.RegisterType<MemoryQueueFactory>().As<IReadQueueFactory, IWriteQueueFactory>().SingleInstance();
+			Builder.RegisterType<MemoryQueueFactory>().As<IPartitionFactory, IWriteQueueFactory>().SingleInstance();
 			return this;
 		}
 	

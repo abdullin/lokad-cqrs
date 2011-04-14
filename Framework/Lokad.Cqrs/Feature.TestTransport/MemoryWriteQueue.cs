@@ -5,16 +5,16 @@ namespace Lokad.Cqrs.Feature.TestTransport
 {
 	public sealed class MemoryWriteQueue : IWriteQueue
 	{
-		readonly ConcurrentQueue<MessageEnvelope> _queue;
+		readonly BlockingCollection<MessageEnvelope> _queue;
 
-		public MemoryWriteQueue(ConcurrentQueue<MessageEnvelope> queue)
+		public MemoryWriteQueue(BlockingCollection<MessageEnvelope> queue)
 		{
 			_queue = queue;
 		}
 
 		public void SendMessage(MessageEnvelope envelope)
 		{
-			_queue.Enqueue(envelope);
+			_queue.Add(envelope);
 		}
 
 		public void Init()

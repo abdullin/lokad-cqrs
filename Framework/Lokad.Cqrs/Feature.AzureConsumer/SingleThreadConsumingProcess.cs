@@ -18,10 +18,10 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 	{
 		readonly ISingleThreadMessageDispatcher _dispatcher;
 		readonly ISystemObserver _observer;
-		readonly AzureReadNotifier _notifier;
+		readonly IPartitionNotifier _notifier;
 
 		public SingleThreadConsumingProcess(ISystemObserver observer,
-			ISingleThreadMessageDispatcher dispatcher, AzureReadNotifier notifier)
+			ISingleThreadMessageDispatcher dispatcher, IPartitionNotifier notifier)
 		{
 			
 			_dispatcher = dispatcher;
@@ -53,7 +53,7 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 			{
 				var token = source.Token;
 				MessageContext context;
-				while (_notifier.TryGetMessage(token, out context))
+				while (_notifier.TakeMessage(token, out context))
 				{
 					try
 					{
@@ -63,7 +63,7 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 					{
 						_observer.Notify(new FailedToConsumeMessage(ex, context.Unpacked.EnvelopeId, context.QueueName));
 						// not a big deal
-						_notifier.TryNotifyNack(context);
+						_notifier. TryNotifyNack(context);
 					}
 					try
 					{
