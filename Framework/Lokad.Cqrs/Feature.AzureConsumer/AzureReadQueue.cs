@@ -8,13 +8,14 @@
 using System;
 using System.Threading;
 using Lokad.Cqrs.Core.Transport;
+using Lokad.Cqrs.Evil;
 using Lokad.Cqrs.Feature.AzureConsumer.Events;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs.Feature.AzureConsumer
 {
-	public sealed class AzureReadQueue : IReadQueue
+	public sealed class AzureReadQueue 
 	{
 		readonly IMessageSerializer _serializer;
 		readonly ISystemObserver _observer;
@@ -23,6 +24,8 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 		readonly Lazy<CloudQueue> _posionQueue;
 		readonly CloudQueue _queue;
 		readonly string _queueName;
+
+		public string Name { get { return _queueName; } }
 
 		const int RetryCount = 4;
 
@@ -91,7 +94,7 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 			try
 			{
 				var m = MessageUtil.ReadMessage(message.AsBytes, _serializer, DownloadPackage);
-				var unpacked = new MessageContext(message, m);
+				var unpacked = new MessageContext(message, m, _queueName);
 				return GetMessageResult.Success(unpacked);
 			}
 			catch (StorageClientException ex)

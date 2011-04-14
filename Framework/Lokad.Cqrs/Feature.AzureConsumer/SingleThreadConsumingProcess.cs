@@ -18,17 +18,15 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 	{
 		readonly ISingleThreadMessageDispatcher _dispatcher;
 		readonly ISystemObserver _observer;
-		readonly Tuple<IReadQueue,string>[] _queues;
-		readonly Func<uint, TimeSpan> _threadSleepInterval;
-
+		readonly AzureReadNotifier _notifier;
 
 		public SingleThreadConsumingProcess(ISystemObserver observer,
-			ISingleThreadMessageDispatcher dispatcher, Func<uint, TimeSpan> sleepWhenNoMessages, Tuple<IReadQueue,string>[] readQueues)
+			ISingleThreadMessageDispatcher dispatcher, AzureReadNotifier notifier)
 		{
-			_queues = readQueues;
+			
 			_dispatcher = dispatcher;
 			_observer = observer;
-			_threadSleepInterval = sleepWhenNoMessages;
+			_notifier = notifier;
 		}
 
 		public void Dispose()
@@ -38,10 +36,7 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 
 		public void Initialize()
 		{
-			foreach (var queue in _queues)
-			{
-				queue.Item1.Init();
-			}
+			_notifier.Init();
 		}
 
 		readonly CancellationTokenSource _disposal = new CancellationTokenSource();
@@ -54,88 +49,33 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 
 		void ReceiveMessages(CancellationToken outer)
 		{
-			uint beenIdleFor = 0;
-
 			using (var source = CancellationTokenSource.CreateLinkedTokenSource(_disposal.Token, outer))
 			{
 				var token = source.Token;
-
-				while (!token.IsCancellationRequested)
+				MessageContext context;
+				while (_notifier.TryGetMessage(token, out context))
 				{
-					var messageFound = false;
-					foreach (var messageQueue in _queues)
-					{
-						if (token.IsCancellationRequested)
-							return;
-
-						// selector policy goes here
-						if (ProcessQueueForMessage(messageQueue.Item1, messageQueue.Item2) == QueueProcessingResult.Continue)
-						{
-							messageFound = true;
-						}
-					}
-
-					if (messageFound)
-					{
-						beenIdleFor = 0;
-					}
-					else
-					{
-						beenIdleFor += 1;
-						var sleepInterval = _threadSleepInterval(beenIdleFor);
-						token.WaitHandle.WaitOne(sleepInterval);
-					}
-				}
-			}
-		}
-
-		QueueProcessingResult ProcessQueueForMessage(IReadQueue queue, string name)
-		{
-			var result = queue.TryGetMessage();
-
-			switch (result.State)
-			{
-				case GetMessageResultState.Success:
-					var envelope = result.Message.Unpacked;
 					try
 					{
-						_dispatcher.DispatchMessage(envelope);
+						_dispatcher.DispatchMessage(context.Unpacked);
 					}
 					catch (Exception ex)
 					{
-						_observer.Notify(new FailedToConsumeMessage(ex, envelope.EnvelopeId, name));
+						_observer.Notify(new FailedToConsumeMessage(ex, context.Unpacked.EnvelopeId, context.QueueName));
 						// not a big deal
-						queue.TryNotifyNack(result.Message);
-						return QueueProcessingResult.Continue;
+						_notifier.TryNotifyNack(context);
 					}
 					try
 					{
-						queue.AckMessage(result.Message);
+						_notifier.AckMessage(context);
 					}
 					catch (Exception ex)
 					{
 						// not a big deal. Message will be processed again.
-						_observer.Notify(new FailedToAckMessage(ex, envelope.EnvelopeId, name));
+						_observer.Notify(new FailedToAckMessage(ex, context.Unpacked.EnvelopeId, context.QueueName));
 					}
-					return QueueProcessingResult.Continue;
-
-				case GetMessageResultState.Wait:
-					return QueueProcessingResult.Sleep;
-
-				case GetMessageResultState.Exception:
-					return QueueProcessingResult.Continue;
-
-				case GetMessageResultState.Retry:
-					return QueueProcessingResult.Continue;
-				default:
-					throw new ArgumentOutOfRangeException();
+				}
 			}
-		}
-
-		enum QueueProcessingResult
-		{
-			Continue,
-			Sleep
 		}
 	}
 }

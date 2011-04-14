@@ -119,8 +119,8 @@
     <Compile Include="Evil\Maybe.1.cs" />
     <Compile Include="Evil\Maybe.cs" />
     <Compile Include="Feature.AtomicStorage\Azure\IAzureAtomicStorageStrategy.cs" />
+    <Compile Include="Feature.AzureConsumer\AzureReadNotifier.cs" />
     <Compile Include="Feature.AzureConsumer\AzureReadQueueFactory.cs" />
-    <Compile Include="Core.Transport\IReadQueue.cs" />
     <Compile Include="Core.Transport\IReadQueueFactory.cs" />
     <Compile Include="Feature.AzureConsumer\Events\FailedToAckMessage.cs" />
     <Compile Include="Feature.DefaultInterfaces\IConsume.cs" />

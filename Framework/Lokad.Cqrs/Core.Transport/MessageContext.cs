@@ -11,10 +11,12 @@ namespace Lokad.Cqrs.Core.Transport
 	{
 		public readonly object TransportMessage;
 		public readonly MessageEnvelope Unpacked;
+		public readonly string QueueName;
 
-		public MessageContext(object transportMessage, MessageEnvelope unpacked)
+		public MessageContext(object transportMessage, MessageEnvelope unpacked, string queueName)
 		{
 			TransportMessage = transportMessage;
+			QueueName = queueName;
 			Unpacked = unpacked;
 		}
 	}
