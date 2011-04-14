@@ -14,12 +14,6 @@ using Lokad.Cqrs.Feature.AzureConsumer.Events;
 
 namespace Lokad.Cqrs.Feature.AzureConsumer
 {
-	public interface IReadNotifier
-	{
-		
-	}
-
-
 	public sealed class SingleThreadConsumingProcess : IEngineProcess
 	{
 		readonly ISingleThreadMessageDispatcher _dispatcher;

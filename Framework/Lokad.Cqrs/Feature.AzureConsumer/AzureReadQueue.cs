@@ -54,10 +54,6 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 		}
 
 		
-		public string Name
-		{
-			get { return _queueName; }
-		}
 
 		public void Init()
 		{
