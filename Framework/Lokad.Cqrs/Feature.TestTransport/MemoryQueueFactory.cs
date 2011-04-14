@@ -10,7 +10,7 @@ namespace Lokad.Cqrs.Feature.TestTransport
 		public IReadQueue GetReadQueue(string name)
 		{
 			var queue = _factory.GetOrAdd(name, s=> new ConcurrentQueue<MessageEnvelope>());
-			return new MemoryReadQueue(queue, name);
+			return new MemoryReadQueue(queue);
 		}
 
 		public IWriteQueue GetWriteQueue(string name)

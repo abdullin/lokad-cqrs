@@ -1,10 +1,11 @@
-﻿namespace Lokad.Cqrs.Core.Transport
+﻿using System.Threading;
+
+namespace Lokad.Cqrs.Core.Transport
 {
 	public interface IReadQueue
 	{
-		string Name { get; }
 		void Init();
-		GetMessageResult GetMessage();
+		GetMessageResult TryGetMessage();
 
 		/// <summary>
 		/// Acknowledges message consumption.

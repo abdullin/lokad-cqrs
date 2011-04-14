@@ -14,16 +14,22 @@ using Lokad.Cqrs.Feature.AzureConsumer.Events;
 
 namespace Lokad.Cqrs.Feature.AzureConsumer
 {
+	public interface IReadNotifier
+	{
+		
+	}
+
+
 	public sealed class SingleThreadConsumingProcess : IEngineProcess
 	{
 		readonly ISingleThreadMessageDispatcher _dispatcher;
 		readonly ISystemObserver _observer;
-		readonly IReadQueue[] _queues;
+		readonly Tuple<IReadQueue,string>[] _queues;
 		readonly Func<uint, TimeSpan> _threadSleepInterval;
 
 
 		public SingleThreadConsumingProcess(ISystemObserver observer,
-			ISingleThreadMessageDispatcher dispatcher, Func<uint, TimeSpan> sleepWhenNoMessages, IReadQueue[] readQueues)
+			ISingleThreadMessageDispatcher dispatcher, Func<uint, TimeSpan> sleepWhenNoMessages, Tuple<IReadQueue,string>[] readQueues)
 		{
 			_queues = readQueues;
 			_dispatcher = dispatcher;
@@ -40,7 +46,7 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 		{
 			foreach (var queue in _queues)
 			{
-				queue.Init();
+				queue.Item1.Init();
 			}
 		}
 
@@ -69,7 +75,7 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 							return;
 
 						// selector policy goes here
-						if (ProcessQueueForMessage(messageQueue) == QueueProcessingResult.Continue)
+						if (ProcessQueueForMessage(messageQueue.Item1, messageQueue.Item2) == QueueProcessingResult.Continue)
 						{
 							messageFound = true;
 						}
@@ -89,9 +95,9 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 			}
 		}
 
-		QueueProcessingResult ProcessQueueForMessage(IReadQueue queue)
+		QueueProcessingResult ProcessQueueForMessage(IReadQueue queue, string name)
 		{
-			var result = queue.GetMessage();
+			var result = queue.TryGetMessage();
 
 			switch (result.State)
 			{
@@ -103,7 +109,7 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 					}
 					catch (Exception ex)
 					{
-						_observer.Notify(new FailedToConsumeMessage(ex, envelope.EnvelopeId, queue.Name));
+						_observer.Notify(new FailedToConsumeMessage(ex, envelope.EnvelopeId, name));
 						// not a big deal
 						queue.TryNotifyNack(result.Message);
 						return QueueProcessingResult.Continue;
@@ -115,12 +121,8 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 					catch (Exception ex)
 					{
 						// not a big deal. Message will be processed again.
-						_observer.Notify(new FailedToAckMessage(ex, envelope.EnvelopeId, queue.Name));
+						_observer.Notify(new FailedToAckMessage(ex, envelope.EnvelopeId, name));
 					}
-
-
-					
-
 					return QueueProcessingResult.Continue;
 
 				case GetMessageResultState.Wait:

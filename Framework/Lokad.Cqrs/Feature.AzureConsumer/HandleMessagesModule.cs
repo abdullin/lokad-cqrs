@@ -194,7 +194,7 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 			dispatcher.Init();
 
 			var factory = context.Resolve<IReadQueueFactory>();
-			var queues =  queueNames.Select(factory.GetReadQueue).ToArray();
+			var queues = queueNames.Select(n => Tuple.Create(factory.GetReadQueue(n),n)).ToArray();
 			var transport = new SingleThreadConsumingProcess(log, dispatcher, SleepWhenNoMessages, queues);
 
 			_applyToTransport(transport, context);

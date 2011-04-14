@@ -65,7 +65,7 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 			_cloudBlob.CreateIfNotExist();
 		}
 
-		public GetMessageResult GetMessage()
+		public GetMessageResult TryGetMessage()
 		{
 			CloudQueueMessage message;
 			try

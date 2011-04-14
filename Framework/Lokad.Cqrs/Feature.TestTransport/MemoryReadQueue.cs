@@ -7,19 +7,16 @@ namespace Lokad.Cqrs.Feature.TestTransport
 	{
 		readonly ConcurrentQueue<MessageEnvelope> _queue;
 
-		public string Name { get; private set; }
-
-		public MemoryReadQueue(ConcurrentQueue<MessageEnvelope> queue, string name)
+		public MemoryReadQueue(ConcurrentQueue<MessageEnvelope> queue)
 		{
 			_queue = queue;
-			Name = name;
 		}
 
 		public void Init()
 		{
 		}
 
-		public GetMessageResult GetMessage()
+		public GetMessageResult TryGetMessage()
 		{
 			MessageEnvelope result;
 			if (_queue.TryDequeue(out result))
