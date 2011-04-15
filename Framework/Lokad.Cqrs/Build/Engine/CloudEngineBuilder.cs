@@ -11,7 +11,6 @@ using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Core.Transport;
 using Lokad.Cqrs.Feature.AzureConsumer;
 using Lokad.Cqrs.Feature.AzureSender;
-using Lokad.Cqrs.Feature.Recurrent;
 using Lokad.Cqrs.Feature.TestTransport;
 
 // ReSharper disable UnusedMethodReturnValue.Global
@@ -60,17 +59,6 @@ namespace Lokad.Cqrs.Build.Engine
 		/// <param name="config">configuration syntax</param>
 		/// <returns>same builder for inling multiple configuration statements</returns>
 		public CloudEngineBuilder AddMessageHandler(Action<HandleMessagesModule> config)
-		{
-			RegisterModule(config);
-			return this;
-		}
-
-		/// <summary>
-		/// Adds Task Scheduling Feature to the instance of <see cref="CloudEngineHost"/>
-		/// </summary>
-		/// <param name="config">configuration syntax</param>
-		/// <returns>same builder for inline multiple configuration statements</returns>
-		public CloudEngineBuilder AddScheduler(Action<RecurrentModule> config)
 		{
 			RegisterModule(config);
 			return this;
