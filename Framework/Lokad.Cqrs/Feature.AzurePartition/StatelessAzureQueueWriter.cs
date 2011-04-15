@@ -3,7 +3,7 @@ using Lokad.Cqrs.Core.Transport;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
 
-namespace Lokad.Cqrs.Feature.AzureSender
+namespace Lokad.Cqrs.Feature.AzurePartition
 {
 	public sealed class StatelessAzureQueueWriter : IQueueWriter
 	{

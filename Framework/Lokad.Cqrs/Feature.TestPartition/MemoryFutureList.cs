@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Lokad.Cqrs.Core.Transport;
 
-namespace Lokad.Cqrs.Feature.TestTransport
+namespace Lokad.Cqrs.Feature.TestPartition
 {
 	public sealed class MemoryFutureList
 	{

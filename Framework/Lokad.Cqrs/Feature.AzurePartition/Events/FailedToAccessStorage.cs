@@ -1,6 +1,6 @@
 ﻿using Microsoft.WindowsAzure.StorageClient;
 
-namespace Lokad.Cqrs.Feature.AzureConsumer.Events
+namespace Lokad.Cqrs.Feature.AzurePartition.Events
 {
 	public sealed class FailedToAccessStorage : ISystemEvent
 	{

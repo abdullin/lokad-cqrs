@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Lokad.Cqrs.Feature.AzureConsumer.Events
+namespace Lokad.Cqrs.Feature.AzurePartition.Events
 {
 	public sealed class FailedToDeserializeMessage : ISystemEvent
 	{

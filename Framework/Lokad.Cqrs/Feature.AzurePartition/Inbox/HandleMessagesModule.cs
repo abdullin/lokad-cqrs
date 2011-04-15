@@ -14,9 +14,10 @@ using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Core.Partition;
 using Lokad.Cqrs.Core.Transport;
 using Lokad.Cqrs.Evil;
+using Lokad.Cqrs.Feature.AzurePartition.Events;
 
 // ReSharper disable MemberCanBePrivate.Global
-namespace Lokad.Cqrs.Feature.AzureConsumer
+namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
 {
 
 	public sealed class HandleMessagesModule : Module

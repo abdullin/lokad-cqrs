@@ -1,6 +1,6 @@
 ﻿using Lokad.Cqrs.Core.Directory;
 
-namespace Lokad.Cqrs.Feature.AzureConsumer
+namespace Lokad.Cqrs.Feature.AzurePartition.Events
 {
 	public sealed class MessageDirectoryCreated : ISystemEvent
 	{

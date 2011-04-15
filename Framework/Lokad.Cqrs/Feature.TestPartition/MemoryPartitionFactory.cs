@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 using Lokad.Cqrs.Core.Partition;
 using Lokad.Cqrs.Core.Transport;
 
-namespace Lokad.Cqrs.Feature.TestTransport
+namespace Lokad.Cqrs.Feature.TestPartition
 {
 	public sealed class MemoryPartitionFactory : IPartitionInboxFactory, IWriteQueueFactory, IEngineProcess
 	{

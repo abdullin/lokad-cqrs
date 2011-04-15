@@ -9,7 +9,7 @@ using System;
 using Autofac;
 using Lokad.Cqrs.Core.Transport;
 
-namespace Lokad.Cqrs.Feature.AzureSender
+namespace Lokad.Cqrs.Feature.AzurePartition.Sender
 {
 	public sealed class SendMessageModule : Module
 	{

@@ -11,7 +11,7 @@ using System.Threading;
 using Lokad.Cqrs.Core.Partition;
 using Lokad.Cqrs.Core.Transport;
 
-namespace Lokad.Cqrs.Feature.TestTransport
+namespace Lokad.Cqrs.Feature.TestPartition
 {
 	public sealed class MemoryPartitionInbox : IPartitionInbox
 	{

@@ -1,9 +1,8 @@
 ﻿using System;
 using Lokad.Cqrs.Evil;
-using Lokad.Cqrs.Feature.AtomicStorage.Azure;
 using Microsoft.WindowsAzure.StorageClient;
 
-namespace Lokad.Cqrs.Feature.AtomicStorage
+namespace Lokad.Cqrs.Feature.AtomicStorage.Azure
 {
 	/// <summary>
 	/// Azure implementation of the view reader/writer

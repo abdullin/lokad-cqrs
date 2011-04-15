@@ -5,9 +5,7 @@
 
 #endregion
 
-using Lokad.Cqrs.Feature.AzureSender;
-
-namespace Lokad.Cqrs.Feature.AzureConsumer
+namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
 {
 	public sealed class AzurePartitionScheduler
 	{

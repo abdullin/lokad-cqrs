@@ -6,11 +6,10 @@
 #endregion
 
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using Lokad.Cqrs.Core.Transport;
 using Microsoft.WindowsAzure;
 
-namespace Lokad.Cqrs.Feature.AzureSender
+namespace Lokad.Cqrs.Feature.AzurePartition.Sender
 {
 	public sealed class AzureWriteQueueFactory : IWriteQueueFactory
 	{

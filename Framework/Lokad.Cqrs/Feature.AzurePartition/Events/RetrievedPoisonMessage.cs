@@ -1,4 +1,4 @@
-﻿namespace Lokad.Cqrs.Feature.AzureConsumer.Events
+﻿namespace Lokad.Cqrs.Feature.AzurePartition.Events
 {
 	public sealed class RetrievedPoisonMessage : ISystemEvent
 

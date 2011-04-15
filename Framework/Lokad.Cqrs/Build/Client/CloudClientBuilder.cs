@@ -8,7 +8,7 @@
 using System;
 using Autofac;
 using Lokad.Cqrs.Core.Transport;
-using Lokad.Cqrs.Feature.AzureSender;
+using Lokad.Cqrs.Feature.AzurePartition.Sender;
 
 namespace Lokad.Cqrs.Build.Client
 {

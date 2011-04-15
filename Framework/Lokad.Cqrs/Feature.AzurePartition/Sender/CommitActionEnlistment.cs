@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Transactions;
 
-namespace Lokad.Cqrs.Feature.AzureSender
+namespace Lokad.Cqrs.Feature.AzurePartition.Sender
 {
 	sealed class CommitActionEnlistment : IEnlistmentNotification
 	{

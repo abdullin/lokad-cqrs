@@ -3,7 +3,7 @@ using System.Threading;
 using Lokad.Cqrs.Core.Partition;
 using Lokad.Cqrs.Core.Transport;
 
-namespace Lokad.Cqrs.Feature.AzureConsumer
+namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
 {
 	/// <summary>
 	/// Handles deserialization, joins multiple queues and notifications

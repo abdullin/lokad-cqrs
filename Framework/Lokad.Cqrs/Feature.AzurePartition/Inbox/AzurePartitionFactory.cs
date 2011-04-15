@@ -11,10 +11,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Lokad.Cqrs.Core.Partition;
-using Lokad.Cqrs.Feature.AzureSender;
 using Microsoft.WindowsAzure;
 
-namespace Lokad.Cqrs.Feature.AzureConsumer
+namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
 {
 	public sealed class AzurePartitionFactory : IPartitionInboxFactory, IEngineProcess
 	{

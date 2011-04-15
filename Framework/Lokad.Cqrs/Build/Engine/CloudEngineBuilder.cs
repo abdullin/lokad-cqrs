@@ -10,9 +10,9 @@ using Autofac;
 using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Core.Partition;
 using Lokad.Cqrs.Core.Transport;
-using Lokad.Cqrs.Feature.AzureConsumer;
-using Lokad.Cqrs.Feature.AzureSender;
-using Lokad.Cqrs.Feature.TestTransport;
+using Lokad.Cqrs.Feature.AzurePartition.Inbox;
+using Lokad.Cqrs.Feature.AzurePartition.Sender;
+using Lokad.Cqrs.Feature.TestPartition;
 
 // ReSharper disable UnusedMethodReturnValue.Global
 namespace Lokad.Cqrs.Build.Engine

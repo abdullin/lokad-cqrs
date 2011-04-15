@@ -9,7 +9,7 @@ using System;
 using System.Transactions;
 using Lokad.Cqrs.Core.Transport;
 
-namespace Lokad.Cqrs.Feature.AzureSender
+namespace Lokad.Cqrs.Feature.AzurePartition.Sender
 {
 	sealed class DefaultMessageSender : IMessageSender
 	{

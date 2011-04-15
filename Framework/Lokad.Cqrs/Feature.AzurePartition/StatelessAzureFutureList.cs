@@ -7,7 +7,7 @@ using Microsoft.WindowsAzure.StorageClient;
 using ProtoBuf;
 using System.Linq;
 
-namespace Lokad.Cqrs.Feature.AzureConsumer
+namespace Lokad.Cqrs.Feature.AzurePartition
 {
 	public sealed class StatelessAzureFutureList
 	{
