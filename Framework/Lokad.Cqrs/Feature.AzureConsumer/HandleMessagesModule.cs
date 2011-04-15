@@ -162,7 +162,7 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 			_dispatcher.Item2(dispatcher);
 			dispatcher.Init();
 
-			var factory = context.Resolve<IPartitionSchedulerFactory>();
+			var factory = context.Resolve<IPartitionInboxFactory>();
 			var notifier = factory.GetNotifier(queueNames);
 			
 			var transport = new SingleThreadConsumingProcess(log, dispatcher, notifier);

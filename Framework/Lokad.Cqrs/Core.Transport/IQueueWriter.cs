@@ -2,7 +2,7 @@
 
 namespace Lokad.Cqrs.Core.Transport
 {
-	public interface IWriteQueue
+	public interface IQueueWriter
 	{
 		void PutMessage(MessageEnvelope envelope);
 		void Init();

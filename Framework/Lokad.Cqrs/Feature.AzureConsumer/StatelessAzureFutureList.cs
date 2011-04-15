@@ -26,9 +26,9 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 			
 		}
 
-		public bool TakePendingMessage(out MessageEnvelope envelope)
+		public MessageEnvelope[] TakePendingMessages()
 		{
-			
+			throw new NotImplementedException();
 		}
 	}
 }

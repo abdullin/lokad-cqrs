@@ -15,20 +15,20 @@ using Lokad.Cqrs.Core.Transport;
 
 namespace Lokad.Cqrs.Feature.TestTransport
 {
-	public sealed class MemoryPartitionElementsFactory : IPartitionSchedulerFactory, IWriteQueueFactory, IEngineProcess
+	public sealed class MemoryPartitionElementsFactory : IPartitionInboxFactory, IWriteQueueFactory, IEngineProcess
 	{
 		readonly ConcurrentDictionary<string, BlockingCollection<MessageEnvelope>> _delivery =
 			new ConcurrentDictionary<string, BlockingCollection<MessageEnvelope>>();
 
 		readonly ConcurrentDictionary<string,MemoryPendingList> _pending = new ConcurrentDictionary<string, MemoryPendingList>();
 
-		public IWriteQueue GetWriteQueue(string name)
+		public IQueueWriter GetWriteQueue(string name)
 		{
 			var queue = _delivery.GetOrAdd(name, s => new BlockingCollection<MessageEnvelope>());
 			return new MemoryWriteQueue(queue);
 		}
 
-		public IPartitionScheduler GetNotifier(string[] queueNames)
+		public IPartitionInbox GetNotifier(string[] queueNames)
 		{
 			var queues = queueNames
 				.Select(n => _delivery.GetOrAdd(n, s => new BlockingCollection<MessageEnvelope>()))

@@ -5,7 +5,7 @@ using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs.Feature.AzureSender
 {
-	public sealed class AzureWriteQueue : IWriteQueue
+	public sealed class StatelessAzureQueueWriter : IQueueWriter
 	{
 		//public void SendAsSingleMessage(object[] items)
 		//{
@@ -70,7 +70,7 @@ namespace Lokad.Cqrs.Feature.AzureSender
 		//    return builder;
 		//}
 
-		public AzureWriteQueue(IMessageSerializer serializer, CloudStorageAccount account, string queueName)
+		public StatelessAzureQueueWriter(IMessageSerializer serializer, CloudStorageAccount account, string queueName)
 		{
 			_serializer = serializer;
 			var blobClient = account.CreateCloudBlobClient();

@@ -18,10 +18,10 @@ namespace Lokad.Cqrs.Core.Partition
 	{
 		readonly ISingleThreadMessageDispatcher _dispatcher;
 		readonly ISystemObserver _observer;
-		readonly IPartitionScheduler _notifier;
+		readonly IPartitionInbox _notifier;
 
 		public SingleThreadConsumingProcess(ISystemObserver observer,
-			ISingleThreadMessageDispatcher dispatcher, IPartitionScheduler notifier)
+			ISingleThreadMessageDispatcher dispatcher, IPartitionInbox notifier)
 		{
 			_dispatcher = dispatcher;
 			_observer = observer;

@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,9 +18,7 @@ using Microsoft.WindowsAzure;
 
 namespace Lokad.Cqrs.Feature.AzureConsumer
 {
-	public sealed class AzurePartitionSchedulerFactory : 
-		IPartitionSchedulerFactory, 
-		IEngineProcess
+	public sealed class AzurePartitionFactory : IPartitionInboxFactory, IEngineProcess
 		
 
 	{
@@ -27,11 +26,10 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 		readonly IMessageSerializer _serializer;
 		readonly ISystemObserver _observer;
 
-		ConcurrentDictionary<string,StatelessAzureQueueReader> _queues = new ConcurrentDictionary<string, StatelessAzureQueueReader>();
-		ConcurrentDictionary<string, StatelessAzureFutureList> _futures = new ConcurrentDictionary<string, StatelessAzureFutureList>();
-		ConcurrentDictionary<string, AzureWriteQueue> _writers = new ConcurrentDictionary<string, AzureWriteQueue>();
+		readonly ConcurrentBag<AzurePartitionScheduler> _schedulers = new ConcurrentBag<AzurePartitionScheduler>();
 
-		public AzurePartitionSchedulerFactory(CloudStorageAccount account, IMessageSerializer serializer,
+
+		public AzurePartitionFactory(CloudStorageAccount account, IMessageSerializer serializer,
 			ISystemObserver observer)
 		{
 			_account = account;
@@ -39,16 +37,23 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 			_observer = observer;
 		}
 
-		public IPartitionScheduler GetNotifier(string[] queueNames)
+		public IPartitionInbox GetNotifier(string[] queueNames)
 		{
 			var queues = queueNames
-				.Select(n => _queues.GetOrAdd(n, name => new StatelessAzureQueueReader(_account, name, _observer, _serializer)))
+				.Select(name => new StatelessAzureQueueReader(_account, name, _observer, _serializer))
 				.ToArray();
 
 			var futures = queueNames
-				.Select(n => _futures.GetOrAdd(n, name => new StatelessAzureFutureList(_account, name, _observer, _serializer)))
+				.Select(name => new StatelessAzureFutureList(_account, name, _observer, _serializer))
 				.ToArray();
-			return new AzurePartitionNotifier(queues, futures, BuildDecayPolicy(TimeSpan.FromSeconds(2)));
+
+			var writers = queueNames
+				.Select(name => new StatelessAzureQueueWriter(_serializer, _account, name))
+				.ToArray();
+
+			_schedulers.Add(new AzurePartitionScheduler(writers, futures));
+
+			return new AzurePartitionInbox(queues, futures, BuildDecayPolicy(TimeSpan.FromSeconds(2)));
 		}
 
 		static Func<uint, TimeSpan> BuildDecayPolicy(TimeSpan maxDecay)
@@ -84,15 +89,9 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 			{
 				while (!token.IsCancellationRequested)
 				{
-					foreach (var list in _futures)
+					foreach (var scheduler in _schedulers)
 					{
-						MessageEnvelope envelope;
-						while (list.Value.TakePendingMessage(out envelope))
-						{
-							_writers
-								.GetOrAdd(list.Key, n => new AzureWriteQueue(_serializer, _account, n))
-								.PutMessage(envelope);
-						}
+						scheduler.DispatchDelayedMessages();
 					}
 
 					token.WaitHandle.WaitOne(TimeSpan.FromSeconds(2));

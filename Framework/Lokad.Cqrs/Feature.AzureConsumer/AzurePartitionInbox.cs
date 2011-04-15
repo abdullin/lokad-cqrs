@@ -8,21 +8,21 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 	/// <summary>
 	/// Handles deserialization, joins multiple queues and notifications
 	/// </summary>
-	public sealed class AzurePartitionNotifier : IPartitionScheduler
+	public sealed class AzurePartitionInbox : IPartitionInbox
 	{
-		readonly StatelessAzureQueueReader[] _azureQueues;
-		readonly StatelessAzureFutureList[] _azureFutures;
+		readonly StatelessAzureQueueReader[] _readers;
+		readonly StatelessAzureFutureList[] _futures;
 
-		public AzurePartitionNotifier(StatelessAzureQueueReader[] azureQueues, StatelessAzureFutureList[] azureFutures, Func<uint, TimeSpan> waiter)
+		public AzurePartitionInbox(StatelessAzureQueueReader[] readers, StatelessAzureFutureList[] futures, Func<uint, TimeSpan> waiter)
 		{
-			_azureQueues = azureQueues;
-			_azureFutures = azureFutures;
+			_readers = readers;
+			_futures = futures;
 			_waiter = waiter;
 		}
 
 		public void Init()
 		{
-			foreach (var queue in _azureQueues)
+			foreach (var queue in _readers)
 			{
 				queue.Init();
 			}
@@ -30,7 +30,7 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 
 		public void AckMessage(MessageContext message)
 		{
-			foreach (var queue in _azureQueues)
+			foreach (var queue in _readers)
 			{
 				if (queue.Name == message.QueueName)
 				{
@@ -50,10 +50,10 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 		{
 			while(!token.IsCancellationRequested)
 			{
-				for (int i = 0; i < _azureQueues.Length; i++)
+				for (int i = 0; i < _readers.Length; i++)
 				{
-					var queue = _azureQueues[i];
-					var future = _azureFutures[i];
+					var queue = _readers[i];
+					var future = _futures[i];
 
 					var message = queue.TryGetMessage();
 					switch (message.State)

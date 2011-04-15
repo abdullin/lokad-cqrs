@@ -69,7 +69,7 @@
     <Compile Include="Build\Engine\Events\HostStopped.cs" />
     <Compile Include="Core.Transport\Contracts_v2\Schema2EnvelopeAttributeContract.cs" />
     <Compile Include="Core.Transport\Contracts_v2\Schema2EnvelopeAttributeTypeContract.cs" />
-    <Compile Include="Core.Partition\IPartitionScheduler.cs" />
+    <Compile Include="Core.Partition\IPartitionInbox.cs" />
     <Compile Include="Feature.AtomicStorage\Azure\AzureAtomicEntityWriter.cs" />
     <Compile Include="Feature.AtomicStorage\Azure\AzureAtomicSingletonReader.cs" />
     <Compile Include="Feature.AtomicStorage\Azure\AzureAtomicEntityReader.cs" />
@@ -122,10 +122,11 @@
     <Compile Include="Evil\Maybe.1.cs" />
     <Compile Include="Evil\Maybe.cs" />
     <Compile Include="Feature.AtomicStorage\Azure\IAzureAtomicStorageStrategy.cs" />
+    <Compile Include="Feature.AzureConsumer\AzurePartitionScheduler.cs" />
     <Compile Include="Feature.AzureConsumer\StatelessAzureFutureList.cs" />
-    <Compile Include="Feature.AzureConsumer\AzurePartitionNotifier.cs" />
-    <Compile Include="Feature.AzureConsumer\AzurePartitionSchedulerFactory.cs" />
-    <Compile Include="Core.Partition\IPartitionSchedulerFactory.cs" />
+    <Compile Include="Feature.AzureConsumer\AzurePartitionInbox.cs" />
+    <Compile Include="Feature.AzureConsumer\AzurePartitionFactory.cs" />
+    <Compile Include="Core.Partition\IPartitionInboxFactory.cs" />
     <Compile Include="Core.Partition\Events\FailedToAckMessage.cs" />
     <Compile Include="Feature.DefaultInterfaces\IConsume.cs" />
     <Compile Include="Feature.DefaultInterfaces\IConsumeMessage.cs" />
@@ -148,7 +149,7 @@
     <Compile Include="Core.Partition\SingleThreadConsumingProcess.cs" />
     <Compile Include="Feature.Logging\NullSystemObserver.cs" />
     <Compile Include="Feature.Logging\TraceSystemObserver.cs" />
-    <Compile Include="Core.Transport\IWriteQueue.cs" />
+    <Compile Include="Core.Transport\IQueueWriter.cs" />
     <Compile Include="Core.Transport\IWriteQueueFactory.cs" />
     <Compile Include="Feature.StreamingStorage\ExtendStorageItem.cs" />
     <Compile Include="Feature.StreamingStorage\Files\FileStorageContainer.cs" />
@@ -185,7 +186,7 @@
     <Compile Include="Feature.StreamingStorage\Azure\BlobStorageRoot.cs" />
     <Compile Include="Feature.StreamingStorage\Azure\BlobStorageUtil.cs" />
     <Compile Include="Feature.StreamingStorage\Azure\SuppressFlushForStream.cs" />
-    <Compile Include="Feature.AzureSender\AzureWriteQueue.cs" />
+    <Compile Include="Feature.AzureSender\StatelessAzureQueueWriter.cs" />
     <Compile Include="Feature.AzureSender\AzureWriteQueueFactory.cs" />
     <Compile Include="Feature.AzureSender\CommitActionEnlistment.cs" />
     <Compile Include="Feature.AzureSender\DefaultMessageSender.cs" />

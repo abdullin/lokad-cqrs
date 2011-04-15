@@ -3,7 +3,7 @@ using Lokad.Cqrs.Core.Transport;
 
 namespace Lokad.Cqrs.Core.Partition
 {
-	public interface IPartitionScheduler
+	public interface IPartitionInbox
 	{
 		void Init();
 		void AckMessage(MessageContext message);

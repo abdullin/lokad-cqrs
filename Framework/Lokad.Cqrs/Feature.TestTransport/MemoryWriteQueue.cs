@@ -3,7 +3,7 @@ using Lokad.Cqrs.Core.Transport;
 
 namespace Lokad.Cqrs.Feature.TestTransport
 {
-	public sealed class MemoryWriteQueue : IWriteQueue
+	public sealed class MemoryWriteQueue : IQueueWriter
 	{
 		readonly BlockingCollection<MessageEnvelope> _queue;
 

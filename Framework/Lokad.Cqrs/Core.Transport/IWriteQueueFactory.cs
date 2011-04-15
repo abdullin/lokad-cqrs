@@ -2,6 +2,6 @@
 {
 	public interface IWriteQueueFactory
 	{
-		IWriteQueue GetWriteQueue(string queueName);
+		IQueueWriter GetWriteQueue(string queueName);
 	}
 }
