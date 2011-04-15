@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using Lokad.Cqrs.Core.Transport;
 
-namespace Lokad.Cqrs.Core.Partition.Testable
+namespace Lokad.Cqrs.Feature.TestTransport
 {
 	public sealed class MemoryWriteQueue : IWriteQueue
 	{

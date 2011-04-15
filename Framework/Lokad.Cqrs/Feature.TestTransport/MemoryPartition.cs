@@ -8,9 +8,10 @@
 using System;
 using System.Collections.Concurrent;
 using System.Threading;
+using Lokad.Cqrs.Core.Partition;
 using Lokad.Cqrs.Core.Transport;
 
-namespace Lokad.Cqrs.Core.Partition.Testable
+namespace Lokad.Cqrs.Feature.TestTransport
 {
 	public sealed class MemoryPartition : IPartitionScheduler
 	{

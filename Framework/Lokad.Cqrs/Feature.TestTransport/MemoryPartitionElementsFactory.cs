@@ -10,9 +10,10 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Lokad.Cqrs.Core.Partition;
 using Lokad.Cqrs.Core.Transport;
 
-namespace Lokad.Cqrs.Core.Partition.Testable
+namespace Lokad.Cqrs.Feature.TestTransport
 {
 	public sealed class MemoryPartitionElementsFactory : IPartitionSchedulerFactory, IWriteQueueFactory, IEngineProcess
 	{

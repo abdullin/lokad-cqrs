@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Lokad.Cqrs.Core.Transport;
 
-namespace Lokad.Cqrs.Core.Partition.Testable
+namespace Lokad.Cqrs.Feature.TestTransport
 {
 	public sealed class MemoryPendingList
 	{
