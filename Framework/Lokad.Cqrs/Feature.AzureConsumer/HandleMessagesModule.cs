@@ -11,6 +11,7 @@ using Autofac;
 using System.Linq;
 using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Dispatch;
+using Lokad.Cqrs.Core.Partition;
 using Lokad.Cqrs.Core.Transport;
 using Lokad.Cqrs.Evil;
 
@@ -128,35 +129,6 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 			return WhereMappings(mm => !typeof(TConsumer).IsAssignableFrom(mm.Consumer));
 		}
 
-		/// <summary>
-		/// Additional configuration to log the exceptions to BLOB.
-		/// </summary>
-		/// <param name="config">The config.</param>
-		/// <returns>same module for inlining</returns>
-		public HandleMessagesModule LogExceptionsToBlob(Action<ConfigureBlobSavingOnException> config)
-		{
-			var configurer = new ConfigureBlobSavingOnException();
-			config(configurer);
-			ApplyToTransport(configurer.Apply);
-			return this;
-		}
-		/// <summary>
-		/// Additional configuration to log the exceptions to BLOB.
-		/// </summary>
-		/// <param name="containerName">Name of the container.</param>
-		/// <param name="delegates">The delegates.</param>
-		/// <returns>same module for inlining</returns>
-		public HandleMessagesModule LogExceptionsToBlob(string containerName, params PrintMessageErrorDelegate[] delegates)
-		{
-			return LogExceptionsToBlob(x =>
-				{
-					x.ContainerName = containerName;
-					foreach (var append in delegates)
-					{
-						x.WithTextAppender(append);
-					}
-				});
-		}
 
 		/// <summary>
 		/// Specifies names of the queues to listen to

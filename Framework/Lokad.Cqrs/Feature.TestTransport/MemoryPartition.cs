@@ -5,21 +5,24 @@
 
 #endregion
 
+using System;
 using System.Collections.Concurrent;
 using System.Threading;
 using Lokad.Cqrs.Core.Transport;
 
-namespace Lokad.Cqrs.Feature.TestTransport
+namespace Lokad.Cqrs.Core.Partition.Testable
 {
 	public sealed class MemoryPartition : IPartitionScheduler
 	{
 		readonly BlockingCollection<MessageEnvelope>[] _queues;
 		readonly string[] _names;
+		readonly MemoryPendingList[] _future;
 
-		public MemoryPartition(BlockingCollection<MessageEnvelope>[] queues, string[] names)
+		public MemoryPartition(BlockingCollection<MessageEnvelope>[] queues, string[] names, MemoryPendingList[] future)
 		{
 			_queues = queues;
 			_names = names;
+			_future = future;
 		}
 
 		public void Init()
@@ -34,11 +37,25 @@ namespace Lokad.Cqrs.Feature.TestTransport
 		public bool TakeMessage(CancellationToken token, out MessageContext context)
 		{
 			MessageEnvelope envelope;
-			var result = BlockingCollection<MessageEnvelope>.TakeFromAny(_queues, out envelope);
-			if (result >= 0)
+
+			while (!token.IsCancellationRequested)
 			{
-				context = new MessageContext(result, envelope, _names[result]);
-				return true;
+				// if incoming message is delayed and in future -> push it to the timer queue.
+				// timer will be responsible for publishing back.
+
+				var result = BlockingCollection<MessageEnvelope>.TakeFromAny(_queues, out envelope);
+				if (result >= 0)
+				{
+					if (envelope.DeliverOn > DateTimeOffset.UtcNow)
+					{
+						// future message
+						_future[result].PutMessage(envelope);
+						continue;
+					}
+					context = new MessageContext(result, envelope, _names[result]);
+					return true;
+				}
+
 			}
 			context = null;
 			return false;

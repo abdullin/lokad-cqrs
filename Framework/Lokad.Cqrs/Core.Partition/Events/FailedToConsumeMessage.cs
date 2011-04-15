@@ -1,14 +1,14 @@
 ﻿using System;
 
-namespace Lokad.Cqrs.Feature.AzureConsumer.Events
+namespace Lokad.Cqrs.Core.Partition.Events
 {
-	public sealed class FailedToAckMessage : ISystemEvent
+	public sealed class FailedToConsumeMessage : ISystemEvent
 	{
 		public Exception Exception { get; private set; }
 		public string EnvelopeId { get; private set; }
 		public string QueueName { get; private set; }
 
-		public FailedToAckMessage(Exception exception, string envelopeId, string queueName)
+		public FailedToConsumeMessage(Exception exception, string envelopeId, string queueName)
 		{
 			Exception = exception;
 			EnvelopeId = envelopeId;

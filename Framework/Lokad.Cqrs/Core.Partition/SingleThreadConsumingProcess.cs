@@ -9,10 +9,10 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Lokad.Cqrs.Core.Dispatch;
+using Lokad.Cqrs.Core.Partition.Events;
 using Lokad.Cqrs.Core.Transport;
-using Lokad.Cqrs.Feature.AzureConsumer.Events;
 
-namespace Lokad.Cqrs.Feature.AzureConsumer
+namespace Lokad.Cqrs.Core.Partition
 {
 	public sealed class SingleThreadConsumingProcess : IEngineProcess
 	{
@@ -23,7 +23,6 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 		public SingleThreadConsumingProcess(ISystemObserver observer,
 			ISingleThreadMessageDispatcher dispatcher, IPartitionScheduler notifier)
 		{
-			
 			_dispatcher = dispatcher;
 			_observer = observer;
 			_notifier = notifier;
@@ -63,7 +62,7 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 					{
 						_observer.Notify(new FailedToConsumeMessage(ex, context.Unpacked.EnvelopeId, context.QueueName));
 						// not a big deal
-						_notifier. TryNotifyNack(context);
+						_notifier.TryNotifyNack(context);
 					}
 					try
 					{

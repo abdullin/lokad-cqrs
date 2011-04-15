@@ -22,28 +22,42 @@ namespace Lokad.Cqrs.Feature.AzureSender
 
 		public void Send(object message)
 		{
-			SendAsBatch(message);
+			DelaySendBatch(default(TimeSpan), message);
 		}
-		
 
-		public void SendAsBatch(params object[] messageItems)
+		public void DelaySend(TimeSpan timeout, object message)
+		{
+			DelaySendBatch(timeout, message);
+		}
+
+		public void SendBatch(params object[] messageItems)
+		{
+			DelaySendBatch(default(TimeSpan), messageItems);
+		}
+
+		public void DelaySendBatch(TimeSpan timeout, params object[] messageItems)
 		{
 			if (messageItems.Length == 0)
 				return;
 
 			var id = Guid.NewGuid().ToString().ToLowerInvariant();
 			var builder = MessageEnvelopeBuilder.FromItems(id, messageItems);
+			if (timeout != default(TimeSpan))
+			{
+				builder.DelayBy(timeout);
+			}
 			var envelope = builder.Build();
 
-			if (Transaction.Current==null)
+			if (Transaction.Current == null)
 			{
 				_queue.SendMessage(envelope);
 			}
 			else
 			{
-				var action = new CommitActionEnlistment(() =>_queue.SendMessage(envelope));
+				var action = new CommitActionEnlistment(() => _queue.SendMessage(envelope));
 				Transaction.Current.EnlistVolatile(action, EnlistmentOptions.None);
 			}
 		}
+
 	}
 }

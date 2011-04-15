@@ -213,7 +213,7 @@ namespace Lokad.Cqrs.Core.Transport.Contracts_v2
 			}
 
 			var envelopeAttributes = AttributesFromContract(envelope.EnvelopeAttributes);
-			return new MessageEnvelope(envelope.MessageId, envelopeAttributes, items);
+			return new MessageEnvelope(envelope.EnvelopeId, envelopeAttributes, items, envelope.DeliverOnUtc);
 		}
 
 		public static byte[] SaveData(MessageEnvelope envelope, IMessageSerializer serializer)
@@ -237,7 +237,10 @@ namespace Lokad.Cqrs.Core.Transport.Contracts_v2
 				}
 
 				var envelopeAttribs = EnvelopeAttributesToContract(envelope.GetAllAttributes());
-				var contract = new Schema2EnvelopeContract(envelope.EnvelopeId.ToString(), envelopeAttribs, itemContracts);
+
+				
+				
+				var contract = new Schema2EnvelopeContract(envelope.EnvelopeId.ToString(), envelopeAttribs, itemContracts, envelope.DeliverOn);
 
 				using (var stream = new MemoryStream())
 				{

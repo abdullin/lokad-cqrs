@@ -5,6 +5,7 @@
 
 #endregion
 
+using System;
 
 namespace Lokad.Cqrs
 {
@@ -19,7 +20,12 @@ namespace Lokad.Cqrs
 		/// <param name="message">The message to send.</param>
 		void Send(object message);
 
+		void DelaySend(TimeSpan timeout, object message);
 
-		void SendAsBatch(params object[] messageItems);
+
+		void SendBatch(params object[] messageItems);
+		void DelaySendBatch(TimeSpan timeout, params object[] messageItems);
+
+
 	}
 }

@@ -69,7 +69,7 @@
     <Compile Include="Build\Engine\Events\HostStopped.cs" />
     <Compile Include="Core.Transport\Contracts_v2\Schema2EnvelopeAttributeContract.cs" />
     <Compile Include="Core.Transport\Contracts_v2\Schema2EnvelopeAttributeTypeContract.cs" />
-    <Compile Include="Core.Transport\IPartitionScheduler.cs" />
+    <Compile Include="Core.Partition\IPartitionScheduler.cs" />
     <Compile Include="Feature.AtomicStorage\Azure\AzureAtomicEntityWriter.cs" />
     <Compile Include="Feature.AtomicStorage\Azure\AzureAtomicSingletonReader.cs" />
     <Compile Include="Feature.AtomicStorage\Azure\AzureAtomicEntityReader.cs" />
@@ -124,8 +124,8 @@
     <Compile Include="Feature.AtomicStorage\Azure\IAzureAtomicStorageStrategy.cs" />
     <Compile Include="Feature.AzureConsumer\AzurePartitionNotifier.cs" />
     <Compile Include="Feature.AzureConsumer\AzurePartitionSchedulerFactory.cs" />
-    <Compile Include="Core.Transport\IPartitionSchedulerFactory.cs" />
-    <Compile Include="Feature.AzureConsumer\Events\FailedToAckMessage.cs" />
+    <Compile Include="Core.Partition\IPartitionSchedulerFactory.cs" />
+    <Compile Include="Core.Partition\Events\FailedToAckMessage.cs" />
     <Compile Include="Feature.DefaultInterfaces\IConsume.cs" />
     <Compile Include="Feature.DefaultInterfaces\IConsumeMessage.cs" />
     <Compile Include="Feature.DefaultInterfaces\IMessage.cs" />
@@ -133,9 +133,8 @@
     <Compile Include="Core.Transport\MessageContext.cs" />
     <Compile Include="Feature.AzureConsumer\AzureReadQueue.cs" />
     <Compile Include="Feature.AzureConsumer\BlobExceptionLogger.cs" />
-    <Compile Include="Feature.AzureConsumer\ConfigureBlobSavingOnException.cs" />
     <Compile Include="Feature.AzureConsumer\Events\FailedToAccessStorage.cs" />
-    <Compile Include="Feature.AzureConsumer\Events\FailedToConsumeMessage.cs" />
+    <Compile Include="Core.Partition\Events\FailedToConsumeMessage.cs" />
     <Compile Include="Feature.AzureConsumer\Events\FailedToDeserializeMessage.cs" />
     <Compile Include="Feature.AzureConsumer\Events\FailedToReadMessage.cs" />
     <Compile Include="Feature.AzureConsumer\Events\MessageAcked.cs" />
@@ -145,7 +144,7 @@
     <Compile Include="Feature.AzureConsumer\HandleMessagesModule.cs" />
     <Compile Include="Feature.AzureConsumer\MessageDirectoryCreated.cs" />
     <Compile Include="Feature.AzureConsumer\PrintMessageErrorDelegate.cs" />
-    <Compile Include="Feature.AzureConsumer\SingleThreadConsumingProcess.cs" />
+    <Compile Include="Core.Partition\SingleThreadConsumingProcess.cs" />
     <Compile Include="Feature.Logging\NullSystemObserver.cs" />
     <Compile Include="Feature.Logging\TraceSystemObserver.cs" />
     <Compile Include="Core.Transport\IWriteQueue.cs" />
@@ -170,6 +169,7 @@
     <Compile Include="Feature.StreamingStorage\StorageWriteOptions.cs" />
     <Compile Include="Feature.StreamingStorage\StreamUtil.cs" />
     <Compile Include="Feature.TestTransport\MemoryPartition.cs" />
+    <Compile Include="Feature.TestTransport\MemoryPendingList.cs" />
     <Compile Include="Feature.TestTransport\MemoryWriteQueue.cs" />
     <Compile Include="IEngineProcess.cs" />
     <Compile Include="IKnowSerializationTypes.cs" />
@@ -177,7 +177,7 @@
     <Compile Include="IMessageSerializer.cs" />
     <Compile Include="ISystemEvent.cs" />
     <Compile Include="ISystemObserver.cs" />
-    <Compile Include="Feature.TestTransport\MemoryPartitionSchedulerFactory.cs" />
+    <Compile Include="Feature.TestTransport\MemoryPartitionElementsFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Feature.StreamingStorage\Azure\BlobStorageContainer.cs" />
     <Compile Include="Feature.StreamingStorage\Azure\BlobStorageItem.cs" />
@@ -196,7 +196,9 @@
     <Compile Include="Core.Serialization\ProtoBufMessageSerializer.cs" />
     <Compile Include="Core.Serialization\ProtoBufUtil.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Feature.TestTimeouts\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

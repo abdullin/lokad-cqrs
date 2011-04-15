@@ -1,4 +1,6 @@
-﻿namespace Lokad.Cqrs.Core.Transport
+﻿using System;
+
+namespace Lokad.Cqrs.Core.Transport
 {
 	public interface IWriteQueue
 	{

@@ -7,6 +7,7 @@
 
 using System;
 using System.Linq;
+using Lokad.Cqrs.Core.Partition;
 using Lokad.Cqrs.Core.Transport;
 using Microsoft.WindowsAzure;
 

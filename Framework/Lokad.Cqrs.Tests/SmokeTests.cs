@@ -27,7 +27,7 @@ namespace Lokad.Cqrs.Tests
 		static CloudEngineHost BuildHost()
 		{
 			var engine = new CloudEngineBuilder();
-			//engine.UseMemoryPartitions();
+			engine.UseMemoryPartitions();
 			engine.DomainIs(m =>
 				{
 					m.WithDefaultInterfaces();
@@ -100,9 +100,10 @@ namespace Lokad.Cqrs.Tests
 
 				var client = host.Resolve<IMessageSender>();
 
-				client.Send(new Hello {Word = "World"});
-				client.Send(new Hello {Word = new string('1', 9000)});
-				client.Send(new Bye {Word = "Earth"});
+				client.Send(new Hello {Word = "HI!"});
+				client.Send(new Hello {Word = new string(')', 9000)});
+				client.DelaySend(1.Seconds(), new Hello { Word = "Let's meet." });
+				client.DelaySend(2.Seconds(), new Bye { Word = "Farewell..."});
 
 				using (var cts = new CancellationTokenSource())
 				{

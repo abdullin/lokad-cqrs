@@ -8,10 +8,11 @@
 using System;
 using Autofac;
 using Lokad.Cqrs.Core.Dispatch;
+using Lokad.Cqrs.Core.Partition;
+using Lokad.Cqrs.Core.Partition.Testable;
 using Lokad.Cqrs.Core.Transport;
 using Lokad.Cqrs.Feature.AzureConsumer;
 using Lokad.Cqrs.Feature.AzureSender;
-using Lokad.Cqrs.Feature.TestTransport;
 
 // ReSharper disable UnusedMethodReturnValue.Global
 namespace Lokad.Cqrs.Build.Engine
@@ -49,7 +50,10 @@ namespace Lokad.Cqrs.Build.Engine
 
 		public CloudEngineBuilder UseMemoryPartitions()
 		{
-			Builder.RegisterType<MemoryPartitionSchedulerFactory>().As<IPartitionSchedulerFactory, IWriteQueueFactory>().SingleInstance();
+			Builder
+				.RegisterType<MemoryPartitionElementsFactory>()
+				.As<IPartitionSchedulerFactory, IWriteQueueFactory, IEngineProcess>()
+				.SingleInstance();
 			return this;
 		}
 	

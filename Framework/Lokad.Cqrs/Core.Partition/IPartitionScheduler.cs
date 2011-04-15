@@ -1,6 +1,7 @@
 ﻿using System.Threading;
+using Lokad.Cqrs.Core.Transport;
 
-namespace Lokad.Cqrs.Core.Transport
+namespace Lokad.Cqrs.Core.Partition
 {
 	public interface IPartitionScheduler
 	{

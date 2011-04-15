@@ -7,6 +7,7 @@ namespace Lokad.Cqrs.Core.Transport
 	{
 		public readonly string EnvelopeId;
 		public readonly IDictionary<string, object> Attributes = new Dictionary<string, object>();
+		public DateTimeOffset DeliverOn;
 
 		public readonly IList<MessageItemToSave> Items = new List<MessageItemToSave>();
 
@@ -28,6 +29,11 @@ namespace Lokad.Cqrs.Core.Transport
 			Items.Add(messageItemToSave);
 		}
 
+		public void DelayBy(TimeSpan span)
+		{
+			DeliverOn = DateTimeOffset.UtcNow + span;
+		}
+
 		public static MessageEnvelopeBuilder FromItems(string envelopeId, params object[] items)
 		{
 			var builder = new MessageEnvelopeBuilder(envelopeId);
@@ -43,7 +49,7 @@ namespace Lokad.Cqrs.Core.Transport
 		public MessageEnvelope Build()
 		{
 			var attributes = new Dictionary<string, object>(Attributes);
-			var items = new MessageItem[this.Items.Count];
+			var items = new MessageItem[Items.Count];
 
 			for (int i = 0; i < items.Length; i++)
 			{
@@ -52,7 +58,7 @@ namespace Lokad.Cqrs.Core.Transport
 				items[i] = new MessageItem(save.MappedType, save.Content, attribs);
 			}
 
-			return new MessageEnvelope(EnvelopeId,attributes, items);
+			return new MessageEnvelope(EnvelopeId,attributes, items, DeliverOn);
 		}
 	}
 }

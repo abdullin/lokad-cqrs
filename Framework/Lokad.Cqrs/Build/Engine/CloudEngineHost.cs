@@ -38,6 +38,7 @@ namespace Lokad.Cqrs.Build.Engine
 		{
 			var tasks = _serverProcesses.Select(p => p.Start(token)).ToArray();
 			_observer.Notify(new HostStarted());
+			
 			return Task.Factory.ContinueWhenAll(tasks, t => _observer.Notify(new HostStopped()));
 		}
 
