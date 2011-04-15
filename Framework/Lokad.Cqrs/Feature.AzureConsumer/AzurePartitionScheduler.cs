@@ -24,10 +24,8 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 		{
 			for (int i = 0; i < _futures.Length; i++)
 			{
-				foreach (var message in _futures[i].TakePendingMessages())
-				{
-					_writers[i].PutMessage(message);
-				}
+				var writer = _writers[i];
+				_futures[i].TranferPendingMessages(writer.PutMessage);
 			}
 		}
 	}

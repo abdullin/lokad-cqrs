@@ -17,8 +17,6 @@ using Microsoft.WindowsAzure;
 namespace Lokad.Cqrs.Feature.AzureConsumer
 {
 	public sealed class AzurePartitionFactory : IPartitionInboxFactory, IEngineProcess
-
-
 	{
 		readonly CloudStorageAccount _account;
 		readonly IMessageSerializer _serializer;

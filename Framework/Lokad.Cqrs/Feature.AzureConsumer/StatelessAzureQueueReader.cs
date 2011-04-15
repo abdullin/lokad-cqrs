@@ -58,7 +58,7 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 
 		
 
-		public void Init()
+		public void Initialize()
 		{
 			_queue.CreateIfNotExist();
 			_cloudBlob.CreateIfNotExist();

@@ -24,7 +24,11 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 		{
 			foreach (var queue in _readers)
 			{
-				queue.Init();
+				queue.Initialize();
+			}
+			foreach (var future in _futures)
+			{
+				future.Initialize();
 			}
 		}
 

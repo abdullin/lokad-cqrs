@@ -27,7 +27,7 @@ namespace Lokad.Cqrs.Tests
 		static CloudEngineHost BuildHost()
 		{
 			var engine = new CloudEngineBuilder();
-			engine.UseMemoryPartitions();
+			//engine.UseMemoryPartitions();
 			engine.DomainIs(m =>
 				{
 					m.WithDefaultInterfaces();
@@ -80,14 +80,27 @@ namespace Lokad.Cqrs.Tests
 
 		public sealed class DoSomething : IConsume<Hello>, IConsume<Bye>
 		{
+			void Record(string name, string value)
+			{
+				if (value.Length > 10)
+				{
+					Trace.WriteLine(string.Format("{0}: {1}... ({2})", name, value.Substring(0,9), value.Length));
+				}
+				else
+				{
+					Trace.WriteLine(string.Format("{0}: {1}", name, value));
+				}
+				
+			}
+
 			public void Consume(Bye message)
 			{
-				Trace.WriteLine("Bye length: " + message.Word.Length);
+				Record("Bye", message.Word);
 			}
 
 			public void Consume(Hello message)
 			{
-				Trace.WriteLine("Hello length: " + message.Word.Length);
+				Record("Hello", message.Word);
 			}
 		}
 

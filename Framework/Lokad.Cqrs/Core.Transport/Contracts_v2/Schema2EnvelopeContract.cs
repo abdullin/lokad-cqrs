@@ -25,12 +25,12 @@ namespace Lokad.Cqrs.Core.Transport.Contracts_v2
 		}
 
 // ReSharper disable UnusedMember.Local
-		Schema2EnvelopeContract(DateTime deliverOnUtc)
+		Schema2EnvelopeContract()
 // ReSharper restore UnusedMember.Local
 		{
 			Items = NoItems;
 			EnvelopeAttributes = NoAttributes;
-			DeliverOnUtc = deliverOnUtc;
+			
 		}
 
 		static readonly Schema2ItemContract[] NoItems = new Schema2ItemContract[0];
