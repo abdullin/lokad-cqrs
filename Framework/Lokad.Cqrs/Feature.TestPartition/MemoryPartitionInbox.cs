@@ -13,13 +13,13 @@ using Lokad.Cqrs.Core.Transport;
 
 namespace Lokad.Cqrs.Feature.TestTransport
 {
-	public sealed class MemoryPartition : IPartitionInbox
+	public sealed class MemoryPartitionInbox : IPartitionInbox
 	{
 		readonly BlockingCollection<MessageEnvelope>[] _queues;
 		readonly string[] _names;
-		readonly MemoryPendingList[] _future;
+		readonly MemoryFutureList[] _future;
 
-		public MemoryPartition(BlockingCollection<MessageEnvelope>[] queues, string[] names, MemoryPendingList[] future)
+		public MemoryPartitionInbox(BlockingCollection<MessageEnvelope>[] queues, string[] names, MemoryFutureList[] future)
 		{
 			_queues = queues;
 			_names = names;

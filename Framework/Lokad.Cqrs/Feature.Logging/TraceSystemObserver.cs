@@ -7,6 +7,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Lokad.Cqrs.Feature.Logging

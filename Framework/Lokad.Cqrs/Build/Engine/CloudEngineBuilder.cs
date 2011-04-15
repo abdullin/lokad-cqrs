@@ -53,7 +53,7 @@ namespace Lokad.Cqrs.Build.Engine
 		public CloudEngineBuilder UseMemoryPartitions()
 		{
 			Builder
-				.RegisterType<MemoryPartitionElementsFactory>()
+				.RegisterType<MemoryPartitionFactory>()
 				.As<IPartitionInboxFactory, IWriteQueueFactory, IEngineProcess>()
 				.SingleInstance();
 			return this;

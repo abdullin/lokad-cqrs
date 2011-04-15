@@ -5,7 +5,7 @@ using Lokad.Cqrs.Core.Transport;
 
 namespace Lokad.Cqrs.Feature.TestTransport
 {
-	public sealed class MemoryPendingList
+	public sealed class MemoryFutureList
 	{
 		readonly IList<MessageEnvelope> _schedule = new List<MessageEnvelope>();
 		readonly object _lock = new object();

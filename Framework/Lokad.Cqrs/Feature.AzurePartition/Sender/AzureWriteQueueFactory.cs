@@ -5,6 +5,7 @@
 
 #endregion
 
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Lokad.Cqrs.Core.Transport;
 using Microsoft.WindowsAzure;
@@ -16,7 +17,7 @@ namespace Lokad.Cqrs.Feature.AzureSender
 		readonly CloudStorageAccount _account;
 		readonly IMessageSerializer _serializer;
 		
-		readonly IDictionary<string, IQueueWriter> _writeQueues = new Dictionary<string, IQueueWriter>();
+		readonly ConcurrentDictionary<string, IQueueWriter> _writeQueues = new ConcurrentDictionary<string, IQueueWriter>();
 
 		public AzureWriteQueueFactory(
 			CloudStorageAccount account,
@@ -29,17 +30,12 @@ namespace Lokad.Cqrs.Feature.AzureSender
 
 		public IQueueWriter GetWriteQueue(string queueName)
 		{
-			lock (_writeQueues)
-			{
-				IQueueWriter value;
-				if (!_writeQueues.TryGetValue(queueName, out value))
+			return _writeQueues.GetOrAdd(queueName, name =>
 				{
-					value = new StatelessAzureQueueWriter(_serializer, _account, queueName);
-					value.Init();
-					_writeQueues.Add(queueName, value);
-				}
-				return value;
-			}
+					var v = new StatelessAzureQueueWriter(_serializer, _account, queueName);
+					v.Init();
+					return v;
+				});
 		}
 	}
 }
