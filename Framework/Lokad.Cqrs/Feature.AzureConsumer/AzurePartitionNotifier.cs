@@ -11,10 +11,12 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 	public sealed class AzurePartitionNotifier : IPartitionScheduler
 	{
 		readonly AzureReadQueue[] _azureQueues;
+		readonly AzureFutureQueue[] _azureFutures;
 
-		public AzurePartitionNotifier(AzureReadQueue[] azureQueues, Func<uint, TimeSpan> waiter)
+		public AzurePartitionNotifier(AzureReadQueue[] azureQueues, AzureFutureQueue[] azureFutures, Func<uint, TimeSpan> waiter)
 		{
 			_azureQueues = azureQueues;
+			_azureFutures = azureFutures;
 			_waiter = waiter;
 		}
 
@@ -48,14 +50,26 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 		{
 			while(!token.IsCancellationRequested)
 			{
-				foreach (var queue in _azureQueues)
+				for (int i = 0; i < _azureQueues.Length; i++)
 				{
+					var queue = _azureQueues[i];
+					var future = _azureFutures[i];
+
 					var message = queue.TryGetMessage();
 					switch (message.State)
 					{
 						case GetMessageResultState.Success:
-							context = message.Message;
+							
 							_emptyCycles = 0;
+							// future message
+							if (message.Message.Unpacked.DeliverOn > DateTimeOffset.UtcNow)
+							{
+								// save
+								future.PutMessage(message.Message.Unpacked);
+								queue.AckMessage(message.Message);
+								break;
+							}
+							context = message.Message;
 							return true;
 						case GetMessageResultState.Empty:
 							_emptyCycles += 1;

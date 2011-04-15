@@ -122,6 +122,7 @@
     <Compile Include="Evil\Maybe.1.cs" />
     <Compile Include="Evil\Maybe.cs" />
     <Compile Include="Feature.AtomicStorage\Azure\IAzureAtomicStorageStrategy.cs" />
+    <Compile Include="Feature.AzureConsumer\AzureFutureQueue.cs" />
     <Compile Include="Feature.AzureConsumer\AzurePartitionNotifier.cs" />
     <Compile Include="Feature.AzureConsumer\AzurePartitionSchedulerFactory.cs" />
     <Compile Include="Core.Partition\IPartitionSchedulerFactory.cs" />

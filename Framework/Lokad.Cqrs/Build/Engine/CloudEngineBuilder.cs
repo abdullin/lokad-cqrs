@@ -39,7 +39,9 @@ namespace Lokad.Cqrs.Build.Engine
 			Azure.UseDevelopmentStorageAccount();
 
 			Builder.RegisterType<AzureWriteQueueFactory>().As<IWriteQueueFactory>().SingleInstance();
-			Builder.RegisterType<AzurePartitionSchedulerFactory>().As<IPartitionSchedulerFactory>().SingleInstance();
+			Builder.RegisterType<AzurePartitionSchedulerFactory>()
+				.As<IPartitionSchedulerFactory, IEngineProcess>()
+				.SingleInstance();
 
 			Builder.RegisterType<SingleThreadConsumingProcess>();
 			Builder.RegisterType<MessageDuplicationManager>().SingleInstance();

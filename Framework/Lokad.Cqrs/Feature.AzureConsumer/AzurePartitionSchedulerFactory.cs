@@ -7,13 +7,14 @@
 
 using System;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Lokad.Cqrs.Core.Partition;
-using Lokad.Cqrs.Core.Transport;
 using Microsoft.WindowsAzure;
 
 namespace Lokad.Cqrs.Feature.AzureConsumer
 {
-	public sealed class AzurePartitionSchedulerFactory : IPartitionSchedulerFactory
+	public sealed class AzurePartitionSchedulerFactory : IPartitionSchedulerFactory, IEngineProcess
 	{
 		readonly CloudStorageAccount _account;
 		readonly IMessageSerializer _serializer;
@@ -32,7 +33,11 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 			var queues = queueNames
 				.Select(n => new AzureReadQueue(_account, n, _observer, _serializer))
 				.ToArray();
-			return new AzurePartitionNotifier(queues, BuildDecayPolicy(TimeSpan.FromSeconds(2)));
+
+			var futures = queueNames
+				.Select(n => new AzureFutureQueue(_account, n, _observer, _serializer))
+				.ToArray();
+			return new AzurePartitionNotifier(queues, futures, BuildDecayPolicy(TimeSpan.FromSeconds(2)));
 		}
 
 		static Func<uint, TimeSpan> BuildDecayPolicy(TimeSpan maxDecay)
@@ -50,6 +55,21 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 
 					return TimeSpan.FromSeconds(foo);
 				};
+		}
+
+		public void Dispose()
+		{
+			
+		}
+
+		public void Initialize()
+		{
+			
+		}
+
+		public Task Start(CancellationToken token)
+		{
+			
 		}
 	}
 }
