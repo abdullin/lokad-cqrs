@@ -24,7 +24,7 @@ namespace Lokad.Cqrs.Feature.AzureSender
 		//    _queue.AddMessage(packed);
 		//}
 
-		public void SendMessage(MessageEnvelope envelope)
+		public void PutMessage(MessageEnvelope envelope)
 		{
 			var packed = PrepareCloudMessage(envelope);
 			_queue.AddMessage(packed);

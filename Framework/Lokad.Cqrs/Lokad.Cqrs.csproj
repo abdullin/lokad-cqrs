@@ -122,7 +122,7 @@
     <Compile Include="Evil\Maybe.1.cs" />
     <Compile Include="Evil\Maybe.cs" />
     <Compile Include="Feature.AtomicStorage\Azure\IAzureAtomicStorageStrategy.cs" />
-    <Compile Include="Feature.AzureConsumer\AzureFutureQueue.cs" />
+    <Compile Include="Feature.AzureConsumer\StatelessAzureFutureList.cs" />
     <Compile Include="Feature.AzureConsumer\AzurePartitionNotifier.cs" />
     <Compile Include="Feature.AzureConsumer\AzurePartitionSchedulerFactory.cs" />
     <Compile Include="Core.Partition\IPartitionSchedulerFactory.cs" />
@@ -132,7 +132,7 @@
     <Compile Include="Feature.DefaultInterfaces\IMessage.cs" />
     <Compile Include="Feature.DefaultInterfaces\IScheduledTask.cs" />
     <Compile Include="Core.Transport\MessageContext.cs" />
-    <Compile Include="Feature.AzureConsumer\AzureReadQueue.cs" />
+    <Compile Include="Feature.AzureConsumer\StatelessAzureQueueReader.cs" />
     <Compile Include="Feature.AzureConsumer\BlobExceptionLogger.cs" />
     <Compile Include="Feature.AzureConsumer\Events\FailedToAccessStorage.cs" />
     <Compile Include="Core.Partition\Events\FailedToConsumeMessage.cs" />

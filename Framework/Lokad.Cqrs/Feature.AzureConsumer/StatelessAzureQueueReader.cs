@@ -15,7 +15,7 @@ using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs.Feature.AzureConsumer
 {
-	public sealed class AzureReadQueue 
+	public sealed class StatelessAzureQueueReader 
 	{
 		readonly IMessageSerializer _serializer;
 		readonly ISystemObserver _observer;
@@ -29,7 +29,7 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 
 		const int RetryCount = 4;
 
-		public AzureReadQueue(
+		public StatelessAzureQueueReader(
 			CloudStorageAccount account,
 			string queueName,
 			ISystemObserver provider,

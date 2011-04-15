@@ -22,7 +22,7 @@ namespace Lokad.Cqrs.Core.Dispatch
 		{
 			var route = _routerRule(message);
 			var queue = _queueFactory.GetWriteQueue(route);
-			queue.SendMessage(message);
+			queue.PutMessage(message);
 		}
 
 		public void SpecifyRouter(Func<MessageEnvelope, string>  router)

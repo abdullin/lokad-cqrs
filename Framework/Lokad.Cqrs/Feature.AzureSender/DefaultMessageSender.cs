@@ -50,11 +50,11 @@ namespace Lokad.Cqrs.Feature.AzureSender
 
 			if (Transaction.Current == null)
 			{
-				_queue.SendMessage(envelope);
+				_queue.PutMessage(envelope);
 			}
 			else
 			{
-				var action = new CommitActionEnlistment(() => _queue.SendMessage(envelope));
+				var action = new CommitActionEnlistment(() => _queue.PutMessage(envelope));
 				Transaction.Current.EnlistVolatile(action, EnlistmentOptions.None);
 			}
 		}

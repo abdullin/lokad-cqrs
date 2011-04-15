@@ -175,7 +175,7 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 
 		protected override void Load(ContainerBuilder builder)
 		{
-			builder.RegisterType<AzureReadQueue>();
+			builder.RegisterType<StatelessAzureQueueReader>();
 
 			// make sure the dispatcher is registered
 			builder.RegisterType(_dispatcher.Item1);

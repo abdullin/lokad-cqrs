@@ -12,7 +12,7 @@ namespace Lokad.Cqrs.Feature.TestTransport
 			_queue = queue;
 		}
 
-		public void SendMessage(MessageEnvelope envelope)
+		public void PutMessage(MessageEnvelope envelope)
 		{
 			_queue.Add(envelope);
 		}

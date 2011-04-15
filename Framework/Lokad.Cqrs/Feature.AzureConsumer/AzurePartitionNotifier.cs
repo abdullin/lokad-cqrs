@@ -10,10 +10,10 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 	/// </summary>
 	public sealed class AzurePartitionNotifier : IPartitionScheduler
 	{
-		readonly AzureReadQueue[] _azureQueues;
-		readonly AzureFutureQueue[] _azureFutures;
+		readonly StatelessAzureQueueReader[] _azureQueues;
+		readonly StatelessAzureFutureList[] _azureFutures;
 
-		public AzurePartitionNotifier(AzureReadQueue[] azureQueues, AzureFutureQueue[] azureFutures, Func<uint, TimeSpan> waiter)
+		public AzurePartitionNotifier(StatelessAzureQueueReader[] azureQueues, StatelessAzureFutureList[] azureFutures, Func<uint, TimeSpan> waiter)
 		{
 			_azureQueues = azureQueues;
 			_azureFutures = azureFutures;
