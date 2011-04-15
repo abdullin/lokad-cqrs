@@ -134,7 +134,6 @@
     <Compile Include="Feature.DefaultInterfaces\IScheduledTask.cs" />
     <Compile Include="Core.Transport\MessageContext.cs" />
     <Compile Include="Feature.AzureConsumer\StatelessAzureQueueReader.cs" />
-    <Compile Include="Feature.AzureConsumer\BlobExceptionLogger.cs" />
     <Compile Include="Feature.AzureConsumer\Events\FailedToAccessStorage.cs" />
     <Compile Include="Core.Partition\Events\FailedToConsumeMessage.cs" />
     <Compile Include="Feature.AzureConsumer\Events\FailedToDeserializeMessage.cs" />
@@ -145,7 +144,6 @@
     <Compile Include="Core.Transport\GetMessageResultState.cs" />
     <Compile Include="Feature.AzureConsumer\HandleMessagesModule.cs" />
     <Compile Include="Feature.AzureConsumer\MessageDirectoryCreated.cs" />
-    <Compile Include="Feature.AzureConsumer\PrintMessageErrorDelegate.cs" />
     <Compile Include="Core.Partition\SingleThreadConsumingProcess.cs" />
     <Compile Include="Feature.Logging\NullSystemObserver.cs" />
     <Compile Include="Feature.Logging\TraceSystemObserver.cs" />

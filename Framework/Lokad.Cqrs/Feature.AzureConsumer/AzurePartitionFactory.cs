@@ -7,19 +7,17 @@
 
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Lokad.Cqrs.Core.Partition;
-using Lokad.Cqrs.Core.Transport;
 using Lokad.Cqrs.Feature.AzureSender;
 using Microsoft.WindowsAzure;
 
 namespace Lokad.Cqrs.Feature.AzureConsumer
 {
 	public sealed class AzurePartitionFactory : IPartitionInboxFactory, IEngineProcess
-		
+
 
 	{
 		readonly CloudStorageAccount _account;
@@ -75,28 +73,26 @@ namespace Lokad.Cqrs.Feature.AzureConsumer
 
 		public void Dispose()
 		{
-			
 		}
 
 		public void Initialize()
 		{
-			
 		}
 
 		public Task Start(CancellationToken token)
 		{
 			return Task.Factory.StartNew(() =>
-			{
-				while (!token.IsCancellationRequested)
 				{
-					foreach (var scheduler in _schedulers)
+					while (!token.IsCancellationRequested)
 					{
-						scheduler.DispatchDelayedMessages();
-					}
+						foreach (var scheduler in _schedulers)
+						{
+							scheduler.DispatchDelayedMessages();
+						}
 
-					token.WaitHandle.WaitOne(TimeSpan.FromSeconds(2));
-				}
-			});
+						token.WaitHandle.WaitOne(TimeSpan.FromSeconds(2));
+					}
+				});
 		}
 	}
 }
