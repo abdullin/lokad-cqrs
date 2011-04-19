@@ -67,32 +67,6 @@ namespace Lokad.Cqrs.Core.Directory
 			return true;
 		}
 
-
-		public DomainAssemblyScanner ConsumerInterfaceHas<TAttribute>()
-			where TAttribute : Attribute
-		{
-			var methods = AppDomain
-				.CurrentDomain
-				.GetAssemblies()
-				.Where(IsUserAssembly)
-				.SelectMany(e => e.GetTypes().Where(t => t.IsPublic))
-				.Where(t => t.IsInterface)
-				.Where(t => t.IsGenericTypeDefinition)
-				.SelectMany(t => t.GetMethods())
-				.Where(t => t.ContainsGenericParameters)
-				.Where(t => t.IsDefined(typeof (TAttribute), false))
-				.ToArray();
-
-			if (methods.Length == 0)
-				throw new InvalidOperationException("Was not able to find any generic methods marked with the attribute");
-			if (methods.Length > 1)
-				throw new InvalidOperationException("Only one method has to be marked with the attribute");
-
-			_consumingMethod = methods.First();
-
-			return this;
-		}
-
 		public IEnumerable<MessageMapping> Build()
 		{
 			if (null == _consumingMethod)
