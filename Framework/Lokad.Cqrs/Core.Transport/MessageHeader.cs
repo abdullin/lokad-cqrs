@@ -7,7 +7,6 @@ namespace Lokad.Cqrs.Core.Transport
 	{
 		public const int FixedSize = 28;
 		
-		public const int Schema2ReferenceFormat = 2011021802;
 		public const int Schema2DataFormat = 2011021801;
 
 		[ProtoMember(1, DataFormat = DataFormat.FixedSize, IsRequired = true)] public readonly int MessageFormatVersion;
@@ -28,11 +27,6 @@ namespace Lokad.Cqrs.Core.Transport
 		public static MessageHeader ForSchema2Data(long attributesLength, long contentLength)
 		{
 			return new MessageHeader(Schema2DataFormat, attributesLength, contentLength, 0);
-		}
-
-		public static MessageHeader ForSchema2Reference(long attributesLength, int checksum)
-		{
-			return new MessageHeader(Schema2ReferenceFormat, attributesLength, 0, checksum);
 		}
 
 // ReSharper disable UnusedMember.Local

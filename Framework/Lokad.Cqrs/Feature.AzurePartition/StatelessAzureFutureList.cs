@@ -100,7 +100,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 			foreach (var pair in pending)
 			{
 				var item = _container.GetBlobReference(pair.Key).DownloadByteArray();
-				var env = MessageUtil.ReadMessage(item, _serializer, n => null);
+				var env = MessageUtil.ReadMessage(item, _serializer);
 				atomicTranfer(env);
 				view.References.Remove(pair.Key);
 			}

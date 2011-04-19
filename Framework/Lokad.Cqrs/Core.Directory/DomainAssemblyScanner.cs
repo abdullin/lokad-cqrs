@@ -56,7 +56,7 @@ namespace Lokad.Cqrs.Core.Directory
 			return this;
 		}
 
-		static bool IsUserAssembly(Assembly a)
+		public static bool IsUserAssembly(Assembly a)
 		{
 			if (string.IsNullOrEmpty(a.FullName))
 				return false;
