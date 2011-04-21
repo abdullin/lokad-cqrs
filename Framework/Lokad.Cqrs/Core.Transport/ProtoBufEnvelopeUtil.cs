@@ -76,11 +76,11 @@ namespace Lokad.Cqrs.Core.Transport
 
 
 			EnvelopeContract envelope;
-			using (var stream = new MemoryStream(buffer, MessageHeader.FixedSize, (int) header.AttributesLength))
+			using (var stream = new MemoryStream(buffer, MessageHeader.FixedSize, (int) header.EnvelopeBytes))
 			{
 				envelope = Serializer.Deserialize<EnvelopeContract>(stream);
 			}
-			int index = MessageHeader.FixedSize + (int) header.AttributesLength;
+			int index = MessageHeader.FixedSize + (int) header.EnvelopeBytes;
 			//var count = (int)header.ContentLength;
 
 			var items = new MessageItem[envelope.Items.Length];
@@ -150,12 +150,12 @@ namespace Lokad.Cqrs.Core.Transport
 					stream.Seek(MessageHeader.FixedSize, SeekOrigin.Begin);
 					// save envelope attributes
 					Serializer.Serialize(stream, contract);
-					long attributesLength = stream.Position - MessageHeader.FixedSize;
+					long envelopeBytes = stream.Position - MessageHeader.FixedSize;
 					// copy data
 					content.WriteTo(stream);
 					// write the header
 					stream.Seek(0, SeekOrigin.Begin);
-					var header = new MessageHeader(MessageHeader.Schema2DataFormat, attributesLength, content.Position, 0);
+					var header = new MessageHeader(MessageHeader.Schema2DataFormat, envelopeBytes, 0);
 					header.WriteToStream(stream);
 					return stream.ToArray();
 				}

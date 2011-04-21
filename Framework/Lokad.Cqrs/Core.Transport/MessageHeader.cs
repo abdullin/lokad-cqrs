@@ -12,39 +12,34 @@ namespace Lokad.Cqrs.Core.Transport
 {
 	public sealed class MessageHeader
 	{
-		public const int FixedSize = 28;
+		public const int FixedSize = 20;
 
 		public const int Schema2DataFormat = 2011021801;
 
 		public readonly int MessageFormatVersion;
-		public readonly long ContentLength;
-		public readonly long AttributesLength;
+		public readonly long EnvelopeBytes;
 		public readonly long CheckSum;
 
-		public MessageHeader(int messageFormatVersion, long attributesLength, long contentLength, long checksum)
+		public MessageHeader(int messageFormatVersion, long envelopeBytes, long checksum)
 		{
 			MessageFormatVersion = messageFormatVersion;
-			AttributesLength = attributesLength;
-			ContentLength = contentLength;
+			EnvelopeBytes = envelopeBytes;
 			CheckSum = checksum;
 		}
 
 		public static MessageHeader ReadHeader(byte[] buffer)
 		{
 			var magic = BitConverter.ToInt32(buffer, 0);
-			var attributesLength = BitConverter.ToInt64(buffer, 4);
-			var contentLength = BitConverter.ToInt32(buffer, 4 + 8);
+			var envelopeBytes = BitConverter.ToInt64(buffer, 4);
+			var checkSum = BitConverter.ToInt64(buffer, 4 + 8);
 
-			var checkSum = BitConverter.ToInt64(buffer, 4 + 16);
-
-			return new MessageHeader(magic, attributesLength, contentLength, checkSum);
+			return new MessageHeader(magic, envelopeBytes, checkSum);
 		}
 
 		public void WriteToStream(MemoryStream stream)
 		{
 			stream.Write(BitConverter.GetBytes(MessageFormatVersion), 0, 4);
-			stream.Write(BitConverter.GetBytes(AttributesLength), 0, 8);
-			stream.Write(BitConverter.GetBytes(ContentLength), 0, 8);
+			stream.Write(BitConverter.GetBytes(EnvelopeBytes), 0, 8);
 			stream.Write(BitConverter.GetBytes(CheckSum), 0, 8);
 		}
 	}
