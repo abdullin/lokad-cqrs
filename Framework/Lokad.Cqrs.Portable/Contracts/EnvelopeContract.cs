@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using ProtoBuf;
 
-namespace Lokad.Cqrs.Core.Transport.Contracts_v2
+namespace Lokad.Cqrs.Contracts
 {
 	[DataContract]
 	public sealed class EnvelopeContract

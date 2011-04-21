@@ -67,8 +67,6 @@
     <Compile Include="Build\Engine\Events\HostInitialized.cs" />
     <Compile Include="Build\Engine\Events\HostStarted.cs" />
     <Compile Include="Build\Engine\Events\HostStopped.cs" />
-    <Compile Include="Core.Transport\Contracts_v2\EnvelopeAttributeContract.cs" />
-    <Compile Include="Core.Transport\Contracts_v2\EnvelopeAttributeTypeContract.cs" />
     <Compile Include="Core.Partition\IPartitionInbox.cs" />
     <Compile Include="Feature.AtomicStorage\Azure\AzureAtomicEntityWriter.cs" />
     <Compile Include="Feature.AtomicStorage\Azure\AzureAtomicSingletonReader.cs" />
@@ -85,10 +83,6 @@
     <Compile Include="Feature.AtomicStorage\IAtomicSingletonReader.cs" />
     <Compile Include="Feature.AtomicStorage\IAtomicSingletonWriter.cs" />
     <Compile Include="Feature.AtomicStorage\IAtomicEntityWriter.cs" />
-    <Compile Include="Core.Transport\Contracts_v2\ItemAttributeContract.cs" />
-    <Compile Include="Core.Transport\Contracts_v2\ItemAttributeTypeContract.cs" />
-    <Compile Include="Core.Transport\Contracts_v2\EnvelopeContract.cs" />
-    <Compile Include="Core.Transport\Contracts_v2\ItemContract.cs" />
     <Compile Include="Core.Transport\MessageAttributes.cs" />
     <Compile Include="Core.Transport\MessageEnvelope.cs" />
     <Compile Include="Core.Transport\MessageEnvelopeBuilder.cs" />
@@ -195,7 +189,15 @@
     <Compile Include="Core.Serialization\ProtoBufMessageSerializer.cs" />
     <Compile Include="Core.Serialization\ProtoBufUtil.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Core.Transport\Contracts_v2\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Lokad.Cqrs.Portable\Lokad.Cqrs.Portable.csproj">
+      <Project>{4E2E749C-4D6F-4EF8-8E9D-96D467306997}</Project>
+      <Name>Lokad.Cqrs.Portable</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

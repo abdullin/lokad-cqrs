@@ -1,4 +1,4 @@
-﻿namespace Lokad.Cqrs.Core.Transport.Contracts_v2
+﻿namespace Lokad.Cqrs.Contracts
 {
 	public enum ItemAttributeTypeContract
 	{

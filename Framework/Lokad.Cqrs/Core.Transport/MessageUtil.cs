@@ -10,7 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Lokad.Cqrs.Core.Transport.Contracts_v2;
+using Lokad.Cqrs.Contracts;
 using Lokad.Cqrs.Evil;
 using ProtoBuf;
 
