@@ -1,19 +1,20 @@
 ﻿using System;
+using System.Runtime.Serialization;
 using ProtoBuf;
 
 namespace Lokad.Cqrs.Core.Transport.Contracts_v2
 {
-	[ProtoContract]
+	[DataContract]
 	public sealed class Schema2EnvelopeContract
 	{
-		[ProtoMember(1)]
+		[DataMember(Order = 1)]
 		public readonly string EnvelopeId;
-		[ProtoMember(2)]
+		[DataMember(Order = 2)]
 		public readonly Schema2EnvelopeAttributeContract[] EnvelopeAttributes;
-		[ProtoMember(3)]
+		[DataMember(Order = 3)]
 		public readonly Schema2ItemContract[] Items;
 
-		[ProtoMember(4)]
+		[DataMember(Order = 4)]
 		public readonly DateTimeOffset DeliverOnUtc;
 
 		public Schema2EnvelopeContract(string envelopeId, Schema2EnvelopeAttributeContract[] envelopeAttributes, Schema2ItemContract[] items, DateTimeOffset deliverOnUtc)

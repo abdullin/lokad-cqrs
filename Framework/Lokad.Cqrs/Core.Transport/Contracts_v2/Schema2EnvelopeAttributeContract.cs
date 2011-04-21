@@ -1,17 +1,18 @@
-﻿using ProtoBuf;
+﻿using System.Runtime.Serialization;
+using ProtoBuf;
 
 namespace Lokad.Cqrs.Core.Transport.Contracts_v2
 {
-	[ProtoContract]
+	[DataContract]
 	public sealed class Schema2EnvelopeAttributeContract
 	{
-		[ProtoMember(1)]
+		[DataMember(Order = 1)]
 		public Schema2EnvelopeAttributeTypeContract Type { get; set; }
-		[ProtoMember(2)]
+		[DataMember(Order = 2)]
 		public string CustomName { get; set; }
-		[ProtoMember(3)]
+		[DataMember(Order = 3)]
 		public string StringValue { get; set; }
-		[ProtoMember(4)]
+		[DataMember(Order = 4)]
 		public long NumberValue { get; set; }
 	}
 }
