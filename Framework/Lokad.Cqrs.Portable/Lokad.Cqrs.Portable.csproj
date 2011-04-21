@@ -37,12 +37,14 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Envelope\EnvelopeConvert.cs" />
     <Compile Include="Envelope\EnvelopeAttributeContract.cs" />
     <Compile Include="Envelope\EnvelopeAttributeTypeContract.cs" />
     <Compile Include="Envelope\EnvelopeContract.cs" />
     <Compile Include="Envelope\ItemAttributeContract.cs" />
     <Compile Include="Envelope\ItemAttributeTypeContract.cs" />
     <Compile Include="Envelope\ItemContract.cs" />
+    <Compile Include="Envelope\EnvelopeAttributes.cs" />
     <Compile Include="IEngineProcess.cs" />
     <Compile Include="IEnvelopeSerializer.cs" />
     <Compile Include="IKnowSerializationTypes.cs" />

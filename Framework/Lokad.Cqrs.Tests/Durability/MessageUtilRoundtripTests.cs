@@ -31,7 +31,7 @@ namespace Lokad.Cqrs.Durability
 		{
 			var builder = new MessageEnvelopeBuilder("my-id");
 			builder.Attributes["Custom"] = 1;
-			builder.Attributes[MessageAttributes.Envelope.CreatedUtc] = DateTimeOffset.UtcNow;
+			builder.Attributes[EnvelopeAttributes.CreatedUtc] = DateTimeOffset.UtcNow;
 
 			builder.AddItem(new MyMessage(42));
 

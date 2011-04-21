@@ -42,7 +42,7 @@ namespace Lokad.Cqrs.Core.Transport
 				builder.AddItem(item);
 			}
 			var created = DateTimeOffset.UtcNow;
-			builder.Attributes.Add(MessageAttributes.Envelope.CreatedUtc, created);
+			builder.Attributes.Add(EnvelopeAttributes.CreatedUtc, created);
 			return builder;
 		}
 

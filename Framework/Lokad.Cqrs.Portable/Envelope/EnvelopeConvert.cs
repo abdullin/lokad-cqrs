@@ -4,8 +4,10 @@ using Lokad.Cqrs.Envelope;
 
 namespace Lokad.Cqrs.Core.Transport
 {
-	public static class ContractConvert
+	public static class EnvelopeConvert
 	{
+
+
 		public static IDictionary<string, object> AttributesFromContract(IEnumerable<EnvelopeAttributeContract> attributes)
 		{
 			var dict = new Dictionary<string, object>();
@@ -15,10 +17,10 @@ namespace Lokad.Cqrs.Core.Transport
 				switch (attribute.Type)
 				{
 					case EnvelopeAttributeTypeContract.CreatedUtc:
-						dict[MessageAttributes.Envelope.CreatedUtc] = DateTimeOffset.Parse(attribute.StringValue);
+						dict[EnvelopeAttributes.CreatedUtc] = DateTimeOffset.Parse(attribute.StringValue);
 						break;
 					case EnvelopeAttributeTypeContract.Sender:
-						dict[MessageAttributes.Envelope.Sender] = attribute.CustomName;
+						dict[EnvelopeAttributes.Sender] = attribute.CustomName;
 						break;
 					case EnvelopeAttributeTypeContract.CustomString:
 						dict[attribute.CustomName] = attribute.StringValue;
@@ -84,14 +86,14 @@ namespace Lokad.Cqrs.Core.Transport
 			{
 				switch (attrib.Key)
 				{
-					case MessageAttributes.Envelope.CreatedUtc:
+					case EnvelopeAttributes.CreatedUtc:
 						contracts[pos] = new EnvelopeAttributeContract
 							{
 								Type = EnvelopeAttributeTypeContract.CreatedUtc,
 								StringValue = ((DateTimeOffset)attrib.Value).ToString("o")
 							};
 						break;
-					case MessageAttributes.Envelope.Sender:
+					case EnvelopeAttributes.Sender:
 						contracts[pos] = new EnvelopeAttributeContract
 							{
 								Type = EnvelopeAttributeTypeContract.Sender,

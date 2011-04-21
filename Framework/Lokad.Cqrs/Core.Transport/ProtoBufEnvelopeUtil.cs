@@ -88,7 +88,7 @@ namespace Lokad.Cqrs.Core.Transport
 			for (int i = 0; i < items.Length; i++)
 			{
 				var itemContract = envelope.Items[i];
-				var attributes = ContractConvert.AttributesFromContract(itemContract.Attributes);
+				var attributes = EnvelopeConvert.AttributesFromContract(itemContract.Attributes);
 				Type contractType;
 				if (serializer.TryGetContractTypeByName(itemContract.ContractName, out contractType))
 				{
@@ -110,7 +110,7 @@ namespace Lokad.Cqrs.Core.Transport
 				index += itemContract.ContentSize;
 			}
 
-			var envelopeAttributes = ContractConvert.AttributesFromContract(envelope.EnvelopeAttributes);
+			var envelopeAttributes = EnvelopeConvert.AttributesFromContract(envelope.EnvelopeAttributes);
 			return new MessageEnvelope(envelope.EnvelopeId, envelopeAttributes, items, envelope.DeliverOnUtc);
 		}
 
@@ -133,13 +133,13 @@ namespace Lokad.Cqrs.Core.Transport
 
 					serializer.Serialize(item.Content, content);
 					int size = (int) content.Position - position;
-					var attribContracts = ContractConvert.ItemAttributesToContract(item.GetAllAttributes());
+					var attribContracts = EnvelopeConvert.ItemAttributesToContract(item.GetAllAttributes());
 					itemContracts[i] = new ItemContract(name, size, attribContracts);
 
 					position += size;
 				}
 
-				var envelopeAttribs = ContractConvert.EnvelopeAttributesToContract(envelope.GetAllAttributes());
+				var envelopeAttribs = EnvelopeConvert.EnvelopeAttributesToContract(envelope.GetAllAttributes());
 
 
 				var contract = new EnvelopeContract(envelope.EnvelopeId, envelopeAttribs, itemContracts, envelope.DeliverOn);
