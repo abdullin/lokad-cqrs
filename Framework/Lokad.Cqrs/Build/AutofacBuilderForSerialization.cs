@@ -7,6 +7,7 @@
 
 using Autofac;
 using Lokad.Cqrs.Core.Serialization;
+using Lokad.Cqrs.Core.Transport;
 
 namespace Lokad.Cqrs.Build
 {
@@ -23,6 +24,14 @@ namespace Lokad.Cqrs.Build
 				.As<IMessageSerializer>().SingleInstance();
 		}
 
+		public void RegisterEnvelopeSerializer<TEnvelopeSerializer>() where TEnvelopeSerializer : IEnvelopeSerializer
+		{
+			Builder
+				.RegisterType<TEnvelopeSerializer>()
+				.As<IEnvelopeSerializer>()
+				.SingleInstance();
+		}
+
 		public void UseDataContractSerializer()
 		{
 			RegisterSerializer<DataContractMessageSerializer>();
@@ -36,6 +45,7 @@ namespace Lokad.Cqrs.Build
 		public void UseProtoBufMessageSerializer()
 		{
 			RegisterSerializer<ProtoBufMessageSerializer>();
+			RegisterEnvelopeSerializer<ProtoBufEnvelopeSerializer>();
 		}
 	}
 }

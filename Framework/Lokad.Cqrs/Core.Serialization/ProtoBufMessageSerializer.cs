@@ -20,7 +20,6 @@ namespace Lokad.Cqrs.Core.Serialization
 		readonly IDictionary<string, Type> _contract2Type = new Dictionary<string, Type>();
 		readonly IDictionary<Type, string> _type2Contract = new Dictionary<Type, string>();
 		readonly IDictionary<Type, IFormatter> _type2Formatter = new Dictionary<Type, IFormatter>();
-
 		
 		public ProtoBufMessageSerializer(ICollection<Type> knownTypes)
 		{
