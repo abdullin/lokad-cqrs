@@ -42,6 +42,16 @@
     <Compile Include="Contracts\ItemAttributeContract.cs" />
     <Compile Include="Contracts\ItemAttributeTypeContract.cs" />
     <Compile Include="Contracts\ItemContract.cs" />
+    <Compile Include="IEngineProcess.cs" />
+    <Compile Include="IEnvelopeSerializer.cs" />
+    <Compile Include="IKnowSerializationTypes.cs" />
+    <Compile Include="IMessageSender.cs" />
+    <Compile Include="IMessageSerializer.cs" />
+    <Compile Include="ISystemEvent.cs" />
+    <Compile Include="ISystemObserver.cs" />
+    <Compile Include="MessageEnvelope.cs" />
+    <Compile Include="MessageItem.cs" />
+    <Compile Include="MessageReference.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -48,14 +48,14 @@ namespace Lokad.Cqrs.Core.Serialization
 			return _serializer.Deserialize(sourceStream, type);
 		}
 
-		Maybe<string> IMessageSerializer.GetContractNameByType(Type messageType)
+		bool IMessageSerializer.TryGetContractNameByType(Type messageType, out string contractName)
 		{
-			return _serializer.GetContractNameByType(messageType);
+			return _serializer.TryGetContractNameByType(messageType, out contractName);
 		}
 
-		Maybe<Type> IMessageSerializer.GetTypeByContractName(string contractName)
+		bool IMessageSerializer.TryGetContractTypeByName(string contractName, out Type contractType)
 		{
-			return _serializer.GetTypeByContractName(contractName);
+			return _serializer.TryGetContractTypeByName(contractName, out contractType);
 		}
 	}
 }

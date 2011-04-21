@@ -66,14 +66,24 @@ namespace Lokad.Cqrs.Core.Serialization
 				.Deserialize(source);
 		}
 
-		public Maybe<string> GetContractNameByType(Type messageType)
+		/// <summary>
+		/// Gets the contract name by the type
+		/// </summary>
+		/// <param name="messageType">Type of the message.</param>
+		/// <returns>contract name (if found)</returns>
+		public bool TryGetContractNameByType(Type messageType, out string contractName)
 		{
-			return _type2Contract.GetValue(messageType);
+			return _type2Contract.TryGetValue(messageType, out contractName);
 		}
 
-		public Maybe<Type> GetTypeByContractName(string contractName)
+		/// <summary>
+		/// Gets the type by contract name.
+		/// </summary>
+		/// <param name="contractName">Name of the contract.</param>
+		/// <returns>type that could be used for contract deserialization (if found)</returns>
+		public bool TryGetContractTypeByName(string contractName, out Type contractType)
 		{
-			return _contract2Type.GetValue(contractName);
+			return _contract2Type.TryGetValue(contractName, out contractType);
 		}
 	}
 }

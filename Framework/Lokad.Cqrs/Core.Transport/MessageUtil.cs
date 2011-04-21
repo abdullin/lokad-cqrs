@@ -242,17 +242,16 @@ namespace Lokad.Cqrs.Core.Transport
 
 			for (int i = 0; i < items.Length; i++)
 			{
-				ItemContract itemContract = envelope.Items[i];
-				Maybe<Type> type = serializer.GetTypeByContractName(itemContract.ContractName);
-				IDictionary<string, object> attributes = AttributesFromContract(itemContract.Attributes);
-
-				if (type.HasValue)
+				var itemContract = envelope.Items[i];
+				var attributes = AttributesFromContract(itemContract.Attributes);
+				Type contractType;
+				if (serializer.TryGetContractTypeByName(itemContract.ContractName, out contractType))
 				{
 					using (var stream = new MemoryStream(buffer, index, itemContract.ContentSize))
 					{
-						object instance = serializer.Deserialize(stream, type.Value);
+						object instance = serializer.Deserialize(stream, contractType);
 
-						items[i] = new MessageItem(type.Value, instance, attributes);
+						items[i] = new MessageItem(contractType, instance, attributes);
 					}
 				}
 				else
@@ -280,8 +279,13 @@ namespace Lokad.Cqrs.Core.Transport
 				for (int i = 0; i < envelope.Items.Length; i++)
 				{
 					var item = envelope.Items[i];
-					string name = serializer.GetContractNameByType(item.MappedType)
-						.ExposeException("Failed to find contract name for {0}", item.MappedType);
+
+					string name;
+					if (!serializer.TryGetContractNameByType(item.MappedType, out name))
+					{
+						throw Errors.InvalidOperation("Failed to find contract name for {0}", item.MappedType);
+					}
+
 					serializer.Serialize(item.Content, content);
 					int size = (int) content.Position - position;
 					ItemAttributeContract[] attribContracts = ItemAttributesToContract(item.GetAllAttributes());

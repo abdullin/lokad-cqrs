@@ -8,7 +8,6 @@
 
 using System;
 using System.IO;
-using Lokad.Cqrs.Evil;
 
 namespace Lokad.Cqrs
 {
@@ -36,13 +35,13 @@ namespace Lokad.Cqrs
 		/// </summary>
 		/// <param name="messageType">Type of the message.</param>
 		/// <returns>contract name (if found)</returns>
-		Maybe<string> GetContractNameByType(Type messageType);
+		bool TryGetContractNameByType(Type messageType, out string contractName);
 
 		/// <summary>
 		/// Gets the type by contract name.
 		/// </summary>
 		/// <param name="contractName">Name of the contract.</param>
 		/// <returns>type that could be used for contract deserialization (if found)</returns>
-		Maybe<Type> GetTypeByContractName(string contractName);
+		bool TryGetContractTypeByName(string contractName, out Type contractType);
 	}
 }

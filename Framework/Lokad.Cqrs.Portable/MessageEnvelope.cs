@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using Lokad.Cqrs.Evil;
 
 namespace Lokad.Cqrs.Core.Transport
 {
@@ -27,12 +26,6 @@ namespace Lokad.Cqrs.Core.Transport
 			DeliverOn = deliverOn;
 			_attributes = attributes;
 			Items = items;
-		}
-
-		public Maybe<TData> GetAttributeValue<TData>(string name)
-			where TData : struct
-		{
-			return _attributes.GetValue(name).Convert(o => (TData)o);
 		}
 
 		public object GetAttribute(string name)

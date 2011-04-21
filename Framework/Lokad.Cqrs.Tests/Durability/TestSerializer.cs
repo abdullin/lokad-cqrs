@@ -18,14 +18,16 @@ namespace Lokad.Cqrs.Durability
 			return Formatter.Deserialize(sourceStream);
 		}
 
-		public Maybe<string> GetContractNameByType(Type messageType)
+		public bool TryGetContractNameByType(Type messageType, out string contractName)
 		{
-			return messageType.FullName;
+			contractName = messageType.FullName;
+			return true;
 		}
 
-		public Maybe<Type> GetTypeByContractName(string contractName)
+		public bool TryGetContractTypeByName(string contractName, out Type contractType)
 		{
-			return Type.GetType(contractName);
+			contractType = Type.GetType(contractName);
+			return true;
 		}
 
 		public static IMessageSerializer Instance = new TestSerializer();
