@@ -14,16 +14,16 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Sender
 	public sealed class AzureWriteQueueFactory : IWriteQueueFactory
 	{
 		readonly CloudStorageAccount _account;
-		readonly IEnvelopeSerializer _serializer;
+		readonly IMessageStreamer _streamer;
 		
 		readonly ConcurrentDictionary<string, IQueueWriter> _writeQueues = new ConcurrentDictionary<string, IQueueWriter>();
 
 		public AzureWriteQueueFactory(
 			CloudStorageAccount account,
-			IEnvelopeSerializer serializer)
+			IMessageStreamer streamer)
 		{
 			_account = account;
-			_serializer = serializer;
+			_streamer = streamer;
 		}
 
 
@@ -31,7 +31,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Sender
 		{
 			return _writeQueues.GetOrAdd(queueName, name =>
 				{
-					var v = new StatelessAzureQueueWriter(_serializer, _account, queueName);
+					var v = new StatelessAzureQueueWriter(_streamer, _account, queueName);
 					v.Init();
 					return v;
 				});

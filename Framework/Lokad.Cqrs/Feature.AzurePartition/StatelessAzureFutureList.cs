@@ -12,16 +12,16 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 	public sealed class StatelessAzureFutureList
 	{
 		readonly ISystemObserver _observer;
-		readonly IEnvelopeSerializer _serializer;
+		readonly IMessageStreamer _streamer;
 		
 		readonly CloudBlobContainer _container;
 		readonly CloudBlob _blob;
 
 
-		public StatelessAzureFutureList(CloudStorageAccount account, string queueName, ISystemObserver observer, IEnvelopeSerializer serializer)
+		public StatelessAzureFutureList(CloudStorageAccount account, string queueName, ISystemObserver observer, IMessageStreamer streamer)
 		{
 			_observer = observer;
-			_serializer = serializer;
+			_streamer = streamer;
 			_container = account.CreateCloudBlobClient().GetContainerReference(queueName);
 			_blob = _container.GetBlobReference("__schedule.bin");
 		}
@@ -61,7 +61,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 				return;
 			}
 
-			var bytes = _serializer.SaveDataMessage(envelope);
+			var bytes = _streamer.SaveDataMessage(envelope);
 			_container.GetBlobReference(id).UploadByteArray(bytes);
 			
 			view.References.Add(id, envelope.DeliverOn);
@@ -102,7 +102,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 			foreach (var pair in pending)
 			{
 				var item = _container.GetBlobReference(pair.Key).DownloadByteArray();
-				var env = _serializer.ReadDataMessage(item);
+				var env = _streamer.ReadDataMessage(item);
 				atomicTranfer(env);
 				view.References.Remove(pair.Key);
 			}

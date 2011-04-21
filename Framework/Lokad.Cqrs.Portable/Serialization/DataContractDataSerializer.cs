@@ -19,7 +19,7 @@ namespace Lokad.Cqrs.Serialization
 	/// Message serializer for the <see cref="DataContractSerializer"/>
 	/// </summary>
 	
-	public class DataContractMessageSerializer : IMessageSerializer
+	public class DataContractDataSerializer : IDataSerializer
 	{
 		readonly IDictionary<string, Type> _contract2Type = new Dictionary<string, Type>();
 		readonly ICollection<Type> _knownTypes;
@@ -27,10 +27,10 @@ namespace Lokad.Cqrs.Serialization
 
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="DataContractMessageSerializer"/> class.
+		/// Initializes a new instance of the <see cref="DataContractDataSerializer"/> class.
 		/// </summary>
 		/// <param name="knownTypes">The known types.</param>
-		public DataContractMessageSerializer(ICollection<Type> knownTypes)
+		public DataContractDataSerializer(ICollection<Type> knownTypes)
 		{
 			if (knownTypes.Count == 0)
 				throw new InvalidOperationException("DataContractMessageSerializer requires some known types to serialize. Have you forgot to supply them?");
@@ -48,10 +48,10 @@ namespace Lokad.Cqrs.Serialization
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="DataContractMessageSerializer"/> class.
+		/// Initializes a new instance of the <see cref="DataContractDataSerializer"/> class.
 		/// </summary>
 		/// <param name="know">The know.</param>
-		public DataContractMessageSerializer(IEnumerable<IKnowSerializationTypes> know)
+		public DataContractDataSerializer(IEnumerable<IKnowSerializationTypes> know)
 			: this(new HashSet<Type>(know.SelectMany(t => t.GetKnownTypes())))
 		{
 		}

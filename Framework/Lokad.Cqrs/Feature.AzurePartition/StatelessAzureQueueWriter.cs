@@ -20,7 +20,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 		CloudQueueMessage PrepareCloudMessage(MessageEnvelope builder)
 		{
 
-			var buffer = _serializer.SaveDataMessage(builder);
+			var buffer = _streamer.SaveDataMessage(builder);
 			if (buffer.Length < CloudQueueLimit)
 			{
 				// write message to queue
@@ -30,13 +30,13 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 			var referenceId = DateTimeOffset.UtcNow.ToString(DateFormatInBlobName) + "-" + builder.EnvelopeId;
 			_cloudBlob.GetBlobReference(referenceId).UploadByteArray(buffer);
 			var reference = new MessageReference(builder.EnvelopeId, _cloudBlob.Uri.ToString(), referenceId);
-			var blob = _serializer.SaveReferenceMessage(reference);
+			var blob = _streamer.SaveReferenceMessage(reference);
 			return new CloudQueueMessage(blob);
 		}
 
-		public StatelessAzureQueueWriter(IEnvelopeSerializer serializer, CloudStorageAccount account, string queueName)
+		public StatelessAzureQueueWriter(IMessageStreamer streamer, CloudStorageAccount account, string queueName)
 		{
-			_serializer = serializer;
+			_streamer = streamer;
 			var blobClient = account.CreateCloudBlobClient();
 			blobClient.RetryPolicy = RetryPolicies.NoRetry();
 
@@ -55,7 +55,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 
 
 		const string DateFormatInBlobName = "yyyy-MM-dd-HH-mm-ss-ffff";
-		readonly IEnvelopeSerializer _serializer;
+		readonly IMessageStreamer _streamer;
 		readonly CloudBlobContainer _cloudBlob;
 		readonly CloudQueue _queue;
 	}

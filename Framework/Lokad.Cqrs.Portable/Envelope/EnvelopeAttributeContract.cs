@@ -1,8 +1,9 @@
-﻿using System.Runtime.Serialization;
+﻿using System;
+using System.Runtime.Serialization;
 
 namespace Lokad.Cqrs.Envelope
 {
-	[DataContract]
+	[DataContract, Serializable]
 	public sealed class EnvelopeAttributeContract
 	{
 		[DataMember(Order = 1)]

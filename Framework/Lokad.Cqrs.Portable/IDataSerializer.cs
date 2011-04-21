@@ -14,7 +14,7 @@ namespace Lokad.Cqrs
 	/// <summary>
 	/// Joins data serializer and contract mapper
 	/// </summary>
-	public interface IMessageSerializer 
+	public interface IDataSerializer 
 	{
 		/// <summary>
 		/// Serializes the object to the specified stream

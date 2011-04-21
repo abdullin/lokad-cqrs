@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 
 namespace Lokad.Cqrs.Envelope
 {
-	[DataContract]
+	[DataContract, Serializable]
 	public sealed class EnvelopeContract
 	{
 		[DataMember(Order = 1)]

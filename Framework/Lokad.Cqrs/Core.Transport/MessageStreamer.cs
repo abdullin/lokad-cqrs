@@ -9,18 +9,33 @@ using System;
 using System.IO;
 using System.Text;
 using Lokad.Cqrs.Envelope;
-using Lokad.Cqrs.Evil;
-using ProtoBuf;
+
+//using ProtoBuf;
 
 namespace Lokad.Cqrs.Core.Transport
 {
 	
-	public static class ProtoBufEnvelopeUtil
+	public interface IEnvelopeSerializer
+	{
+		void SerializeEnvelope(Stream stream, EnvelopeContract contract);
+		EnvelopeContract DeserializeEnvelope(Stream stream);
+	}
+
+	public sealed class MessageStreamer : IMessageStreamer
 	{
 		const string RefernceSignature = "[cqrs-ref-r1]";
 		static readonly byte[] Reference = Encoding.Unicode.GetBytes(RefernceSignature);
 
-		public static byte[] SaveReferenceMessage(MessageReference reference)
+		readonly IEnvelopeSerializer _envelopeSerializer;
+		readonly IDataSerializer _dataSerializer;
+
+		public MessageStreamer(IEnvelopeSerializer envelopeSerializer, IDataSerializer dataSerializer)
+		{
+			_envelopeSerializer = envelopeSerializer;
+			_dataSerializer = dataSerializer;
+		}
+
+		public byte[] SaveReferenceMessage(MessageReference reference)
 		{
 			// important to use \r\n
 			var builder = new StringBuilder();
@@ -34,7 +49,7 @@ namespace Lokad.Cqrs.Core.Transport
 		}
 
 
-		public static byte[] SaveDataMessage(MessageEnvelope builder, IMessageSerializer serializer)
+		public byte[] SaveDataMessage(MessageEnvelope builder)
 		{
 			//  string contract, Guid messageId, Uri sender, 
 			var itemContracts = new ItemContract[builder.Items.Length];
@@ -46,12 +61,13 @@ namespace Lokad.Cqrs.Core.Transport
 					var item = builder.Items[i];
 
 					string name;
-					if (!serializer.TryGetContractNameByType(item.MappedType, out name))
+					if (!_dataSerializer.TryGetContractNameByType(item.MappedType, out name))
 					{
-						throw Errors.InvalidOperation("Failed to find contract name for {0}", item.MappedType);
+						var error = string.Format("Failed to find contract name for {0}", item.MappedType);
+						throw new InvalidOperationException(error);
 					}
 
-					serializer.Serialize(item.Content, content);
+					_dataSerializer.Serialize(item.Content, content);
 					int size = (int) content.Position - position;
 					var attribContracts = EnvelopeConvert.ItemAttributesToContract(item.GetAllAttributes());
 					itemContracts[i] = new ItemContract(name, size, attribContracts);
@@ -69,7 +85,7 @@ namespace Lokad.Cqrs.Core.Transport
 					// skip header
 					stream.Seek(MessageHeader.FixedSize, SeekOrigin.Begin);
 					// save envelope attributes
-					Serializer.Serialize(stream, contract);
+					_envelopeSerializer.SerializeEnvelope(stream, contract);
 					long envelopeBytes = stream.Position - MessageHeader.FixedSize;
 					// copy data
 					content.WriteTo(stream);
@@ -82,7 +98,7 @@ namespace Lokad.Cqrs.Core.Transport
 			}
 		}
 
-		public static bool TryReadAsReference(byte[] buffer, out MessageReference reference)
+		public  bool TryReadAsReference(byte[] buffer, out MessageReference reference)
 		{
 			if (BytesStart(buffer, Reference))
 			{
@@ -110,7 +126,7 @@ namespace Lokad.Cqrs.Core.Transport
 		}
 
 
-		public static MessageEnvelope ReadDataMessage(byte[] buffer, IMessageSerializer serializer)
+		public MessageEnvelope ReadDataMessage(byte[] buffer)
 		{
 			var header = MessageHeader.ReadHeader(buffer);
 
@@ -122,7 +138,7 @@ namespace Lokad.Cqrs.Core.Transport
 			EnvelopeContract envelope;
 			using (var stream = new MemoryStream(buffer, MessageHeader.FixedSize, (int) header.EnvelopeBytes))
 			{
-				envelope = Serializer.Deserialize<EnvelopeContract>(stream);
+				envelope = _envelopeSerializer.DeserializeEnvelope(stream);
 			}
 			int index = MessageHeader.FixedSize + (int) header.EnvelopeBytes;
 			//var count = (int)header.ContentLength;
@@ -134,11 +150,11 @@ namespace Lokad.Cqrs.Core.Transport
 				var itemContract = envelope.Items[i];
 				var attributes = EnvelopeConvert.AttributesFromContract(itemContract.Attributes);
 				Type contractType;
-				if (serializer.TryGetContractTypeByName(itemContract.ContractName, out contractType))
+				if (_dataSerializer.TryGetContractTypeByName(itemContract.ContractName, out contractType))
 				{
 					using (var stream = new MemoryStream(buffer, index, itemContract.ContentSize))
 					{
-						object instance = serializer.Deserialize(stream, contractType);
+						object instance = _dataSerializer.Deserialize(stream, contractType);
 
 						items[i] = new MessageItem(contractType, instance, attributes);
 					}

@@ -18,32 +18,32 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
 	public sealed class AzurePartitionFactory : IPartitionInboxFactory, IEngineProcess
 	{
 		readonly CloudStorageAccount _account;
-		readonly IEnvelopeSerializer _serializer;
+		readonly IMessageStreamer _streamer;
 		readonly ISystemObserver _observer;
 
 		readonly ConcurrentBag<AzurePartitionScheduler> _schedulers = new ConcurrentBag<AzurePartitionScheduler>();
 
 
-		public AzurePartitionFactory(CloudStorageAccount account, IEnvelopeSerializer serializer,
+		public AzurePartitionFactory(CloudStorageAccount account, IMessageStreamer streamer,
 			ISystemObserver observer)
 		{
 			_account = account;
-			_serializer = serializer;
+			_streamer = streamer;
 			_observer = observer;
 		}
 
 		public IPartitionInbox GetNotifier(string[] queueNames)
 		{
 			var queues = queueNames
-				.Select(name => new StatelessAzureQueueReader(_account, name, _observer, _serializer))
+				.Select(name => new StatelessAzureQueueReader(_account, name, _observer, _streamer))
 				.ToArray();
 
 			var futures = queueNames
-				.Select(name => new StatelessAzureFutureList(_account, name, _observer, _serializer))
+				.Select(name => new StatelessAzureFutureList(_account, name, _observer, _streamer))
 				.ToArray();
 
 			var writers = queueNames
-				.Select(name => new StatelessAzureQueueWriter(_serializer, _account, name))
+				.Select(name => new StatelessAzureQueueWriter(_streamer, _account, name))
 				.ToArray();
 
 			_schedulers.Add(new AzurePartitionScheduler(writers, futures));

@@ -12,11 +12,11 @@ namespace Lokad.Cqrs.Core.Serialization
 	/// <summary>
 	/// Default message serializer that attempts to automatically detect serialization format.
 	/// </summary>
-	public sealed class AutoDetectingMessageSerializer : IMessageSerializer
+	public sealed class AutoDetectingDataSerializer : IDataSerializer
 	{
-		readonly IMessageSerializer _serializer;
+		readonly IDataSerializer _serializer;
 
-		public AutoDetectingMessageSerializer(IEnumerable<IKnowSerializationTypes> providers)
+		public AutoDetectingDataSerializer(IEnumerable<IKnowSerializationTypes> providers)
 		{
 			var types = providers.SelectMany(p => p.GetKnownTypes()).ToArray();
 
@@ -31,30 +31,30 @@ namespace Lokad.Cqrs.Core.Serialization
 			if (protoCount > 0)
 			{
 				// protobuf takes precedence
-				_serializer = new ProtoBufMessageSerializer(types);
+				_serializer = new ProtoBufDataSerializer(types);
 			}
 			else
 			{
-				_serializer = new DataContractMessageSerializer(types);
+				_serializer = new DataContractDataSerializer(types);
 			}
 		}
 
-		void IMessageSerializer.Serialize(object instance, Stream destinationStream)
+		void IDataSerializer.Serialize(object instance, Stream destinationStream)
 		{
 			_serializer.Serialize(instance, destinationStream);
 		}
 
-		object IMessageSerializer.Deserialize(Stream sourceStream, Type type)
+		object IDataSerializer.Deserialize(Stream sourceStream, Type type)
 		{
 			return _serializer.Deserialize(sourceStream, type);
 		}
 
-		bool IMessageSerializer.TryGetContractNameByType(Type messageType, out string contractName)
+		bool IDataSerializer.TryGetContractNameByType(Type messageType, out string contractName)
 		{
 			return _serializer.TryGetContractNameByType(messageType, out contractName);
 		}
 
-		bool IMessageSerializer.TryGetContractTypeByName(string contractName, out Type contractType)
+		bool IDataSerializer.TryGetContractTypeByName(string contractName, out Type contractType)
 		{
 			return _serializer.TryGetContractTypeByName(contractName, out contractType);
 		}

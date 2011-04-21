@@ -17,7 +17,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 {
 	public sealed class StatelessAzureQueueReader 
 	{
-		readonly IEnvelopeSerializer _serializer;
+		readonly IMessageStreamer _streamer;
 		readonly ISystemObserver _observer;
 
 		readonly CloudBlobContainer _cloudBlob;
@@ -33,7 +33,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 			CloudStorageAccount account,
 			string queueName,
 			ISystemObserver provider,
-			IEnvelopeSerializer serializer)
+			IMessageStreamer streamer)
 		{
 			var blobClient = account.CreateCloudBlobClient();
 			blobClient.RetryPolicy = RetryPolicies.NoRetry();
@@ -53,7 +53,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 			_observer = provider;
 
 			_queueName = queueName;
-			_serializer = serializer;
+			_streamer = streamer;
 		}
 
 		
@@ -117,7 +117,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 			var buffer = message.AsBytes;
 
 			MessageReference reference;
-			if (_serializer.TryReadAsReference(buffer, out reference))
+			if (_streamer.TryReadAsReference(buffer, out reference))
 			{
 				if (reference.StorageContainer != _cloudBlob.Uri.ToString())
 					throw new InvalidOperationException("Wrong container used!");
@@ -125,7 +125,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 				buffer = blob.DownloadByteArray();
 			}
 
-			var m = _serializer.ReadDataMessage(buffer);
+			var m = _streamer.ReadDataMessage(buffer);
 			return new MessageContext(message, m, _queueName);
 		}
 

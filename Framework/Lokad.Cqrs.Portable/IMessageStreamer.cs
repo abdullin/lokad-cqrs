@@ -8,7 +8,7 @@
 
 namespace Lokad.Cqrs
 {
-	public interface IEnvelopeSerializer
+	public interface IMessageStreamer
 	{
 		byte[] SaveReferenceMessage(MessageReference reference);
 		byte[] SaveDataMessage(MessageEnvelope builder);

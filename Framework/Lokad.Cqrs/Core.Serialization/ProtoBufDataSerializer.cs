@@ -11,17 +11,20 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
+using Lokad.Cqrs.Core.Transport;
+using Lokad.Cqrs.Envelope;
 using Lokad.Cqrs.Evil;
+using ProtoBuf;
 
 namespace Lokad.Cqrs.Core.Serialization
 {
-	public class ProtoBufMessageSerializer : IMessageSerializer
+	public class ProtoBufDataSerializer : IDataSerializer
 	{
 		readonly IDictionary<string, Type> _contract2Type = new Dictionary<string, Type>();
 		readonly IDictionary<Type, string> _type2Contract = new Dictionary<Type, string>();
 		readonly IDictionary<Type, IFormatter> _type2Formatter = new Dictionary<Type, IFormatter>();
 		
-		public ProtoBufMessageSerializer(ICollection<Type> knownTypes)
+		public ProtoBufDataSerializer(ICollection<Type> knownTypes)
 		{
 			if (knownTypes.Count == 0)
 				throw new InvalidOperationException("ProtoBuf requires some known types to serialize. Have you forgot to supply them?");
@@ -37,17 +40,17 @@ namespace Lokad.Cqrs.Core.Serialization
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ProtoBufMessageSerializer"/> class.
+		/// Initializes a new instance of the <see cref="ProtoBufDataSerializer"/> class.
 		/// </summary>
 		/// <param name="types">The types.</param>
 		
-		public ProtoBufMessageSerializer(IEnumerable<IKnowSerializationTypes> types) : this (types.SelectMany(t => t.GetKnownTypes()).ToSet())
+		public ProtoBufDataSerializer(IEnumerable<IKnowSerializationTypes> types) : this (types.SelectMany(t => t.GetKnownTypes()).ToSet())
 		{
 		}
 
-		public static ProtoBufMessageSerializer For<T>()
+		public static ProtoBufDataSerializer For<T>()
 		{
-			return new ProtoBufMessageSerializer(new[] { typeof(T)});
+			return new ProtoBufDataSerializer(new[] { typeof(T)});
 		}
 
 		public void Serialize(object instance, Stream destination)
@@ -84,6 +87,19 @@ namespace Lokad.Cqrs.Core.Serialization
 		public bool TryGetContractTypeByName(string contractName, out Type contractType)
 		{
 			return _contract2Type.TryGetValue(contractName, out contractType);
+		}
+	}
+
+	public sealed class ProtoBufEnvelopeSerializer : IEnvelopeSerializer
+	{
+		public void SerializeEnvelope(Stream stream, EnvelopeContract contract)
+		{
+			Serializer.Serialize(stream, contract);
+		}
+
+		public EnvelopeContract DeserializeEnvelope(Stream stream)
+		{
+			return Serializer.Deserialize<EnvelopeContract>(stream);
 		}
 	}
 }
