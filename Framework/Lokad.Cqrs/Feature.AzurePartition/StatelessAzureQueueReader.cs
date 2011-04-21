@@ -125,7 +125,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 				buffer = blob.DownloadByteArray();
 			}
 
-			var m = MessageUtil.ReadMessage(buffer, _serializer);
+			var m = MessageUtil.ReadDataMessage(buffer, _serializer);
 			return new MessageContext(message, m, _queueName);
 		}
 

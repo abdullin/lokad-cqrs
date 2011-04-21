@@ -89,7 +89,6 @@
     <Compile Include="Core.Transport\Contracts_v2\Schema2ItemAttributeTypeContract.cs" />
     <Compile Include="Core.Transport\Contracts_v2\Schema2EnvelopeContract.cs" />
     <Compile Include="Core.Transport\Contracts_v2\Schema2ItemContract.cs" />
-    <Compile Include="Core.Transport\Contracts_v2\Schema2Util.cs" />
     <Compile Include="Core.Transport\MessageAttributes.cs" />
     <Compile Include="Core.Transport\MessageEnvelope.cs" />
     <Compile Include="Core.Transport\MessageEnvelopeBuilder.cs" />
