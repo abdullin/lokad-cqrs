@@ -1,6 +1,6 @@
 ﻿namespace Lokad.Cqrs.Core.Transport.Contracts_v2
 {
-	public enum Schema2EnvelopeAttributeTypeContract
+	public enum EnvelopeAttributeTypeContract
 	{
 		Undefined = 0,
 		CreatedUtc = 1,

@@ -4,27 +4,27 @@ using ProtoBuf;
 namespace Lokad.Cqrs.Core.Transport.Contracts_v2
 {
 	[DataContract]
-	public sealed class Schema2ItemContract
+	public sealed class ItemContract
 	{
 		[DataMember(Order = 1)]
 		public readonly string ContractName;
 		[DataMember(Order = 2)]
 		public readonly int ContentSize;
 		[DataMember(Order = 3)]
-		public Schema2ItemAttributeContract[] Attributes;
+		public ItemAttributeContract[] Attributes;
 
-		Schema2ItemContract()
+		ItemContract()
 		{
 			Attributes = Empty;
 		}
 
-		public Schema2ItemContract(string contractName, int contentSize, Schema2ItemAttributeContract[] attributes)
+		public ItemContract(string contractName, int contentSize, ItemAttributeContract[] attributes)
 		{
 			ContractName = contractName;
 			ContentSize = contentSize;
 			Attributes = attributes;
 		}
 
-		static readonly Schema2ItemAttributeContract[] Empty = new Schema2ItemAttributeContract[0];
+		static readonly ItemAttributeContract[] Empty = new ItemAttributeContract[0];
 	}
 }

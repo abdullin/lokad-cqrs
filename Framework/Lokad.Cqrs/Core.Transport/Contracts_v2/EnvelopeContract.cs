@@ -5,19 +5,19 @@ using ProtoBuf;
 namespace Lokad.Cqrs.Core.Transport.Contracts_v2
 {
 	[DataContract]
-	public sealed class Schema2EnvelopeContract
+	public sealed class EnvelopeContract
 	{
 		[DataMember(Order = 1)]
 		public readonly string EnvelopeId;
 		[DataMember(Order = 2)]
-		public readonly Schema2EnvelopeAttributeContract[] EnvelopeAttributes;
+		public readonly EnvelopeAttributeContract[] EnvelopeAttributes;
 		[DataMember(Order = 3)]
-		public readonly Schema2ItemContract[] Items;
+		public readonly ItemContract[] Items;
 
 		[DataMember(Order = 4)]
 		public readonly DateTimeOffset DeliverOnUtc;
 
-		public Schema2EnvelopeContract(string envelopeId, Schema2EnvelopeAttributeContract[] envelopeAttributes, Schema2ItemContract[] items, DateTimeOffset deliverOnUtc)
+		public EnvelopeContract(string envelopeId, EnvelopeAttributeContract[] envelopeAttributes, ItemContract[] items, DateTimeOffset deliverOnUtc)
 		{
 			EnvelopeId = envelopeId;
 			DeliverOnUtc = deliverOnUtc;
@@ -26,7 +26,7 @@ namespace Lokad.Cqrs.Core.Transport.Contracts_v2
 		}
 
 // ReSharper disable UnusedMember.Local
-		Schema2EnvelopeContract()
+		EnvelopeContract()
 // ReSharper restore UnusedMember.Local
 		{
 			Items = NoItems;
@@ -34,7 +34,7 @@ namespace Lokad.Cqrs.Core.Transport.Contracts_v2
 			
 		}
 
-		static readonly Schema2ItemContract[] NoItems = new Schema2ItemContract[0];
-		static readonly Schema2EnvelopeAttributeContract[] NoAttributes = new Schema2EnvelopeAttributeContract[0];
+		static readonly ItemContract[] NoItems = new ItemContract[0];
+		static readonly EnvelopeAttributeContract[] NoAttributes = new EnvelopeAttributeContract[0];
 	}
 }
