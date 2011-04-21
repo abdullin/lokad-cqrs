@@ -91,7 +91,7 @@
     <Compile Include="Core.Transport\MessageHeader.cs" />
     <Compile Include="Core.Transport\MessageItemToSave.cs" />
     <Compile Include="Core.Transport\MessagePrinter.cs" />
-    <Compile Include="Core.Transport\MessageUtil.cs" />
+    <Compile Include="Core.Transport\ProtoBufEnvelopeSerializer.cs" />
     <Compile Include="Core.Directory\ConsumerInfo.cs" />
     <Compile Include="Core.Directory\DomainAssemblyScanner.cs" />
     <Compile Include="Core.Directory\MessageDirectory.cs" />

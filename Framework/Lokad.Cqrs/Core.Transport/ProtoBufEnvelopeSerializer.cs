@@ -1,16 +1,12 @@
-﻿#region Copyright (c) 2009-2010 LOKAD SAS. All rights reserved.
+﻿#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
 
-// Copyright (c) 2009-2010 LOKAD SAS. All rights reserved.
-// You must not remove this notice, or any other, from this software.
-// This document is the property of LOKAD SAS and must not be disclosed.
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
 
 #endregion
 
-using System.Collections.Generic;
-
 namespace Lokad.Cqrs.Core.Transport
 {
-
 	public sealed class ProtoBufEnvelopeSerializer : IEnvelopeSerializer
 	{
 		readonly IMessageSerializer _serializer;
