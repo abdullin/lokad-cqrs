@@ -223,11 +223,7 @@ namespace Lokad.Cqrs.Core.Transport
 
 		public static MessageEnvelope ReadDataMessage(byte[] buffer, IMessageSerializer serializer)
 		{
-			MessageHeader header;
-			using (var stream1 = new MemoryStream(buffer, 0, MessageHeader.FixedSize))
-			{
-				header = Serializer.Deserialize<MessageHeader>(stream1);
-			}
+			var header = MessageHeader.ReadHeader(buffer, 0);
 			
 			
 			if (header.MessageFormatVersion != MessageHeader.Schema2DataFormat)
@@ -283,7 +279,7 @@ namespace Lokad.Cqrs.Core.Transport
 				int position = 0;
 				for (int i = 0; i < envelope.Items.Length; i++)
 				{
-					MessageItem item = envelope.Items[i];
+					var item = envelope.Items[i];
 					string name = serializer.GetContractNameByType(item.MappedType)
 						.ExposeException("Failed to find contract name for {0}", item.MappedType);
 					serializer.Serialize(item.Content, content);
@@ -310,8 +306,8 @@ namespace Lokad.Cqrs.Core.Transport
 					content.WriteTo(stream);
 					// write the header
 					stream.Seek(0, SeekOrigin.Begin);
-					MessageHeader messageHeader = MessageHeader.ForSchema2Data(attributesLength, content.Position);
-					Serializer.Serialize(stream, messageHeader);
+					var header = new MessageHeader(MessageHeader.Schema2DataFormat, attributesLength, content.Position, 0);
+					header.WriteToStream(stream);
 					return stream.ToArray();
 				}
 			}

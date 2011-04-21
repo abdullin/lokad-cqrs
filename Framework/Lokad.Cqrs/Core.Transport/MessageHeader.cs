@@ -1,22 +1,27 @@
-﻿using ProtoBuf;
+﻿#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
+
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
+using System;
+using System.IO;
 
 namespace Lokad.Cqrs.Core.Transport
 {
-	[ProtoContract]
 	public sealed class MessageHeader
 	{
 		public const int FixedSize = 28;
-		
+
 		public const int Schema2DataFormat = 2011021801;
 
-		[ProtoMember(1, DataFormat = DataFormat.FixedSize, IsRequired = true)] public readonly int MessageFormatVersion;
-		[ProtoMember(2, DataFormat = DataFormat.FixedSize, IsRequired = true)] public readonly long ContentLength;
-		[ProtoMember(3, DataFormat = DataFormat.FixedSize, IsRequired = true)]
+		public readonly int MessageFormatVersion;
+		public readonly long ContentLength;
 		public readonly long AttributesLength;
-		[ProtoMember(4, DataFormat = DataFormat.FixedSize, IsRequired = true)]
 		public readonly long CheckSum;
 
-		MessageHeader(int messageFormatVersion, long attributesLength, long contentLength, int checksum)
+		public MessageHeader(int messageFormatVersion, long attributesLength, long contentLength, long checksum)
 		{
 			MessageFormatVersion = messageFormatVersion;
 			AttributesLength = attributesLength;
@@ -24,15 +29,23 @@ namespace Lokad.Cqrs.Core.Transport
 			CheckSum = checksum;
 		}
 
-		public static MessageHeader ForSchema2Data(long attributesLength, long contentLength)
+		public static MessageHeader ReadHeader(byte[] buffer, int start = 0)
 		{
-			return new MessageHeader(Schema2DataFormat, attributesLength, contentLength, 0);
+			var magic = BitConverter.ToInt32(buffer, start);
+			var attributesLength = BitConverter.ToInt64(buffer, start + 4);
+			var contentLength = BitConverter.ToInt32(buffer, start + 4 + 8);
+
+			var checkSum = BitConverter.ToInt64(buffer, start + 4 + 16);
+
+			return new MessageHeader(magic, attributesLength, contentLength, checkSum);
 		}
 
-// ReSharper disable UnusedMember.Local
-		MessageHeader()
-// ReSharper restore UnusedMember.Local
+		public void WriteToStream(MemoryStream stream)
 		{
+			stream.Write(BitConverter.GetBytes(MessageFormatVersion), 0, 4);
+			stream.Write(BitConverter.GetBytes(AttributesLength), 0, 8);
+			stream.Write(BitConverter.GetBytes(ContentLength), 0, 8);
+			stream.Write(BitConverter.GetBytes(CheckSum), 0, 8);
 		}
 	}
 }
