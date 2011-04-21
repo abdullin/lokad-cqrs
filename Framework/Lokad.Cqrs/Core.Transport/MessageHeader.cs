@@ -10,12 +10,18 @@ namespace Lokad.Cqrs.Core.Transport
 		public const int Schema2DataFormat = 2011021801;
 
 		[ProtoMember(1, DataFormat = DataFormat.FixedSize, IsRequired = true)] public readonly int MessageFormatVersion;
-		[ProtoMember(2, DataFormat = DataFormat.FixedSize, IsRequired = true)] public readonly long AttributesLength;
+		[ProtoMember(2, DataFormat = DataFormat.FixedSize, IsRequired = true)] public readonly long ContentLength;
+		[ProtoMember(3, DataFormat = DataFormat.FixedSize, IsRequired = true)]
+		public readonly long AttributesLength;
+		[ProtoMember(4, DataFormat = DataFormat.FixedSize, IsRequired = true)]
+		public readonly long CheckSum;
 
 		MessageHeader(int messageFormatVersion, long attributesLength, long contentLength, int checksum)
 		{
 			MessageFormatVersion = messageFormatVersion;
 			AttributesLength = attributesLength;
+			ContentLength = contentLength;
+			CheckSum = checksum;
 		}
 
 		public static MessageHeader ForSchema2Data(long attributesLength, long contentLength)
