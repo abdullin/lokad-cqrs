@@ -14,6 +14,7 @@ using ProtoBuf;
 
 namespace Lokad.Cqrs.Core.Transport
 {
+	
 	public static class ProtoBufEnvelopeUtil
 	{
 		const string RefernceSignature = "[cqrs-ref-r1]";
@@ -35,7 +36,50 @@ namespace Lokad.Cqrs.Core.Transport
 
 		public static byte[] SaveDataMessage(MessageEnvelope builder, IMessageSerializer serializer)
 		{
-			return SaveData(builder, serializer);
+			//  string contract, Guid messageId, Uri sender, 
+			var itemContracts = new ItemContract[builder.Items.Length];
+			using (var content = new MemoryStream())
+			{
+				int position = 0;
+				for (int i = 0; i < builder.Items.Length; i++)
+				{
+					var item = builder.Items[i];
+
+					string name;
+					if (!serializer.TryGetContractNameByType(item.MappedType, out name))
+					{
+						throw Errors.InvalidOperation("Failed to find contract name for {0}", item.MappedType);
+					}
+
+					serializer.Serialize(item.Content, content);
+					int size = (int) content.Position - position;
+					var attribContracts = EnvelopeConvert.ItemAttributesToContract(item.GetAllAttributes());
+					itemContracts[i] = new ItemContract(name, size, attribContracts);
+
+					position += size;
+				}
+
+				var envelopeAttribs = EnvelopeConvert.EnvelopeAttributesToContract(builder.GetAllAttributes());
+
+
+				var contract = new EnvelopeContract(builder.EnvelopeId, envelopeAttribs, itemContracts, builder.DeliverOn);
+
+				using (var stream = new MemoryStream())
+				{
+					// skip header
+					stream.Seek(MessageHeader.FixedSize, SeekOrigin.Begin);
+					// save envelope attributes
+					Serializer.Serialize(stream, contract);
+					long envelopeBytes = stream.Position - MessageHeader.FixedSize;
+					// copy data
+					content.WriteTo(stream);
+					// write the header
+					stream.Seek(0, SeekOrigin.Begin);
+					var header = new MessageHeader(MessageHeader.Schema2DataFormat, envelopeBytes, 0);
+					header.WriteToStream(stream);
+					return stream.ToArray();
+				}
+			}
 		}
 
 		public static bool TryReadAsReference(byte[] buffer, out MessageReference reference)
@@ -112,54 +156,6 @@ namespace Lokad.Cqrs.Core.Transport
 
 			var envelopeAttributes = EnvelopeConvert.AttributesFromContract(envelope.EnvelopeAttributes);
 			return new MessageEnvelope(envelope.EnvelopeId, envelopeAttributes, items, envelope.DeliverOnUtc);
-		}
-
-		static byte[] SaveData(MessageEnvelope envelope, IMessageSerializer serializer)
-		{
-			//  string contract, Guid messageId, Uri sender, 
-			var itemContracts = new ItemContract[envelope.Items.Length];
-			using (var content = new MemoryStream())
-			{
-				int position = 0;
-				for (int i = 0; i < envelope.Items.Length; i++)
-				{
-					var item = envelope.Items[i];
-
-					string name;
-					if (!serializer.TryGetContractNameByType(item.MappedType, out name))
-					{
-						throw Errors.InvalidOperation("Failed to find contract name for {0}", item.MappedType);
-					}
-
-					serializer.Serialize(item.Content, content);
-					int size = (int) content.Position - position;
-					var attribContracts = EnvelopeConvert.ItemAttributesToContract(item.GetAllAttributes());
-					itemContracts[i] = new ItemContract(name, size, attribContracts);
-
-					position += size;
-				}
-
-				var envelopeAttribs = EnvelopeConvert.EnvelopeAttributesToContract(envelope.GetAllAttributes());
-
-
-				var contract = new EnvelopeContract(envelope.EnvelopeId, envelopeAttribs, itemContracts, envelope.DeliverOn);
-
-				using (var stream = new MemoryStream())
-				{
-					// skip header
-					stream.Seek(MessageHeader.FixedSize, SeekOrigin.Begin);
-					// save envelope attributes
-					Serializer.Serialize(stream, contract);
-					long envelopeBytes = stream.Position - MessageHeader.FixedSize;
-					// copy data
-					content.WriteTo(stream);
-					// write the header
-					stream.Seek(0, SeekOrigin.Begin);
-					var header = new MessageHeader(MessageHeader.Schema2DataFormat, envelopeBytes, 0);
-					header.WriteToStream(stream);
-					return stream.ToArray();
-				}
-			}
 		}
 	}
 }

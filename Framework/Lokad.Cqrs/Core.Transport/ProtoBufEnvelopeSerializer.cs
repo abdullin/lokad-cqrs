@@ -7,6 +7,8 @@
 
 namespace Lokad.Cqrs.Core.Transport
 {
+	
+
 	public sealed class ProtoBufEnvelopeSerializer : IEnvelopeSerializer
 	{
 		readonly IMessageSerializer _serializer;
