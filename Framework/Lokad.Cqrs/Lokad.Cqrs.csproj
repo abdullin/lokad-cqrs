@@ -68,6 +68,7 @@
     <Compile Include="Build\Engine\Events\HostStarted.cs" />
     <Compile Include="Build\Engine\Events\HostStopped.cs" />
     <Compile Include="Core.Partition\IPartitionInbox.cs" />
+    <Compile Include="Core.Serialization\AutoDetectingMessageSerializer.cs" />
     <Compile Include="Feature.AtomicStorage\Azure\AzureAtomicEntityWriter.cs" />
     <Compile Include="Feature.AtomicStorage\Azure\AzureAtomicSingletonReader.cs" />
     <Compile Include="Feature.AtomicStorage\Azure\AzureAtomicEntityReader.cs" />
@@ -173,9 +174,6 @@
     <Compile Include="Feature.AzurePartition\Sender\DefaultMessageSender.cs" />
     <Compile Include="Feature.AzurePartition\Sender\SendMessageModule.cs" />
     <Compile Include="Core.Serialization\AttributeHelper.cs" />
-    <Compile Include="Core.Serialization\AutoDetectingMessageSerializer.cs" />
-    <Compile Include="Core.Serialization\DataContractMessageSerializer.cs" />
-    <Compile Include="Core.Serialization\DataContractUtil.cs" />
     <Compile Include="Core.Serialization\ProtoBufMessageSerializer.cs" />
     <Compile Include="Core.Serialization\ProtoBufUtil.cs" />
   </ItemGroup>

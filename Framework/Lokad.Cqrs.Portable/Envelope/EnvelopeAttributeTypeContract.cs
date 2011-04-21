@@ -1,4 +1,4 @@
-﻿namespace Lokad.Cqrs.Contracts
+﻿namespace Lokad.Cqrs.Envelope
 {
 	public enum EnvelopeAttributeTypeContract
 	{

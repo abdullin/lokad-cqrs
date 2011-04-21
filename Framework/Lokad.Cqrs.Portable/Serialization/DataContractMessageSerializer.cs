@@ -12,9 +12,8 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Xml;
-using Lokad.Cqrs.Evil;
 
-namespace Lokad.Cqrs.Core.Serialization
+namespace Lokad.Cqrs.Serialization
 {
 	/// <summary>
 	/// Message serializer for the <see cref="DataContractSerializer"/>
@@ -53,7 +52,7 @@ namespace Lokad.Cqrs.Core.Serialization
 		/// </summary>
 		/// <param name="know">The know.</param>
 		public DataContractMessageSerializer(IEnumerable<IKnowSerializationTypes> know)
-			: this(ExtendIEnumerable.ToSet<Type>(know.SelectMany(t => t.GetKnownTypes())))
+			: this(new HashSet<Type>(know.SelectMany(t => t.GetKnownTypes())))
 		{
 		}
 

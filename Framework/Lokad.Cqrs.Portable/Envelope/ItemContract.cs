@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Lokad.Cqrs.Contracts
+namespace Lokad.Cqrs.Envelope
 {
 	[DataContract]
 	public sealed class ItemContract

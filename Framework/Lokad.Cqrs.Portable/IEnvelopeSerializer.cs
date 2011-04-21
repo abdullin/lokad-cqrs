@@ -6,8 +6,6 @@
 
 #endregion
 
-using Lokad.Cqrs.Core.Transport;
-
 namespace Lokad.Cqrs
 {
 	public interface IEnvelopeSerializer

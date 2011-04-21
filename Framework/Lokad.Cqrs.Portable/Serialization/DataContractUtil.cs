@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
-using Lokad.Cqrs.Evil;
 
-namespace Lokad.Cqrs.Core.Serialization
+namespace Lokad.Cqrs.Serialization
 {
 	/// <summary>
 	/// Helper class to work with <see cref="DataContract"/>
@@ -22,7 +21,7 @@ namespace Lokad.Cqrs.Core.Serialization
 
 			if (failures.Any())
 			{
-				var list = ExtendIEnumerable.JoinStrings(failures.Select(f => f.FullName), Environment.NewLine);
+				var list = string.Join(Environment.NewLine, failures.Select(f => f.FullName).ToArray());
 
 				throw new InvalidOperationException(
 					"All messages must be marked with the DataContract attribute in order to be used with DCS: " + list);

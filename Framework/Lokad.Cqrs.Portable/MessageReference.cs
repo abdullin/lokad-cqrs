@@ -1,4 +1,4 @@
-﻿namespace Lokad.Cqrs.Core.Transport
+﻿namespace Lokad.Cqrs
 {
 	public sealed class MessageReference
 	{

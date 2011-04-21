@@ -1,12 +1,12 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Lokad.Cqrs.Contracts
+namespace Lokad.Cqrs.Envelope
 {
 	[DataContract]
-	public sealed class EnvelopeAttributeContract
+	public sealed class ItemAttributeContract
 	{
 		[DataMember(Order = 1)]
-		public EnvelopeAttributeTypeContract Type { get; set; }
+		public ItemAttributeTypeContract Type { get; set; }
 		[DataMember(Order = 2)]
 		public string CustomName { get; set; }
 		[DataMember(Order = 3)]
