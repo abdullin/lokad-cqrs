@@ -16,15 +16,38 @@ using ProtoBuf;
 
 namespace Lokad.Cqrs.Core.Transport
 {
-	public interface IMessageEnvelopeSerializer
+
+	public sealed class ProtoBufEnvelopeSerializer : IEnvelopeSerializer
 	{
-		byte[] SaveReferenceMessage(MessageReference reference);
-		byte[] SaveDataMessage(MessageEnvelope builder, IMessageSerializer serializer);
-		bool TryReadAsReference(byte[] buffer, out MessageReference reference);
-		MessageEnvelope ReadDataMessage(byte[] buffer, IMessageSerializer serializer);
+		readonly IMessageSerializer _serializer;
+
+		public ProtoBufEnvelopeSerializer(IMessageSerializer serializer)
+		{
+			_serializer = serializer;
+		}
+
+		public byte[] SaveReferenceMessage(MessageReference reference)
+		{
+			return ProtoBufEnvelopeUtil.SaveReferenceMessage(reference);
+		}
+
+		public byte[] SaveDataMessage(MessageEnvelope builder)
+		{
+			return ProtoBufEnvelopeUtil.SaveDataMessage(builder, _serializer);
+		}
+
+		public bool TryReadAsReference(byte[] buffer, out MessageReference reference)
+		{
+			return ProtoBufEnvelopeUtil.TryReadAsReference(buffer, out reference);
+		}
+
+		public MessageEnvelope ReadDataMessage(byte[] buffer)
+		{
+			return ProtoBufEnvelopeUtil.ReadDataMessage(buffer, _serializer);
+		}
 	}
 
-	public class MessageUtil
+	public static class ProtoBufEnvelopeUtil
 	{
 		const string RefernceSignature = "[cqrs-ref-r1]";
 		static readonly byte[] Reference = Encoding.Unicode.GetBytes(RefernceSignature);

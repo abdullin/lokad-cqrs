@@ -18,13 +18,13 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
 	public sealed class AzurePartitionFactory : IPartitionInboxFactory, IEngineProcess
 	{
 		readonly CloudStorageAccount _account;
-		readonly IMessageSerializer _serializer;
+		readonly IEnvelopeSerializer _serializer;
 		readonly ISystemObserver _observer;
 
 		readonly ConcurrentBag<AzurePartitionScheduler> _schedulers = new ConcurrentBag<AzurePartitionScheduler>();
 
 
-		public AzurePartitionFactory(CloudStorageAccount account, IMessageSerializer serializer,
+		public AzurePartitionFactory(CloudStorageAccount account, IEnvelopeSerializer serializer,
 			ISystemObserver observer)
 		{
 			_account = account;

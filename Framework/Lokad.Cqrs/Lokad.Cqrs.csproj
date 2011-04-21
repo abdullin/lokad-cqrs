@@ -171,6 +171,7 @@
     <Compile Include="Feature.TestPartition\MemoryQueueWriter.cs" />
     <Compile Include="IEngineProcess.cs" />
     <Compile Include="IKnowSerializationTypes.cs" />
+    <Compile Include="IEnvelopeSerializer.cs" />
     <Compile Include="IMessageSender.cs" />
     <Compile Include="IMessageSerializer.cs" />
     <Compile Include="ISystemEvent.cs" />

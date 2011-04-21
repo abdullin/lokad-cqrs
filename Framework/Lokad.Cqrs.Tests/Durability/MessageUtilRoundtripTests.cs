@@ -21,8 +21,8 @@ namespace Lokad.Cqrs.Durability
 		public void EmptyRoundtrip()
 		{
 			var builder = new MessageEnvelopeBuilder("my-id").Build();
-			var bytes = MessageUtil.SaveDataMessage(builder, TestSerializer.Instance);
-			var envelope = MessageUtil.ReadDataMessage(bytes, TestSerializer.Instance);
+			var bytes = ProtoBufEnvelopeUtil.SaveDataMessage(builder, TestSerializer.Instance);
+			var envelope = ProtoBufEnvelopeUtil.ReadDataMessage(bytes, TestSerializer.Instance);
 			Assert.AreEqual(envelope.EnvelopeId, "my-id");
 		}
 
@@ -36,8 +36,8 @@ namespace Lokad.Cqrs.Durability
 			builder.AddItem(new MyMessage(42));
 
 
-			var bytes = MessageUtil.SaveDataMessage(builder.Build(), TestSerializer.Instance);
-			var envelope = MessageUtil.ReadDataMessage(bytes, TestSerializer.Instance);
+			var bytes = ProtoBufEnvelopeUtil.SaveDataMessage(builder.Build(), TestSerializer.Instance);
+			var envelope = ProtoBufEnvelopeUtil.ReadDataMessage(bytes, TestSerializer.Instance);
 			Assert.AreEqual(1, envelope.GetAttribute("Custom"));
 			Assert.AreEqual(1, envelope.Items.Length);
 			Assert.AreEqual(42, ((MyMessage) envelope.Items[0].Content).Value);
