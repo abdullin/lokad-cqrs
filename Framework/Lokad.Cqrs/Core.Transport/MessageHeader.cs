@@ -29,13 +29,13 @@ namespace Lokad.Cqrs.Core.Transport
 			CheckSum = checksum;
 		}
 
-		public static MessageHeader ReadHeader(byte[] buffer, int start = 0)
+		public static MessageHeader ReadHeader(byte[] buffer)
 		{
-			var magic = BitConverter.ToInt32(buffer, start);
-			var attributesLength = BitConverter.ToInt64(buffer, start + 4);
-			var contentLength = BitConverter.ToInt32(buffer, start + 4 + 8);
+			var magic = BitConverter.ToInt32(buffer, 0);
+			var attributesLength = BitConverter.ToInt64(buffer, 4);
+			var contentLength = BitConverter.ToInt32(buffer, 4 + 8);
 
-			var checkSum = BitConverter.ToInt64(buffer, start + 4 + 16);
+			var checkSum = BitConverter.ToInt64(buffer, 4 + 16);
 
 			return new MessageHeader(magic, attributesLength, contentLength, checkSum);
 		}
