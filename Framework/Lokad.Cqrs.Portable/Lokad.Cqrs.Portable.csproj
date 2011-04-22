@@ -1,0 +1,117 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{4E2E749C-4D6F-4EF8-8E9D-96D467306997}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Lokad.Cqrs</RootNamespace>
+    <AssemblyName>Lokad.Cqrs.Portable</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Autofac">
+      <HintPath>..\Library\Autofac\Autofac.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.XML" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Build\AutofacBuilderBase.cs" />
+    <Compile Include="Build\AutofacBuilderForLogging.cs" />
+    <Compile Include="Build\AutofacBuilderForSerialization.cs" />
+    <Compile Include="Build\Host\CloudEngineHost.cs" />
+    <Compile Include="Build\Host\Events\HostInitializationStarted.cs" />
+    <Compile Include="Build\Host\Events\HostInitialized.cs" />
+    <Compile Include="Build\Host\Events\HostStarted.cs" />
+    <Compile Include="Build\Host\Events\HostStopped.cs" />
+    <Compile Include="Core.Directory\ConsumerInfo.cs" />
+    <Compile Include="Core.Directory\DomainAssemblyScanner.cs" />
+    <Compile Include="Core.Directory\MessageDirectory.cs" />
+    <Compile Include="Core.Directory\MessageDirectoryBuilder.cs" />
+    <Compile Include="Core.Directory\MessageInfo.cs" />
+    <Compile Include="Core.Directory\MessageMapping.cs" />
+    <Compile Include="Core.Directory\MessageReflectionUtil.cs" />
+    <Compile Include="Core.Dispatch\DispatchCommandBatchToSingleConsumer.cs" />
+    <Compile Include="Core.Dispatch\DispatcherProcess.cs" />
+    <Compile Include="Core.Dispatch\DispatcherUtil.cs" />
+    <Compile Include="Core.Dispatch\DispatchEventToMultipleConsumers.cs" />
+    <Compile Include="Core.Dispatch\DispatchMessagesToRoute.cs" />
+    <Compile Include="Core.Dispatch\Events\FailedToAckMessage.cs" />
+    <Compile Include="Core.Dispatch\Events\FailedToConsumeMessage.cs" />
+    <Compile Include="Core.Dispatch\ISingleThreadMessageDispatcher.cs" />
+    <Compile Include="Core.Dispatch\MessageDuplicationManager.cs" />
+    <Compile Include="Core.Dispatch\MessageDuplicationMemory.cs" />
+    <Compile Include="Core.Evil\InvocationUtil.cs" />
+    <Compile Include="Core.Inbox\IPartitionInbox.cs" />
+    <Compile Include="Core.Inbox\MessageContext.cs" />
+    <Compile Include="Core.Envelope\EnvelopeSerializerWithDataContracts.cs" />
+    <Compile Include="Core.Envelope\EnvelopeConvert.cs" />
+    <Compile Include="Core.Envelope\EnvelopeAttributeContract.cs" />
+    <Compile Include="Core.Envelope\EnvelopeAttributeTypeContract.cs" />
+    <Compile Include="Core.Envelope\EnvelopeContract.cs" />
+    <Compile Include="Core.Envelope\EnvelopeStreamer.cs" />
+    <Compile Include="Core.Envelope\ItemAttributeContract.cs" />
+    <Compile Include="Core.Envelope\ItemAttributeTypeContract.cs" />
+    <Compile Include="Core.Envelope\ItemContract.cs" />
+    <Compile Include="Core.Envelope\EnvelopeAttributes.cs" />
+    <Compile Include="Core.Envelope\MessageHeader.cs" />
+    <Compile Include="Core.Directory\Default\IConsume.cs" />
+    <Compile Include="Core.Directory\Default\IConsumeMessage.cs" />
+    <Compile Include="Core.Directory\Default\IMessage.cs" />
+    <Compile Include="Feature.Logging\NullSystemObserver.cs" />
+    <Compile Include="Feature.Logging\TraceSystemObserver.cs" />
+    <Compile Include="Feature.MemoryPartition\MemoryFutureList.cs" />
+    <Compile Include="Feature.MemoryPartition\MemoryPartitionFactory.cs" />
+    <Compile Include="Feature.MemoryPartition\MemoryPartitionInbox.cs" />
+    <Compile Include="Feature.MemoryPartition\MemoryQueueWriter.cs" />
+    <Compile Include="IEngineProcess.cs" />
+    <Compile Include="IEnvelopeSerializer.cs" />
+    <Compile Include="IEnvelopeStreamer.cs" />
+    <Compile Include="IKnowSerializationTypes.cs" />
+    <Compile Include="IMessageSender.cs" />
+    <Compile Include="IDataSerializer.cs" />
+    <Compile Include="Core.Outbox\IQueueWriter.cs" />
+    <Compile Include="Core.Outbox\IQueueWriterFactory.cs" />
+    <Compile Include="ISystemEvent.cs" />
+    <Compile Include="ISystemObserver.cs" />
+    <Compile Include="MessageEnvelope.cs" />
+    <Compile Include="MessageItem.cs" />
+    <Compile Include="EnvelopeReference.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Serialization\DataSerializerWithDataContracts.cs" />
+    <Compile Include="Serialization\DataContractUtil.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

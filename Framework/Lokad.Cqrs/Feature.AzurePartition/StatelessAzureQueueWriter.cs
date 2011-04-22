@@ -1,4 +1,5 @@
 ﻿using System;
+using Lokad.Cqrs.Core.Outbox;
 using Lokad.Cqrs.Core.Transport;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
@@ -7,23 +8,6 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 {
 	public sealed class StatelessAzureQueueWriter : IQueueWriter
 	{
-		//public void SendAsSingleMessage(object[] items)
-		//{
-		//    if (items.Length == 0)
-		//        return;
-
-		//    var builder = BuildEnvelopeFromItems(items);
-		//    var packed = PrepareCloudMessage(builder);
-		//    _queue.AddMessage(packed);
-		//}
-
-		//public void ForwardMessage(MessageEnvelope envelope)
-		//{
-		//    var builder = CopyEnvelope(envelope);
-		//    var packed = PrepareCloudMessage(builder);
-		//    _queue.AddMessage(packed);
-		//}
-
 		public void PutMessage(MessageEnvelope envelope)
 		{
 			var packed = PrepareCloudMessage(envelope);
@@ -36,7 +20,8 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 
 		CloudQueueMessage PrepareCloudMessage(MessageEnvelope builder)
 		{
-			var buffer = MessageUtil.SaveDataMessage(builder, _serializer);
+
+			var buffer = _streamer.SaveDataMessage(builder);
 			if (buffer.Length < CloudQueueLimit)
 			{
 				// write message to queue
@@ -45,34 +30,14 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 			// ok, we didn't fit, so create reference message
 			var referenceId = DateTimeOffset.UtcNow.ToString(DateFormatInBlobName) + "-" + builder.EnvelopeId;
 			_cloudBlob.GetBlobReference(referenceId).UploadByteArray(buffer);
-			var reference = new MessageReference(builder.EnvelopeId, _cloudBlob.Uri.ToString(), referenceId);
-			var blob = MessageUtil.SaveReferenceMessage(reference);
+			var reference = new EnvelopeReference(builder.EnvelopeId, _cloudBlob.Uri.ToString(), referenceId);
+			var blob = _streamer.SaveReferenceMessage(reference);
 			return new CloudQueueMessage(blob);
 		}
 
-		//static MessageEnvelopeBuilder CopyEnvelope(MessageEnvelope envelope)
-		//{
-		//    var builder = new MessageEnvelopeBuilder(envelope.EnvelopeId);
-
-		//    foreach (var item in envelope.Items)
-		//    {
-		//        var save = new MessageItemToSave(item.MappedType, item.Content);
-		//        foreach (var attribute in item.GetAllAttributes())
-		//        {
-		//            save.Attributes.Add(attribute);
-		//        }
-		//        builder.Items.Add(save);
-		//    }
-		//    foreach (var attribute in envelope.GetAllAttributes())
-		//    {
-		//        builder.Attributes.Add(attribute);
-		//    }
-		//    return builder;
-		//}
-
-		public StatelessAzureQueueWriter(IMessageSerializer serializer, CloudStorageAccount account, string queueName)
+		public StatelessAzureQueueWriter(IEnvelopeStreamer streamer, CloudStorageAccount account, string queueName)
 		{
-			_serializer = serializer;
+			_streamer = streamer;
 			var blobClient = account.CreateCloudBlobClient();
 			blobClient.RetryPolicy = RetryPolicies.NoRetry();
 
@@ -91,7 +56,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 
 
 		const string DateFormatInBlobName = "yyyy-MM-dd-HH-mm-ss-ffff";
-		readonly IMessageSerializer _serializer;
+		readonly IEnvelopeStreamer _streamer;
 		readonly CloudBlobContainer _cloudBlob;
 		readonly CloudQueue _queue;
 	}

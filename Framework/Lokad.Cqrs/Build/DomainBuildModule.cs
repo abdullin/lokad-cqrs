@@ -11,6 +11,7 @@ using System.Reflection;
 using Autofac;
 using Autofac.Core;
 using Lokad.Cqrs.Core.Directory;
+using Lokad.Cqrs.Core.Serialization;
 using Lokad.Cqrs.Feature.DefaultInterfaces;
 
 namespace Lokad.Cqrs.Build
@@ -94,7 +95,7 @@ namespace Lokad.Cqrs.Build
 		/// </summary>
 		/// <param name="customFilterForConsumers">The custom filter for consumers.</param>
 		/// <returns>same module instance for chaining fluent configurations</returns>
-		public DomainBuildModule WhereConsumers(Func<Type, bool> customFilterForConsumers)
+		public DomainBuildModule WhereConsumers(Predicate<Type> customFilterForConsumers)
 		{
 			_scanner.WhereConsumers(customFilterForConsumers);
 			return this;
@@ -105,7 +106,7 @@ namespace Lokad.Cqrs.Build
 		/// </summary>
 		/// <param name="customFilterForMessages">The custom filter for messages.</param>
 		/// <returns>same module instance for chaining fluent configurations</returns>
-		public DomainBuildModule WhereMessages(Func<Type, bool> customFilterForMessages)
+		public DomainBuildModule WhereMessages(Predicate<Type> customFilterForMessages)
 		{
 			_scanner.WhereMessages(customFilterForMessages);
 			return this;
@@ -134,6 +135,22 @@ namespace Lokad.Cqrs.Build
 		{
 			_scanner.WithAssemblyOf<T1>();
 			_scanner.WithAssemblyOf<T2>();
+			return this;
+		}
+
+
+		public DomainBuildModule InUserAssemblies()
+		{
+			foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+			{
+				if (string.IsNullOrEmpty(assembly.FullName))
+					continue;
+				if (assembly.FullName.StartsWith("System."))
+					continue;
+				if (assembly.FullName.StartsWith("Microsoft."))
+					continue;
+				_scanner.WithAssembly(assembly);
+			}
 			return this;
 		}
 
@@ -244,5 +261,35 @@ namespace Lokad.Cqrs.Build
 			//delegate string GetInfoDelegate(UnpackedMessage message);
 		}
 
+	}
+
+	static class Buildy
+	{
+		public static bool ContainsQueuePrefix(string queueName)
+		{
+			return queueName.Contains(":");
+		}
+
+		public static void Assert(bool check, string text, params object[] args)
+		{
+			if (!check)
+				throw new InvalidOperationException(string.Format(text, args));
+		}
+		
+	}
+
+	public static class AutofacBuilderForSerializationExtended
+	{
+		public static void AutoDetectSerializer(this AutofacBuilderForSerialization @this)
+		{
+			@this.RegisterDataSerializer<DataSerializerWithAutoDetection>();
+			@this.RegisterEnvelopeSerializer<EnvelopeSerializerWithProtoBuf>();
+		}
+
+		public static void UseProtoBufSerialization(this AutofacBuilderForSerialization self)
+		{
+			self.RegisterDataSerializer<DataSerializerWithProtoBuf>();
+			self.RegisterEnvelopeSerializer<EnvelopeSerializerWithProtoBuf>();
+		}
 	}
 }

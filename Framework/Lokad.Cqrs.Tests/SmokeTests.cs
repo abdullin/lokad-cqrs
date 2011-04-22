@@ -5,12 +5,12 @@
 
 #endregion
 
+using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading;
 using Lokad.Cqrs.Build.Engine;
-using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Evil;
 using Lokad.Cqrs.Feature.DefaultInterfaces;
 using NUnit.Framework;
@@ -27,37 +27,17 @@ namespace Lokad.Cqrs.Tests
 		static CloudEngineHost BuildHost()
 		{
 			var engine = new CloudEngineBuilder();
-			//engine.UseMemoryPartitions();
-			engine.DomainIs(m =>
+			engine.AddMessageClient("memory:inbox");
+
+			engine.AddMemoryPartition("process-all");
+			engine.Azure(x => x.AddPartition("process-vip"));
+
+			engine.AddMemoryRouter("inbox", e =>
 				{
-					m.WithDefaultInterfaces();
-					m.InCurrentAssembly();
+					if (e.Items.Any(i => i.MappedType == typeof (VipMessage)))
+						return "azure-dev:process-vip";
+					return "memory:process-all";
 				});
-
-			engine.AddMessageHandler(x =>
-				{
-					x.ListenToQueue("test-in");
-					x.Dispatch<DispatchMessagesToRoute>(r =>
-						{
-							r.SpecifyRouter(e =>
-								{
-									if (e.Items.Any(i => i.MappedType == typeof (Hello)))
-										return "test-hi";
-									if (e.Items.Any(i => i.MappedType == typeof (Bye)))
-										return "test-bye";
-									return "test-what";
-								});
-						});
-				});
-
-			engine.AddMessageHandler(x =>
-				{
-					x.ListenToQueue("test-hi", "test-bye");
-					x.Dispatch<DispatchEventToMultipleConsumers>();
-				});
-
-			engine.AddMessageClient(x => x.DefaultToQueue("test-in"));
-
 
 			return engine.Build();
 		}
@@ -65,42 +45,41 @@ namespace Lokad.Cqrs.Tests
 		#endregion
 
 		[DataContract]
-		public sealed class Hello : IMessage
+		public sealed class VipMessage : IMessage
 		{
 			[DataMember(Order = 1)]
 			public string Word { get; set; }
 		}
 
 		[DataContract]
-		public sealed class Bye : IMessage
+		public sealed class UsualMessage : IMessage
 		{
 			[DataMember(Order = 1)]
 			public string Word { get; set; }
 		}
 
-		public sealed class DoSomething : IConsume<Hello>, IConsume<Bye>
+		public sealed class DoSomething : IConsume<VipMessage>, IConsume<UsualMessage>
 		{
-			void Record(string name, string value)
+			void Print(string value)
 			{
-				if (value.Length > 10)
+				if (value.Length > 20)
 				{
-					Trace.WriteLine(string.Format("{0}: {1}... ({2})", name, value.Substring(0,9), value.Length));
+					Trace.WriteLine(string.Format("{0}... ({1})", value.Substring(0, 16), value.Length));
 				}
 				else
 				{
-					Trace.WriteLine(string.Format("{0}: {1}", name, value));
+					Trace.WriteLine(string.Format("{0}", value));
 				}
-				
 			}
 
-			public void Consume(Bye message)
+			public void Consume(UsualMessage message)
 			{
-				Record("Bye", message.Word);
+				Print(message.Word);
 			}
 
-			public void Consume(Hello message)
+			public void Consume(VipMessage message)
 			{
-				Record("Hello", message.Word);
+				Print(message.Word);
 			}
 		}
 
@@ -109,19 +88,21 @@ namespace Lokad.Cqrs.Tests
 		{
 			using (var host = BuildHost())
 			{
-				host.Initialize();
-
 				var client = host.Resolve<IMessageSender>();
 
-				client.Send(new Hello {Word = "HI!"});
-				client.Send(new Hello {Word = new string(')', 9000)});
-				client.DelaySend(1.Seconds(), new Hello { Word = "Let's meet." });
-				client.DelaySend(2.Seconds(), new Bye { Word = "Farewell..."});
+				client.Send(new VipMessage {Word = "VIP1 Message"});
+				client.Send(new UsualMessage {Word = "Usual Large:" + new string(')', 9000)});
+				client.DelaySend(3.Seconds(), new VipMessage {Word = "VIP Delayed Large :" + new string(')', 9000)});
+				client.DelaySend(2.Seconds(), new UsualMessage {Word = "Usual Delayed"});
+
+				//client.SendBatch(new VipMessage { Word = " VIP with usual "}, new UsualMessage() { Word = "Vip with usual"});
 
 				using (var cts = new CancellationTokenSource())
 				{
 					var task = host.Start(cts.Token);
 					Thread.Sleep(10.Seconds());
+
+
 					cts.Cancel(true);
 					task.Wait(5.Seconds());
 				}
@@ -139,6 +120,14 @@ namespace Lokad.Cqrs.Tests
 		[Test]
 		public void Test2()
 		{
+			using (var host = BuildHost())
+			using (var cts = new CancellationTokenSource())
+			{
+				host.Start(cts.Token);
+				Console.WriteLine("Press any key to stop");
+				Console.ReadKey(true);
+				cts.Cancel(true);
+			}
 		}
 	}
 }

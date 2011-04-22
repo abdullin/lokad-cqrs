@@ -8,6 +8,10 @@
 using System;
 using System.Net;
 using Autofac;
+using Autofac.Core;
+using Lokad.Cqrs.Core.Outbox;
+using Lokad.Cqrs.Feature.AzurePartition.Inbox;
+using Lokad.Cqrs.Feature.AzurePartition.Sender;
 using Lokad.Cqrs.Feature.StreamingStorage;
 using Lokad.Cqrs.Feature.StreamingStorage.Azure;
 using Microsoft.WindowsAzure;
@@ -21,18 +25,13 @@ namespace Lokad.Cqrs.Build
 	/// <summary>
 	/// Autofac syntax for configuring Azure storage
 	/// </summary>
-	public sealed class AutofacBuilderForAzure : AutofacBuilderBase
+	public sealed class AutofacBuilderForAzure : IModule
 	{
-		Action<CloudBlobClient> _configureClient = client => { };
-		
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="AutofacBuilderForAzure"/> class.
-		/// </summary>
-		/// <param name="builder">The builder.</param>
-		public AutofacBuilderForAzure(ContainerBuilder builder) : base(builder)
-		{
-		}
+		ContainerBuilder _builder = new ContainerBuilder();
+
+		Action<CloudBlobClient> _configureBlobClient = client => { };
+
 
 		/// <summary>
 		/// Uses development storage account defined in the string.
@@ -46,9 +45,8 @@ namespace Lokad.Cqrs.Build
 		public AutofacBuilderForAzure UseStorageAccount(string accountString)
 		{
 			var account = CloudStorageAccount.Parse(accountString);
-			Builder.RegisterInstance(account);
+			_builder.RegisterInstance(account);
 			DisableNagleForQueuesAndTables(account);
-			RegisterLocals();
 			return this;
 		}
 
@@ -62,9 +60,8 @@ namespace Lokad.Cqrs.Build
 		
 		public AutofacBuilderForAzure UseStorageAccount(CloudStorageAccount account)
 		{
-			Builder.RegisterInstance(account);
+			_builder.RegisterInstance(account);
 			DisableNagleForQueuesAndTables(account);
-			RegisterLocals();
 			return this;
 		}
 
@@ -80,9 +77,8 @@ namespace Lokad.Cqrs.Build
 		{
 			var credentials = new StorageCredentialsAccountAndKey(accountName, accessKey);
 			var account = new CloudStorageAccount(credentials, useHttps);
-			Builder.RegisterInstance(account);
+			_builder.RegisterInstance(account);
 			DisableNagleForQueuesAndTables(account);
-			RegisterLocals();
 			return this;
 		}
 
@@ -104,9 +100,27 @@ namespace Lokad.Cqrs.Build
 		/// <remarks>This option is enabled by default</remarks>
 		public AutofacBuilderForAzure UseDevelopmentStorageAccount()
 		{
-			Builder.RegisterInstance(CloudStorageAccount.DevelopmentStorageAccount);
-			RegisterLocals();
+			_builder.RegisterInstance(CloudStorageAccount.DevelopmentStorageAccount);
+			
 			return this;
+		}
+
+		public AutofacBuilderForAzure AddPartition(string[] queues, Action<AzurePartitionModule> config)
+		{
+			foreach (var queue in queues)
+			{
+				Buildy.Assert(!Cqrs.Build.Buildy.ContainsQueuePrefix(queue), "Queue '{0}' should not contain queue prefix, since it's memory already", queue);
+			}
+			var module = new AzurePartitionModule(queues);
+
+			config(module);
+			_builder.RegisterModule(module);
+			return this;
+		}
+
+		public AutofacBuilderForAzure AddPartition(params string[] queues)
+		{
+			return AddPartition(queues, m => { });
 		}
 
 		/// <summary>
@@ -117,7 +131,7 @@ namespace Lokad.Cqrs.Build
 		/// </returns>
 		public AutofacBuilderForAzure LoadStorageAccountFromSettings(Func<IComponentContext, string> configProvider)
 		{
-			Builder.Register(c =>
+			_builder.Register(c =>
 				{
 					var value = configProvider(c);
 					var account = CloudStorageAccount.Parse(value);
@@ -125,7 +139,6 @@ namespace Lokad.Cqrs.Build
 					return account;
 				}).SingleInstance();
 
-			RegisterLocals();
 
 			return this;
 		}
@@ -149,18 +162,27 @@ namespace Lokad.Cqrs.Build
 		/// <param name="action">The action.</param>
 		public void ConfigureBlobClient(Action<CloudBlobClient> action)
 		{
-			_configureClient += action;
+			_configureBlobClient += action;
 		}
 
-		void RegisterLocals()
+		public void Configure(IComponentRegistry componentRegistry)
 		{
-			Builder.RegisterType<BlobStorageRoot>().SingleInstance().As<IStorageRoot>();
-			Builder.Register(c =>
-				{
-					var client = c.Resolve<CloudStorageAccount>().CreateCloudBlobClient();
-					_configureClient(client);
-					return client;
-				});
+			_builder.RegisterInstance(CloudStorageAccount.DevelopmentStorageAccount);
+			_builder.RegisterType<AzureWriteQueueFactory>().As<IQueueWriterFactory>().SingleInstance();
+			_builder.RegisterType<AzurePartitionFactory>().As<AzurePartitionFactory, IEngineProcess>().SingleInstance();
+
+			_builder.RegisterType<BlobStorageRoot>().SingleInstance().As<IStorageRoot>();
+			_builder.Register(c =>
+			{
+				var client = c.Resolve<CloudStorageAccount>().CreateCloudBlobClient();
+				_configureBlobClient(client);
+				return client;
+			});
+
+			_builder.Update(componentRegistry);
 		}
+
+
+		
 	}
 }

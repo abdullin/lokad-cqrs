@@ -91,7 +91,8 @@ namespace Lokad.Cqrs.Feature.StreamingStorage.Azure
 					}
 					break;
 				default:
-					throw Errors.InvalidOperation("Unsupported ContentEncoding '{0}'", compression);
+					var error = string.Format("Unsupported ContentEncoding '{0}'", compression);
+					throw new InvalidOperationException(error);
 			}
 		}
 

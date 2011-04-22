@@ -53,7 +53,7 @@ namespace Lokad.Cqrs.Evil
 			{
 				if (!_hasValue)
 				{
-					throw Errors.InvalidOperation("Dont access value when maybe is empty");
+					throw new InvalidOperationException("Dont access value when maybe is empty"); 
 				}
 
 				return _value;

@@ -7,12 +7,13 @@
 
 using System;
 using Autofac;
+using Lokad.Cqrs.Build.Client;
 using Lokad.Cqrs.Core.Dispatch;
+using Lokad.Cqrs.Core.Outbox;
 using Lokad.Cqrs.Core.Partition;
-using Lokad.Cqrs.Core.Transport;
 using Lokad.Cqrs.Feature.AzurePartition.Inbox;
 using Lokad.Cqrs.Feature.AzurePartition.Sender;
-using Lokad.Cqrs.Feature.TestPartition;
+using Lokad.Cqrs.Feature.MemoryPartition;
 
 // ReSharper disable UnusedMethodReturnValue.Global
 namespace Lokad.Cqrs.Build.Engine
@@ -27,48 +28,75 @@ namespace Lokad.Cqrs.Build.Engine
 
 		public AutofacBuilderForLogging Logging { get { return new AutofacBuilderForLogging(Builder); } }
 		public AutofacBuilderForSerialization Serialization { get { return new AutofacBuilderForSerialization(Builder);} }
-		public AutofacBuilderForAzure Azure { get { return new AutofacBuilderForAzure(Builder);}}
+		
 
 		public CloudEngineBuilder()
 		{
 			// System presets
 			Logging.LogToTrace();
 			Serialization.AutoDetectSerializer();
+			
 
-			// Azure presets
-			Azure.UseDevelopmentStorageAccount();
+			Builder.RegisterType<MemoryPartitionFactory>().As<IQueueWriterFactory, IEngineProcess, MemoryPartitionFactory>().SingleInstance();
 
-			Builder.RegisterType<AzureWriteQueueFactory>().As<IWriteQueueFactory>().SingleInstance();
-			Builder.RegisterType<AzurePartitionFactory>()
-				.As<IPartitionInboxFactory, IEngineProcess>()
-				.SingleInstance();
 
-			Builder.RegisterType<SingleThreadConsumingProcess>();
+
+			Builder.RegisterType<DispatcherProcess>();
 			Builder.RegisterType<MessageDuplicationManager>().SingleInstance();
 
 			// some defaults
 			Builder.RegisterType<CloudEngineHost>().SingleInstance();
 		}
 
-		public CloudEngineBuilder UseMemoryPartitions()
+
+
+		public CloudEngineBuilder AddMemoryPartition(string[] queues, Action<MemoryPartitionModule> config)
 		{
-			Builder
-				.RegisterType<MemoryPartitionFactory>()
-				.As<IPartitionInboxFactory, IWriteQueueFactory, IEngineProcess>()
-				.SingleInstance();
+			foreach (var queue in queues)
+			{
+				Buildy.Assert(!Cqrs.Build.Buildy.ContainsQueuePrefix(queue), "Queue '{0}' should not contain queue prefix, since it's memory already", queue);
+			}
+			var module = new MemoryPartitionModule(queues);
+
+			config(module);
+			Builder.RegisterModule(module);
 			return this;
 		}
-	
-		/// <summary>
-		/// Adds Message Handling Feature to the instance of <see cref="CloudEngineHost"/>
-		/// </summary>
-		/// <param name="config">configuration syntax</param>
-		/// <returns>same builder for inling multiple configuration statements</returns>
-		public CloudEngineBuilder AddMessageHandler(Action<HandleMessagesModule> config)
+
+
+		public CloudEngineBuilder Azure(Action<AutofacBuilderForAzure> config)
 		{
 			RegisterModule(config);
 			return this;
 		}
+
+
+		
+
+		public CloudEngineBuilder AddMemoryPartition(params string[] queues)
+		{
+			return AddMemoryPartition(queues, m => { });
+		}
+
+		public CloudEngineBuilder RegisterInstance<T>(T instance)where T :class
+		{
+			this.Builder.RegisterInstance(instance);
+			return this;
+		}
+
+		public CloudEngineBuilder AddMemoryPartition(string queueName, Action<MemoryPartitionModule> config)
+		{
+			return AddMemoryPartition(new string[]{queueName}, config);
+		}
+
+		public CloudEngineBuilder AddMemoryRouter(string queueName, Func<MessageEnvelope, string> config)
+		{
+			return AddMemoryPartition(queueName, m => m.Dispatch<DispatchMessagesToRoute>(x => x.SpecifyRouter(config)));
+		}
+
+
+
+		int _domainRegistrations = 0;
 
 		/// <summary>
 		/// Configures the message domain for the instance of <see cref="CloudEngineHost"/>.
@@ -77,6 +105,7 @@ namespace Lokad.Cqrs.Build.Engine
 		/// <returns>same builder for inline multiple configuration statements</returns>
 		public CloudEngineBuilder DomainIs(Action<DomainBuildModule> config)
 		{
+			_domainRegistrations += 1;
 			RegisterModule(config);
 			return this;
 		}
@@ -84,11 +113,12 @@ namespace Lokad.Cqrs.Build.Engine
 		/// <summary>
 		/// Creates default message sender for the instance of <see cref="CloudEngineHost"/>
 		/// </summary>
-		/// <param name="config">configuration syntax.</param>
 		/// <returns>same builder for inline multiple configuration statements</returns>
-		public CloudEngineBuilder AddMessageClient(Action<SendMessageModule> config)
+		public CloudEngineBuilder AddMessageClient(string queueName)
 		{
-			RegisterModule(config);
+			var m = new SendMessageModule(queueName);
+
+			Builder.RegisterModule(m);
 			return this;
 		}
 
@@ -98,8 +128,20 @@ namespace Lokad.Cqrs.Build.Engine
 		/// <returns>new instance of cloud engine host</returns>
 		public CloudEngineHost Build()
 		{
+			if (_domainRegistrations == 0)
+			{
+				DomainIs(m =>
+					{
+						m.WithDefaultInterfaces();
+						m.InUserAssemblies();
+					});
+			}
+
+
 			ILifetimeScope container = Builder.Build();
-			return container.Resolve<CloudEngineHost>(TypedParameter.From(container));
+			var host = container.Resolve<CloudEngineHost>(TypedParameter.From(container));
+			host.Initialize();
+			return host;
 		}
 	}
 }

@@ -6,6 +6,7 @@
 #endregion
 
 using System;
+using Lokad.Cqrs.Core.Envelope;
 using Lokad.Cqrs.Core.Serialization;
 using Lokad.Cqrs.Core.Transport;
 using NUnit.Framework;
@@ -25,7 +26,11 @@ namespace Lokad.Cqrs.Durability
 
 			var bytes = Convert.FromBase64String(msg);
 
-			var obj = MessageUtil.ReadMessage(bytes, ProtoBufMessageSerializer.For<ActivateUserCommand>());
+
+			var streamer = new EnvelopeStreamer(new EnvelopeSerializerWithProtoBuf(),
+				DataSerializerWithProtoBuf.For<ActivateUserCommand>());
+
+			var obj = streamer.ReadDataMessage(bytes);
 			Assert.IsInstanceOfType(typeof (ActivateUserCommand), obj.Items[0].Content);
 		}
 
