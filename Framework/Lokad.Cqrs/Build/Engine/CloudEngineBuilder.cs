@@ -96,6 +96,12 @@ namespace Lokad.Cqrs.Build.Engine
 			return AddMemoryPartition(queues, m => { });
 		}
 
+		public CloudEngineBuilder RegisterInstance<T>(T instance)where T :class
+		{
+			this.Builder.RegisterInstance(instance);
+			return this;
+		}
+
 		public CloudEngineBuilder AddMemoryPartition(string queueName, Action<MemoryPartitionModule> config)
 		{
 			return AddMemoryPartition(new string[]{queueName}, config);

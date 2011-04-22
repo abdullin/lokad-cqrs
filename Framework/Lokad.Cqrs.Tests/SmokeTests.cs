@@ -11,12 +11,9 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading;
 using Lokad.Cqrs.Build.Engine;
-using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Evil;
 using Lokad.Cqrs.Feature.DefaultInterfaces;
-using Lokad.Cqrs.Feature.TestPartition;
 using NUnit.Framework;
-using Autofac;
 
 namespace Lokad.Cqrs.Tests
 {
@@ -34,15 +31,13 @@ namespace Lokad.Cqrs.Tests
 
 			engine.AddMemoryPartition("process-all");
 			engine.AddAzurePartition("process-vip");
-
-
 			engine.AddMemoryRouter("inbox", e =>
 				{
 					if (e.Items.Any(i => i.MappedType == typeof (VipMessage)))
 						return "azure-dev:process-vip";
 					return "memory:process-all";
 				});
-			
+
 			return engine.Build();
 		}
 
@@ -68,13 +63,12 @@ namespace Lokad.Cqrs.Tests
 			{
 				if (value.Length > 20)
 				{
-					Trace.WriteLine(string.Format("{0}... ({1})", value.Substring(0,16), value.Length));
+					Trace.WriteLine(string.Format("{0}... ({1})", value.Substring(0, 16), value.Length));
 				}
 				else
 				{
 					Trace.WriteLine(string.Format("{0}", value));
 				}
-				
 			}
 
 			public void Consume(UsualMessage message)
@@ -97,8 +91,8 @@ namespace Lokad.Cqrs.Tests
 
 				client.Send(new VipMessage {Word = "VIP1 Message"});
 				client.Send(new UsualMessage {Word = "Usual Large:" + new string(')', 9000)});
-				client.DelaySend(3.Seconds(), new VipMessage { Word = "VIP Delayed Large :" + new string(')', 9000) });
-				client.DelaySend(2.Seconds(), new UsualMessage { Word = "Usual Delayed"});
+				client.DelaySend(3.Seconds(), new VipMessage {Word = "VIP Delayed Large :" + new string(')', 9000)});
+				client.DelaySend(2.Seconds(), new UsualMessage {Word = "Usual Delayed"});
 
 				//client.SendBatch(new VipMessage { Word = " VIP with usual "}, new UsualMessage() { Word = "Vip with usual"});
 
@@ -108,7 +102,6 @@ namespace Lokad.Cqrs.Tests
 					Thread.Sleep(10.Seconds());
 
 
-					
 					cts.Cancel(true);
 					task.Wait(5.Seconds());
 				}
@@ -126,7 +119,6 @@ namespace Lokad.Cqrs.Tests
 		[Test]
 		public void Test2()
 		{
-
 			using (var host = BuildHost())
 			using (var cts = new CancellationTokenSource())
 			{
