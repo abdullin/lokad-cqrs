@@ -8,6 +8,7 @@
 using System;
 using Lokad.Cqrs.Core.Serialization;
 using Lokad.Cqrs.Core.Transport;
+using Lokad.Cqrs.Envelope;
 using NUnit.Framework;
 using ProtoBuf;
 // ReSharper disable UnusedMember.Global

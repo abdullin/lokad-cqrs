@@ -8,11 +8,10 @@
 using System;
 using System.IO;
 using System.Text;
-using Lokad.Cqrs.Envelope;
 
 //using ProtoBuf;
 
-namespace Lokad.Cqrs.Core.Transport
+namespace Lokad.Cqrs.Envelope
 {
 	public sealed class EnvelopeStreamer : IEnvelopeStreamer
 	{

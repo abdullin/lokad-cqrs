@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using Lokad.Cqrs.Envelope;
 
-namespace Lokad.Cqrs.Core.Transport
+namespace Lokad.Cqrs
 {
 	public interface IEnvelopeSerializer
 	{

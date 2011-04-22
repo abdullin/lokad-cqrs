@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Lokad.Cqrs.Envelope;
 
 namespace Lokad.Cqrs.Core.Transport
 {

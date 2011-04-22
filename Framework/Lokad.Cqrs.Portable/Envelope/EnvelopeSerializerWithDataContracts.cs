@@ -1,9 +1,8 @@
 ﻿using System.IO;
 using System.Runtime.Serialization;
 using System.Xml;
-using Lokad.Cqrs.Envelope;
 
-namespace Lokad.Cqrs.Core.Transport
+namespace Lokad.Cqrs.Envelope
 {
 	public sealed class EnvelopeSerializerWithDataContracts : IEnvelopeSerializer
 	{

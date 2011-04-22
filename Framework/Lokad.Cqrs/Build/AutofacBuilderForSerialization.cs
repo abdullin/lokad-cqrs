@@ -8,6 +8,7 @@
 using Autofac;
 using Lokad.Cqrs.Core.Serialization;
 using Lokad.Cqrs.Core.Transport;
+using Lokad.Cqrs.Envelope;
 using Lokad.Cqrs.Serialization;
 
 namespace Lokad.Cqrs.Build
