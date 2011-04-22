@@ -22,7 +22,6 @@ namespace Lokad.Cqrs.Build.Client
 	{
 		public CloudClientBuilder()
 		{
-			Azure.UseDevelopmentStorageAccount();
 			Serialization.AutoDetectSerializer();
 			Logging.LogToTrace();
 
@@ -44,11 +43,6 @@ namespace Lokad.Cqrs.Build.Client
 			get { return new AutofacBuilderForSerialization(Builder); }
 		}
 
-		public AutofacBuilderForAzure Azure
-		{
-			get { return new AutofacBuilderForAzure(Builder); }
-		}
-
 		
 
 		/// <summary>
@@ -67,6 +61,12 @@ namespace Lokad.Cqrs.Build.Client
 		/// <param name="config">configuration syntax.</param>
 		/// <returns>same builder for inline multiple configuration statements</returns>
 		public CloudClientBuilder Domain(Action<DomainBuildModule> config)
+		{
+			RegisterModule(config);
+			return this;
+		}
+
+		public CloudClientBuilder Azure(Action<AutofacBuilderForAzure> config)
 		{
 			RegisterModule(config);
 			return this;

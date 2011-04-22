@@ -30,7 +30,8 @@ namespace Lokad.Cqrs.Tests
 			engine.AddMessageClient("memory:inbox");
 
 			engine.AddMemoryPartition("process-all");
-			engine.AddAzurePartition("process-vip");
+			engine.Azure(x => x.AddPartition("process-vip"));
+
 			engine.AddMemoryRouter("inbox", e =>
 				{
 					if (e.Items.Any(i => i.MappedType == typeof (VipMessage)))

@@ -7,12 +7,10 @@
 
 using System;
 using Autofac;
-using Lokad.Cqrs.Core.Directory;
+using Lokad.Cqrs.Build.Client;
 using Lokad.Cqrs.Core.Dispatch;
-using Lokad.Cqrs.Core.Inbox;
 using Lokad.Cqrs.Core.Outbox;
 using Lokad.Cqrs.Core.Partition;
-using Lokad.Cqrs.Core.Transport;
 using Lokad.Cqrs.Feature.AzurePartition.Inbox;
 using Lokad.Cqrs.Feature.AzurePartition.Sender;
 using Lokad.Cqrs.Feature.MemoryPartition;
@@ -30,21 +28,14 @@ namespace Lokad.Cqrs.Build.Engine
 
 		public AutofacBuilderForLogging Logging { get { return new AutofacBuilderForLogging(Builder); } }
 		public AutofacBuilderForSerialization Serialization { get { return new AutofacBuilderForSerialization(Builder);} }
-		public AutofacBuilderForAzure Azure { get { return new AutofacBuilderForAzure(Builder);}}
+		
 
 		public CloudEngineBuilder()
 		{
 			// System presets
 			Logging.LogToTrace();
 			Serialization.AutoDetectSerializer();
-
-			// Azure presets
-			Azure.UseDevelopmentStorageAccount();
-
-
-			// register azure partition factory
-			Builder.RegisterType<AzureWriteQueueFactory>().As<IQueueWriterFactory>().SingleInstance();
-			Builder.RegisterType<AzurePartitionFactory>().As<AzurePartitionFactory, IEngineProcess>().SingleInstance();
+			
 
 			Builder.RegisterType<MemoryPartitionFactory>().As<IQueueWriterFactory, IEngineProcess, MemoryPartitionFactory>().SingleInstance();
 
@@ -61,7 +52,6 @@ namespace Lokad.Cqrs.Build.Engine
 
 		public CloudEngineBuilder AddMemoryPartition(string[] queues, Action<MemoryPartitionModule> config)
 		{
-
 			foreach (var queue in queues)
 			{
 				Buildy.Assert(!Cqrs.Build.Buildy.ContainsQueuePrefix(queue), "Queue '{0}' should not contain queue prefix, since it's memory already", queue);
@@ -74,23 +64,14 @@ namespace Lokad.Cqrs.Build.Engine
 		}
 
 
-		public CloudEngineBuilder AddAzurePartition(string[] queues, Action<AzurePartitionModule> config)
+		public CloudEngineBuilder Azure(Action<AutofacBuilderForAzure> config)
 		{
-			foreach (var queue in queues)
-			{
-				Buildy.Assert(!Cqrs.Build.Buildy.ContainsQueuePrefix(queue), "Queue '{0}' should not contain queue prefix, since it's memory already", queue);
-			}
-			var module = new AzurePartitionModule(queues);
-
-			config(module);
-			Builder.RegisterModule(module);
+			RegisterModule(config);
 			return this;
 		}
 
-		public CloudEngineBuilder AddAzurePartition(params string[] queues)
-		{
-			return AddAzurePartition(queues, m => { });
-		}
+
+		
 
 		public CloudEngineBuilder AddMemoryPartition(params string[] queues)
 		{

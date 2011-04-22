@@ -90,5 +90,8 @@ namespace Lokad.Cqrs.Build
 		{
 			return base.GetType();
 		}
+
+
+
 	}
 }
