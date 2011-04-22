@@ -71,8 +71,7 @@ namespace Lokad.Cqrs.Core.Directory
 						};
 				}).ToList();
 
-			var includedTypes = messages
-				.Select(m => m.MessageType).ToSet();
+			var includedTypes = new HashSet<Type>(messages.Select(m => m.MessageType));
 
 			// message directory should still include all messages for the serializers
 			var orphanedMessages = _mappings

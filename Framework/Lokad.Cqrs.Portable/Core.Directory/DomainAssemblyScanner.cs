@@ -17,8 +17,8 @@ namespace Lokad.Cqrs.Core.Directory
 	public sealed class DomainAssemblyScanner
 	{
 		readonly HashSet<Assembly> _assemblies = new HashSet<Assembly>();
-		readonly Filter<Type> _handlerSelector = new Filter<Type>();
-		readonly Filter<Type> _serializableSelector = new Filter<Type>();
+		readonly HashSet<Predicate<Type>> _handlerSelector = new HashSet<Predicate<Type>>();
+		readonly HashSet<Predicate<Type>> _serializableSelector = new HashSet<Predicate<Type>>();
 		MethodInfo _consumingMethod;
 		
 		public MethodInfo ConsumingMethod
@@ -38,15 +38,15 @@ namespace Lokad.Cqrs.Core.Directory
 			return this;
 		}
 
-		public DomainAssemblyScanner WhereMessages(Func<Type, bool> filter)
+		public DomainAssemblyScanner WhereMessages(Predicate<Type> filter)
 		{
-			_serializableSelector.AddFilter(filter);
+			_serializableSelector.Add(filter);
 			return this;
 		}
 
-		public DomainAssemblyScanner WhereConsumers(Func<Type, Boolean> filter)
+		public DomainAssemblyScanner WhereConsumers(Predicate<Type> filter)
 		{
-			_handlerSelector.AddFilter(filter);
+			_handlerSelector.Add(filter);
 			return this;
 		}
 
@@ -79,12 +79,12 @@ namespace Lokad.Cqrs.Core.Directory
 				.SelectMany(a => a.GetExportedTypes())
 				.ToList();
 
-			var messageTypes = _serializableSelector
-				.Apply(types)
+			var messageTypes = types
+				.Where(t => !_serializableSelector.Any(x => !x(t)))
 				.ToArray();
 
-			var consumerTypes = _handlerSelector
-				.Apply(types)
+			var consumerTypes = types
+				.Where(t => !_handlerSelector.Any(x => !x(t)))
 				.Where(t => !t.IsGenericType)
 				.ToArray();
 
@@ -113,7 +113,7 @@ namespace Lokad.Cqrs.Core.Directory
 				result.Add(m);
 			}
 			
-			var allMessages = result.Select(m => m.Message).ToSet();
+			var allMessages = new HashSet<Type>(result.Select(m => m.Message));
 
 			foreach (var messageType in messageTypes)
 			{

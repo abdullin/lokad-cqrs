@@ -19,7 +19,7 @@ namespace Lokad.Cqrs.Build
 	[Serializable]
 	public abstract class AutofacBuilderBase
 	{
-		public readonly ContainerBuilder Builder;
+		protected readonly ContainerBuilder Builder;
 
 		protected AutofacBuilderBase()
 		{
@@ -31,7 +31,7 @@ namespace Lokad.Cqrs.Build
 			Builder = builder;
 		}
 
-		public void RegisterModule<TModule>(Action<TModule> configure)
+		protected void RegisterModule<TModule>(Action<TModule> configure)
 			where TModule : IModule, new()
 		{
 			var module = new TModule();

@@ -94,7 +94,7 @@ namespace Lokad.Cqrs.Build
 		/// </summary>
 		/// <param name="customFilterForConsumers">The custom filter for consumers.</param>
 		/// <returns>same module instance for chaining fluent configurations</returns>
-		public DomainBuildModule WhereConsumers(Func<Type, bool> customFilterForConsumers)
+		public DomainBuildModule WhereConsumers(Predicate<Type> customFilterForConsumers)
 		{
 			_scanner.WhereConsumers(customFilterForConsumers);
 			return this;
@@ -105,7 +105,7 @@ namespace Lokad.Cqrs.Build
 		/// </summary>
 		/// <param name="customFilterForMessages">The custom filter for messages.</param>
 		/// <returns>same module instance for chaining fluent configurations</returns>
-		public DomainBuildModule WhereMessages(Func<Type, bool> customFilterForMessages)
+		public DomainBuildModule WhereMessages(Predicate<Type> customFilterForMessages)
 		{
 			_scanner.WhereMessages(customFilterForMessages);
 			return this;

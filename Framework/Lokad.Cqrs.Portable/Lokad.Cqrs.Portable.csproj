@@ -40,9 +40,19 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core.Build\AutofacBuilderBase.cs" />
+    <Compile Include="Core.Build\CloudEngineHost.cs" />
+    <Compile Include="Core.Build\Events\HostInitializationStarted.cs" />
+    <Compile Include="Core.Build\Events\HostInitialized.cs" />
+    <Compile Include="Core.Build\Events\HostStarted.cs" />
+    <Compile Include="Core.Build\Events\HostStopped.cs" />
     <Compile Include="Core.Directory\ConsumerInfo.cs" />
+    <Compile Include="Core.Directory\DomainAssemblyScanner.cs" />
     <Compile Include="Core.Directory\MessageDirectory.cs" />
+    <Compile Include="Core.Directory\MessageDirectoryBuilder.cs" />
     <Compile Include="Core.Directory\MessageInfo.cs" />
+    <Compile Include="Core.Directory\MessageMapping.cs" />
+    <Compile Include="Core.Directory\MessageReflectionUtil.cs" />
     <Compile Include="Core.Dispatch\DispatchCommandBatchToSingleConsumer.cs" />
     <Compile Include="Core.Dispatch\DispatcherProcess.cs" />
     <Compile Include="Core.Dispatch\DispatcherUtil.cs" />
@@ -67,9 +77,9 @@
     <Compile Include="Core.Envelope\ItemContract.cs" />
     <Compile Include="Core.Envelope\EnvelopeAttributes.cs" />
     <Compile Include="Core.Envelope\MessageHeader.cs" />
-    <Compile Include="Feature.DefaultInterfaces\IConsume.cs" />
-    <Compile Include="Feature.DefaultInterfaces\IConsumeMessage.cs" />
-    <Compile Include="Feature.DefaultInterfaces\IMessage.cs" />
+    <Compile Include="Core.Directory\Default\IConsume.cs" />
+    <Compile Include="Core.Directory\Default\IConsumeMessage.cs" />
+    <Compile Include="Core.Directory\Default\IMessage.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryFutureList.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryPartitionFactory.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryPartitionInbox.cs" />

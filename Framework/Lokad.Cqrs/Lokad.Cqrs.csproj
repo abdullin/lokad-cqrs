@@ -52,22 +52,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Build\AutofacBuilderBase.cs" />
     <Compile Include="Build\AutofacBuilderForAzure.cs" />
     <Compile Include="Build\AutofacBuilderForLogging.cs" />
     <Compile Include="Build\AutofacBuilderForSerialization.cs" />
     <Compile Include="Build\Client\CloudClient.cs" />
     <Compile Include="Build\Client\CloudClientBuilder.cs" />
+    <Compile Include="Build\Engine\CloudEngineBuilder.cs" />
     <Compile Include="Build\CloudSettingsProvider.cs" />
     <Compile Include="Build\DomainBuildModule.cs" />
-    <Compile Include="Build\Engine\CloudEngineBuilder.cs" />
-    <Compile Include="Build\Engine\CloudEngineHost.cs" />
     <Compile Include="Build\Engine\CloudEngineRole.cs" />
-    <Compile Include="Build\Engine\Events\HostInitializationStarted.cs" />
-    <Compile Include="Build\Engine\Events\HostInitialized.cs" />
-    <Compile Include="Build\Engine\Events\HostStarted.cs" />
-    <Compile Include="Build\Engine\Events\HostStopped.cs" />
-    <Compile Include="Core.Directory\MessageReflectionUtil.cs" />
     <Compile Include="Core.Serialization\DataSerializerWithAutoDetection.cs" />
     <Compile Include="Feature.AtomicStorage\Azure\AzureAtomicEntityWriter.cs" />
     <Compile Include="Feature.AtomicStorage\Azure\AzureAtomicSingletonReader.cs" />
@@ -87,9 +80,6 @@
     <Compile Include="Core.Transport\MessageEnvelopeBuilder.cs" />
     <Compile Include="Core.Transport\MessageItemToSave.cs" />
     <Compile Include="Core.Transport\MessagePrinter.cs" />
-    <Compile Include="Core.Directory\DomainAssemblyScanner.cs" />
-    <Compile Include="Core.Directory\MessageDirectoryBuilder.cs" />
-    <Compile Include="Core.Directory\MessageMapping.cs" />
     <Compile Include="Evil\ExtendIDictionary.cs" />
     <Compile Include="Evil\ExtendIEnumerable.cs" />
     <Compile Include="Evil\ExtendInt32.cs" />
@@ -149,6 +139,7 @@
     <Compile Include="Core.Serialization\ProtoBufUtil.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Core.Directory\" />
     <Folder Include="Core.Partition\" />
   </ItemGroup>
   <ItemGroup>
