@@ -127,7 +127,7 @@
     <Compile Include="Feature.AzurePartition\Events\RetrievedPoisonMessage.cs" />
     <Compile Include="Core.Transport\GetMessageResult.cs" />
     <Compile Include="Core.Transport\GetMessageResultState.cs" />
-    <Compile Include="Feature.AzurePartition\Inbox\HandleMessagesModule.cs" />
+    <Compile Include="Feature.AzurePartition\Inbox\AzurePartitionModule.cs" />
     <Compile Include="Feature.AzurePartition\Events\MessageDirectoryCreated.cs" />
     <Compile Include="Core.Partition\SingleThreadConsumingProcess.cs" />
     <Compile Include="Feature.Logging\NullSystemObserver.cs" />

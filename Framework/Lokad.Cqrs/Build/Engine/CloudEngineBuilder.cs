@@ -43,7 +43,7 @@ namespace Lokad.Cqrs.Build.Engine
 
 			// register azure partition factory
 			Builder.RegisterType<AzureWriteQueueFactory>().As<IQueueWriterFactory>().SingleInstance();
-			//Builder.RegisterType<AzurePartitionFactory>().As<AzurePartitionFactory, IEngineProcess>().SingleInstance();
+			Builder.RegisterType<AzurePartitionFactory>().As<AzurePartitionFactory, IEngineProcess>().SingleInstance();
 
 			Builder.RegisterType<MemoryPartitionFactory>().As<IQueueWriterFactory, IEngineProcess, MemoryPartitionFactory>().SingleInstance();
 
@@ -56,16 +56,6 @@ namespace Lokad.Cqrs.Build.Engine
 			Builder.RegisterType<CloudEngineHost>().SingleInstance();
 		}
 
-		/// <summary>
-		/// Adds Message Handling Feature to the instance of <see cref="CloudEngineHost"/>
-		/// </summary>
-		/// <param name="config">configuration syntax</param>
-		/// <returns>same builder for inling multiple configuration statements</returns>
-		public CloudEngineBuilder AddMessageHandler(Action<HandleMessagesModule> config)
-		{
-			RegisterModule(config);
-			return this;
-		}
 
 
 		public CloudEngineBuilder AddMemoryPartition(string[] queues, Action<MemoryPartitionModule> config)
@@ -81,6 +71,26 @@ namespace Lokad.Cqrs.Build.Engine
 			Builder.RegisterModule(module);
 			return this;
 		}
+
+
+		public CloudEngineBuilder AddAzurePartition(string[] queues, Action<AzurePartitionModule> config)
+		{
+			foreach (var queue in queues)
+			{
+				Buildy.Assert(!Cqrs.Build.Buildy.ContainsQueuePrefix(queue), "Queue '{0}' should not contain queue prefix, since it's memory already", queue);
+			}
+			var module = new AzurePartitionModule(queues);
+
+			config(module);
+			Builder.RegisterModule(module);
+			return this;
+		}
+
+		public CloudEngineBuilder AddAzurePartition(params string[] queues)
+		{
+			return AddAzurePartition(queues, m => { });
+		}
+
 		public CloudEngineBuilder AddMemoryPartition(params string[] queues)
 		{
 			return AddMemoryPartition(queues, m => { });
@@ -141,7 +151,9 @@ namespace Lokad.Cqrs.Build.Engine
 
 
 			ILifetimeScope container = Builder.Build();
-			return container.Resolve<CloudEngineHost>(TypedParameter.From(container));
+			var host = container.Resolve<CloudEngineHost>(TypedParameter.From(container));
+			host.Initialize();
+			return host;
 		}
 	}
 }

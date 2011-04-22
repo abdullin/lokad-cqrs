@@ -34,11 +34,15 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Sender
 		{
 			foreach (var account in _accounts)
 			{
-				var match = account.Credentials.AccountName + ":";
+				var accountName = account.Credentials.AccountName;
+				if (accountName == CloudStorageAccount.DevelopmentStorageAccount.Credentials.AccountName)
+				{
+					accountName = "azure-dev";
+				}
+				var match = accountName + ":";
 				if (queueName.StartsWith(match, StringComparison.InvariantCultureIgnoreCase))
 				{
-
-					var cleanedName = queueName.Remove(0, queueName.Length).TrimStart();
+					var cleanedName = queueName.Remove(0, match.Length).TrimStart();
 
 					writer = _writeQueues.GetOrAdd(queueName, name =>
 					{
