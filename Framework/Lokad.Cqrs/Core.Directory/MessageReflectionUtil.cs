@@ -16,32 +16,7 @@ namespace Lokad.Cqrs.Core.Directory
 {
 	static class MessageReflectionUtil
 	{
-		[DebuggerNonUserCode]
-		public static void InvokeConsume(object messageHandler,  object messageInstance,  string methodName)
-		{
-			if (messageHandler == null) throw new ArgumentNullException("messageHandler");
-			if (messageInstance == null) throw new ArgumentNullException("messageInstance");
-			if (methodName == null) throw new ArgumentNullException("methodName");
-
-			try
-			{
-				var handlerType = messageHandler.GetType();
-				var messageType = messageInstance.GetType();
-				var consume = handlerType.GetMethod(methodName, new[] {messageType});
-
-				if (null == consume)
-					throw Errors.InvalidOperation("Unable to find consuming method {0}.{1}({2}).", 
-						handlerType.Name, 
-						methodName, 
-						messageType.Name);
-
-				consume.Invoke(messageHandler, new[] {messageInstance});
-			}
-			catch (TargetInvocationException e)
-			{
-				throw Errors.Inner(e);
-			}
-		}
+	
 
 
 		public static MethodInfo ExpressConsumer<THandler>(Expression<Action<THandler>> expression)

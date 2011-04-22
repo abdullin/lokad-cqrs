@@ -39,7 +39,7 @@ namespace Lokad.Cqrs.Build.Client
 			}
 			catch (TargetInvocationException e)
 			{
-				throw Errors.Inner(e);
+				throw InvocationUtil.Inner(e);
 			}
 		}
 

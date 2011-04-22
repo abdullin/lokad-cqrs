@@ -77,7 +77,8 @@ namespace Lokad.Cqrs.Feature.AtomicStorage.Azure
 			}
 			catch (StorageClientException ex)
 			{
-				throw Errors.InvalidOperation("Failed to load view {0}-{1}", typeof(TView), key);
+				var error = string.Format("Failed to load view {0}-{1}", typeof (TView), key);
+				throw new InvalidOperationException(error, ex);
 			}
 			var view = _convention.Deserialize<TView>(text);
 			change(view);

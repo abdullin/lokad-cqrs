@@ -67,16 +67,7 @@
     <Compile Include="Build\Engine\Events\HostInitialized.cs" />
     <Compile Include="Build\Engine\Events\HostStarted.cs" />
     <Compile Include="Build\Engine\Events\HostStopped.cs" />
-    <Compile Include="Core.Dispatch\DispatchCommandBatchToSingleConsumer.cs" />
-    <Compile Include="Core.Dispatch\DispatcherProcess.cs" />
-    <Compile Include="Core.Dispatch\DispatcherUtil.cs" />
-    <Compile Include="Core.Dispatch\DispatchEventToMultipleConsumers.cs" />
-    <Compile Include="Core.Dispatch\DispatchMessagesToRoute.cs" />
-    <Compile Include="Core.Dispatch\Events\FailedToAckMessage.cs" />
-    <Compile Include="Core.Dispatch\Events\FailedToConsumeMessage.cs" />
-    <Compile Include="Core.Dispatch\ISingleThreadMessageDispatcher.cs" />
-    <Compile Include="Core.Dispatch\MessageDuplicationManager.cs" />
-    <Compile Include="Core.Dispatch\MessageDuplicationMemory.cs" />
+    <Compile Include="Core.Directory\MessageReflectionUtil.cs" />
     <Compile Include="Core.Serialization\DataSerializerWithAutoDetection.cs" />
     <Compile Include="Feature.AtomicStorage\Azure\AzureAtomicEntityWriter.cs" />
     <Compile Include="Feature.AtomicStorage\Azure\AzureAtomicSingletonReader.cs" />
@@ -96,13 +87,9 @@
     <Compile Include="Core.Transport\MessageEnvelopeBuilder.cs" />
     <Compile Include="Core.Transport\MessageItemToSave.cs" />
     <Compile Include="Core.Transport\MessagePrinter.cs" />
-    <Compile Include="Core.Directory\ConsumerInfo.cs" />
     <Compile Include="Core.Directory\DomainAssemblyScanner.cs" />
-    <Compile Include="Core.Directory\MessageDirectory.cs" />
     <Compile Include="Core.Directory\MessageDirectoryBuilder.cs" />
     <Compile Include="Core.Directory\MessageMapping.cs" />
-    <Compile Include="Core.Directory\MessageReflectionUtil.cs" />
-    <Compile Include="Evil\Errors.cs" />
     <Compile Include="Evil\ExtendIDictionary.cs" />
     <Compile Include="Evil\ExtendIEnumerable.cs" />
     <Compile Include="Evil\ExtendInt32.cs" />
@@ -163,8 +150,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Core.Partition\" />
-    <Folder Include="Feature.DefaultInterfaces\" />
-    <Folder Include="Feature.TestPartition\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Lokad.Cqrs.Portable\Lokad.Cqrs.Portable.csproj">

@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Lokad.Cqrs.Evil;
 
 namespace Lokad.Cqrs.Core.Directory
 {
@@ -42,7 +43,7 @@ namespace Lokad.Cqrs.Core.Directory
 
 		public void InvokeConsume(object consumer, object message)
 		{
-			MessageReflectionUtil.InvokeConsume(consumer, message, _consumeMethodName);
+			InvocationUtil.InvokeConsume(consumer, message, _consumeMethodName);
 		}
 
 		public IEnumerable<Type> GetKnownTypes()

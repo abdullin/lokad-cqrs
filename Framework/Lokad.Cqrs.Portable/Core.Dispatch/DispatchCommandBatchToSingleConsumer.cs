@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using Autofac;
 using Lokad.Cqrs.Core.Directory;
-using Lokad.Cqrs.Core.Transport;
 
 namespace Lokad.Cqrs.Core.Dispatch
 {

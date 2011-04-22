@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Outbox;
-using Lokad.Cqrs.Core.Transport;
 using System.Linq;
 
 namespace Lokad.Cqrs.Core.Dispatch
