@@ -38,7 +38,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core.Inbox\IPartitionInbox.cs" />
-    <Compile Include="Core.Inbox\IPartitionInboxFactory.cs" />
     <Compile Include="Core.Inbox\MessageContext.cs" />
     <Compile Include="Envelope\EnvelopeSerializerWithDataContracts.cs" />
     <Compile Include="Envelope\EnvelopeConvert.cs" />

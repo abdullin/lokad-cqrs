@@ -109,6 +109,7 @@
     <Compile Include="Evil\Maybe.cs" />
     <Compile Include="Feature.AtomicStorage\Azure\IAzureAtomicStorageStrategy.cs" />
     <Compile Include="Feature.AzurePartition\Inbox\AzurePartitionScheduler.cs" />
+    <Compile Include="Feature.AzurePartition\Inbox\MemoryPartitionModule.cs" />
     <Compile Include="Feature.AzurePartition\StatelessAzureFutureList.cs" />
     <Compile Include="Feature.AzurePartition\Inbox\AzurePartitionInbox.cs" />
     <Compile Include="Feature.AzurePartition\Inbox\AzurePartitionFactory.cs" />

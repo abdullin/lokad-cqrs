@@ -10,23 +10,26 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Lokad.Cqrs.Core.Inbox;
 using Lokad.Cqrs.Feature.MemoryPartition;
 
 namespace Lokad.Cqrs.Feature.TestPartition
 {
-	public sealed class MemoryPartitionFactory : IPartitionInboxFactory, IQueueWriterFactory, IEngineProcess
+	public sealed class MemoryPartitionFactory : IQueueWriterFactory, IEngineProcess
 	{
 		readonly ConcurrentDictionary<string, BlockingCollection<MessageEnvelope>> _delivery =
 			new ConcurrentDictionary<string, BlockingCollection<MessageEnvelope>>();
 
 		readonly ConcurrentDictionary<string,MemoryFutureList> _pending = new ConcurrentDictionary<string, MemoryFutureList>();
 
+		
+
 		public bool TryGetWriteQueue(string name, out IQueueWriter writer)
 		{
-			if (name.StartsWith("memory:"))
+			const string prefix = "memory:";
+			if (name.StartsWith(prefix, StringComparison.InvariantCultureIgnoreCase))
 			{
-				var queue = _delivery.GetOrAdd(name, s => new BlockingCollection<MessageEnvelope>());
+				var cleaned = name.Remove(0, prefix.Length).Trim();
+				var queue = _delivery.GetOrAdd(cleaned, s => new BlockingCollection<MessageEnvelope>());
 				writer = new MemoryQueueWriter(queue);
 				return true;
 			}
@@ -34,7 +37,7 @@ namespace Lokad.Cqrs.Feature.TestPartition
 			return false;
 		}
 
-		public IPartitionInbox GetNotifier(string[] queueNames)
+		public MemoryPartitionInbox GetMemoryInbox(string[] queueNames)
 		{
 			var queues = queueNames
 				.Select(n => _delivery.GetOrAdd(n, s => new BlockingCollection<MessageEnvelope>()))

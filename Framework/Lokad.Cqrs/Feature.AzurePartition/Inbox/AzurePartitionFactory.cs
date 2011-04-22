@@ -16,7 +16,7 @@ using Microsoft.WindowsAzure;
 
 namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
 {
-	public sealed class AzurePartitionFactory : IPartitionInboxFactory, IEngineProcess
+	public sealed class AzurePartitionFactory : IEngineProcess
 	{
 		readonly CloudStorageAccount _account;
 		readonly IEnvelopeStreamer _streamer;

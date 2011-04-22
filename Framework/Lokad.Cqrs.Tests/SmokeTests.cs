@@ -13,6 +13,7 @@ using Lokad.Cqrs.Build.Engine;
 using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Evil;
 using Lokad.Cqrs.Feature.DefaultInterfaces;
+using Lokad.Cqrs.Feature.TestPartition;
 using NUnit.Framework;
 
 namespace Lokad.Cqrs.Tests
@@ -27,37 +28,17 @@ namespace Lokad.Cqrs.Tests
 		static CloudEngineHost BuildHost()
 		{
 			var engine = new CloudEngineBuilder();
-			engine.DomainIs(m =>
+			engine.AddMessageClient("memory:test-in");
+			engine.AddMemoryPartition("test-hi", "test-bye");
+			engine.AddMemoryRouter("test-in", e =>
 				{
-					m.WithDefaultInterfaces();
-					m.InCurrentAssembly();
+					if (e.Items.Any(i => i.MappedType == typeof (Hello)))
+						return "memory:test-hi";
+					if (e.Items.Any(i => i.MappedType == typeof (Bye)))
+						return "memory:test-bye";
+					return "memory:test-what";
 				});
-
-			engine.AddMessageHandler(x =>
-				{
-					x.ListenToQueue("memory:test-in");
-					x.Dispatch<DispatchMessagesToRoute>(r =>
-						{
-							r.SpecifyRouter(e =>
-								{
-									if (e.Items.Any(i => i.MappedType == typeof (Hello)))
-										return "memory:test-hi";
-									if (e.Items.Any(i => i.MappedType == typeof (Bye)))
-										return "memory:test-bye";
-									return "memory:test-what";
-								});
-						});
-				});
-
-			engine.AddMessageHandler(x =>
-				{
-					x.ListenToQueue("memory:test-hi", "memory:test-bye");
-					x.Dispatch<DispatchEventToMultipleConsumers>();
-				});
-
-			engine.AddMessageClient(x => x.QueueName = "memory:test-in");
-
-
+			
 			return engine.Build();
 		}
 
@@ -121,6 +102,9 @@ namespace Lokad.Cqrs.Tests
 				{
 					var task = host.Start(cts.Token);
 					Thread.Sleep(10.Seconds());
+
+
+					
 					cts.Cancel(true);
 					task.Wait(5.Seconds());
 				}

@@ -37,7 +37,9 @@ namespace Lokad.Cqrs.Build.Engine
 		public Task Start(CancellationToken token)
 		{
 			var tasks = _serverProcesses.Select(p => p.Start(token)).ToArray();
-			_observer.Notify(new HostStarted());
+			var names = _serverProcesses.Select(p => string.Format("{0}({1:X8})", p.GetType().Name, p.GetHashCode())).ToArray();
+
+			_observer.Notify(new HostStarted(names));
 			
 			return Task.Factory.ContinueWhenAll(tasks, t => _observer.Notify(new HostStopped()));
 		}

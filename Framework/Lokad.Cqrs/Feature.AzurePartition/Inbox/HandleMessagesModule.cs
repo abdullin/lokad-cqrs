@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using Autofac;
 using System.Linq;
+using Autofac.Core;
 using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Core.Inbox;
@@ -39,7 +40,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
 			ModuleName = "Handler-" + GetHashCode().ToString("X8");
 
 
-			Dispatch<DispatchCommandBatchToSingleConsumer>();
+			
 		}
 
 		public HandleMessagesModule ApplyToTransport(Action<SingleThreadConsumingProcess, IComponentContext> config)
@@ -66,71 +67,12 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
 		}
 
 
-		public HandleMessagesModule Dispatch<TDispatcher>(Action<TDispatcher> configure)
-			where TDispatcher : class,ISingleThreadMessageDispatcher
-		{
-			_dispatcher = Tuple.Create(typeof (TDispatcher), new Action<ISingleThreadMessageDispatcher>(d => configure((TDispatcher) d)));
-			return this;
-		}
+		
 
-		public HandleMessagesModule Dispatch<TDispatcher>()
-			where TDispatcher : class, ISingleThreadMessageDispatcher
-		{
-			return Dispatch<TDispatcher>(dispatcher => { });
-		}
 		
 		
-		/// <summary>
-		/// Adds custom filters for <see cref="MessageMapping"/>, that will be used
-		/// for configuring this message handler.
-		/// </summary>
-		/// <param name="filter">The filter.</param>
-		/// <returns></returns>
-		public HandleMessagesModule WhereMappings(Func<MessageMapping, bool> filter)
-		{
-			_filter.AddFilter(filter);
-			return this;
-		}
-
-		/// <summary>
-		/// Adds filter to exclude all message mappings, where messages derive from the specified class
-		/// </summary>
-		/// <typeparam name="TMessage">The type of the message.</typeparam>
-		/// <returns>same module instance for chaining fluent configurations</returns>
-		public HandleMessagesModule WhereMessagesAreNot<TMessage>()
-		{
-			return WhereMappings(mm => !typeof(TMessage).IsAssignableFrom(mm.Message));
-		}
-
-		/// <summary>
-		/// Adds filter to include only message mappings, where messages derive from the specified class
-		/// </summary>
-		/// <typeparam name="TMessage">The type of the message.</typeparam>
-		/// <returns>same module instance for chaining fluent configurations</returns>
-		public HandleMessagesModule WhereMessagesAre<TMessage>()
-		{
-			return WhereMappings(mm => typeof(TMessage).IsAssignableFrom(mm.Message));
-		}
-
-		/// <summary>
-		/// Adds filter to include only message mappings, where consumers derive from the specified class
-		/// </summary>
-		/// <typeparam name="TConsumer">The type of the consumer.</typeparam>
-		/// <returns>same module instance for chaining fluent configurations</returns>
-		public HandleMessagesModule WhereConsumersAre<TConsumer>()
-		{
-			return WhereMappings(mm => typeof(TConsumer).IsAssignableFrom(mm.Consumer));
-		}
-		/// <summary>
-		/// Adds filter to exclude all message mappings, where consumers derive from the specified class
-		/// </summary>
-		/// <typeparam name="TConsumer">The type of the consumer.</typeparam>
-		/// <returns>same module instance for chaining fluent configurations</returns>
-		public HandleMessagesModule WhereConsumersAreNot<TConsumer>()
-		{
-			return WhereMappings(mm => !typeof(TConsumer).IsAssignableFrom(mm.Consumer));
-		}
-
+		
+	
 
 		/// <summary>
 		/// Specifies names of the queues to listen to
@@ -164,7 +106,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
 			_dispatcher.Item2(dispatcher);
 			dispatcher.Init();
 
-			var factory = context.Resolve<IPartitionInboxFactory>();
+			var factory = context.Resolve<AzurePartitionFactory>();
 			var notifier = factory.GetNotifier(queueNames);
 			
 			var transport = new SingleThreadConsumingProcess(log, dispatcher, notifier);
@@ -174,6 +116,8 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
 
 			return transport;
 		}
+
+		
 
 		protected override void Load(ContainerBuilder builder)
 		{

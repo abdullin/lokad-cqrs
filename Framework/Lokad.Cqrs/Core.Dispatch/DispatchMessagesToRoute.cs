@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Transport;
 using System.Linq;
 
@@ -35,7 +36,7 @@ namespace Lokad.Cqrs.Core.Dispatch
 			}
 		}
 
-		public void SpecifyRouter(Func<MessageEnvelope, string>  router)
+		public void SpecifyRouter(Func<MessageEnvelope, string> router)
 		{
 			_routerRule = router;
 		}
@@ -48,4 +49,5 @@ namespace Lokad.Cqrs.Core.Dispatch
 			}
 		}
 	}
+
 }

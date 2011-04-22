@@ -137,6 +137,22 @@ namespace Lokad.Cqrs.Build
 			return this;
 		}
 
+
+		public DomainBuildModule InUserAssemblies()
+		{
+			foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+			{
+				if (string.IsNullOrEmpty(assembly.FullName))
+					continue;
+				if (assembly.FullName.StartsWith("System."))
+					continue;
+				if (assembly.FullName.StartsWith("Microsoft."))
+					continue;
+				_scanner.WithAssembly(assembly);
+			}
+			return this;
+		}
+
 		/// <summary>
 		/// Includes assemblies of the specified types into the discovery process
 		/// </summary>
@@ -244,5 +260,21 @@ namespace Lokad.Cqrs.Build
 			//delegate string GetInfoDelegate(UnpackedMessage message);
 		}
 
+	}
+
+	static class Buildy
+	{
+		public static bool ContainsQueuePrefix(string queueName)
+		{
+			return queueName.Contains(":");
+		}
+
+		public static void Assert(bool check, string text, params object[] args)
+		{
+			if (!check)
+				throw new InvalidOperationException(string.Format(text, args));
+		}
+
+		
 	}
 }

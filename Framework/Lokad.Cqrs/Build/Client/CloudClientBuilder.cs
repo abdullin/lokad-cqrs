@@ -56,10 +56,7 @@ namespace Lokad.Cqrs.Build.Client
 		/// <returns>same builder for inline multiple configuration statements</returns>
 		public CloudClientBuilder AddMessageClient(string queueName)
 		{
-			Builder.RegisterModule(new SendMessageModule
-				{
-				QueueName = queueName
-			});
+			Builder.RegisterModule(new SendMessageModule(queueName));
 			return this;
 		}
 
