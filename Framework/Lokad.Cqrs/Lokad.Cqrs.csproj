@@ -53,8 +53,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Build\AutofacBuilderForAzure.cs" />
-    <Compile Include="Build\AutofacBuilderForLogging.cs" />
-    <Compile Include="Build\AutofacBuilderForSerialization.cs" />
     <Compile Include="Build\Client\CloudClient.cs" />
     <Compile Include="Build\Client\CloudClientBuilder.cs" />
     <Compile Include="Build\Engine\CloudEngineBuilder.cs" />
@@ -102,8 +100,6 @@
     <Compile Include="Core.Transport\GetMessageResultState.cs" />
     <Compile Include="Feature.AzurePartition\Inbox\AzurePartitionModule.cs" />
     <Compile Include="Feature.AzurePartition\Events\MessageDirectoryCreated.cs" />
-    <Compile Include="Feature.Logging\NullSystemObserver.cs" />
-    <Compile Include="Feature.Logging\TraceSystemObserver.cs" />
     <Compile Include="Feature.StreamingStorage\ExtendStorageItem.cs" />
     <Compile Include="Feature.StreamingStorage\Files\FileStorageContainer.cs" />
     <Compile Include="Feature.StreamingStorage\Files\FileStorageItem.cs" />

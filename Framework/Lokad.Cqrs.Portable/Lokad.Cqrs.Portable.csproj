@@ -40,12 +40,14 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core.Build\AutofacBuilderBase.cs" />
-    <Compile Include="Core.Build\CloudEngineHost.cs" />
-    <Compile Include="Core.Build\Events\HostInitializationStarted.cs" />
-    <Compile Include="Core.Build\Events\HostInitialized.cs" />
-    <Compile Include="Core.Build\Events\HostStarted.cs" />
-    <Compile Include="Core.Build\Events\HostStopped.cs" />
+    <Compile Include="Build\AutofacBuilderBase.cs" />
+    <Compile Include="Build\AutofacBuilderForLogging.cs" />
+    <Compile Include="Build\AutofacBuilderForSerialization.cs" />
+    <Compile Include="Build\Host\CloudEngineHost.cs" />
+    <Compile Include="Build\Host\Events\HostInitializationStarted.cs" />
+    <Compile Include="Build\Host\Events\HostInitialized.cs" />
+    <Compile Include="Build\Host\Events\HostStarted.cs" />
+    <Compile Include="Build\Host\Events\HostStopped.cs" />
     <Compile Include="Core.Directory\ConsumerInfo.cs" />
     <Compile Include="Core.Directory\DomainAssemblyScanner.cs" />
     <Compile Include="Core.Directory\MessageDirectory.cs" />
@@ -80,6 +82,8 @@
     <Compile Include="Core.Directory\Default\IConsume.cs" />
     <Compile Include="Core.Directory\Default\IConsumeMessage.cs" />
     <Compile Include="Core.Directory\Default\IMessage.cs" />
+    <Compile Include="Feature.Logging\NullSystemObserver.cs" />
+    <Compile Include="Feature.Logging\TraceSystemObserver.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryFutureList.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryPartitionFactory.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryPartitionInbox.cs" />

@@ -11,6 +11,7 @@ using System.Reflection;
 using Autofac;
 using Autofac.Core;
 using Lokad.Cqrs.Core.Directory;
+using Lokad.Cqrs.Core.Serialization;
 using Lokad.Cqrs.Feature.DefaultInterfaces;
 
 namespace Lokad.Cqrs.Build
@@ -274,7 +275,21 @@ namespace Lokad.Cqrs.Build
 			if (!check)
 				throw new InvalidOperationException(string.Format(text, args));
 		}
-
 		
+	}
+
+	public static class AutofacBuilderForSerializationExtended
+	{
+		public static void AutoDetectSerializer(this AutofacBuilderForSerialization @this)
+		{
+			@this.RegisterDataSerializer<DataSerializerWithAutoDetection>();
+			@this.RegisterEnvelopeSerializer<EnvelopeSerializerWithProtoBuf>();
+		}
+
+		public static void UseProtoBufSerialization(this AutofacBuilderForSerialization self)
+		{
+			self.RegisterDataSerializer<DataSerializerWithProtoBuf>();
+			self.RegisterEnvelopeSerializer<EnvelopeSerializerWithProtoBuf>();
+		}
 	}
 }
