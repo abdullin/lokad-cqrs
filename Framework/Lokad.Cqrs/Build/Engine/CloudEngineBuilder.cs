@@ -8,6 +8,7 @@
 using System;
 using Autofac;
 using Lokad.Cqrs.Core.Dispatch;
+using Lokad.Cqrs.Core.Inbox;
 using Lokad.Cqrs.Core.Partition;
 using Lokad.Cqrs.Core.Transport;
 using Lokad.Cqrs.Feature.AzurePartition.Inbox;
@@ -38,10 +39,17 @@ namespace Lokad.Cqrs.Build.Engine
 			// Azure presets
 			Azure.UseDevelopmentStorageAccount();
 
-			Builder.RegisterType<AzureWriteQueueFactory>().As<IWriteQueueFactory>().SingleInstance();
-			Builder.RegisterType<AzurePartitionFactory>()
-				.As<IPartitionInboxFactory, IEngineProcess>()
+
+			// register azure partition factory
+			Builder.RegisterType<AzureWriteQueueFactory>().As<IQueueWriterFactory>().SingleInstance();
+			Builder.RegisterType<AzurePartitionFactory>().As<IPartitionInboxFactory, IEngineProcess>().SingleInstance();
+
+			Builder
+				.RegisterType<MemoryPartitionFactory>()
+				.As<IPartitionInboxFactory, IQueueWriterFactory, IEngineProcess>()
 				.SingleInstance();
+
+
 
 			Builder.RegisterType<SingleThreadConsumingProcess>();
 			Builder.RegisterType<MessageDuplicationManager>().SingleInstance();
@@ -50,15 +58,6 @@ namespace Lokad.Cqrs.Build.Engine
 			Builder.RegisterType<CloudEngineHost>().SingleInstance();
 		}
 
-		public CloudEngineBuilder UseMemoryPartitions()
-		{
-			Builder
-				.RegisterType<MemoryPartitionFactory>()
-				.As<IPartitionInboxFactory, IWriteQueueFactory, IEngineProcess>()
-				.SingleInstance();
-			return this;
-		}
-	
 		/// <summary>
 		/// Adds Message Handling Feature to the instance of <see cref="CloudEngineHost"/>
 		/// </summary>

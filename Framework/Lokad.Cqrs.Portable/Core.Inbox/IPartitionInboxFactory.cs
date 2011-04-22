@@ -1,4 +1,4 @@
-﻿namespace Lokad.Cqrs.Core.Partition
+﻿namespace Lokad.Cqrs.Core.Inbox
 {
 	public interface IPartitionInboxFactory
 	{

@@ -1,7 +1,6 @@
 ﻿using System.Threading;
-using Lokad.Cqrs.Core.Transport;
 
-namespace Lokad.Cqrs.Core.Partition
+namespace Lokad.Cqrs.Core.Inbox
 {
 	public interface IPartitionInbox
 	{

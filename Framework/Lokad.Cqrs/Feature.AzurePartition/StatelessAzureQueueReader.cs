@@ -8,6 +8,7 @@
 using System;
 using System.Text;
 using System.Threading;
+using Lokad.Cqrs.Core.Inbox;
 using Lokad.Cqrs.Core.Transport;
 using Lokad.Cqrs.Feature.AzurePartition.Events;
 using Microsoft.WindowsAzure;

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using Lokad.Cqrs.Core.Transport;
+using System.Linq;
 
 namespace Lokad.Cqrs.Core.Dispatch
 {
@@ -9,20 +11,28 @@ namespace Lokad.Cqrs.Core.Dispatch
 	///</summary>
 	public sealed class DispatchMessagesToRoute : ISingleThreadMessageDispatcher
 	{
-		readonly IWriteQueueFactory _queueFactory;
+		readonly IEnumerable<IQueueWriterFactory> _queueFactory;
 		Func<MessageEnvelope, string> _routerRule;
 
-		public DispatchMessagesToRoute(IWriteQueueFactory queueFactory)
+		public DispatchMessagesToRoute(IEnumerable<IQueueWriterFactory> queueFactory)
 		{
-			_queueFactory = queueFactory;
+			// static implementation for now
+			_queueFactory = queueFactory.ToArray();
 		}
 
 
 		public void DispatchMessage(MessageEnvelope message)
 		{
 			var route = _routerRule(message);
-			var queue = _queueFactory.GetWriteQueue(route);
-			queue.PutMessage(message);
+
+			foreach (var factory in _queueFactory)
+			{
+				IQueueWriter writer;
+				if (factory.TryGetWriteQueue(route, out writer))
+				{
+					writer.PutMessage(message);
+				}
+			}
 		}
 
 		public void SpecifyRouter(Func<MessageEnvelope, string>  router)

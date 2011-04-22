@@ -27,8 +27,8 @@ namespace Lokad.Cqrs.Durability
 			var bytes = Convert.FromBase64String(msg);
 
 
-			var streamer = new EnvelopeStreamer(new ProtoBufEnvelopeSerializer(),
-				ProtoBufDataSerializer.For<ActivateUserCommand>());
+			var streamer = new EnvelopeStreamer(new EnvelopeSerializerWithProtoBuf(),
+				DataSerializerWithProtoBuf.For<ActivateUserCommand>());
 
 			var obj = streamer.ReadDataMessage(bytes);
 			Assert.IsInstanceOfType(typeof (ActivateUserCommand), obj.Items[0].Content);

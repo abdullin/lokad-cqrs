@@ -27,7 +27,6 @@ namespace Lokad.Cqrs.Tests
 		static CloudEngineHost BuildHost()
 		{
 			var engine = new CloudEngineBuilder();
-			//engine.UseMemoryPartitions();
 			engine.DomainIs(m =>
 				{
 					m.WithDefaultInterfaces();
@@ -36,27 +35,27 @@ namespace Lokad.Cqrs.Tests
 
 			engine.AddMessageHandler(x =>
 				{
-					x.ListenToQueue("test-in");
+					x.ListenToQueue("memory:test-in");
 					x.Dispatch<DispatchMessagesToRoute>(r =>
 						{
 							r.SpecifyRouter(e =>
 								{
 									if (e.Items.Any(i => i.MappedType == typeof (Hello)))
-										return "test-hi";
+										return "memory:test-hi";
 									if (e.Items.Any(i => i.MappedType == typeof (Bye)))
-										return "test-bye";
-									return "test-what";
+										return "memory:test-bye";
+									return "memory:test-what";
 								});
 						});
 				});
 
 			engine.AddMessageHandler(x =>
 				{
-					x.ListenToQueue("test-hi", "test-bye");
+					x.ListenToQueue("memory:test-hi", "memory:test-bye");
 					x.Dispatch<DispatchEventToMultipleConsumers>();
 				});
 
-			engine.AddMessageClient(x => x.DefaultToQueue("test-in"));
+			engine.AddMessageClient(x => x.QueueName = "memory:test-in");
 
 
 			return engine.Build();

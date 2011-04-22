@@ -9,6 +9,7 @@ using System;
 using Autofac;
 using Lokad.Cqrs.Core.Transport;
 using Lokad.Cqrs.Feature.AzurePartition.Sender;
+using Lokad.Cqrs.Feature.TestPartition;
 
 namespace Lokad.Cqrs.Build.Client
 {
@@ -24,7 +25,8 @@ namespace Lokad.Cqrs.Build.Client
 			Serialization.AutoDetectSerializer();
 			Logging.LogToTrace();
 
-			Builder.RegisterType<AzureWriteQueueFactory>().As<IWriteQueueFactory>().SingleInstance();
+			Builder.RegisterType<AzureWriteQueueFactory>().As<IQueueWriterFactory>().SingleInstance();
+			Builder.RegisterType<MemoryPartitionFactory>().As<IQueueWriterFactory>().SingleInstance();
 			
 
 			Builder.RegisterType<CloudClient>().SingleInstance();
@@ -51,11 +53,13 @@ namespace Lokad.Cqrs.Build.Client
 		/// <summary>
 		/// Creates default message sender for the instance of <see cref="CloudClient"/>
 		/// </summary>
-		/// <param name="config">configuration syntax.</param>
 		/// <returns>same builder for inline multiple configuration statements</returns>
-		public CloudClientBuilder AddMessageClient(Action<SendMessageModule> config)
+		public CloudClientBuilder AddMessageClient(string queueName)
 		{
-			RegisterModule(config);
+			Builder.RegisterModule(new SendMessageModule
+				{
+				QueueName = queueName
+			});
 			return this;
 		}
 
@@ -68,21 +72,6 @@ namespace Lokad.Cqrs.Build.Client
 		{
 			RegisterModule(config);
 			return this;
-		}
-
-		
-		public CloudClient BuildFor(string queueName)
-		{
-			var container = Builder.Build();
-
-			var lazy = new Lazy<IMessageSender>(() =>
-				{
-					var queue = container.Resolve<IWriteQueueFactory>().GetWriteQueue(queueName);
-					return new DefaultMessageSender(queue);
-				},false);
-
-			
-			return container.Resolve<CloudClient>(TypedParameter.From(lazy));
 		}
 		
 		public CloudClient Build()

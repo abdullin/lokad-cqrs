@@ -11,6 +11,7 @@ using Autofac;
 using System.Linq;
 using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Dispatch;
+using Lokad.Cqrs.Core.Inbox;
 using Lokad.Cqrs.Core.Partition;
 using Lokad.Cqrs.Core.Transport;
 using Lokad.Cqrs.Evil;

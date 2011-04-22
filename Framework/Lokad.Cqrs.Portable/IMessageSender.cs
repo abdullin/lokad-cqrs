@@ -21,11 +21,7 @@ namespace Lokad.Cqrs
 		void Send(object message);
 
 		void DelaySend(TimeSpan timeout, object message);
-
-
 		void SendBatch(params object[] messageItems);
 		void DelaySendBatch(TimeSpan timeout, params object[] messageItems);
-
-
 	}
 }

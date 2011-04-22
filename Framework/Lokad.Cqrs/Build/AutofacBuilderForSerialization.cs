@@ -17,38 +17,42 @@ namespace Lokad.Cqrs.Build
 	{
 		public AutofacBuilderForSerialization(ContainerBuilder builder) : base(builder)
 		{
-			builder.RegisterType<EnvelopeStreamer>().SingleInstance();
+			builder.RegisterType<EnvelopeStreamer>().As<IEnvelopeStreamer>()
+				.SingleInstance();
 		}
 
 		public void RegisterDataSerializer<TSerializer>() where TSerializer : IDataSerializer
 		{
 			Builder
 				.RegisterType<TSerializer>()
-				.As<IDataSerializer>().SingleInstance();
+				.As<IDataSerializer>()
+				.SingleInstance();
 		}
 
 		public void RegisterEnvelopeSerializer<TEnvelopeSerializer>() where TEnvelopeSerializer : IEnvelopeSerializer
 		{
 			Builder
 				.RegisterType<TEnvelopeSerializer>()
-				.As<IEnvelopeStreamer>()
+				.As<IEnvelopeSerializer>()
 				.SingleInstance();
 		}
 
 		public void UseDataContractSerializer()
 		{
 			RegisterDataSerializer<DataSerializerWithDataContracts>();
+			RegisterEnvelopeSerializer<EnvelopeSerializerWithDataContracts>();
 		}
 
 		public void AutoDetectSerializer()
 		{
-			RegisterDataSerializer<AutoDetectingDataSerializer>();
+			RegisterDataSerializer<DataSerializerWithAutoDetection>();
+			RegisterEnvelopeSerializer<EnvelopeSerializerWithProtoBuf>();
 		}
 
 		public void UseProtoBufSerialization()
 		{
-			RegisterDataSerializer<ProtoBufDataSerializer>();
-			RegisterEnvelopeSerializer<ProtoBufEnvelopeSerializer>();
+			RegisterDataSerializer<DataSerializerWithProtoBuf>();
+			RegisterEnvelopeSerializer<EnvelopeSerializerWithProtoBuf>();
 		}
 	}
 }

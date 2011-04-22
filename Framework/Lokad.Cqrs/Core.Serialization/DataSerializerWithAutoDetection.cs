@@ -12,11 +12,11 @@ namespace Lokad.Cqrs.Core.Serialization
 	/// <summary>
 	/// Default message serializer that attempts to automatically detect serialization format.
 	/// </summary>
-	public sealed class AutoDetectingDataSerializer : IDataSerializer
+	public sealed class DataSerializerWithAutoDetection : IDataSerializer
 	{
 		readonly IDataSerializer _serializer;
 
-		public AutoDetectingDataSerializer(IEnumerable<IKnowSerializationTypes> providers)
+		public DataSerializerWithAutoDetection(IEnumerable<IKnowSerializationTypes> providers)
 		{
 			var types = providers.SelectMany(p => p.GetKnownTypes()).ToArray();
 
@@ -31,7 +31,7 @@ namespace Lokad.Cqrs.Core.Serialization
 			if (protoCount > 0)
 			{
 				// protobuf takes precedence
-				_serializer = new ProtoBufDataSerializer(types);
+				_serializer = new DataSerializerWithProtoBuf(types);
 			}
 			else
 			{

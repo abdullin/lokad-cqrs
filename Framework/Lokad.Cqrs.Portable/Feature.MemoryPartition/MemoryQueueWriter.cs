@@ -1,5 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using Lokad.Cqrs.Core.Transport;
 
 namespace Lokad.Cqrs.Feature.TestPartition
 {

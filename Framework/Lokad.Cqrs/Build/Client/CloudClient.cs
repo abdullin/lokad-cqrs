@@ -21,14 +21,10 @@ namespace Lokad.Cqrs.Build.Client
 		public CloudClient(ILifetimeScope resolver)
 		{
 			_resolver = resolver;
-			_client = new Lazy<IMessageSender>(GetClient, LazyThreadSafetyMode.ExecutionAndPublication);
+			_client = new Lazy<IMessageSender>(() => GetClient(resolver), LazyThreadSafetyMode.ExecutionAndPublication);
 		}
 
-		public CloudClient(ILifetimeScope resolver, Lazy<IMessageSender> client)
-		{
-			_resolver = resolver;
-			_client = client;
-		}
+	
 
 		public void SendMessage(object message)
 		{
@@ -47,11 +43,11 @@ namespace Lokad.Cqrs.Build.Client
 			}
 		}
 
-		IMessageSender GetClient()
+		static IMessageSender GetClient(ILifetimeScope resolver)
 		{
 			try
 			{
-				return _resolver.Resolve<IMessageSender>();
+				return resolver.Resolve<IMessageSender>();
 			}
 			catch (Exception e)
 			{

@@ -6,6 +6,7 @@
 #endregion
 
 using System;
+using Lokad.Cqrs.Core.Inbox;
 
 namespace Lokad.Cqrs.Core.Transport
 {

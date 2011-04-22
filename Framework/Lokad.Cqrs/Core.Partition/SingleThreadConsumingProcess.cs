@@ -9,6 +9,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Lokad.Cqrs.Core.Dispatch;
+using Lokad.Cqrs.Core.Inbox;
 using Lokad.Cqrs.Core.Partition.Events;
 using Lokad.Cqrs.Core.Transport;
 

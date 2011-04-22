@@ -37,6 +37,9 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core.Inbox\IPartitionInbox.cs" />
+    <Compile Include="Core.Inbox\IPartitionInboxFactory.cs" />
+    <Compile Include="Core.Inbox\MessageContext.cs" />
     <Compile Include="Envelope\EnvelopeSerializerWithDataContracts.cs" />
     <Compile Include="Envelope\EnvelopeConvert.cs" />
     <Compile Include="Envelope\EnvelopeAttributeContract.cs" />
@@ -48,12 +51,18 @@
     <Compile Include="Envelope\ItemContract.cs" />
     <Compile Include="Envelope\EnvelopeAttributes.cs" />
     <Compile Include="Envelope\MessageHeader.cs" />
+    <Compile Include="Feature.MemoryPartition\MemoryFutureList.cs" />
+    <Compile Include="Feature.MemoryPartition\MemoryPartitionFactory.cs" />
+    <Compile Include="Feature.MemoryPartition\MemoryPartitionInbox.cs" />
+    <Compile Include="Feature.MemoryPartition\MemoryQueueWriter.cs" />
     <Compile Include="IEngineProcess.cs" />
     <Compile Include="IEnvelopeSerializer.cs" />
     <Compile Include="IEnvelopeStreamer.cs" />
     <Compile Include="IKnowSerializationTypes.cs" />
     <Compile Include="IMessageSender.cs" />
     <Compile Include="IDataSerializer.cs" />
+    <Compile Include="Core.Outbox\IQueueWriter.cs" />
+    <Compile Include="Core.Outbox\IQueueWriterFactory.cs" />
     <Compile Include="ISystemEvent.cs" />
     <Compile Include="ISystemObserver.cs" />
     <Compile Include="MessageEnvelope.cs" />

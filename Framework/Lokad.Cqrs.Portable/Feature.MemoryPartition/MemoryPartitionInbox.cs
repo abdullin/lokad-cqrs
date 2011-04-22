@@ -8,8 +8,8 @@
 using System;
 using System.Collections.Concurrent;
 using System.Threading;
-using Lokad.Cqrs.Core.Partition;
-using Lokad.Cqrs.Core.Transport;
+using Lokad.Cqrs.Core.Inbox;
+using Lokad.Cqrs.Feature.MemoryPartition;
 
 namespace Lokad.Cqrs.Feature.TestPartition
 {

@@ -10,6 +10,7 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Lokad.Cqrs.Core.Inbox;
 using Lokad.Cqrs.Core.Partition;
 using Microsoft.WindowsAzure;
 

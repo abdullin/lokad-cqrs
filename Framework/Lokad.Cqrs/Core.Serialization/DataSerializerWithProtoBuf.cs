@@ -18,13 +18,13 @@ using ProtoBuf;
 
 namespace Lokad.Cqrs.Core.Serialization
 {
-	public class ProtoBufDataSerializer : IDataSerializer
+	public class DataSerializerWithProtoBuf : IDataSerializer
 	{
 		readonly IDictionary<string, Type> _contract2Type = new Dictionary<string, Type>();
 		readonly IDictionary<Type, string> _type2Contract = new Dictionary<Type, string>();
 		readonly IDictionary<Type, IFormatter> _type2Formatter = new Dictionary<Type, IFormatter>();
 		
-		public ProtoBufDataSerializer(ICollection<Type> knownTypes)
+		public DataSerializerWithProtoBuf(ICollection<Type> knownTypes)
 		{
 			if (knownTypes.Count == 0)
 				throw new InvalidOperationException("ProtoBuf requires some known types to serialize. Have you forgot to supply them?");
@@ -40,17 +40,17 @@ namespace Lokad.Cqrs.Core.Serialization
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ProtoBufDataSerializer"/> class.
+		/// Initializes a new instance of the <see cref="DataSerializerWithProtoBuf"/> class.
 		/// </summary>
 		/// <param name="types">The types.</param>
 		
-		public ProtoBufDataSerializer(IEnumerable<IKnowSerializationTypes> types) : this (types.SelectMany(t => t.GetKnownTypes()).ToSet())
+		public DataSerializerWithProtoBuf(IEnumerable<IKnowSerializationTypes> types) : this (types.SelectMany(t => t.GetKnownTypes()).ToSet())
 		{
 		}
 
-		public static ProtoBufDataSerializer For<T>()
+		public static DataSerializerWithProtoBuf For<T>()
 		{
-			return new ProtoBufDataSerializer(new[] { typeof(T)});
+			return new DataSerializerWithProtoBuf(new[] { typeof(T)});
 		}
 
 		public void Serialize(object instance, Stream destination)
@@ -90,7 +90,7 @@ namespace Lokad.Cqrs.Core.Serialization
 		}
 	}
 
-	public sealed class ProtoBufEnvelopeSerializer : IEnvelopeSerializer
+	public sealed class EnvelopeSerializerWithProtoBuf : IEnvelopeSerializer
 	{
 		public void SerializeEnvelope(Stream stream, EnvelopeContract contract)
 		{
