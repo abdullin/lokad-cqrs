@@ -29,12 +29,12 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 			// ok, we didn't fit, so create reference message
 			var referenceId = DateTimeOffset.UtcNow.ToString(DateFormatInBlobName) + "-" + builder.EnvelopeId;
 			_cloudBlob.GetBlobReference(referenceId).UploadByteArray(buffer);
-			var reference = new MessageReference(builder.EnvelopeId, _cloudBlob.Uri.ToString(), referenceId);
+			var reference = new EnvelopeReference(builder.EnvelopeId, _cloudBlob.Uri.ToString(), referenceId);
 			var blob = _streamer.SaveReferenceMessage(reference);
 			return new CloudQueueMessage(blob);
 		}
 
-		public StatelessAzureQueueWriter(IMessageStreamer streamer, CloudStorageAccount account, string queueName)
+		public StatelessAzureQueueWriter(IEnvelopeStreamer streamer, CloudStorageAccount account, string queueName)
 		{
 			_streamer = streamer;
 			var blobClient = account.CreateCloudBlobClient();
@@ -55,7 +55,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 
 
 		const string DateFormatInBlobName = "yyyy-MM-dd-HH-mm-ss-ffff";
-		readonly IMessageStreamer _streamer;
+		readonly IEnvelopeStreamer _streamer;
 		readonly CloudBlobContainer _cloudBlob;
 		readonly CloudQueue _queue;
 	}

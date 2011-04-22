@@ -35,7 +35,7 @@ namespace Lokad.Cqrs.Core.Serialization
 			}
 			else
 			{
-				_serializer = new DataContractDataSerializer(types);
+				_serializer = new DataSerializerWithDataContracts(types);
 			}
 		}
 

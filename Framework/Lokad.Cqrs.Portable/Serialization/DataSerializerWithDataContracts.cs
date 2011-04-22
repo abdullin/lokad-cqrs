@@ -1,8 +1,7 @@
-﻿#region Copyright (c) 2009-2010 LOKAD SAS. All rights reserved.
+﻿#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
 
-// Copyright (c) 2009-2010 LOKAD SAS. All rights reserved.
-// You must not remove this notice, or any other, from this software.
-// This document is the property of LOKAD SAS and must not be disclosed.
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
 
 #endregion
 
@@ -18,8 +17,7 @@ namespace Lokad.Cqrs.Serialization
 	/// <summary>
 	/// Message serializer for the <see cref="DataContractSerializer"/>
 	/// </summary>
-	
-	public class DataContractDataSerializer : IDataSerializer
+	public class DataSerializerWithDataContracts : IDataSerializer
 	{
 		readonly IDictionary<string, Type> _contract2Type = new Dictionary<string, Type>();
 		readonly ICollection<Type> _knownTypes;
@@ -27,13 +25,14 @@ namespace Lokad.Cqrs.Serialization
 
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="DataContractDataSerializer"/> class.
+		/// Initializes a new instance of the <see cref="DataSerializerWithDataContracts"/> class.
 		/// </summary>
 		/// <param name="knownTypes">The known types.</param>
-		public DataContractDataSerializer(ICollection<Type> knownTypes)
+		public DataSerializerWithDataContracts(ICollection<Type> knownTypes)
 		{
 			if (knownTypes.Count == 0)
-				throw new InvalidOperationException("DataContractMessageSerializer requires some known types to serialize. Have you forgot to supply them?");
+				throw new InvalidOperationException(
+					"DataContractMessageSerializer requires some known types to serialize. Have you forgot to supply them?");
 
 			_knownTypes = knownTypes;
 
@@ -48,10 +47,10 @@ namespace Lokad.Cqrs.Serialization
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="DataContractDataSerializer"/> class.
+		/// Initializes a new instance of the <see cref="DataSerializerWithDataContracts"/> class.
 		/// </summary>
 		/// <param name="know">The know.</param>
-		public DataContractDataSerializer(IEnumerable<IKnowSerializationTypes> know)
+		public DataSerializerWithDataContracts(IEnumerable<IKnowSerializationTypes> know)
 			: this(new HashSet<Type>(know.SelectMany(t => t.GetKnownTypes())))
 		{
 		}
@@ -81,7 +80,7 @@ namespace Lokad.Cqrs.Serialization
 		public object Deserialize(Stream sourceStream, Type type)
 		{
 			var serializer = new DataContractSerializer(type, _knownTypes);
-			
+
 			using (var reader = XmlDictionaryReader.CreateBinaryReader(sourceStream, XmlDictionaryReaderQuotas.Max))
 			{
 				return serializer.ReadObject(reader);

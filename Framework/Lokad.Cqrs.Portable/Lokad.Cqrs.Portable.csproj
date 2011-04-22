@@ -37,16 +37,20 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Envelope\EnvelopeSerializerWithDataContracts.cs" />
     <Compile Include="Envelope\EnvelopeConvert.cs" />
     <Compile Include="Envelope\EnvelopeAttributeContract.cs" />
     <Compile Include="Envelope\EnvelopeAttributeTypeContract.cs" />
     <Compile Include="Envelope\EnvelopeContract.cs" />
+    <Compile Include="Envelope\EnvelopeStreamer.cs" />
     <Compile Include="Envelope\ItemAttributeContract.cs" />
     <Compile Include="Envelope\ItemAttributeTypeContract.cs" />
     <Compile Include="Envelope\ItemContract.cs" />
     <Compile Include="Envelope\EnvelopeAttributes.cs" />
+    <Compile Include="Envelope\MessageHeader.cs" />
     <Compile Include="IEngineProcess.cs" />
-    <Compile Include="IMessageStreamer.cs" />
+    <Compile Include="IEnvelopeSerializer.cs" />
+    <Compile Include="IEnvelopeStreamer.cs" />
     <Compile Include="IKnowSerializationTypes.cs" />
     <Compile Include="IMessageSender.cs" />
     <Compile Include="IDataSerializer.cs" />
@@ -54,11 +58,12 @@
     <Compile Include="ISystemObserver.cs" />
     <Compile Include="MessageEnvelope.cs" />
     <Compile Include="MessageItem.cs" />
-    <Compile Include="MessageReference.cs" />
+    <Compile Include="EnvelopeReference.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Serialization\DataContractDataSerializer.cs" />
+    <Compile Include="Serialization\DataSerializerWithDataContracts.cs" />
     <Compile Include="Serialization\DataContractUtil.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

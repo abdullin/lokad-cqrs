@@ -14,14 +14,7 @@ using Lokad.Cqrs.Envelope;
 
 namespace Lokad.Cqrs.Core.Transport
 {
-	
-	public interface IEnvelopeSerializer
-	{
-		void SerializeEnvelope(Stream stream, EnvelopeContract contract);
-		EnvelopeContract DeserializeEnvelope(Stream stream);
-	}
-
-	public sealed class MessageStreamer : IMessageStreamer
+	public sealed class EnvelopeStreamer : IEnvelopeStreamer
 	{
 		const string RefernceSignature = "[cqrs-ref-r1]";
 		static readonly byte[] Reference = Encoding.Unicode.GetBytes(RefernceSignature);
@@ -29,13 +22,13 @@ namespace Lokad.Cqrs.Core.Transport
 		readonly IEnvelopeSerializer _envelopeSerializer;
 		readonly IDataSerializer _dataSerializer;
 
-		public MessageStreamer(IEnvelopeSerializer envelopeSerializer, IDataSerializer dataSerializer)
+		public EnvelopeStreamer(IEnvelopeSerializer envelopeSerializer, IDataSerializer dataSerializer)
 		{
 			_envelopeSerializer = envelopeSerializer;
 			_dataSerializer = dataSerializer;
 		}
 
-		public byte[] SaveReferenceMessage(MessageReference reference)
+		public byte[] SaveReferenceMessage(EnvelopeReference reference)
 		{
 			// important to use \r\n
 			var builder = new StringBuilder();
@@ -98,13 +91,13 @@ namespace Lokad.Cqrs.Core.Transport
 			}
 		}
 
-		public  bool TryReadAsReference(byte[] buffer, out MessageReference reference)
+		public  bool TryReadAsReference(byte[] buffer, out EnvelopeReference reference)
 		{
 			if (BytesStart(buffer, Reference))
 			{
 				string text = Encoding.Unicode.GetString(buffer);
 				string[] args = text.Split(new[] {"\r\n"}, StringSplitOptions.RemoveEmptyEntries);
-				reference = new MessageReference(args[1], args[2], args[3]);
+				reference = new EnvelopeReference(args[1], args[2], args[3]);
 				return true;
 			}
 			reference = null;

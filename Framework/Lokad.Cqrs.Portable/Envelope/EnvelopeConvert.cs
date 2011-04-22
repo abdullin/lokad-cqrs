@@ -4,10 +4,8 @@ using Lokad.Cqrs.Envelope;
 
 namespace Lokad.Cqrs.Core.Transport
 {
-	public static class EnvelopeConvert
+	static class EnvelopeConvert
 	{
-
-
 		public static IDictionary<string, object> AttributesFromContract(IEnumerable<EnvelopeAttributeContract> attributes)
 		{
 			var dict = new Dictionary<string, object>();

@@ -17,7 +17,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 {
 	public sealed class StatelessAzureQueueReader 
 	{
-		readonly IMessageStreamer _streamer;
+		readonly IEnvelopeStreamer _streamer;
 		readonly ISystemObserver _observer;
 
 		readonly CloudBlobContainer _cloudBlob;
@@ -33,7 +33,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 			CloudStorageAccount account,
 			string queueName,
 			ISystemObserver provider,
-			IMessageStreamer streamer)
+			IEnvelopeStreamer streamer)
 		{
 			var blobClient = account.CreateCloudBlobClient();
 			blobClient.RetryPolicy = RetryPolicies.NoRetry();
@@ -116,7 +116,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 		{
 			var buffer = message.AsBytes;
 
-			MessageReference reference;
+			EnvelopeReference reference;
 			if (_streamer.TryReadAsReference(buffer, out reference))
 			{
 				if (reference.StorageContainer != _cloudBlob.Uri.ToString())

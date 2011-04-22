@@ -34,7 +34,7 @@ namespace Lokad.Cqrs.Durability
 
 		public static IDataSerializer Data = new TestSerializer();
 		public static IEnvelopeSerializer Envelope = new TestSerializer();
-		public static IMessageStreamer Streamer = new MessageStreamer(Envelope, Data);
+		public static IEnvelopeStreamer Streamer = new EnvelopeStreamer(Envelope, Data);
 		public void SerializeEnvelope(Stream stream, EnvelopeContract contract)
 		{
 			Formatter.Serialize(stream, contract);

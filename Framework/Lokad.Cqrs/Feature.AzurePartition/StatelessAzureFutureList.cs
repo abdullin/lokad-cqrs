@@ -12,13 +12,13 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 	public sealed class StatelessAzureFutureList
 	{
 		readonly ISystemObserver _observer;
-		readonly IMessageStreamer _streamer;
+		readonly IEnvelopeStreamer _streamer;
 		
 		readonly CloudBlobContainer _container;
 		readonly CloudBlob _blob;
 
 
-		public StatelessAzureFutureList(CloudStorageAccount account, string queueName, ISystemObserver observer, IMessageStreamer streamer)
+		public StatelessAzureFutureList(CloudStorageAccount account, string queueName, ISystemObserver observer, IEnvelopeStreamer streamer)
 		{
 			_observer = observer;
 			_streamer = streamer;

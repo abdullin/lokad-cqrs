@@ -1,12 +1,12 @@
 ﻿namespace Lokad.Cqrs
 {
-	public sealed class MessageReference
+	public sealed class EnvelopeReference
 	{
 		public readonly string EnvelopeId;
 		public readonly string StorageReference;
 		public readonly string StorageContainer;
 
-		public MessageReference(string envelopeId, string storageContainer, string storageReference)
+		public EnvelopeReference(string envelopeId, string storageContainer, string storageReference)
 		{
 			EnvelopeId = envelopeId;
 			StorageReference = storageReference;
