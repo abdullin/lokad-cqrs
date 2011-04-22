@@ -6,8 +6,8 @@
 #endregion
 
 using System;
+using Lokad.Cqrs.Core.Envelope;
 using Lokad.Cqrs.Core.Transport;
-using Lokad.Cqrs.Envelope;
 using Lokad.Cqrs.Tests;
 using NUnit.Framework;
 

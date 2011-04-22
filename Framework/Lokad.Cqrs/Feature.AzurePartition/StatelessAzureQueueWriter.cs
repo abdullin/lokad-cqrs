@@ -1,4 +1,5 @@
 ﻿using System;
+using Lokad.Cqrs.Core.Outbox;
 using Lokad.Cqrs.Core.Transport;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;

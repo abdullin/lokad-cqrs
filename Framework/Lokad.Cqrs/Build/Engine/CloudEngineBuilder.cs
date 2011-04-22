@@ -10,11 +10,12 @@ using Autofac;
 using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Core.Inbox;
+using Lokad.Cqrs.Core.Outbox;
 using Lokad.Cqrs.Core.Partition;
 using Lokad.Cqrs.Core.Transport;
 using Lokad.Cqrs.Feature.AzurePartition.Inbox;
 using Lokad.Cqrs.Feature.AzurePartition.Sender;
-using Lokad.Cqrs.Feature.TestPartition;
+using Lokad.Cqrs.Feature.MemoryPartition;
 
 // ReSharper disable UnusedMethodReturnValue.Global
 namespace Lokad.Cqrs.Build.Engine
@@ -49,7 +50,7 @@ namespace Lokad.Cqrs.Build.Engine
 
 
 
-			Builder.RegisterType<SingleThreadConsumingProcess>();
+			Builder.RegisterType<DispatcherProcess>();
 			Builder.RegisterType<MessageDuplicationManager>().SingleInstance();
 
 			// some defaults

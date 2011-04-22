@@ -3,7 +3,7 @@ using Autofac;
 using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Core.Partition;
-using Lokad.Cqrs.Feature.TestPartition;
+using Lokad.Cqrs.Feature.MemoryPartition;
 
 namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
 {
@@ -55,7 +55,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
 			var factory = context.Resolve<MemoryPartitionFactory>();
 			var notifier = factory.GetMemoryInbox(_memoryQueues);
 
-			var transport = new SingleThreadConsumingProcess(log, dispatcher, notifier);
+			var transport = new DispatcherProcess(log, dispatcher, notifier);
 			return transport;
 		}
 	}

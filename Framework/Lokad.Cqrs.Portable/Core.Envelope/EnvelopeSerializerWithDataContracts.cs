@@ -1,8 +1,15 @@
-﻿using System.IO;
+﻿#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
+
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
+using System.IO;
 using System.Runtime.Serialization;
 using System.Xml;
 
-namespace Lokad.Cqrs.Envelope
+namespace Lokad.Cqrs.Core.Envelope
 {
 	public sealed class EnvelopeSerializerWithDataContracts : IEnvelopeSerializer
 	{
@@ -10,7 +17,7 @@ namespace Lokad.Cqrs.Envelope
 
 		public EnvelopeSerializerWithDataContracts()
 		{
-			_serializer = new DataContractSerializer(typeof(EnvelopeContract));
+			_serializer = new DataContractSerializer(typeof (EnvelopeContract));
 		}
 
 		public void SerializeEnvelope(Stream stream, EnvelopeContract contract)
@@ -26,7 +33,7 @@ namespace Lokad.Cqrs.Envelope
 		{
 			using (var reader = XmlDictionaryReader.CreateBinaryReader(stream, XmlDictionaryReaderQuotas.Max))
 			{
-				return (EnvelopeContract)_serializer.ReadObject(reader);
+				return (EnvelopeContract) _serializer.ReadObject(reader);
 			}
 		}
 	}

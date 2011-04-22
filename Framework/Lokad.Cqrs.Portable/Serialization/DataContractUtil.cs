@@ -1,4 +1,11 @@
-﻿using System;
+﻿#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
+
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -17,7 +24,7 @@ namespace Lokad.Cqrs.Serialization
 		public static void ThrowOnMessagesWithoutDataContracts(IEnumerable<Type> knownTypes)
 		{
 			var failures = knownTypes
-				.Where(m => false == m.IsDefined(typeof(DataContractAttribute), false));
+				.Where(m => false == m.IsDefined(typeof (DataContractAttribute), false));
 
 			if (failures.Any())
 			{
@@ -35,7 +42,7 @@ namespace Lokad.Cqrs.Serialization
 		/// <returns></returns>
 		public static string GetContractReference(Type type)
 		{
-			var contract = (DataContractAttribute)type.GetCustomAttributes(typeof(DataContractAttribute), false).First();
+			var contract = (DataContractAttribute) type.GetCustomAttributes(typeof (DataContractAttribute), false).First();
 
 			var name = string.IsNullOrEmpty(contract.Name) ? type.Name : contract.Name;
 			if (string.IsNullOrEmpty(contract.Namespace))

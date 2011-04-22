@@ -1,7 +1,14 @@
-﻿using System;
+﻿#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
+
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
+using System;
 using System.Collections.Generic;
 
-namespace Lokad.Cqrs.Envelope
+namespace Lokad.Cqrs.Core.Envelope
 {
 	static class EnvelopeConvert
 	{
@@ -87,14 +94,14 @@ namespace Lokad.Cqrs.Envelope
 						contracts[pos] = new EnvelopeAttributeContract
 							{
 								Type = EnvelopeAttributeTypeContract.CreatedUtc,
-								StringValue = ((DateTimeOffset)attrib.Value).ToString("o")
+								StringValue = ((DateTimeOffset) attrib.Value).ToString("o")
 							};
 						break;
 					case EnvelopeAttributes.Sender:
 						contracts[pos] = new EnvelopeAttributeContract
 							{
 								Type = EnvelopeAttributeTypeContract.Sender,
-								StringValue = (string)attrib.Value
+								StringValue = (string) attrib.Value
 							};
 						break;
 					default:
@@ -104,7 +111,7 @@ namespace Lokad.Cqrs.Envelope
 								{
 									Type = EnvelopeAttributeTypeContract.CustomString,
 									CustomName = attrib.Key,
-									StringValue = (string)attrib.Value
+									StringValue = (string) attrib.Value
 								};
 						}
 						else if ((attrib.Value is long) || (attrib.Value is int) || (attrib.Value is short))

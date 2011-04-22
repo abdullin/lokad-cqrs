@@ -7,9 +7,10 @@
 
 using System;
 using Autofac;
+using Lokad.Cqrs.Core.Outbox;
 using Lokad.Cqrs.Core.Transport;
 using Lokad.Cqrs.Feature.AzurePartition.Sender;
-using Lokad.Cqrs.Feature.TestPartition;
+using Lokad.Cqrs.Feature.MemoryPartition;
 
 namespace Lokad.Cqrs.Build.Client
 {

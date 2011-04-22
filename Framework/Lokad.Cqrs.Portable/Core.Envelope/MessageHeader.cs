@@ -8,7 +8,7 @@
 using System;
 using System.IO;
 
-namespace Lokad.Cqrs.Envelope
+namespace Lokad.Cqrs.Core.Envelope
 {
 	public sealed class MessageHeader
 	{

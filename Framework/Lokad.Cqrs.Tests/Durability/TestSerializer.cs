@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using Lokad.Cqrs.Core.Envelope;
 using Lokad.Cqrs.Core.Transport;
-using Lokad.Cqrs.Envelope;
 using Lokad.Cqrs.Evil;
 
 namespace Lokad.Cqrs.Durability

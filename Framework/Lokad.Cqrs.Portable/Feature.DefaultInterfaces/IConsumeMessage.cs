@@ -1,4 +1,11 @@
-﻿namespace Lokad.Cqrs.Feature.DefaultInterfaces
+﻿#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
+
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
+namespace Lokad.Cqrs.Feature.DefaultInterfaces
 {
 	/// <summary>
 	/// <para>Default CQRS interface for interface-base domain setup. By default Lokad.CQRS 
@@ -9,5 +16,7 @@
 	/// as shown in the samples.</para>
 	/// </summary>
 	/// <remarks>Look in the samples for more details on the usage</remarks>
-	public interface IConsumeMessage{}
+	public interface IConsumeMessage
+	{
+	}
 }

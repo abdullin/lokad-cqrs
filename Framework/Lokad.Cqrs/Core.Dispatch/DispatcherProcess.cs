@@ -11,17 +11,16 @@ using System.Threading.Tasks;
 using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Core.Inbox;
 using Lokad.Cqrs.Core.Partition.Events;
-using Lokad.Cqrs.Core.Transport;
 
 namespace Lokad.Cqrs.Core.Partition
 {
-	public sealed class SingleThreadConsumingProcess : IEngineProcess
+	public sealed class DispatcherProcess : IEngineProcess
 	{
 		readonly ISingleThreadMessageDispatcher _dispatcher;
 		readonly ISystemObserver _observer;
 		readonly IPartitionInbox _notifier;
 
-		public SingleThreadConsumingProcess(ISystemObserver observer,
+		public DispatcherProcess(ISystemObserver observer,
 			ISingleThreadMessageDispatcher dispatcher, IPartitionInbox notifier)
 		{
 			_dispatcher = dispatcher;

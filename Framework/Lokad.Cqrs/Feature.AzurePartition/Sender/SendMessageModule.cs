@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using Autofac;
 using Lokad.Cqrs.Build;
+using Lokad.Cqrs.Core.Outbox;
 using Lokad.Cqrs.Core.Transport;
 using System.Linq;
 

@@ -37,19 +37,23 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core.Directory\MessageInfo.cs" />
     <Compile Include="Core.Inbox\IPartitionInbox.cs" />
     <Compile Include="Core.Inbox\MessageContext.cs" />
-    <Compile Include="Envelope\EnvelopeSerializerWithDataContracts.cs" />
-    <Compile Include="Envelope\EnvelopeConvert.cs" />
-    <Compile Include="Envelope\EnvelopeAttributeContract.cs" />
-    <Compile Include="Envelope\EnvelopeAttributeTypeContract.cs" />
-    <Compile Include="Envelope\EnvelopeContract.cs" />
-    <Compile Include="Envelope\EnvelopeStreamer.cs" />
-    <Compile Include="Envelope\ItemAttributeContract.cs" />
-    <Compile Include="Envelope\ItemAttributeTypeContract.cs" />
-    <Compile Include="Envelope\ItemContract.cs" />
-    <Compile Include="Envelope\EnvelopeAttributes.cs" />
-    <Compile Include="Envelope\MessageHeader.cs" />
+    <Compile Include="Core.Envelope\EnvelopeSerializerWithDataContracts.cs" />
+    <Compile Include="Core.Envelope\EnvelopeConvert.cs" />
+    <Compile Include="Core.Envelope\EnvelopeAttributeContract.cs" />
+    <Compile Include="Core.Envelope\EnvelopeAttributeTypeContract.cs" />
+    <Compile Include="Core.Envelope\EnvelopeContract.cs" />
+    <Compile Include="Core.Envelope\EnvelopeStreamer.cs" />
+    <Compile Include="Core.Envelope\ItemAttributeContract.cs" />
+    <Compile Include="Core.Envelope\ItemAttributeTypeContract.cs" />
+    <Compile Include="Core.Envelope\ItemContract.cs" />
+    <Compile Include="Core.Envelope\EnvelopeAttributes.cs" />
+    <Compile Include="Core.Envelope\MessageHeader.cs" />
+    <Compile Include="Feature.DefaultInterfaces\IConsume.cs" />
+    <Compile Include="Feature.DefaultInterfaces\IConsumeMessage.cs" />
+    <Compile Include="Feature.DefaultInterfaces\IMessage.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryFutureList.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryPartitionFactory.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryPartitionInbox.cs" />

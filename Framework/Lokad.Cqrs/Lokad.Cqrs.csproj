@@ -67,6 +67,16 @@
     <Compile Include="Build\Engine\Events\HostInitialized.cs" />
     <Compile Include="Build\Engine\Events\HostStarted.cs" />
     <Compile Include="Build\Engine\Events\HostStopped.cs" />
+    <Compile Include="Core.Dispatch\DispatchCommandBatchToSingleConsumer.cs" />
+    <Compile Include="Core.Dispatch\DispatcherProcess.cs" />
+    <Compile Include="Core.Dispatch\DispatcherUtil.cs" />
+    <Compile Include="Core.Dispatch\DispatchEventToMultipleConsumers.cs" />
+    <Compile Include="Core.Dispatch\DispatchMessagesToRoute.cs" />
+    <Compile Include="Core.Dispatch\Events\FailedToAckMessage.cs" />
+    <Compile Include="Core.Dispatch\Events\FailedToConsumeMessage.cs" />
+    <Compile Include="Core.Dispatch\ISingleThreadMessageDispatcher.cs" />
+    <Compile Include="Core.Dispatch\MessageDuplicationManager.cs" />
+    <Compile Include="Core.Dispatch\MessageDuplicationMemory.cs" />
     <Compile Include="Core.Serialization\DataSerializerWithAutoDetection.cs" />
     <Compile Include="Feature.AtomicStorage\Azure\AzureAtomicEntityWriter.cs" />
     <Compile Include="Feature.AtomicStorage\Azure\AzureAtomicSingletonReader.cs" />
@@ -90,16 +100,8 @@
     <Compile Include="Core.Directory\DomainAssemblyScanner.cs" />
     <Compile Include="Core.Directory\MessageDirectory.cs" />
     <Compile Include="Core.Directory\MessageDirectoryBuilder.cs" />
-    <Compile Include="Core.Directory\MessageInfo.cs" />
     <Compile Include="Core.Directory\MessageMapping.cs" />
     <Compile Include="Core.Directory\MessageReflectionUtil.cs" />
-    <Compile Include="Core.Dispatch\DispatchCommandBatchToSingleConsumer.cs" />
-    <Compile Include="Core.Dispatch\DispatchEventToMultipleConsumers.cs" />
-    <Compile Include="Core.Dispatch\DispatchMessagesToRoute.cs" />
-    <Compile Include="Core.Dispatch\ISingleThreadMessageDispatcher.cs" />
-    <Compile Include="Core.Dispatch\MessageDispatch.cs" />
-    <Compile Include="Core.Dispatch\MessageDuplicationManager.cs" />
-    <Compile Include="Core.Dispatch\MessageDuplicationMemory.cs" />
     <Compile Include="Evil\Errors.cs" />
     <Compile Include="Evil\ExtendIDictionary.cs" />
     <Compile Include="Evil\ExtendIEnumerable.cs" />
@@ -113,14 +115,8 @@
     <Compile Include="Feature.AzurePartition\StatelessAzureFutureList.cs" />
     <Compile Include="Feature.AzurePartition\Inbox\AzurePartitionInbox.cs" />
     <Compile Include="Feature.AzurePartition\Inbox\AzurePartitionFactory.cs" />
-    <Compile Include="Core.Partition\Events\FailedToAckMessage.cs" />
-    <Compile Include="Feature.DefaultInterfaces\IConsume.cs" />
-    <Compile Include="Feature.DefaultInterfaces\IConsumeMessage.cs" />
-    <Compile Include="Feature.DefaultInterfaces\IMessage.cs" />
-    <Compile Include="Feature.DefaultInterfaces\IScheduledTask.cs" />
     <Compile Include="Feature.AzurePartition\StatelessAzureQueueReader.cs" />
     <Compile Include="Feature.AzurePartition\Events\FailedToAccessStorage.cs" />
-    <Compile Include="Core.Partition\Events\FailedToConsumeMessage.cs" />
     <Compile Include="Feature.AzurePartition\Events\FailedToDeserializeMessage.cs" />
     <Compile Include="Feature.AzurePartition\Events\FailedToReadMessage.cs" />
     <Compile Include="Feature.AzurePartition\Events\MessageAcked.cs" />
@@ -129,7 +125,6 @@
     <Compile Include="Core.Transport\GetMessageResultState.cs" />
     <Compile Include="Feature.AzurePartition\Inbox\AzurePartitionModule.cs" />
     <Compile Include="Feature.AzurePartition\Events\MessageDirectoryCreated.cs" />
-    <Compile Include="Core.Partition\SingleThreadConsumingProcess.cs" />
     <Compile Include="Feature.Logging\NullSystemObserver.cs" />
     <Compile Include="Feature.Logging\TraceSystemObserver.cs" />
     <Compile Include="Feature.StreamingStorage\ExtendStorageItem.cs" />
@@ -167,6 +162,8 @@
     <Compile Include="Core.Serialization\ProtoBufUtil.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Core.Partition\" />
+    <Folder Include="Feature.DefaultInterfaces\" />
     <Folder Include="Feature.TestPartition\" />
   </ItemGroup>
   <ItemGroup>

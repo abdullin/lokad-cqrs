@@ -9,11 +9,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Lokad.Cqrs.Core.Directory;
-using Lokad.Cqrs.Evil;
 
 namespace Lokad.Cqrs.Core.Dispatch
 {
-	static class MessageDispatch
+	static class DispatcherUtil
 	{
 		public const string UnitOfWorkTag = "UnitOfWork";
 		public const string ScopeTag = "Scope";
@@ -26,9 +25,10 @@ namespace Lokad.Cqrs.Core.Dispatch
 
 			if (multipleConsumers.Any())
 			{
+				var joined = string.Join("; ", multipleConsumers.ToArray());
+
 				throw new InvalidOperationException(
-					"These messages have multiple consumers. Did you intend to declare them as events? " +
-						multipleConsumers.JoinStrings(Environment.NewLine));
+					"These messages have multiple consumers. Did you intend to declare them as events? " + joined);
 			}
 		}
 	}

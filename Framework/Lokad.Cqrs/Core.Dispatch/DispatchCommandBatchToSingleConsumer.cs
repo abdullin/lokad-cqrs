@@ -50,13 +50,13 @@ namespace Lokad.Cqrs.Core.Dispatch
 				}
 			}
 
-			using (var unit = _container.BeginLifetimeScope(MessageDispatch.UnitOfWorkTag))
+			using (var unit = _container.BeginLifetimeScope(DispatcherUtil.UnitOfWorkTag))
 			{
 				foreach (var item in message.Items)
 				{
 					// we're dispatching them inside single lifetime scope
 					// meaning same transaction,
-					using (var scope = unit.BeginLifetimeScope(MessageDispatch.ScopeTag))
+					using (var scope = unit.BeginLifetimeScope(DispatcherUtil.ScopeTag))
 					{
 						var consumerType = _messageConsumers[item.MappedType];
 						{
@@ -73,7 +73,7 @@ namespace Lokad.Cqrs.Core.Dispatch
 
 		public void Init()
 		{
-			MessageDispatch.ThrowIfCommandHasMultipleConsumers(_messageDirectory.Messages);
+			DispatcherUtil.ThrowIfCommandHasMultipleConsumers(_messageDirectory.Messages);
 			foreach (var messageInfo in _messageDirectory.Messages)
 			{
 				if (messageInfo.AllConsumers.Length > 0)

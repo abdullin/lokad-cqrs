@@ -1,6 +1,6 @@
-#region (c) 2010 Lokad Open Source - New BSD License 
+#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
 
-// Copyright (c) Lokad 2010, http://www.lokad.com
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
 // This code is released as Open Source under the terms of the New BSD Licence
 
 #endregion
@@ -20,7 +20,8 @@ namespace Lokad.Cqrs
 		readonly IDictionary<string, object> _attributes = new Dictionary<string, object>();
 		public readonly MessageItem[] Items;
 
-		public MessageEnvelope(string envelopeId, IDictionary<string,object> attributes, MessageItem[] items, DateTimeOffset deliverOn)
+		public MessageEnvelope(string envelopeId, IDictionary<string, object> attributes, MessageItem[] items,
+			DateTimeOffset deliverOn)
 		{
 			EnvelopeId = envelopeId;
 			DeliverOn = deliverOn;
@@ -33,7 +34,7 @@ namespace Lokad.Cqrs
 			return _attributes[name];
 		}
 
-		public ICollection<KeyValuePair<string,object>> GetAllAttributes()
+		public ICollection<KeyValuePair<string, object>> GetAllAttributes()
 		{
 			return _attributes;
 		}

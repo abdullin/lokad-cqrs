@@ -11,8 +11,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
+using Lokad.Cqrs.Core.Envelope;
 using Lokad.Cqrs.Core.Transport;
-using Lokad.Cqrs.Envelope;
 using Lokad.Cqrs.Evil;
 using ProtoBuf;
 

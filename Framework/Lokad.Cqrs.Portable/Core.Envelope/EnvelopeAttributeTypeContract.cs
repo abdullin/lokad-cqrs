@@ -5,13 +5,14 @@
 
 #endregion
 
-namespace Lokad.Cqrs
+namespace Lokad.Cqrs.Core.Envelope
 {
-	/// <summary>
-	/// System event representing something that happened
-	/// within the infrastructure
-	/// </summary>
-	public interface ISystemEvent
+	public enum EnvelopeAttributeTypeContract
 	{
+		Undefined = 0,
+		CreatedUtc = 1,
+		Sender = 2,
+		CustomNumber = 3,
+		CustomString = 4,
 	}
 }

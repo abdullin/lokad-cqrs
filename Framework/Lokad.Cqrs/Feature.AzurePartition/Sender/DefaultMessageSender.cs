@@ -7,6 +7,7 @@
 
 using System;
 using System.Transactions;
+using Lokad.Cqrs.Core.Outbox;
 using Lokad.Cqrs.Core.Transport;
 
 namespace Lokad.Cqrs.Feature.AzurePartition.Sender

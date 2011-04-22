@@ -11,7 +11,7 @@ using System.Text;
 
 //using ProtoBuf;
 
-namespace Lokad.Cqrs.Envelope
+namespace Lokad.Cqrs.Core.Envelope
 {
 	public sealed class EnvelopeStreamer : IEnvelopeStreamer
 	{
@@ -90,7 +90,7 @@ namespace Lokad.Cqrs.Envelope
 			}
 		}
 
-		public  bool TryReadAsReference(byte[] buffer, out EnvelopeReference reference)
+		public bool TryReadAsReference(byte[] buffer, out EnvelopeReference reference)
 		{
 			if (BytesStart(buffer, Reference))
 			{

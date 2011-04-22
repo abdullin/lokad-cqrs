@@ -9,9 +9,8 @@ using System;
 using System.Collections.Concurrent;
 using System.Threading;
 using Lokad.Cqrs.Core.Inbox;
-using Lokad.Cqrs.Feature.MemoryPartition;
 
-namespace Lokad.Cqrs.Feature.TestPartition
+namespace Lokad.Cqrs.Feature.MemoryPartition
 {
 	public sealed class MemoryPartitionInbox : IPartitionInbox
 	{
@@ -56,7 +55,6 @@ namespace Lokad.Cqrs.Feature.TestPartition
 					context = new MessageContext(result, envelope, _names[result]);
 					return true;
 				}
-
 			}
 			context = null;
 			return false;

@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using Lokad.Cqrs.Core.Outbox;
 using Lokad.Cqrs.Core.Transport;
 using Microsoft.WindowsAzure;
 using System.Linq;

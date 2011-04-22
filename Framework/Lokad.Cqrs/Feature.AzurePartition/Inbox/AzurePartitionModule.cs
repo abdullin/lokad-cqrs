@@ -30,7 +30,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
 
 		public string ModuleName { get; private set; }
 
-		Action<SingleThreadConsumingProcess, IComponentContext> _applyToTransport = (transport, context) => { };
+		Action<DispatcherProcess, IComponentContext> _applyToTransport = (transport, context) => { };
 
 		public AzurePartitionModule(string[] queueNames)
 		{
@@ -46,7 +46,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
 			_dispatcher = Tuple.Create(typeof(TDispatcher), new Action<ISingleThreadMessageDispatcher>(d => configure((TDispatcher)d)));
 			return this;
 		}
-		public AzurePartitionModule ApplyToTransport(Action<SingleThreadConsumingProcess, IComponentContext> config)
+		public AzurePartitionModule ApplyToTransport(Action<DispatcherProcess, IComponentContext> config)
 		{
 			_applyToTransport += config;
 			return this;
@@ -103,7 +103,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
 			var factory = context.Resolve<AzurePartitionFactory>();
 			var notifier = factory.GetNotifier(_queueNames.ToArray());
 
-			var transport = new SingleThreadConsumingProcess(log, dispatcher, notifier);
+			var transport = new DispatcherProcess(log, dispatcher, notifier);
 
 			
 			return transport;
