@@ -51,7 +51,9 @@ namespace Lokad.Cqrs.Core.Outbox
 				throw new InvalidOperationException(message);
 			}
 
-			return new DefaultMessageSender(queues[0]);
+			var observer = c.Resolve<ISystemObserver>();
+
+			return new DefaultMessageSender(queues[0], observer, _queueName);
 		}
 
 		public void Configure(IComponentRegistry componentRegistry)

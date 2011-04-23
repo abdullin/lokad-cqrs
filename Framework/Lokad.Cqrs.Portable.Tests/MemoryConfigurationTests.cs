@@ -1,16 +1,18 @@
-﻿using System.Runtime.Serialization;
+﻿using System;
+using System.Runtime.Serialization;
 using System.Threading;
 using Lokad.Cqrs.Build.Engine;
 using Lokad.Cqrs.Core.Directory.Default;
 using NUnit.Framework;
-using Lokad.Cqrs.Evil;
 
 namespace Lokad.Cqrs
 {
 	[TestFixture]
-	public sealed class MemoryTests
+	public sealed class MemoryConfigurationTests
 	{
 		// ReSharper disable InconsistentNaming
+
+		#region Domain
 		[DataContract]
 		public sealed class Message1 : IMessage
 		{
@@ -47,31 +49,58 @@ namespace Lokad.Cqrs
 			}
 		}
 
-		[Test]
-		public void Test()
+		#endregion
+
+		static void TestConfiguration(Action<CloudEngineBuilder> config)
 		{
 			var h = new ManualResetEventSlim();
 
 			var engine = new CloudEngineBuilder()
-					.AddMessageClient("memory:in")
-					.AddMemoryRouter("in", me => "memory:do")
-					.AddMemoryPartition("do")
 					.RegisterInstance(h)
 					.DomainIs(d =>
-						{
-							d.InCurrentAssembly();
-							d.WithDefaultInterfaces();
-							d.WhereMessagesAre<Message1>();
-						});
+					{
+						d.InCurrentAssembly();
+						d.WithDefaultInterfaces();
+						d.WhereMessagesAre<Message1>();
+					});
+
+			config(engine);
 
 			using (var eng = engine.Build())
 			using (var t = new CancellationTokenSource())
 			{
 				eng.Start(t.Token);
 				eng.Resolve<IMessageSender>().Send(new Message1(0));
-				var signaled = h.Wait(5.Seconds(), t.Token);
+				var signaled = h.Wait(TimeSpan.FromSeconds(5), t.Token);
 				Assert.IsTrue(signaled);
 			}
+		}
+
+		[Test]
+		public void PartitionWithRouter()
+		{
+			TestConfiguration(x => x
+				.AddMessageClient("memory:in")
+				.AddMemoryRouter("in", me => "memory:do")
+				.AddMemoryPartition("do"));
+		}
+
+		[Test]
+		public void Direct()
+		{
+			TestConfiguration(x => x
+				.AddMessageClient("memory:in")
+				.AddMemoryPartition("in"));
+		}
+
+		[Test]
+		public void RouterChain()
+		{
+			TestConfiguration(x => x
+				.AddMessageClient("memory:in")
+				.AddMemoryRouter("in", me => (((Message1)me.Items[0].Content).Block % 2) == 0 ? "memory:do1" : "memory:do2")
+				.AddMemoryPartition("do1")
+				.AddMemoryPartition("do2"));
 		}
 	}
 }

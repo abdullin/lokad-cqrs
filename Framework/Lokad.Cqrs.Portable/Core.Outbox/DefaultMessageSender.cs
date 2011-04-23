@@ -8,16 +8,21 @@
 using System;
 using System.Transactions;
 using Lokad.Cqrs.Core.Envelope;
+using System.Linq;
 
 namespace Lokad.Cqrs.Core.Outbox
 {
 	sealed class DefaultMessageSender : IMessageSender
 	{
 		readonly IQueueWriter _queue;
+		readonly ISystemObserver _observer;
+		readonly string _queueName;
 
-		public DefaultMessageSender(IQueueWriter queue)
+		public DefaultMessageSender(IQueueWriter queue, ISystemObserver observer, string queueName)
 		{
 			_queue = queue;
+			_observer = observer;
+			_queueName = queueName;
 		}
 
 		public void Send(object message)
@@ -51,10 +56,15 @@ namespace Lokad.Cqrs.Core.Outbox
 			if (Transaction.Current == null)
 			{
 				_queue.PutMessage(envelope);
+				_observer.Notify(new EnvelopeSent(_queueName, envelope.EnvelopeId, false, envelope.Items.Select(x => x.MappedType.Name).ToArray()));
 			}
 			else
 			{
-				var action = new CommitActionEnlistment(() => _queue.PutMessage(envelope));
+				var action = new CommitActionEnlistment(() =>
+					{
+						_queue.PutMessage(envelope);
+						_observer.Notify(new EnvelopeSent(_queueName, envelope.EnvelopeId, false, envelope.Items.Select(x => x.MappedType.Name).ToArray()));
+					});
 				Transaction.Current.EnlistVolatile(action, EnlistmentOptions.None);
 			}
 		}
