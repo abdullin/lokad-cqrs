@@ -5,23 +5,21 @@
 
 #endregion
 
+using System;
 using Autofac;
+using Autofac.Core;
 using Lokad.Cqrs.Core.Envelope;
 using Lokad.Cqrs.Serialization;
 
 namespace Lokad.Cqrs.Build
 {
-	public sealed class AutofacBuilderForSerialization : AutofacBuilderBase
+	public sealed class AutofacBuilderForSerialization : BuildSyntaxHelper, IModule
 	{
-		public AutofacBuilderForSerialization(ContainerBuilder builder) : base(builder)
-		{
-			builder.RegisterType<EnvelopeStreamer>().As<IEnvelopeStreamer>()
-				.SingleInstance();
-		}
+		readonly ContainerBuilder _builder = new ContainerBuilder();
 
 		public void RegisterDataSerializer<TSerializer>() where TSerializer : IDataSerializer
 		{
-			Builder
+			_builder
 				.RegisterType<TSerializer>()
 				.As<IDataSerializer>()
 				.SingleInstance();
@@ -29,7 +27,7 @@ namespace Lokad.Cqrs.Build
 
 		public void RegisterEnvelopeSerializer<TEnvelopeSerializer>() where TEnvelopeSerializer : IEnvelopeSerializer
 		{
-			Builder
+			_builder
 				.RegisterType<TEnvelopeSerializer>()
 				.As<IEnvelopeSerializer>()
 				.SingleInstance();
@@ -39,6 +37,14 @@ namespace Lokad.Cqrs.Build
 		{
 			RegisterDataSerializer<DataSerializerWithDataContracts>();
 			RegisterEnvelopeSerializer<EnvelopeSerializerWithDataContracts>();
+		}
+
+		public void Configure(IComponentRegistry componentRegistry)
+		{
+			_builder.RegisterType<EnvelopeStreamer>().As<IEnvelopeStreamer>()
+				.SingleInstance();
+
+			_builder.Update(componentRegistry);
 		}
 	}
 }

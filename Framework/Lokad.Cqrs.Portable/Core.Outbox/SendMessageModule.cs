@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using Autofac;
+using Autofac.Core;
 using Lokad.Cqrs.Build;
 using Lokad.Cqrs.Core.Outbox;
 using Lokad.Cqrs.Core.Transport;
@@ -15,23 +16,17 @@ using System.Linq;
 
 namespace Lokad.Cqrs.Feature.AzurePartition.Sender
 {
-	public sealed class SendMessageModule : Module
+	public sealed class SendMessageModule : BuildSyntaxHelper, IModule
 	{
 		readonly string _queueName;
+		readonly ContainerBuilder _builder = new ContainerBuilder();
 
 		public SendMessageModule(string queueName)
 		{
 			_queueName = queueName;
 		}
 
-		protected override void Load(ContainerBuilder builder)
-		{
-			Buildy.Assert(!string.IsNullOrEmpty(_queueName), "Empty Queue name is set for SendMessageModule. Please set 'QueueName'.");
-			Buildy.Assert(Buildy.ContainsQueuePrefix(_queueName), "Queue {0} should have queue provider name", _queueName);
-			
-			builder.Register(BuildDefaultMessageSender).SingleInstance().As<IMessageSender>();
-			
-		}
+		
 
 		DefaultMessageSender BuildDefaultMessageSender(IComponentContext c)
 		{
@@ -60,6 +55,15 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Sender
 			}
 
 			return new DefaultMessageSender(queues[0]);
+		}
+
+		public void Configure(IComponentRegistry componentRegistry)
+		{
+			Assert(!string.IsNullOrEmpty(_queueName), "Empty Queue name is set for SendMessageModule. Please set 'QueueName'.");
+			Assert(ContainsQueuePrefix(_queueName), "Queue {0} should have queue provider name", _queueName);
+
+			_builder.Register(BuildDefaultMessageSender).SingleInstance().As<IMessageSender>();
+			_builder.Update(componentRegistry);
 		}
 	}
 }

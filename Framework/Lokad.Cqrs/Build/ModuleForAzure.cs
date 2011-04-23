@@ -10,6 +10,7 @@ using System.Net;
 using Autofac;
 using Autofac.Core;
 using Lokad.Cqrs.Core.Outbox;
+using Lokad.Cqrs.Core.Transport;
 using Lokad.Cqrs.Feature.AzurePartition.Inbox;
 using Lokad.Cqrs.Feature.AzurePartition.Sender;
 using Lokad.Cqrs.Feature.StreamingStorage;
@@ -25,10 +26,9 @@ namespace Lokad.Cqrs.Build
 	/// <summary>
 	/// Autofac syntax for configuring Azure storage
 	/// </summary>
-	public sealed class AutofacBuilderForAzure : IModule
+	public sealed class ModuleForAzure : BuildSyntaxHelper, IModule
 	{
-
-		ContainerBuilder _builder = new ContainerBuilder();
+		readonly ContainerBuilder _builder = new ContainerBuilder();
 
 		Action<CloudBlobClient> _configureBlobClient = client => { };
 
@@ -42,7 +42,7 @@ namespace Lokad.Cqrs.Build
 		/// </returns>
 		/// <seealso cref="CloudStorageAccount.Parse"/>
 		
-		public AutofacBuilderForAzure UseStorageAccount(string accountString)
+		public ModuleForAzure UseStorageAccount(string accountString)
 		{
 			var account = CloudStorageAccount.Parse(accountString);
 			_builder.RegisterInstance(account);
@@ -58,7 +58,7 @@ namespace Lokad.Cqrs.Build
 		/// same builder for inling multiple configuration statements
 		/// </returns>
 		
-		public AutofacBuilderForAzure UseStorageAccount(CloudStorageAccount account)
+		public ModuleForAzure UseStorageAccount(CloudStorageAccount account)
 		{
 			_builder.RegisterInstance(account);
 			DisableNagleForQueuesAndTables(account);
@@ -73,7 +73,7 @@ namespace Lokad.Cqrs.Build
 		/// same builder for inling multiple configuration statements
 		/// </returns>
 		
-		public AutofacBuilderForAzure UseStorageAccount(string accountName, string accessKey, bool useHttps = true)
+		public ModuleForAzure UseStorageAccount(string accountName, string accessKey, bool useHttps = true)
 		{
 			var credentials = new StorageCredentialsAccountAndKey(accountName, accessKey);
 			var account = new CloudStorageAccount(credentials, useHttps);
@@ -98,27 +98,27 @@ namespace Lokad.Cqrs.Build
 		/// same builder for inling multiple configuration statements
 		/// </returns>
 		/// <remarks>This option is enabled by default</remarks>
-		public AutofacBuilderForAzure UseDevelopmentStorageAccount()
+		public ModuleForAzure UseDevelopmentStorageAccount()
 		{
 			_builder.RegisterInstance(CloudStorageAccount.DevelopmentStorageAccount);
 			
 			return this;
 		}
 
-		public AutofacBuilderForAzure AddPartition(string[] queues, Action<AzurePartitionModule> config)
+		public ModuleForAzure AddPartition(string[] queues, Action<ModuleForAzurePartition> config)
 		{
 			foreach (var queue in queues)
 			{
-				Buildy.Assert(!Cqrs.Build.Buildy.ContainsQueuePrefix(queue), "Queue '{0}' should not contain queue prefix, since it's memory already", queue);
+				Assert(!ContainsQueuePrefix(queue), "Queue '{0}' should not contain queue prefix, since it's memory already", queue);
 			}
-			var module = new AzurePartitionModule(queues);
+			var module = new ModuleForAzurePartition(queues);
 
 			config(module);
 			_builder.RegisterModule(module);
 			return this;
 		}
 
-		public AutofacBuilderForAzure AddPartition(params string[] queues)
+		public ModuleForAzure AddPartition(params string[] queues)
 		{
 			return AddPartition(queues, m => { });
 		}
@@ -129,7 +129,7 @@ namespace Lokad.Cqrs.Build
 		/// <returns>
 		/// same builder for inling multiple configuration statements
 		/// </returns>
-		public AutofacBuilderForAzure LoadStorageAccountFromSettings(Func<IComponentContext, string> configProvider)
+		public ModuleForAzure LoadStorageAccountFromSettings(Func<IComponentContext, string> configProvider)
 		{
 			_builder.Register(c =>
 				{
@@ -149,7 +149,7 @@ namespace Lokad.Cqrs.Build
 		/// <returns>
 		/// same builder for inling multiple configuration statements
 		/// </returns>
-		public AutofacBuilderForAzure LoadStorageAccountFromSettings(Func<string> configProvider)
+		public ModuleForAzure LoadStorageAccountFromSettings(Func<string> configProvider)
 		{
 			return LoadStorageAccountFromSettings(c => configProvider());
 		}

@@ -1,13 +1,14 @@
 ﻿using System;
 using Autofac;
+using Autofac.Core;
+using Lokad.Cqrs.Build;
 using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Core.Partition;
-using Lokad.Cqrs.Feature.MemoryPartition;
 
-namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
+namespace Lokad.Cqrs.Feature.MemoryPartition
 {
-	public sealed class MemoryPartitionModule : Module
+	public sealed class MemoryPartitionModule : BuildSyntaxHelper, IModule
 	{
 		readonly string[] _memoryQueues;
 		Tuple<Type, Action<ISingleThreadMessageDispatcher>> _dispatcher;
@@ -34,12 +35,6 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
 		}
 
 
-		protected override void Load(ContainerBuilder builder)
-		{
-			builder.RegisterType(_dispatcher.Item1);
-			builder.Register(BuildConsumingProcess);
-		}
-
 		IEngineProcess BuildConsumingProcess(IComponentContext context)
 		{
 			var log = context.Resolve<ISystemObserver>();
@@ -57,6 +52,14 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
 
 			var transport = new DispatcherProcess(log, dispatcher, notifier);
 			return transport;
+		}
+
+		public void Configure(IComponentRegistry componentRegistry)
+		{
+			var builder = new ContainerBuilder();
+			builder.RegisterType(_dispatcher.Item1);
+			builder.Register(BuildConsumingProcess);
+			builder.Update(componentRegistry);
 		}
 	}
 }

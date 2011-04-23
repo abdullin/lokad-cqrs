@@ -11,7 +11,6 @@ using System.Reflection;
 using Autofac;
 using Autofac.Core;
 using Lokad.Cqrs.Core.Directory;
-using Lokad.Cqrs.Core.Serialization;
 using Lokad.Cqrs.Feature.DefaultInterfaces;
 
 namespace Lokad.Cqrs.Build
@@ -261,35 +260,5 @@ namespace Lokad.Cqrs.Build
 			//delegate string GetInfoDelegate(UnpackedMessage message);
 		}
 
-	}
-
-	static class Buildy
-	{
-		public static bool ContainsQueuePrefix(string queueName)
-		{
-			return queueName.Contains(":");
-		}
-
-		public static void Assert(bool check, string text, params object[] args)
-		{
-			if (!check)
-				throw new InvalidOperationException(string.Format(text, args));
-		}
-		
-	}
-
-	public static class AutofacBuilderForSerializationExtended
-	{
-		public static void AutoDetectSerializer(this AutofacBuilderForSerialization @this)
-		{
-			@this.RegisterDataSerializer<DataSerializerWithAutoDetection>();
-			@this.RegisterEnvelopeSerializer<EnvelopeSerializerWithProtoBuf>();
-		}
-
-		public static void UseProtoBufSerialization(this AutofacBuilderForSerialization self)
-		{
-			self.RegisterDataSerializer<DataSerializerWithProtoBuf>();
-			self.RegisterEnvelopeSerializer<EnvelopeSerializerWithProtoBuf>();
-		}
 	}
 }

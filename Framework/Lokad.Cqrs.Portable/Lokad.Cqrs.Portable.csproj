@@ -37,19 +37,21 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Transactions" />
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Build\AutofacBuilderBase.cs" />
-    <Compile Include="Build\AutofacBuilderForLogging.cs" />
+    <Compile Include="Build\BuildSyntaxHelper.cs" />
     <Compile Include="Build\AutofacBuilderForSerialization.cs" />
-    <Compile Include="Build\Host\CloudEngineHost.cs" />
-    <Compile Include="Build\Host\Events\HostInitializationStarted.cs" />
-    <Compile Include="Build\Host\Events\HostInitialized.cs" />
-    <Compile Include="Build\Host\Events\HostStarted.cs" />
-    <Compile Include="Build\Host\Events\HostStopped.cs" />
+    <Compile Include="Build\Engine\CloudEngineBuilder.cs" />
+    <Compile Include="Build\Engine\CloudEngineHost.cs" />
+    <Compile Include="Build\Engine\Events\HostInitializationStarted.cs" />
+    <Compile Include="Build\Engine\Events\HostInitialized.cs" />
+    <Compile Include="Build\Engine\Events\HostStarted.cs" />
+    <Compile Include="Build\Engine\Events\HostStopped.cs" />
     <Compile Include="Core.Directory\ConsumerInfo.cs" />
     <Compile Include="Core.Directory\DomainAssemblyScanner.cs" />
+    <Compile Include="Core.Directory\DomainBuildModule.cs" />
     <Compile Include="Core.Directory\MessageDirectory.cs" />
     <Compile Include="Core.Directory\MessageDirectoryBuilder.cs" />
     <Compile Include="Core.Directory\MessageInfo.cs" />
@@ -65,6 +67,8 @@
     <Compile Include="Core.Dispatch\ISingleThreadMessageDispatcher.cs" />
     <Compile Include="Core.Dispatch\MessageDuplicationManager.cs" />
     <Compile Include="Core.Dispatch\MessageDuplicationMemory.cs" />
+    <Compile Include="Core.Envelope\MessageEnvelopeBuilder.cs" />
+    <Compile Include="Core.Envelope\MessageItemToSave.cs" />
     <Compile Include="Core.Evil\InvocationUtil.cs" />
     <Compile Include="Core.Inbox\IPartitionInbox.cs" />
     <Compile Include="Core.Inbox\MessageContext.cs" />
@@ -82,11 +86,15 @@
     <Compile Include="Core.Directory\Default\IConsume.cs" />
     <Compile Include="Core.Directory\Default\IConsumeMessage.cs" />
     <Compile Include="Core.Directory\Default\IMessage.cs" />
+    <Compile Include="Core.Outbox\CommitActionEnlistment.cs" />
+    <Compile Include="Core.Outbox\DefaultMessageSender.cs" />
+    <Compile Include="Core.Outbox\SendMessageModule.cs" />
     <Compile Include="Feature.Logging\NullSystemObserver.cs" />
     <Compile Include="Feature.Logging\TraceSystemObserver.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryFutureList.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryPartitionFactory.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryPartitionInbox.cs" />
+    <Compile Include="Feature.MemoryPartition\MemoryPartitionModule.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryQueueWriter.cs" />
     <Compile Include="IEngineProcess.cs" />
     <Compile Include="IEnvelopeSerializer.cs" />

@@ -17,26 +17,17 @@ namespace Lokad.Cqrs.Build
 	/// Helper class for creating fluent APIs, that hides unused signatures
 	/// </summary>
 	[Serializable]
-	public abstract class AutofacBuilderBase
+	public abstract class BuildSyntaxHelper
 	{
-		protected readonly ContainerBuilder Builder;
-
-		protected AutofacBuilderBase()
+		public static bool ContainsQueuePrefix(string queueName)
 		{
-			Builder = new ContainerBuilder();
+			return queueName.Contains(":");
 		}
 
-		protected AutofacBuilderBase(ContainerBuilder builder)
+		public static void Assert(bool check, string text, params object[] args)
 		{
-			Builder = builder;
-		}
-
-		protected void RegisterModule<TModule>(Action<TModule> configure)
-			where TModule : IModule, new()
-		{
-			var module = new TModule();
-			configure(module);
-			Builder.RegisterModule(module);
+			if (!check)
+				throw new InvalidOperationException(string.Format(text, args));
 		}
 
 		/// <summary>

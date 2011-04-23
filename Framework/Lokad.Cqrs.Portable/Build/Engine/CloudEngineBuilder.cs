@@ -6,14 +6,17 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using Autofac;
-using Lokad.Cqrs.Build.Client;
+using Autofac.Core;
 using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Core.Outbox;
 using Lokad.Cqrs.Core.Partition;
-using Lokad.Cqrs.Feature.AzurePartition.Inbox;
+using Lokad.Cqrs.Core.Transport;
 using Lokad.Cqrs.Feature.AzurePartition.Sender;
+using Lokad.Cqrs.Feature.Logging;
 using Lokad.Cqrs.Feature.MemoryPartition;
+using System.Linq;
 
 // ReSharper disable UnusedMethodReturnValue.Global
 namespace Lokad.Cqrs.Build.Engine
@@ -23,30 +26,26 @@ namespace Lokad.Cqrs.Build.Engine
 	/// <summary>
 	/// Fluent API for creating and configuring <see cref="CloudEngineHost"/>
 	/// </summary>
-	public class CloudEngineBuilder : AutofacBuilderBase
+	public class CloudEngineBuilder : BuildSyntaxHelper
 	{
+		HashSet<IModule> _moduleEnlistments = new HashSet<IModule>();
 
-		public AutofacBuilderForLogging Logging { get { return new AutofacBuilderForLogging(Builder); } }
-		public AutofacBuilderForSerialization Serialization { get { return new AutofacBuilderForSerialization(Builder);} }
-		
-
-		public CloudEngineBuilder()
+		bool IsEnlisted<TModule>() where TModule : IModule
 		{
-			// System presets
-			Logging.LogToTrace();
-			Serialization.AutoDetectSerializer();
-			
-
-			Builder.RegisterType<MemoryPartitionFactory>().As<IQueueWriterFactory, IEngineProcess, MemoryPartitionFactory>().SingleInstance();
-
-
-
-			Builder.RegisterType<DispatcherProcess>();
-			Builder.RegisterType<MessageDuplicationManager>().SingleInstance();
-
-			// some defaults
-			Builder.RegisterType<CloudEngineHost>().SingleInstance();
+			return _moduleEnlistments.Count(x => x is TModule) > 0;
 		}
+
+		public void Enlist<TModule>(Action<TModule> config) where TModule : IModule, new()
+		{
+			var m = new TModule();
+			config(m);
+			_moduleEnlistments.Add(m);
+		}
+		public void Enlist(IModule module)
+		{
+			_moduleEnlistments.Add(module);
+		}
+	
 
 
 
@@ -54,22 +53,21 @@ namespace Lokad.Cqrs.Build.Engine
 		{
 			foreach (var queue in queues)
 			{
-				Buildy.Assert(!Cqrs.Build.Buildy.ContainsQueuePrefix(queue), "Queue '{0}' should not contain queue prefix, since it's memory already", queue);
+				Assert(!ContainsQueuePrefix(queue), "Queue '{0}' should not contain queue prefix, since it's memory already", queue);
 			}
 			var module = new MemoryPartitionModule(queues);
-
 			config(module);
-			Builder.RegisterModule(module);
+			Enlist(module);
 			return this;
 		}
 
-
-		public CloudEngineBuilder Azure(Action<AutofacBuilderForAzure> config)
+		public CloudEngineBuilder RegisterSystemObserver(ISystemObserver observer)
 		{
-			RegisterModule(config);
+			Builder.RegisterInstance(observer);
 			return this;
 		}
 
+		
 
 		
 
@@ -80,7 +78,7 @@ namespace Lokad.Cqrs.Build.Engine
 
 		public CloudEngineBuilder RegisterInstance<T>(T instance)where T :class
 		{
-			this.Builder.RegisterInstance(instance);
+			Builder.RegisterInstance(instance);
 			return this;
 		}
 
@@ -96,7 +94,6 @@ namespace Lokad.Cqrs.Build.Engine
 
 
 
-		int _domainRegistrations = 0;
 
 		/// <summary>
 		/// Configures the message domain for the instance of <see cref="CloudEngineHost"/>.
@@ -105,8 +102,7 @@ namespace Lokad.Cqrs.Build.Engine
 		/// <returns>same builder for inline multiple configuration statements</returns>
 		public CloudEngineBuilder DomainIs(Action<DomainBuildModule> config)
 		{
-			_domainRegistrations += 1;
-			RegisterModule(config);
+			Enlist(config);
 			return this;
 		}
 
@@ -117,8 +113,17 @@ namespace Lokad.Cqrs.Build.Engine
 		public CloudEngineBuilder AddMessageClient(string queueName)
 		{
 			var m = new SendMessageModule(queueName);
+			Enlist(m);
+			return this;
+		}
 
-			Builder.RegisterModule(m);
+		public readonly ContainerBuilder Builder = new ContainerBuilder();
+
+		public CloudEngineBuilder Serialization(Action<AutofacBuilderForSerialization> config)
+		{
+			var m = new AutofacBuilderForSerialization();
+			config(m);
+			Enlist(m);
 			return this;
 		}
 
@@ -128,17 +133,43 @@ namespace Lokad.Cqrs.Build.Engine
 		/// <returns>new instance of cloud engine host</returns>
 		public CloudEngineHost Build()
 		{
-			if (_domainRegistrations == 0)
+			// nonconditional registrations
+			// System presets
+			RegisterSystemObserver(new TraceSystemObserver());
+
+			Builder.RegisterType<DispatcherProcess>();
+			Builder.RegisterType<MessageDuplicationManager>().SingleInstance();
+
+			// some defaults
+			Builder.RegisterType<CloudEngineHost>().SingleInstance();
+
+			// conditional registrations and defaults
+			if (!IsEnlisted<DomainBuildModule>())
 			{
 				DomainIs(m =>
-					{
-						m.WithDefaultInterfaces();
-						m.InUserAssemblies();
-					});
+				{
+					m.WithDefaultInterfaces();
+					m.InUserAssemblies();
+				});
+			}
+			if (!IsEnlisted<AutofacBuilderForSerialization>())
+			{
+				Serialization(x => x.UseDataContractSerializer());
+			}
+
+			if (IsEnlisted<MemoryPartitionModule>())
+			{
+				Builder.RegisterType<MemoryPartitionFactory>().As<IQueueWriterFactory, IEngineProcess, MemoryPartitionFactory>().SingleInstance();
 			}
 
 
-			ILifetimeScope container = Builder.Build();
+
+			foreach (var module in _moduleEnlistments)
+			{
+				Builder.RegisterModule(module);
+			}
+
+			var container = Builder.Build();
 			var host = container.Resolve<CloudEngineHost>(TypedParameter.From(container));
 			host.Initialize();
 			return host;

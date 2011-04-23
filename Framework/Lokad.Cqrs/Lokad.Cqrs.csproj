@@ -52,12 +52,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Build\AutofacBuilderForAzure.cs" />
+    <Compile Include="Build\ModuleForAzure.cs" />
+    <Compile Include="Build\ModuleExtensionForSerialization.cs" />
     <Compile Include="Build\Client\CloudClient.cs" />
     <Compile Include="Build\Client\CloudClientBuilder.cs" />
-    <Compile Include="Build\Engine\CloudEngineBuilder.cs" />
     <Compile Include="Build\CloudSettingsProvider.cs" />
-    <Compile Include="Build\DomainBuildModule.cs" />
     <Compile Include="Build\Engine\CloudEngineRole.cs" />
     <Compile Include="Core.Serialization\DataSerializerWithAutoDetection.cs" />
     <Compile Include="Feature.AtomicStorage\Azure\AzureAtomicEntityWriter.cs" />
@@ -75,8 +74,6 @@
     <Compile Include="Feature.AtomicStorage\IAtomicSingletonReader.cs" />
     <Compile Include="Feature.AtomicStorage\IAtomicSingletonWriter.cs" />
     <Compile Include="Feature.AtomicStorage\IAtomicEntityWriter.cs" />
-    <Compile Include="Core.Transport\MessageEnvelopeBuilder.cs" />
-    <Compile Include="Core.Transport\MessageItemToSave.cs" />
     <Compile Include="Core.Transport\MessagePrinter.cs" />
     <Compile Include="Evil\ExtendIDictionary.cs" />
     <Compile Include="Evil\ExtendIEnumerable.cs" />
@@ -86,7 +83,6 @@
     <Compile Include="Evil\Maybe.cs" />
     <Compile Include="Feature.AtomicStorage\Azure\IAzureAtomicStorageStrategy.cs" />
     <Compile Include="Feature.AzurePartition\Inbox\AzurePartitionScheduler.cs" />
-    <Compile Include="Feature.AzurePartition\Inbox\MemoryPartitionModule.cs" />
     <Compile Include="Feature.AzurePartition\StatelessAzureFutureList.cs" />
     <Compile Include="Feature.AzurePartition\Inbox\AzurePartitionInbox.cs" />
     <Compile Include="Feature.AzurePartition\Inbox\AzurePartitionFactory.cs" />
@@ -98,7 +94,7 @@
     <Compile Include="Feature.AzurePartition\Events\RetrievedPoisonMessage.cs" />
     <Compile Include="Core.Transport\GetMessageResult.cs" />
     <Compile Include="Core.Transport\GetMessageResultState.cs" />
-    <Compile Include="Feature.AzurePartition\Inbox\AzurePartitionModule.cs" />
+    <Compile Include="Feature.AzurePartition\Inbox\ModuleForAzurePartition.cs" />
     <Compile Include="Feature.AzurePartition\Events\MessageDirectoryCreated.cs" />
     <Compile Include="Feature.StreamingStorage\ExtendStorageItem.cs" />
     <Compile Include="Feature.StreamingStorage\Files\FileStorageContainer.cs" />
@@ -127,9 +123,6 @@
     <Compile Include="Feature.StreamingStorage\Azure\SuppressFlushForStream.cs" />
     <Compile Include="Feature.AzurePartition\StatelessAzureQueueWriter.cs" />
     <Compile Include="Feature.AzurePartition\Sender\AzureWriteQueueFactory.cs" />
-    <Compile Include="Feature.AzurePartition\Sender\CommitActionEnlistment.cs" />
-    <Compile Include="Feature.AzurePartition\Sender\DefaultMessageSender.cs" />
-    <Compile Include="Feature.AzurePartition\Sender\SendMessageModule.cs" />
     <Compile Include="Core.Serialization\AttributeHelper.cs" />
     <Compile Include="Core.Serialization\DataSerializerWithProtoBuf.cs" />
     <Compile Include="Core.Serialization\ProtoBufUtil.cs" />

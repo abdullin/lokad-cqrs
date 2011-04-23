@@ -22,7 +22,7 @@ using Lokad.Cqrs.Feature.AzurePartition.Events;
 namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
 {
 
-	public sealed class AzurePartitionModule : Module
+	public sealed class ModuleForAzurePartition : Module
 	{
 		HashSet<string> _queueNames = new HashSet<string>();
 
@@ -32,7 +32,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
 
 		Action<DispatcherProcess, IComponentContext> _applyToTransport = (transport, context) => { };
 
-		public AzurePartitionModule(string[] queueNames)
+		public ModuleForAzurePartition(string[] queueNames)
 		{
 			_queueNames = queueNames.ToSet();
 			ModuleName = "Handler-" + GetHashCode().ToString("X8");
@@ -40,20 +40,20 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
 		}
 
 
-		public AzurePartitionModule Dispatch<TDispatcher>(Action<TDispatcher> configure)
+		public ModuleForAzurePartition Dispatch<TDispatcher>(Action<TDispatcher> configure)
 		where TDispatcher : class,ISingleThreadMessageDispatcher
 		{
 			_dispatcher = Tuple.Create(typeof(TDispatcher), new Action<ISingleThreadMessageDispatcher>(d => configure((TDispatcher)d)));
 			return this;
 		}
-		public AzurePartitionModule ApplyToTransport(Action<DispatcherProcess, IComponentContext> config)
+		public ModuleForAzurePartition ApplyToTransport(Action<DispatcherProcess, IComponentContext> config)
 		{
 			_applyToTransport += config;
 			return this;
 		}
 
 		
-		public AzurePartitionModule WhenMessageHandlerFails(Action<MessageEnvelope, Exception> handler)
+		public ModuleForAzurePartition WhenMessageHandlerFails(Action<MessageEnvelope, Exception> handler)
 		{
 			throw new NotImplementedException();
 			//return ApplyToTransport((transport, context) =>
@@ -64,7 +64,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
 		}
 
 		
-		public AzurePartitionModule WhenMessageArrives(Action<MessageEnvelope> interceptor)
+		public ModuleForAzurePartition WhenMessageArrives(Action<MessageEnvelope> interceptor)
 		{
 			throw new NotImplementedException();
 		}
@@ -79,7 +79,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
 
 		readonly MessageDirectoryFilter _filter = new MessageDirectoryFilter();
 
-		public AzurePartitionModule WhereFilter(Action<MessageDirectoryFilter> filter)
+		public ModuleForAzurePartition WhereFilter(Action<MessageDirectoryFilter> filter)
 		{
 			filter(_filter);
 			return this;

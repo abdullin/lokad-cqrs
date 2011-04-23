@@ -10,6 +10,7 @@ using Autofac;
 using Lokad.Cqrs.Core.Outbox;
 using Lokad.Cqrs.Core.Transport;
 using Lokad.Cqrs.Feature.AzurePartition.Sender;
+using Lokad.Cqrs.Feature.Logging;
 using Lokad.Cqrs.Feature.MemoryPartition;
 
 namespace Lokad.Cqrs.Build.Client
@@ -18,12 +19,18 @@ namespace Lokad.Cqrs.Build.Client
 	/// Fluent API for creating and configuring <see cref="CloudClient"/>
 	/// </summary>
 // ReSharper disable UnusedMember.Global
-	public sealed class CloudClientBuilder : AutofacBuilderBase
+	public sealed class CloudClientBuilder : BuildSyntaxHelper
 	{
+		public readonly ContainerBuilder Builder = new ContainerBuilder();
+
 		public CloudClientBuilder()
 		{
-			Serialization.AutoDetectSerializer();
-			Logging.LogToTrace();
+			// default serialization
+
+
+			Serialization(x => x.AutoDetectSerializer());
+
+			Builder.RegisterInstance(new TraceSystemObserver());
 
 			Builder.RegisterType<AzureWriteQueueFactory>().As<IQueueWriterFactory>().SingleInstance();
 			Builder.RegisterType<MemoryPartitionFactory>().As<IQueueWriterFactory>().SingleInstance();
@@ -32,18 +39,7 @@ namespace Lokad.Cqrs.Build.Client
 			Builder.RegisterType<CloudClient>().SingleInstance();
 		}
 
-
-		public AutofacBuilderForLogging Logging
-		{
-			get { return new AutofacBuilderForLogging(Builder); }
-		}
-
-		public AutofacBuilderForSerialization Serialization
-		{
-			get { return new AutofacBuilderForSerialization(Builder); }
-		}
-
-		
+	
 
 		/// <summary>
 		/// Creates default message sender for the instance of <see cref="CloudClient"/>
@@ -62,13 +58,25 @@ namespace Lokad.Cqrs.Build.Client
 		/// <returns>same builder for inline multiple configuration statements</returns>
 		public CloudClientBuilder Domain(Action<DomainBuildModule> config)
 		{
-			RegisterModule(config);
+			var m = new DomainBuildModule();
+			config(m);
+			Builder.RegisterModule(m);
 			return this;
 		}
 
-		public CloudClientBuilder Azure(Action<AutofacBuilderForAzure> config)
+		public CloudClientBuilder Azure(Action<ModuleForAzure> config)
 		{
-			RegisterModule(config);
+			var m = new ModuleForAzure();
+			config(m);
+			Builder.RegisterModule(m);
+			return this;
+		}
+
+		public CloudClientBuilder Serialization(Action<AutofacBuilderForSerialization> config)
+		{
+			var m = new AutofacBuilderForSerialization();
+			config(m);
+			Builder.RegisterModule(m);
 			return this;
 		}
 		
