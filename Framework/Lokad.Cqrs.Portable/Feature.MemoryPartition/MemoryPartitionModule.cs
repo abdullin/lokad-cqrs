@@ -4,7 +4,6 @@ using Autofac.Core;
 using Lokad.Cqrs.Build;
 using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Dispatch;
-using Lokad.Cqrs.Core.Partition;
 
 namespace Lokad.Cqrs.Feature.MemoryPartition
 {

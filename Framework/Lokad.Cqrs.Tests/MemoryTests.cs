@@ -1,7 +1,7 @@
 ﻿using System.Runtime.Serialization;
 using System.Threading;
 using Lokad.Cqrs.Build.Engine;
-using Lokad.Cqrs.Feature.DefaultInterfaces;
+using Lokad.Cqrs.Core.Directory.Default;
 using NUnit.Framework;
 using Lokad.Cqrs.Evil;
 

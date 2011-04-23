@@ -10,10 +10,9 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Autofac;
 using Autofac.Core;
-using Lokad.Cqrs.Core.Directory;
-using Lokad.Cqrs.Feature.DefaultInterfaces;
+using Lokad.Cqrs.Core.Directory.Default;
 
-namespace Lokad.Cqrs.Build
+namespace Lokad.Cqrs.Core.Directory
 {
 	/// <summary>
 	/// Module for building CQRS domains.

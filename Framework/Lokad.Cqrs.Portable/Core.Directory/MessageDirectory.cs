@@ -8,7 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Lokad.Cqrs.Evil;
+using Lokad.Cqrs.Core.Evil;
 
 namespace Lokad.Cqrs.Core.Directory
 {

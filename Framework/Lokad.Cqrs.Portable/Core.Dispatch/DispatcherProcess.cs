@@ -8,11 +8,10 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Lokad.Cqrs.Core.Dispatch;
+using Lokad.Cqrs.Core.Dispatch.Events;
 using Lokad.Cqrs.Core.Inbox;
-using Lokad.Cqrs.Core.Partition.Events;
 
-namespace Lokad.Cqrs.Core.Partition
+namespace Lokad.Cqrs.Core.Dispatch
 {
 	public sealed class DispatcherProcess : IEngineProcess
 	{

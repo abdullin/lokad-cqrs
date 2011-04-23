@@ -11,7 +11,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Lokad.Cqrs.Core.Inbox;
-using Lokad.Cqrs.Core.Partition;
 using Microsoft.WindowsAzure;
 
 namespace Lokad.Cqrs.Feature.AzurePartition.Inbox

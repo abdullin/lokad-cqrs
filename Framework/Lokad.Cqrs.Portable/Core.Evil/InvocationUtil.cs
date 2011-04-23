@@ -8,10 +8,9 @@
 
 using System;
 using System.Diagnostics;
-using System.Globalization;
 using System.Reflection;
 
-namespace Lokad.Cqrs.Evil
+namespace Lokad.Cqrs.Core.Evil
 {
 	/// <summary>
 	/// Helper class for generating exceptions

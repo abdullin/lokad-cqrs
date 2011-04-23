@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using Lokad.Cqrs.Core.Inbox;
-using Lokad.Cqrs.Core.Partition;
 using Lokad.Cqrs.Core.Transport;
 
 namespace Lokad.Cqrs.Feature.AzurePartition.Inbox

@@ -11,8 +11,8 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading;
 using Lokad.Cqrs.Build.Engine;
+using Lokad.Cqrs.Core.Directory.Default;
 using Lokad.Cqrs.Evil;
-using Lokad.Cqrs.Feature.DefaultInterfaces;
 using NUnit.Framework;
 
 namespace Lokad.Cqrs.Tests

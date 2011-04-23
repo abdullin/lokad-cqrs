@@ -9,6 +9,7 @@ using System;
 using System.Reflection;
 using System.Threading;
 using Autofac;
+using Lokad.Cqrs.Core.Evil;
 using Lokad.Cqrs.Evil;
 
 namespace Lokad.Cqrs.Build.Client

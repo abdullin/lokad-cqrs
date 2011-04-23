@@ -10,11 +10,8 @@ using System.Collections.Generic;
 using Autofac;
 using Autofac.Core;
 using Lokad.Cqrs.Build;
-using Lokad.Cqrs.Core.Outbox;
-using Lokad.Cqrs.Core.Transport;
-using System.Linq;
 
-namespace Lokad.Cqrs.Feature.AzurePartition.Sender
+namespace Lokad.Cqrs.Core.Outbox
 {
 	public sealed class SendMessageModule : BuildSyntaxHelper, IModule
 	{

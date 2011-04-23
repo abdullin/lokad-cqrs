@@ -13,7 +13,6 @@ using Autofac.Core;
 using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Core.Inbox;
-using Lokad.Cqrs.Core.Partition;
 using Lokad.Cqrs.Core.Transport;
 using Lokad.Cqrs.Evil;
 using Lokad.Cqrs.Feature.AzurePartition.Events;

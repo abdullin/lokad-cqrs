@@ -5,7 +5,7 @@
 
 #endregion
 
-namespace Lokad.Cqrs.Feature.DefaultInterfaces
+namespace Lokad.Cqrs.Core.Directory.Default
 {
 	/// <summary>
 	/// <para>Default CQRS interface for interface-base domain setup of message consumers. By default Lokad.CQRS 

@@ -7,6 +7,7 @@
 
 using System;
 using Autofac;
+using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Outbox;
 using Lokad.Cqrs.Core.Transport;
 using Lokad.Cqrs.Feature.AzurePartition.Sender;

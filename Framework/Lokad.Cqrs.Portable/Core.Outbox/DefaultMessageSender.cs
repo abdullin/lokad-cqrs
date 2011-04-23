@@ -7,10 +7,9 @@
 
 using System;
 using System.Transactions;
-using Lokad.Cqrs.Core.Outbox;
-using Lokad.Cqrs.Core.Transport;
+using Lokad.Cqrs.Core.Envelope;
 
-namespace Lokad.Cqrs.Feature.AzurePartition.Sender
+namespace Lokad.Cqrs.Core.Outbox
 {
 	sealed class DefaultMessageSender : IMessageSender
 	{

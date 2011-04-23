@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Lokad.Cqrs.Core.Partition.Events
+namespace Lokad.Cqrs.Core.Dispatch.Events
 {
 	public sealed class FailedToConsumeMessage : ISystemEvent
 	{
