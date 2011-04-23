@@ -1,4 +1,11 @@
-﻿using System;
+﻿#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
+
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
+using System;
 using System.Collections.Generic;
 
 namespace Lokad.Cqrs.Core.Envelope
@@ -20,7 +27,7 @@ namespace Lokad.Cqrs.Core.Envelope
 		{
 			// add KVPs after
 			var t = typeof (T);
-			if (t == typeof(object))
+			if (t == typeof (object))
 			{
 				t = item.GetType();
 			}
@@ -58,7 +65,7 @@ namespace Lokad.Cqrs.Core.Envelope
 				items[i] = new MessageItem(save.MappedType, save.Content, attribs);
 			}
 
-			return new MessageEnvelope(EnvelopeId,attributes, items, DeliverOn);
+			return new MessageEnvelope(EnvelopeId, attributes, items, DeliverOn);
 		}
 	}
 }

@@ -1,6 +1,6 @@
-#region (c) 2010 Lokad Open Source - New BSD License 
+#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
 
-// Copyright (c) Lokad 2010, http://www.lokad.com
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
 // This code is released as Open Source under the terms of the New BSD Licence
 
 #endregion
@@ -56,19 +56,19 @@ namespace Lokad.Cqrs.Core.Directory
 			var messages = mappings
 				.ToLookup(x => x.Message)
 				.Select(x =>
-				{
-					var domainConsumers = x
-						.Where(t => t.Consumer != typeof(MessageMapping.BusNull))
-						.ToArray();
+					{
+						var domainConsumers = x
+							.Where(t => t.Consumer != typeof (MessageMapping.BusNull))
+							.ToArray();
 
-					return new MessageInfo
-						{
-							MessageType = x.Key,
-							AllConsumers = domainConsumers.Select(m => m.Consumer).Distinct().ToArray(),
-							DerivedConsumers = domainConsumers.Where(m => !m.Direct).Select(m => m.Consumer).Distinct().ToArray(),
-							DirectConsumers = domainConsumers.Where(m => m.Direct).Select(m => m.Consumer).Distinct().ToArray(),
-						};
-				}).ToList();
+						return new MessageInfo
+							{
+								MessageType = x.Key,
+								AllConsumers = domainConsumers.Select(m => m.Consumer).Distinct().ToArray(),
+								DerivedConsumers = domainConsumers.Where(m => !m.Direct).Select(m => m.Consumer).Distinct().ToArray(),
+								DirectConsumers = domainConsumers.Where(m => m.Direct).Select(m => m.Consumer).Distinct().ToArray(),
+							};
+					}).ToList();
 
 			var includedTypes = new HashSet<Type>(messages.Select(m => m.MessageType));
 
@@ -84,7 +84,7 @@ namespace Lokad.Cqrs.Core.Directory
 					});
 
 			messages.AddRange(orphanedMessages);
-			
+
 			return new MessageDirectory(_methodName, consumers, messages.ToArray());
 		}
 	}
@@ -117,7 +117,7 @@ namespace Lokad.Cqrs.Core.Directory
 		/// <returns>same module instance for chaining fluent configurations</returns>
 		public MessageDirectoryFilter WhereMessagesAreNot<TMessage>()
 		{
-			return WhereMappings(mm => !typeof(TMessage).IsAssignableFrom(mm.Message));
+			return WhereMappings(mm => !typeof (TMessage).IsAssignableFrom(mm.Message));
 		}
 
 		/// <summary>
@@ -127,7 +127,7 @@ namespace Lokad.Cqrs.Core.Directory
 		/// <returns>same module instance for chaining fluent configurations</returns>
 		public MessageDirectoryFilter WhereMessagesAre<TMessage>()
 		{
-			return WhereMappings(mm => typeof(TMessage).IsAssignableFrom(mm.Message));
+			return WhereMappings(mm => typeof (TMessage).IsAssignableFrom(mm.Message));
 		}
 
 		/// <summary>
@@ -137,8 +137,9 @@ namespace Lokad.Cqrs.Core.Directory
 		/// <returns>same module instance for chaining fluent configurations</returns>
 		public MessageDirectoryFilter WhereConsumersAre<TConsumer>()
 		{
-			return WhereMappings(mm => typeof(TConsumer).IsAssignableFrom(mm.Consumer));
+			return WhereMappings(mm => typeof (TConsumer).IsAssignableFrom(mm.Consumer));
 		}
+
 		/// <summary>
 		/// Adds filter to exclude all message mappings, where consumers derive from the specified class
 		/// </summary>
@@ -146,8 +147,7 @@ namespace Lokad.Cqrs.Core.Directory
 		/// <returns>same module instance for chaining fluent configurations</returns>
 		public MessageDirectoryFilter WhereConsumersAreNot<TConsumer>()
 		{
-			return WhereMappings(mm => !typeof(TConsumer).IsAssignableFrom(mm.Consumer));
+			return WhereMappings(mm => !typeof (TConsumer).IsAssignableFrom(mm.Consumer));
 		}
-
 	}
 }

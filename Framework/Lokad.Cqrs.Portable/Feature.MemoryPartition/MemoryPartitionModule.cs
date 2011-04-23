@@ -1,4 +1,11 @@
-﻿using System;
+﻿#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
+
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
+using System;
 using Autofac;
 using Autofac.Core;
 using Lokad.Cqrs.Build;
@@ -18,7 +25,7 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
 			filter(_filter);
 			return this;
 		}
-		
+
 
 		public MemoryPartitionModule(string[] memoryQueues)
 		{
@@ -27,9 +34,10 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
 		}
 
 		public MemoryPartitionModule Dispatch<TDispatcher>(Action<TDispatcher> configure)
-			where TDispatcher : class,ISingleThreadMessageDispatcher
+			where TDispatcher : class, ISingleThreadMessageDispatcher
 		{
-			_dispatcher = Tuple.Create(typeof(TDispatcher), new Action<ISingleThreadMessageDispatcher>(d => configure((TDispatcher)d)));
+			_dispatcher = Tuple.Create(typeof (TDispatcher),
+				new Action<ISingleThreadMessageDispatcher>(d => configure((TDispatcher) d)));
 			return this;
 		}
 
@@ -42,7 +50,7 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
 			var dir = context.Resolve<MessageDirectoryBuilder>();
 			var directory = dir.BuildDirectory(_filter.DoesPassFilter);
 			var typedParameter = TypedParameter.From(directory);
-			var dispatcher = (ISingleThreadMessageDispatcher)context.Resolve(_dispatcher.Item1, typedParameter);
+			var dispatcher = (ISingleThreadMessageDispatcher) context.Resolve(_dispatcher.Item1, typedParameter);
 			_dispatcher.Item2(dispatcher);
 			dispatcher.Init();
 

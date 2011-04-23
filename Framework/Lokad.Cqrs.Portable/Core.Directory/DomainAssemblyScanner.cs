@@ -1,13 +1,13 @@
-﻿#region (c) 2010 Lokad Open Source - New BSD License 
+﻿#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
 
-// Copyright (c) Lokad 2010, http://www.lokad.com
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
 // This code is released as Open Source under the terms of the New BSD Licence
 
 #endregion
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -19,7 +19,7 @@ namespace Lokad.Cqrs.Core.Directory
 		readonly HashSet<Predicate<Type>> _handlerSelector = new HashSet<Predicate<Type>>();
 		readonly HashSet<Predicate<Type>> _serializableSelector = new HashSet<Predicate<Type>>();
 		MethodInfo _consumingMethod;
-		
+
 		public MethodInfo ConsumingMethod
 		{
 			get { return _consumingMethod; }
@@ -111,7 +111,7 @@ namespace Lokad.Cqrs.Core.Directory
 			{
 				result.Add(m);
 			}
-			
+
 			var allMessages = new HashSet<Type>(result.Select(m => m.Message));
 
 			foreach (var messageType in messageTypes)

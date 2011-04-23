@@ -1,6 +1,6 @@
-#region (c) 2010 Lokad Open Source - New BSD License 
+#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
 
-// Copyright (c) Lokad 2010, http://www.lokad.com
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
 // This code is released as Open Source under the terms of the New BSD Licence
 
 #endregion
@@ -23,7 +23,8 @@ namespace Lokad.Cqrs.Core.Dispatch
 		readonly IDictionary<Type, Type[]> _dispatcher = new Dictionary<Type, Type[]>();
 		readonly MessageDuplicationMemory _dispatchMemory;
 
-		public DispatchEventToMultipleConsumers(ILifetimeScope container, MessageDirectory directory, MessageDuplicationManager memory)
+		public DispatchEventToMultipleConsumers(ILifetimeScope container, MessageDirectory directory,
+			MessageDuplicationManager memory)
 		{
 			_container = container;
 			_directory = directory;
@@ -47,7 +48,8 @@ namespace Lokad.Cqrs.Core.Dispatch
 				return;
 
 			if (unpacked.Items.Length != 1)
-				throw new InvalidOperationException("Batch message arrived to the shared scope. Are you batching events or dispatching commands to shared scope?");
+				throw new InvalidOperationException(
+					"Batch message arrived to the shared scope. Are you batching events or dispatching commands to shared scope?");
 
 			// we get failure if one of the subscribers fails
 			Type[] consumerTypes;

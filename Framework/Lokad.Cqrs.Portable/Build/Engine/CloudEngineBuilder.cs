@@ -1,12 +1,13 @@
-#region (c) 2010 Lokad Open Source - New BSD License 
+#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
 
-// Copyright (c) Lokad 2010, http://www.lokad.com
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
 // This code is released as Open Source under the terms of the New BSD Licence
 
 #endregion
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Autofac;
 using Autofac.Core;
 using Lokad.Cqrs.Core.Directory;
@@ -14,13 +15,11 @@ using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Core.Outbox;
 using Lokad.Cqrs.Feature.Logging;
 using Lokad.Cqrs.Feature.MemoryPartition;
-using System.Linq;
 
 // ReSharper disable UnusedMethodReturnValue.Global
+
 namespace Lokad.Cqrs.Build.Engine
 {
-	
-
 	/// <summary>
 	/// Fluent API for creating and configuring <see cref="CloudEngineHost"/>
 	/// </summary>
@@ -39,12 +38,11 @@ namespace Lokad.Cqrs.Build.Engine
 			config(m);
 			_moduleEnlistments.Add(m);
 		}
+
 		public void Enlist(IModule module)
 		{
 			_moduleEnlistments.Add(module);
 		}
-	
-
 
 
 		public CloudEngineBuilder AddMemoryPartition(string[] queues, Action<MemoryPartitionModule> config)
@@ -65,16 +63,13 @@ namespace Lokad.Cqrs.Build.Engine
 			return this;
 		}
 
-		
-
-		
 
 		public CloudEngineBuilder AddMemoryPartition(params string[] queues)
 		{
 			return AddMemoryPartition(queues, m => { });
 		}
 
-		public CloudEngineBuilder RegisterInstance<T>(T instance)where T :class
+		public CloudEngineBuilder RegisterInstance<T>(T instance) where T : class
 		{
 			Builder.RegisterInstance(instance);
 			return this;
@@ -82,15 +77,13 @@ namespace Lokad.Cqrs.Build.Engine
 
 		public CloudEngineBuilder AddMemoryPartition(string queueName, Action<MemoryPartitionModule> config)
 		{
-			return AddMemoryPartition(new string[]{queueName}, config);
+			return AddMemoryPartition(new string[] {queueName}, config);
 		}
 
 		public CloudEngineBuilder AddMemoryRouter(string queueName, Func<MessageEnvelope, string> config)
 		{
 			return AddMemoryPartition(queueName, m => m.Dispatch<DispatchMessagesToRoute>(x => x.SpecifyRouter(config)));
 		}
-
-
 
 
 		/// <summary>
@@ -145,10 +138,10 @@ namespace Lokad.Cqrs.Build.Engine
 			if (!IsEnlisted<DomainBuildModule>())
 			{
 				DomainIs(m =>
-				{
-					m.WithDefaultInterfaces();
-					m.InUserAssemblies();
-				});
+					{
+						m.WithDefaultInterfaces();
+						m.InUserAssemblies();
+					});
 			}
 			if (!IsEnlisted<AutofacBuilderForSerialization>())
 			{
@@ -157,9 +150,9 @@ namespace Lokad.Cqrs.Build.Engine
 
 			if (IsEnlisted<MemoryPartitionModule>())
 			{
-				Builder.RegisterType<MemoryPartitionFactory>().As<IQueueWriterFactory, IEngineProcess, MemoryPartitionFactory>().SingleInstance();
+				Builder.RegisterType<MemoryPartitionFactory>().As<IQueueWriterFactory, IEngineProcess, MemoryPartitionFactory>().
+					SingleInstance();
 			}
-
 
 
 			foreach (var module in _moduleEnlistments)

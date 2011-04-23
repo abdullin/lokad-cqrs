@@ -1,6 +1,6 @@
-#region (c) 2010 Lokad Open Source - New BSD License 
+#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
 
-// Copyright (c) Lokad 2010, http://www.lokad.com
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
 // This code is released as Open Source under the terms of the New BSD Licence
 
 #endregion
@@ -39,7 +39,7 @@ namespace Lokad.Cqrs.Core.Directory
 			ConsumerMethodSample<IConsume<IMessage>>(i => i.Consume(null));
 			WhereMessagesAre<IMessage>();
 			WhereConsumersAre<IConsumeMessage>();
-			
+
 			return this;
 		}
 
@@ -71,7 +71,6 @@ namespace Lokad.Cqrs.Core.Directory
 			return this;
 		}
 
-		
 
 		/// <summary>
 		/// <para>Specifies custom rule for finding message consumers - where they derive from the provided interface. </para>
@@ -129,7 +128,7 @@ namespace Lokad.Cqrs.Core.Directory
 		/// <returns>
 		/// same module instance for chaining fluent configurations
 		/// </returns>
-		public DomainBuildModule InAssemblyOf<T1,T2>()
+		public DomainBuildModule InAssemblyOf<T1, T2>()
 		{
 			_scanner.WithAssemblyOf<T1>();
 			_scanner.WithAssemblyOf<T2>();
@@ -166,7 +165,7 @@ namespace Lokad.Cqrs.Core.Directory
 			_scanner.WithAssemblyOf<T1>();
 			_scanner.WithAssemblyOf<T2>();
 			_scanner.WithAssemblyOf<T3>();
-			
+
 			return this;
 		}
 
@@ -177,7 +176,7 @@ namespace Lokad.Cqrs.Core.Directory
 		public DomainBuildModule InCurrentAssembly()
 		{
 			_scanner.WithAssembly(Assembly.GetCallingAssembly());
-			
+
 			return this;
 		}
 
@@ -258,6 +257,5 @@ namespace Lokad.Cqrs.Core.Directory
 
 			//delegate string GetInfoDelegate(UnpackedMessage message);
 		}
-
 	}
 }

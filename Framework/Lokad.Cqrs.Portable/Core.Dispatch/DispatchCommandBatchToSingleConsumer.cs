@@ -1,4 +1,4 @@
-#region (c) 2010-2011 Lokad Open Source - New BSD License 
+#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
 
 // Copyright (c) Lokad 2010-2011, http://www.lokad.com
 // This code is released as Open Source under the terms of the New BSD Licence
@@ -23,7 +23,8 @@ namespace Lokad.Cqrs.Core.Dispatch
 		readonly MessageDirectory _messageDirectory;
 		readonly MessageDuplicationMemory _memory;
 
-		public DispatchCommandBatchToSingleConsumer(ILifetimeScope container, MessageDirectory messageDirectory, MessageDuplicationManager manager)
+		public DispatchCommandBatchToSingleConsumer(ILifetimeScope container, MessageDirectory messageDirectory,
+			MessageDuplicationManager manager)
 		{
 			_container = container;
 			_messageDirectory = messageDirectory;
@@ -39,7 +40,7 @@ namespace Lokad.Cqrs.Core.Dispatch
 			// empty message, hm...
 			if (message.Items.Length == 0)
 				return;
-			
+
 			// verify that all consumers are available
 			foreach (var item in message.Items)
 			{
@@ -68,7 +69,6 @@ namespace Lokad.Cqrs.Core.Dispatch
 			_memory.Memorize(message.EnvelopeId);
 		}
 
-	
 
 		public void Init()
 		{

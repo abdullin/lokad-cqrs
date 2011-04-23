@@ -1,6 +1,6 @@
-#region (c) 2010 Lokad Open Source - New BSD License 
+#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
 
-// Copyright (c) Lokad 2010, http://www.lokad.com
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
 // This code is released as Open Source under the terms of the New BSD Licence
 
 #endregion
@@ -17,7 +17,6 @@ using Lokad.Cqrs.Core.Evil;
 
 namespace Lokad.Cqrs.Build.Engine
 {
-	
 	public sealed class CloudEngineHost : IDisposable
 	{
 		public ILifetimeScope Container { get; private set; }
@@ -40,7 +39,7 @@ namespace Lokad.Cqrs.Build.Engine
 			var names = _serverProcesses.Select(p => string.Format("{0}({1:X8})", p.GetType().Name, p.GetHashCode())).ToArray();
 
 			_observer.Notify(new HostStarted(names));
-			
+
 			return Task.Factory.ContinueWhenAll(tasks, t => _observer.Notify(new HostStopped()));
 		}
 

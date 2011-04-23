@@ -1,6 +1,6 @@
-﻿#region (c) 2010 Lokad Open Source - New BSD License 
+﻿#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
 
-// Copyright (c) Lokad 2010, http://www.lokad.com
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
 // This code is released as Open Source under the terms of the New BSD Licence
 
 #endregion
@@ -23,7 +23,6 @@ namespace Lokad.Cqrs.Core.Outbox
 			_queueName = queueName;
 		}
 
-		
 
 		DefaultMessageSender BuildDefaultMessageSender(IComponentContext c)
 		{
@@ -41,7 +40,8 @@ namespace Lokad.Cqrs.Core.Outbox
 
 			if (queues.Count == 0)
 			{
-				string message = string.Format("There are no queues for the '{0}'. Did you forget to register a factory?", _queueName);
+				string message = string.Format("There are no queues for the '{0}'. Did you forget to register a factory?",
+					_queueName);
 				throw new InvalidOperationException(message);
 			}
 			if (queues.Count > 1)

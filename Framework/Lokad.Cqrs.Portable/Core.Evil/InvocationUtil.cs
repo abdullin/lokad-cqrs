@@ -1,8 +1,7 @@
-#region (c)2009 Lokad - New BSD license
+#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
 
-// Copyright (c) Lokad 2009 
-// Company: http://www.lokad.com
-// This code is released under the terms of the new BSD licence
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
 
 #endregion
 
@@ -21,7 +20,7 @@ namespace Lokad.Cqrs.Core.Evil
 
 		static InvocationUtil()
 		{
-			InternalPreserveStackTraceMethod = typeof(Exception).GetMethod("InternalPreserveStackTrace",
+			InternalPreserveStackTraceMethod = typeof (Exception).GetMethod("InternalPreserveStackTrace",
 				BindingFlags.Instance | BindingFlags.NonPublic);
 		}
 
@@ -30,7 +29,7 @@ namespace Lokad.Cqrs.Core.Evil
 		/// </summary>
 		/// <param name="e">The target invocation exception to unwrap.</param>
 		/// <returns>inner exception</returns>
-		public static Exception Inner( Exception e)
+		public static Exception Inner(Exception e)
 		{
 			if (e == null) throw new ArgumentNullException("e");
 			InternalPreserveStackTraceMethod.Invoke(e.InnerException, new object[0]);
@@ -49,7 +48,7 @@ namespace Lokad.Cqrs.Core.Evil
 			{
 				var handlerType = messageHandler.GetType();
 				var messageType = messageInstance.GetType();
-				var consume = handlerType.GetMethod(methodName, new[] { messageType });
+				var consume = handlerType.GetMethod(methodName, new[] {messageType});
 
 				if (null == consume)
 				{
@@ -60,7 +59,7 @@ namespace Lokad.Cqrs.Core.Evil
 					throw new InvalidOperationException(text);
 				}
 
-				consume.Invoke(messageHandler, new[] { messageInstance });
+				consume.Invoke(messageHandler, new[] {messageInstance});
 			}
 			catch (TargetInvocationException e)
 			{

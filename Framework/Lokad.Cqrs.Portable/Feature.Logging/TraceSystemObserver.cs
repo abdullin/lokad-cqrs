@@ -1,13 +1,11 @@
-#region (c)2009 Lokad - New BSD license
+#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
 
-// Copyright (c) Lokad 2009 
-// Company: http://www.lokad.com
-// This code is released under the terms of the new BSD licence
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
 
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Lokad.Cqrs.Feature.Logging
@@ -17,7 +15,6 @@ namespace Lokad.Cqrs.Feature.Logging
 	/// </summary>
 	/// <remarks>Use Logging stack, if more flexibility is needed</remarks>
 	[Serializable]
-	
 	public sealed class TraceSystemObserver : ISystemObserver
 	{
 		public void Notify(ISystemEvent @event)

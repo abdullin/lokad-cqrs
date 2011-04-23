@@ -5,7 +5,6 @@
 
 #endregion
 
-using System;
 using Autofac;
 using Autofac.Core;
 using Lokad.Cqrs.Core.Envelope;

@@ -1,12 +1,19 @@
-﻿using System;
+﻿#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
+
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
+using System;
 using System.Collections.Concurrent;
 using System.Linq;
 
 namespace Lokad.Cqrs.Core.Dispatch
 {
-	public sealed class MessageDuplicationMemory 
+	public sealed class MessageDuplicationMemory
 	{
-		readonly ConcurrentDictionary<string,DateTime> _memory = new ConcurrentDictionary<string, DateTime>();
+		readonly ConcurrentDictionary<string, DateTime> _memory = new ConcurrentDictionary<string, DateTime>();
 
 		public void Memorize(string memoryId)
 		{
@@ -33,6 +40,5 @@ namespace Lokad.Cqrs.Core.Dispatch
 				_memory.TryRemove(key, out deleted);
 			}
 		}
-
 	}
 }
