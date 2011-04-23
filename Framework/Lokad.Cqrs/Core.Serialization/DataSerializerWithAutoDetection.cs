@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using Lokad.Cqrs.Evil;
-using Lokad.Cqrs.Serialization;
 using ProtoBuf;
 
 namespace Lokad.Cqrs.Core.Serialization

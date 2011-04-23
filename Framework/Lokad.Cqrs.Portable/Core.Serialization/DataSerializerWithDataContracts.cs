@@ -12,7 +12,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Xml;
 
-namespace Lokad.Cqrs.Serialization
+namespace Lokad.Cqrs.Core.Serialization
 {
 	/// <summary>
 	/// Message serializer for the <see cref="DataContractSerializer"/>

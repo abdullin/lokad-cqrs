@@ -7,12 +7,12 @@
 
 using Autofac;
 using Autofac.Core;
+using Lokad.Cqrs.Build;
 using Lokad.Cqrs.Core.Envelope;
-using Lokad.Cqrs.Serialization;
 
-namespace Lokad.Cqrs.Build
+namespace Lokad.Cqrs.Core.Serialization
 {
-	public sealed class AutofacBuilderForSerialization : BuildSyntaxHelper, IModule
+	public sealed class ModuleForSerialization : BuildSyntaxHelper, IModule
 	{
 		readonly ContainerBuilder _builder = new ContainerBuilder();
 

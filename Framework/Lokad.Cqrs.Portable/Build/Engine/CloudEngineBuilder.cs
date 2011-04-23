@@ -13,6 +13,7 @@ using Autofac.Core;
 using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Core.Outbox;
+using Lokad.Cqrs.Core.Serialization;
 using Lokad.Cqrs.Feature.Logging;
 using Lokad.Cqrs.Feature.MemoryPartition;
 
@@ -45,13 +46,13 @@ namespace Lokad.Cqrs.Build.Engine
 		}
 
 
-		public CloudEngineBuilder AddMemoryPartition(string[] queues, Action<MemoryPartitionModule> config)
+		public CloudEngineBuilder AddMemoryPartition(string[] queues, Action<ModuleForMemoryPartition> config)
 		{
 			foreach (var queue in queues)
 			{
 				Assert(!ContainsQueuePrefix(queue), "Queue '{0}' should not contain queue prefix, since it's memory already", queue);
 			}
-			var module = new MemoryPartitionModule(queues);
+			var module = new ModuleForMemoryPartition(queues);
 			config(module);
 			Enlist(module);
 			return this;
@@ -75,7 +76,7 @@ namespace Lokad.Cqrs.Build.Engine
 			return this;
 		}
 
-		public CloudEngineBuilder AddMemoryPartition(string queueName, Action<MemoryPartitionModule> config)
+		public CloudEngineBuilder AddMemoryPartition(string queueName, Action<ModuleForMemoryPartition> config)
 		{
 			return AddMemoryPartition(new string[] {queueName}, config);
 		}
@@ -91,7 +92,7 @@ namespace Lokad.Cqrs.Build.Engine
 		/// </summary>
 		/// <param name="config">configuration syntax.</param>
 		/// <returns>same builder for inline multiple configuration statements</returns>
-		public CloudEngineBuilder DomainIs(Action<DomainBuildModule> config)
+		public CloudEngineBuilder DomainIs(Action<ModuleForMessageDirectory> config)
 		{
 			Enlist(config);
 			return this;
@@ -110,9 +111,9 @@ namespace Lokad.Cqrs.Build.Engine
 
 		public readonly ContainerBuilder Builder = new ContainerBuilder();
 
-		public CloudEngineBuilder Serialization(Action<AutofacBuilderForSerialization> config)
+		public CloudEngineBuilder Serialization(Action<ModuleForSerialization> config)
 		{
-			var m = new AutofacBuilderForSerialization();
+			var m = new ModuleForSerialization();
 			config(m);
 			Enlist(m);
 			return this;
@@ -135,7 +136,7 @@ namespace Lokad.Cqrs.Build.Engine
 			Builder.RegisterType<CloudEngineHost>().SingleInstance();
 
 			// conditional registrations and defaults
-			if (!IsEnlisted<DomainBuildModule>())
+			if (!IsEnlisted<ModuleForMessageDirectory>())
 			{
 				DomainIs(m =>
 					{
@@ -143,12 +144,12 @@ namespace Lokad.Cqrs.Build.Engine
 						m.InUserAssemblies();
 					});
 			}
-			if (!IsEnlisted<AutofacBuilderForSerialization>())
+			if (!IsEnlisted<ModuleForSerialization>())
 			{
 				Serialization(x => x.UseDataContractSerializer());
 			}
 
-			if (IsEnlisted<MemoryPartitionModule>())
+			if (IsEnlisted<ModuleForMemoryPartition>())
 			{
 				Builder.RegisterType<MemoryPartitionFactory>().As<IQueueWriterFactory, IEngineProcess, MemoryPartitionFactory>().
 					SingleInstance();

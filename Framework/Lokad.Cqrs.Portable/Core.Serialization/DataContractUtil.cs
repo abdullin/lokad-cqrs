@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 
-namespace Lokad.Cqrs.Serialization
+namespace Lokad.Cqrs.Core.Serialization
 {
 	/// <summary>
 	/// Helper class to work with <see cref="DataContract"/>

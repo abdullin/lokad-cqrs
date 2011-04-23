@@ -16,12 +16,12 @@ namespace Lokad.Cqrs.Build
 	[Serializable]
 	public abstract class BuildSyntaxHelper
 	{
-		public static bool ContainsQueuePrefix(string queueName)
+		protected static bool ContainsQueuePrefix(string queueName)
 		{
 			return queueName.Contains(":");
 		}
 
-		public static void Assert(bool check, string text, params object[] args)
+		protected static void Assert(bool check, string text, params object[] args)
 		{
 			if (!check)
 				throw new InvalidOperationException(string.Format(text, args));

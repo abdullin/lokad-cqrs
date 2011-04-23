@@ -9,6 +9,7 @@ using System;
 using Autofac;
 using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Outbox;
+using Lokad.Cqrs.Core.Serialization;
 using Lokad.Cqrs.Core.Transport;
 using Lokad.Cqrs.Feature.AzurePartition.Sender;
 using Lokad.Cqrs.Feature.Logging;
@@ -57,9 +58,9 @@ namespace Lokad.Cqrs.Build.Client
 		/// </summary>
 		/// <param name="config">configuration syntax.</param>
 		/// <returns>same builder for inline multiple configuration statements</returns>
-		public CloudClientBuilder Domain(Action<DomainBuildModule> config)
+		public CloudClientBuilder Domain(Action<ModuleForMessageDirectory> config)
 		{
-			var m = new DomainBuildModule();
+			var m = new ModuleForMessageDirectory();
 			config(m);
 			Builder.RegisterModule(m);
 			return this;
@@ -73,9 +74,9 @@ namespace Lokad.Cqrs.Build.Client
 			return this;
 		}
 
-		public CloudClientBuilder Serialization(Action<AutofacBuilderForSerialization> config)
+		public CloudClientBuilder Serialization(Action<ModuleForSerialization> config)
 		{
-			var m = new AutofacBuilderForSerialization();
+			var m = new ModuleForSerialization();
 			config(m);
 			Builder.RegisterModule(m);
 			return this;

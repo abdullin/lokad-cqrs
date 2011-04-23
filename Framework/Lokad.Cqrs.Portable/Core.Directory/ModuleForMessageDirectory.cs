@@ -17,15 +17,15 @@ namespace Lokad.Cqrs.Core.Directory
 	/// <summary>
 	/// Module for building CQRS domains.
 	/// </summary>
-	public class DomainBuildModule : IModule
+	public class ModuleForMessageDirectory : IModule
 	{
 		readonly DomainAssemblyScanner _scanner = new DomainAssemblyScanner();
 		readonly ContainerBuilder _builder;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="DomainBuildModule"/> class.
+		/// Initializes a new instance of the <see cref="ModuleForMessageDirectory"/> class.
 		/// </summary>
-		public DomainBuildModule()
+		public ModuleForMessageDirectory()
 		{
 			_builder = new ContainerBuilder();
 		}
@@ -34,7 +34,7 @@ namespace Lokad.Cqrs.Core.Directory
 		/// Uses default interfaces and conventions.
 		/// </summary>
 		/// <returns>same module instance for chaining fluent configurations</returns>
-		public DomainBuildModule WithDefaultInterfaces()
+		public ModuleForMessageDirectory WithDefaultInterfaces()
 		{
 			ConsumerMethodSample<IConsume<IMessage>>(i => i.Consume(null));
 			WhereMessagesAre<IMessage>();
@@ -49,7 +49,7 @@ namespace Lokad.Cqrs.Core.Directory
 		/// <typeparam name="THandler">The type of the handler.</typeparam>
 		/// <param name="expression">The expression.</param>
 		/// <returns>same module instance for chaining fluent configurations</returns>
-		public DomainBuildModule ConsumerMethodSample<THandler>(Expression<Action<THandler>> expression)
+		public ModuleForMessageDirectory ConsumerMethodSample<THandler>(Expression<Action<THandler>> expression)
 		{
 			_scanner.ConsumerMethodSample(expression);
 			return this;
@@ -61,7 +61,7 @@ namespace Lokad.Cqrs.Core.Directory
 		/// </summary>
 		/// <typeparam name="TInterface">The type of the interface.</typeparam>
 		/// <returns>same module instance for chaining fluent configurations</returns>
-		public DomainBuildModule WhereMessagesAre<TInterface>()
+		public ModuleForMessageDirectory WhereMessagesAre<TInterface>()
 		{
 			_scanner.WhereMessages(type =>
 				typeof (TInterface).IsAssignableFrom(type)
@@ -78,7 +78,7 @@ namespace Lokad.Cqrs.Core.Directory
 		/// </summary>
 		/// <typeparam name="TInterface">The type of the interface.</typeparam>
 		/// <returns>same module instance for chaining fluent configurations</returns>
-		public DomainBuildModule WhereConsumersAre<TInterface>()
+		public ModuleForMessageDirectory WhereConsumersAre<TInterface>()
 		{
 			_scanner.WhereConsumers(type =>
 				typeof (TInterface).IsAssignableFrom(type)
@@ -92,7 +92,7 @@ namespace Lokad.Cqrs.Core.Directory
 		/// </summary>
 		/// <param name="customFilterForConsumers">The custom filter for consumers.</param>
 		/// <returns>same module instance for chaining fluent configurations</returns>
-		public DomainBuildModule WhereConsumers(Predicate<Type> customFilterForConsumers)
+		public ModuleForMessageDirectory WhereConsumers(Predicate<Type> customFilterForConsumers)
 		{
 			_scanner.WhereConsumers(customFilterForConsumers);
 			return this;
@@ -103,7 +103,7 @@ namespace Lokad.Cqrs.Core.Directory
 		/// </summary>
 		/// <param name="customFilterForMessages">The custom filter for messages.</param>
 		/// <returns>same module instance for chaining fluent configurations</returns>
-		public DomainBuildModule WhereMessages(Predicate<Type> customFilterForMessages)
+		public ModuleForMessageDirectory WhereMessages(Predicate<Type> customFilterForMessages)
 		{
 			_scanner.WhereMessages(customFilterForMessages);
 			return this;
@@ -114,7 +114,7 @@ namespace Lokad.Cqrs.Core.Directory
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <returns>same module instance for chaining fluent configurations</returns>
-		public DomainBuildModule InAssemblyOf<T>()
+		public ModuleForMessageDirectory InAssemblyOf<T>()
 		{
 			_scanner.WithAssemblyOf<T>();
 			return this;
@@ -128,7 +128,7 @@ namespace Lokad.Cqrs.Core.Directory
 		/// <returns>
 		/// same module instance for chaining fluent configurations
 		/// </returns>
-		public DomainBuildModule InAssemblyOf<T1, T2>()
+		public ModuleForMessageDirectory InAssemblyOf<T1, T2>()
 		{
 			_scanner.WithAssemblyOf<T1>();
 			_scanner.WithAssemblyOf<T2>();
@@ -136,7 +136,7 @@ namespace Lokad.Cqrs.Core.Directory
 		}
 
 
-		public DomainBuildModule InUserAssemblies()
+		public ModuleForMessageDirectory InUserAssemblies()
 		{
 			foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
 			{
@@ -160,7 +160,7 @@ namespace Lokad.Cqrs.Core.Directory
 		/// <returns>
 		/// same module instance for chaining fluent configurations
 		/// </returns>
-		public DomainBuildModule InAssemblyOf<T1, T2, T3>()
+		public ModuleForMessageDirectory InAssemblyOf<T1, T2, T3>()
 		{
 			_scanner.WithAssemblyOf<T1>();
 			_scanner.WithAssemblyOf<T2>();
@@ -173,7 +173,7 @@ namespace Lokad.Cqrs.Core.Directory
 		/// Includes the current assembly in the discovery
 		/// </summary>
 		/// same module instance for chaining fluent configurations
-		public DomainBuildModule InCurrentAssembly()
+		public ModuleForMessageDirectory InCurrentAssembly()
 		{
 			_scanner.WithAssembly(Assembly.GetCallingAssembly());
 

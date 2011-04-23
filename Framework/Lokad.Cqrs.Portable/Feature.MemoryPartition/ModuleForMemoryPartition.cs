@@ -14,26 +14,26 @@ using Lokad.Cqrs.Core.Dispatch;
 
 namespace Lokad.Cqrs.Feature.MemoryPartition
 {
-	public sealed class MemoryPartitionModule : BuildSyntaxHelper, IModule
+	public sealed class ModuleForMemoryPartition : BuildSyntaxHelper, IModule
 	{
 		readonly string[] _memoryQueues;
 		Tuple<Type, Action<ISingleThreadMessageDispatcher>> _dispatcher;
 		readonly MessageDirectoryFilter _filter = new MessageDirectoryFilter();
 
-		public MemoryPartitionModule WhereFilter(Action<MessageDirectoryFilter> filter)
+		public ModuleForMemoryPartition WhereFilter(Action<MessageDirectoryFilter> filter)
 		{
 			filter(_filter);
 			return this;
 		}
 
 
-		public MemoryPartitionModule(string[] memoryQueues)
+		public ModuleForMemoryPartition(string[] memoryQueues)
 		{
 			_memoryQueues = memoryQueues;
 			Dispatch<DispatchEventToMultipleConsumers>(x => { });
 		}
 
-		public MemoryPartitionModule Dispatch<TDispatcher>(Action<TDispatcher> configure)
+		public ModuleForMemoryPartition Dispatch<TDispatcher>(Action<TDispatcher> configure)
 			where TDispatcher : class, ISingleThreadMessageDispatcher
 		{
 			_dispatcher = Tuple.Create(typeof (TDispatcher),

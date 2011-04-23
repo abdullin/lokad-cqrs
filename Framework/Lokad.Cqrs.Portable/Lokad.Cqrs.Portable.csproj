@@ -42,7 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Build\BuildSyntaxHelper.cs" />
-    <Compile Include="Build\AutofacBuilderForSerialization.cs" />
+    <Compile Include="Core.Serialization\ModuleForSerialization.cs" />
     <Compile Include="Build\Engine\CloudEngineBuilder.cs" />
     <Compile Include="Build\Engine\CloudEngineHost.cs" />
     <Compile Include="Build\Engine\Events\HostInitializationStarted.cs" />
@@ -51,7 +51,7 @@
     <Compile Include="Build\Engine\Events\HostStopped.cs" />
     <Compile Include="Core.Directory\ConsumerInfo.cs" />
     <Compile Include="Core.Directory\DomainAssemblyScanner.cs" />
-    <Compile Include="Core.Directory\DomainBuildModule.cs" />
+    <Compile Include="Core.Directory\ModuleForMessageDirectory.cs" />
     <Compile Include="Core.Directory\MessageDirectory.cs" />
     <Compile Include="Core.Directory\MessageDirectoryBuilder.cs" />
     <Compile Include="Core.Directory\MessageInfo.cs" />
@@ -94,7 +94,7 @@
     <Compile Include="Feature.MemoryPartition\MemoryFutureList.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryPartitionFactory.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryPartitionInbox.cs" />
-    <Compile Include="Feature.MemoryPartition\MemoryPartitionModule.cs" />
+    <Compile Include="Feature.MemoryPartition\ModuleForMemoryPartition.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryQueueWriter.cs" />
     <Compile Include="IEngineProcess.cs" />
     <Compile Include="IEnvelopeSerializer.cs" />
@@ -110,8 +110,8 @@
     <Compile Include="MessageItem.cs" />
     <Compile Include="EnvelopeReference.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Serialization\DataSerializerWithDataContracts.cs" />
-    <Compile Include="Serialization\DataContractUtil.cs" />
+    <Compile Include="Core.Serialization\DataSerializerWithDataContracts.cs" />
+    <Compile Include="Core.Serialization\DataContractUtil.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
