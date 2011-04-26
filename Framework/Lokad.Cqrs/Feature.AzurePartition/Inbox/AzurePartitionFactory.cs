@@ -62,6 +62,11 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
                         return maxDecay;
                     }
 
+                    if (l == 0)
+                    {
+                        l += 1;
+                    }
+
                     var foo = Math.Pow(2, (l - 1)/5.0)/64d*seconds;
 
                     return TimeSpan.FromSeconds(foo);

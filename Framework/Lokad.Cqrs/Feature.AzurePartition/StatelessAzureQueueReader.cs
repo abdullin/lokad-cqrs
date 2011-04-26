@@ -30,7 +30,6 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             get { return _queueName; }
         }
 
-        const int RetryCount = 4;
 
         public StatelessAzureQueueReader(
             CloudStorageAccount account,
@@ -64,6 +63,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
         {
             _queue.CreateIfNotExist();
             _cloudBlob.CreateIfNotExist();
+            
         }
 
         public GetMessageResult TryGetMessage()
@@ -71,7 +71,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             CloudQueueMessage message;
             try
             {
-                message = _queue.GetMessage();
+                message = _queue.GetMessage(TimeSpan.FromSeconds(0));
             }
             catch (Exception ex)
             {
