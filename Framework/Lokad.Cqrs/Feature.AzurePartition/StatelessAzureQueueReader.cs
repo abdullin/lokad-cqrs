@@ -83,16 +83,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             {
                 return GetMessageResult.Empty;
             }
-
-            if (message.DequeueCount > RetryCount)
-            {
-                _observer.Notify(new RetrievedPoisonMessage(_queue.Name, message.Id));
-
-                _posionQueue.Value.AddMessage(message);
-                _queue.DeleteMessage(message);
-                return GetMessageResult.Retry;
-            }
-
+            
             try
             {
                 var unpacked = DownloadPackage(message);

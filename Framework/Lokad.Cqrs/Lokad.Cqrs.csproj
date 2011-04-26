@@ -91,7 +91,6 @@
     <Compile Include="Feature.AzurePartition\Events\FailedToDeserializeMessage.cs" />
     <Compile Include="Feature.AzurePartition\Events\FailedToReadMessage.cs" />
     <Compile Include="Feature.AzurePartition\Events\MessageAcked.cs" />
-    <Compile Include="Feature.AzurePartition\Events\RetrievedPoisonMessage.cs" />
     <Compile Include="Core.Transport\GetMessageResult.cs" />
     <Compile Include="Core.Transport\GetMessageResultState.cs" />
     <Compile Include="Feature.AzurePartition\Inbox\ModuleForAzurePartition.cs" />

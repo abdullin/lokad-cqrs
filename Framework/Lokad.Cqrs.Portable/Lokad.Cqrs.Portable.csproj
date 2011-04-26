@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Build\BuildSyntaxHelper.cs" />
+    <Compile Include="Core.Dispatch\MemoryQuarantine.cs" />
     <Compile Include="Core.Outbox\EnvelopeSent.cs" />
     <Compile Include="Core.Serialization\ModuleForSerialization.cs" />
     <Compile Include="Build\Engine\CloudEngineBuilder.cs" />
@@ -90,7 +91,7 @@
     <Compile Include="Core.Outbox\CommitActionEnlistment.cs" />
     <Compile Include="Core.Outbox\DefaultMessageSender.cs" />
     <Compile Include="Core.Outbox\SendMessageModule.cs" />
-    <Compile Include="Declare.cs" />
+    <Compile Include="Define.cs" />
     <Compile Include="Feature.Logging\NullSystemObserver.cs" />
     <Compile Include="Feature.Logging\TraceSystemObserver.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryFutureList.cs" />

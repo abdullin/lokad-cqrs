@@ -18,11 +18,13 @@ namespace Lokad.Cqrs.Core.Dispatch
         readonly ISingleThreadMessageDispatcher _dispatcher;
         readonly ISystemObserver _observer;
         readonly IPartitionInbox _notifier;
+        readonly MemoryQuarantine _quarantine;
 
         public DispatcherProcess(ISystemObserver observer,
-            ISingleThreadMessageDispatcher dispatcher, IPartitionInbox notifier)
+            ISingleThreadMessageDispatcher dispatcher, IPartitionInbox notifier, MemoryQuarantine quarantine)
         {
             _dispatcher = dispatcher;
+            _quarantine = quarantine;
             _observer = observer;
             _notifier = notifier;
         }
@@ -53,19 +55,33 @@ namespace Lokad.Cqrs.Core.Dispatch
                 MessageContext context;
                 while (_notifier.TakeMessage(token, out context))
                 {
+                    var processed = false;
                     try
                     {
                         _dispatcher.DispatchMessage(context.Unpacked);
+                        processed = true;
                     }
                     catch (Exception ex)
                     {
                         _observer.Notify(new FailedToConsumeMessage(ex, context.Unpacked.EnvelopeId, context.QueueName));
-                        // not a big deal
-                        _notifier.TryNotifyNack(context);
+                        // if the code below fails, it will just cause everything to be reprocessed later
+                        if (_quarantine.Accept(context, ex))
+                        {
+                            _observer.Notify(new QuarantinedMessage(ex, context.Unpacked.EnvelopeId, context.QueueName));
+                            _notifier.AckMessage(context);
+                        }
+                        else
+                        {
+                            _notifier.TryNotifyNack(context);
+                        }
                     }
                     try
                     {
-                        _notifier.AckMessage(context);
+                        if (processed)
+                        {
+                            _notifier.AckMessage(context);
+                            _quarantine.Clear(context);
+                        }
                     }
                     catch (Exception ex)
                     {
