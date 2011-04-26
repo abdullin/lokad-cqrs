@@ -72,7 +72,14 @@ namespace Lokad.Cqrs.Core.Directory
                 throw new InvalidOperationException("Consuming method has not been defined");
 
             if (!_assemblies.Any())
-                throw new InvalidOperationException("There are no assemblies to scan");
+            {
+                var userAssemblies = AppDomain.CurrentDomain.GetAssemblies().Where(IsUserAssembly);
+                foreach (var userAssembly in userAssemblies)
+                {
+                    _assemblies.Add(userAssembly);
+                }
+            }
+            
 
             var types = _assemblies
                 .SelectMany(a => a.GetExportedTypes())
