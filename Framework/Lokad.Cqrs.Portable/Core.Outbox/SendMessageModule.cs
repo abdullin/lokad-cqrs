@@ -40,7 +40,7 @@ namespace Lokad.Cqrs.Core.Outbox
 
             if (queues.Count == 0)
             {
-                string message =
+                var message =
                     string.Format("There are no queues for the '{0}'. Did you forget to register a factory?",
                         _queueName);
                 throw new InvalidOperationException(message);

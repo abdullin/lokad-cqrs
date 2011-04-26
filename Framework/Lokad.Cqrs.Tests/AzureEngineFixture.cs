@@ -98,7 +98,7 @@ namespace Lokad.Cqrs.Tests
             var engine = new CloudEngineBuilder()
                 .RegisterInstance<IObserver<ISystemEvent>>(_events)
                 .RegisterInstance(this)
-                .AddMessageClient("memory:inda")
+                .AddMessageClient("azure-dev:inda")
                 .Azure(m => m.AddPartition("inda"))
                 .DomainIs(d => d.WhereMessages(t => identifyNested.Contains(t)).InCurrentAssembly());
 
