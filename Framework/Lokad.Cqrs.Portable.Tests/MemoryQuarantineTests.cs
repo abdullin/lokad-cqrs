@@ -1,108 +1,53 @@
 ﻿using System;
-using System.Runtime.Serialization;
-using System.Threading;
-using Lokad.Cqrs.Build.Engine;
+using Lokad.Cqrs.Core.Dispatch.Events;
 using NUnit.Framework;
+using System.Linq;
 
 namespace Lokad.Cqrs
 {
     [TestFixture]
-    public sealed class MemoryQuarantineTests
+    public sealed class MemoryQuarantineTests : EngineFixture
     {
         // ReSharper disable InconsistentNaming
 
-        #region Domain
-
-        [DataContract]
-        public sealed class Command : Define.Command
+     
+        [Test]
+        public void FailureEndsWithQuarantine()
         {
-            [DataMember]
-            public readonly int Block;
-
-            public Command(int block)
-            {
-                Block = block;
-            }
-        }
-
-        public sealed class Handler : Define.Handler<Command>
-        {
-            readonly ManualResetEventSlim _slim;
-            readonly MemoryQuarantineTests _tests;
-
-            public Handler(ManualResetEventSlim slim, MemoryQuarantineTests tests)
-            {
-                _slim = slim;
-                _tests = tests;
-            }
-
-            public void Consume(Command message)
-            {
-                if (_tests.Counter == 4)
+            HandleString(x =>
                 {
-                    _slim.Set();
-                }
-                else
-                {
-                    _tests.Counter += 1;
                     throw new InvalidOperationException();
-                }
-                
-            }
-        }
+                });
 
-        
+            Events
+                .OfType<QuarantinedMessage>()
+                .Subscribe(cm => StopAndComplete());
 
-        #endregion
+            RunEngineTillStopped(() => SendString("do"));
 
-        public int Counter = 0;
-
-        void TestConfiguration(Action<CloudEngineBuilder> config)
-        {
-            var h = new ManualResetEventSlim();
-
-            var engine = new CloudEngineBuilder()
-                .RegisterInstance(h)
-                .RegisterInstance(this)
-                .DomainIs(d => d.WhereMessagesAre<Command>());
-
-            config(engine);
-
-            using (var eng = engine.Build())
-            using (var t = new CancellationTokenSource())
-            {
-                eng.Start(t.Token);
-                eng.Resolve<IMessageSender>().Send(new Command(0));
-                var signaled = h.Wait(TimeSpan.FromSeconds(5), t.Token);
-                Assert.IsTrue(signaled);
-            }
+            Assert.IsTrue(TestCompleted);
         }
 
         [Test]
-        public void SimpleRetry()
+        public void FewFailuresDoNotQuarantine()
         {
-            TestConfiguration(x => x
-                .AddMessageClient("memory:do")
-                .AddMemoryPartition("do"));
-        }
+            var counter = 0;
+            HandleString(x =>
+                {
+                    if (++counter != 4)
+                        throw new InvalidOperationException();
+                    StopAndComplete();
+                });
 
-        [Test]
-        public void Direct()
-        {
-            TestConfiguration(x => x
-                .AddMessageClient("memory:in")
-                .AddMemoryPartition("in"));
-        }
+            var captured = 0;
+            Events
+                .Where(t => t is FailedToConsumeMessage)
+                .Subscribe(t => captured ++);
 
-        [Test]
-        public void RouterChain()
-        {
-            TestConfiguration(x => x
-                .AddMessageClient("memory:in")
-                .AddMemoryRouter("in",
-                    me => (((Command)me.Items[0].Content).Block % 2) == 0 ? "memory:do1" : "memory:do2")
-                .AddMemoryPartition("do1")
-                .AddMemoryPartition("do2"));
+            RunEngineTillStopped(() => SendString("do"));
+
+            Assert.IsTrue(TestCompleted);
+            Assert.AreEqual(3, captured);
         }
     }
 }

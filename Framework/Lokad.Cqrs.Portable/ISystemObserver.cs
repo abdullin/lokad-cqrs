@@ -5,6 +5,8 @@
 
 #endregion
 
+using System;
+
 namespace Lokad.Cqrs
 {
     /// <summary>

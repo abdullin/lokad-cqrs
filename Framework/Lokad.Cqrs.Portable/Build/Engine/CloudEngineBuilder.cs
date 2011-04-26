@@ -65,6 +65,12 @@ namespace Lokad.Cqrs.Build.Engine
             return this;
         }
 
+        public CloudEngineBuilder RegisterSystemObserver<TObserver>() where TObserver : ISystemObserver
+        {
+            Builder.RegisterType<TObserver>().SingleInstance().As<ISystemObserver>();
+            return this;
+        }
+
 
         public CloudEngineBuilder AddMemoryPartition(params string[] queues)
         {
@@ -128,7 +134,7 @@ namespace Lokad.Cqrs.Build.Engine
         {
             // nonconditional registrations
             // System presets
-            RegisterSystemObserver(new TraceSystemObserver());
+            RegisterSystemObserver<DefaultSystemObserver>();
 
             Builder.RegisterType<DispatcherProcess>();
             Builder.RegisterType<MessageDuplicationManager>().SingleInstance();

@@ -31,7 +31,7 @@ namespace Lokad.Cqrs.Build.Client
 
             Serialization(x => x.AutoDetectSerializer());
 
-            Builder.RegisterInstance(new TraceSystemObserver());
+            Builder.RegisterType<DefaultSystemObserver>().SingleInstance();
 
             Builder.RegisterType<AzureWriteQueueFactory>().As<IQueueWriterFactory>().SingleInstance();
             Builder.RegisterType<MemoryPartitionFactory>().As<IQueueWriterFactory>().SingleInstance();

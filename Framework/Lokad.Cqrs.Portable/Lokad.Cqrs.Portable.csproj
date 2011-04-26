@@ -93,7 +93,7 @@
     <Compile Include="Core.Outbox\SendMessageModule.cs" />
     <Compile Include="Define.cs" />
     <Compile Include="Feature.Logging\NullSystemObserver.cs" />
-    <Compile Include="Feature.Logging\TraceSystemObserver.cs" />
+    <Compile Include="Feature.Logging\DefaultSystemObserver.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryFutureList.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryPartitionFactory.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryPartitionInbox.cs" />
