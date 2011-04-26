@@ -64,12 +64,7 @@ namespace Lokad.Cqrs
 
             var engine = new CloudEngineBuilder()
                 .RegisterInstance(h)
-                .DomainIs(d =>
-                    {
-                        d.InCurrentAssembly();
-                        d.WithDefaultInterfaces();
-                        d.WhereMessagesAre<Message1>();
-                    });
+                .DomainIs(d => d.WhereMessagesAre<Message1>());
 
             config(engine);
 

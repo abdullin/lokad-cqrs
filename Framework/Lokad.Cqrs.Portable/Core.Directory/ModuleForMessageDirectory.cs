@@ -21,6 +21,7 @@ namespace Lokad.Cqrs.Core.Directory
     {
         readonly DomainAssemblyScanner _scanner = new DomainAssemblyScanner();
         readonly ContainerBuilder _builder;
+        bool _messageSignatureSpecified = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ModuleForMessageDirectory"/> class.
@@ -40,6 +41,7 @@ namespace Lokad.Cqrs.Core.Directory
             WhereMessagesAre<IMessage>();
             WhereConsumersAre<IConsumeMessage>();
 
+            _messageSignatureSpecified = true;
             return this;
         }
 
@@ -52,6 +54,7 @@ namespace Lokad.Cqrs.Core.Directory
         public ModuleForMessageDirectory ConsumerMethodSample<THandler>(Expression<Action<THandler>> expression)
         {
             _scanner.ConsumerMethodSample(expression);
+            _messageSignatureSpecified = true;
             return this;
         }
 
@@ -183,6 +186,11 @@ namespace Lokad.Cqrs.Core.Directory
 
         void IModule.Configure(IComponentRegistry componentRegistry)
         {
+            if (!_messageSignatureSpecified)
+            {
+                WithDefaultInterfaces();
+            }
+
             var mappings = _scanner.Build();
 
             var directoryBuilder = new MessageDirectoryBuilder(mappings, _scanner.ConsumingMethod.Name);
