@@ -55,7 +55,7 @@ namespace Lokad.Cqrs
 
         public bool TestCompleted { get; set; }
 
-        public void StopAndComplete()
+        public void CompleteTestAndStopEngine()
         {
             Trace.WriteLine("completing test");
             TestCompleted = true;
@@ -67,7 +67,7 @@ namespace Lokad.Cqrs
             get { return _host.Resolve<IMessageSender>(); }
         }
 
-        protected void HandleString(Action<string> data)
+        protected void EnlistHandler(Action<string> data)
         {
             _whenConfiguring += builder => builder.RegisterInstance(data);
         }

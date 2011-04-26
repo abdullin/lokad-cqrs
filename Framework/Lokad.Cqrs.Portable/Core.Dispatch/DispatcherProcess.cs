@@ -17,16 +17,16 @@ namespace Lokad.Cqrs.Core.Dispatch
     {
         readonly ISingleThreadMessageDispatcher _dispatcher;
         readonly ISystemObserver _observer;
-        readonly IPartitionInbox _notifier;
+        readonly IPartitionInbox _inbox;
         readonly MemoryQuarantine _quarantine;
 
         public DispatcherProcess(ISystemObserver observer,
-            ISingleThreadMessageDispatcher dispatcher, IPartitionInbox notifier, MemoryQuarantine quarantine)
+            ISingleThreadMessageDispatcher dispatcher, IPartitionInbox inbox, MemoryQuarantine quarantine)
         {
             _dispatcher = dispatcher;
             _quarantine = quarantine;
             _observer = observer;
-            _notifier = notifier;
+            _inbox = inbox;
         }
 
         public void Dispose()
@@ -36,7 +36,7 @@ namespace Lokad.Cqrs.Core.Dispatch
 
         public void Initialize()
         {
-            _notifier.Init();
+            _inbox.Init();
         }
 
         readonly CancellationTokenSource _disposal = new CancellationTokenSource();
@@ -53,7 +53,7 @@ namespace Lokad.Cqrs.Core.Dispatch
             {
                 var token = source.Token;
                 MessageContext context;
-                while (_notifier.TakeMessage(token, out context))
+                while (_inbox.TakeMessage(token, out context))
                 {
                     var processed = false;
                     try
@@ -68,18 +68,18 @@ namespace Lokad.Cqrs.Core.Dispatch
                         if (_quarantine.Accept(context, ex))
                         {
                             _observer.Notify(new QuarantinedMessage(ex, context.Unpacked.EnvelopeId, context.QueueName));
-                            _notifier.AckMessage(context);
+                            _inbox.AckMessage(context);
                         }
                         else
                         {
-                            _notifier.TryNotifyNack(context);
+                            _inbox.TryNotifyNack(context);
                         }
                     }
                     try
                     {
                         if (processed)
                         {
-                            _notifier.AckMessage(context);
+                            _inbox.AckMessage(context);
                             _quarantine.Clear(context);
                         }
                     }

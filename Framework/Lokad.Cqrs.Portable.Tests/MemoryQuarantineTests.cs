@@ -14,16 +14,20 @@ namespace Lokad.Cqrs
         [Test]
         public void FailureEndsWithQuarantine()
         {
-            HandleString(x =>
+            EnlistHandler(x =>
                 {
-                    throw new InvalidOperationException();
+                    throw new InvalidOperationException("Fail: "+x);
                 });
 
             Events
                 .OfType<QuarantinedMessage>()
-                .Subscribe(cm => StopAndComplete());
+                .Subscribe(cm =>
+                    {
+                        Assert.AreEqual("Fail: try", cm.LastException.Message);
+                        CompleteTestAndStopEngine();
+                    });
 
-            RunEngineTillStopped(() => SendString("do"));
+            RunEngineTillStopped(() => SendString("try"));
 
             Assert.IsTrue(TestCompleted);
         }
@@ -32,11 +36,11 @@ namespace Lokad.Cqrs
         public void FewFailuresDoNotQuarantine()
         {
             var counter = 0;
-            HandleString(x =>
+            EnlistHandler(x =>
                 {
                     if (++counter != 4)
                         throw new InvalidOperationException();
-                    StopAndComplete();
+                    CompleteTestAndStopEngine();
                 });
 
             var captured = 0;
