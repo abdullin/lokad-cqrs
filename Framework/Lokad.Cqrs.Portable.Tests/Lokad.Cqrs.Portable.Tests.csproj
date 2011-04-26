@@ -50,7 +50,7 @@
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EngineFixture.cs" />
+    <Compile Include="MemoryEngineFixture.cs" />
     <Compile Include="MemoryConfigurationTests.cs" />
     <Compile Include="MemoryQuarantineTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

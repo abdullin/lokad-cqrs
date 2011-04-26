@@ -7,6 +7,7 @@
 
 using System;
 using System.Net;
+using System.Text.RegularExpressions;
 using Autofac;
 using Autofac.Core;
 using Lokad.Cqrs.Core.Outbox;
@@ -31,6 +32,8 @@ namespace Lokad.Cqrs.Build
         readonly ContainerBuilder _builder = new ContainerBuilder();
 
         Action<CloudBlobClient> _configureBlobClient = client => { };
+
+        static Regex _queueName = new Regex("^[A-Za-z][A-Za-z0-9]{2,62}", RegexOptions.Compiled);
 
 
         /// <summary>
@@ -108,6 +111,8 @@ namespace Lokad.Cqrs.Build
             {
                 Assert(!ContainsQueuePrefix(queue),
                     "Queue '{0}' should not contain queue prefix, since it's memory already", queue);
+
+                Assert(_queueName.IsMatch(queue), "Queue name should match regex '{0}'", _queueName.ToString());
             }
             var module = new ModuleForAzurePartition(queues);
 

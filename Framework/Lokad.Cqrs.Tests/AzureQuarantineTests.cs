@@ -1,22 +1,22 @@
 ﻿using System;
+using System.Linq;
 using Lokad.Cqrs.Core.Dispatch.Events;
 using NUnit.Framework;
-using System.Linq;
 
-namespace Lokad.Cqrs
+namespace Lokad.Cqrs.Tests
 {
     [TestFixture]
-    public sealed class MemoryQuarantineTests : MemoryEngineFixture
+    public sealed class AzureQuarantineTests : AzureEngineFixture
     {
         // ReSharper disable InconsistentNaming
 
-     
+
         [Test]
         public void FailureEndsWithQuarantine()
         {
             EnlistHandler(x =>
                 {
-                    throw new InvalidOperationException("Fail: "+x);
+                    throw new InvalidOperationException("Fail: " + x);
                 });
 
             Events
@@ -46,7 +46,7 @@ namespace Lokad.Cqrs
             var captured = 0;
             Events
                 .Where(t => t is FailedToConsumeMessage)
-                .Subscribe(t => captured ++);
+                .Subscribe(t => captured++);
 
             RunEngineTillStopped(() => SendString("do"));
 

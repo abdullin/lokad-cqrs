@@ -17,7 +17,7 @@ using NUnit.Framework;
 
 namespace Lokad.Cqrs
 {
-    public abstract class EngineFixture
+    public abstract class MemoryEngineFixture
     {
         CancellationTokenSource _source;
         CloudEngineHost _host;
@@ -89,7 +89,7 @@ namespace Lokad.Cqrs
         public void RunEngineTillStopped(Action whenStarted)
         {
             var identifyNested =
-                new[] {typeof (EngineFixture), GetType()}
+                new[] {typeof (MemoryEngineFixture), GetType()}
                     .SelectMany(t => t.GetNestedTypes())
                     .Where(t => typeof (IMessage).IsAssignableFrom(t))
                     .Where(t => !t.IsAbstract)
