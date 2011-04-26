@@ -7,9 +7,9 @@
 
 namespace Lokad.Cqrs.Core.Envelope
 {
-	public static class EnvelopeAttributes
-	{
-		public const string CreatedUtc = "CreatedUtc";
-		public const string Sender = "Sender";
-	}
+    public static class EnvelopeAttributes
+    {
+        public const string CreatedUtc = "CreatedUtc";
+        public const string Sender = "Sender";
+    }
 }

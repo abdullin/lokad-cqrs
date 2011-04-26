@@ -12,66 +12,66 @@ using Lokad.Cqrs.Core.Directory;
 
 namespace Lokad.Cqrs.Core.Dispatch
 {
-	///<summary>
-	/// Dispatcher that sends a single event to multiple consumers within this worker.
-	/// No transactions are used here, we keep track of duplication.
-	///</summary>
-	public sealed class DispatchEventToMultipleConsumers : ISingleThreadMessageDispatcher
-	{
-		readonly ILifetimeScope _container;
-		readonly MessageDirectory _directory;
-		readonly IDictionary<Type, Type[]> _dispatcher = new Dictionary<Type, Type[]>();
-		readonly MessageDuplicationMemory _dispatchMemory;
+    ///<summary>
+    /// Dispatcher that sends a single event to multiple consumers within this worker.
+    /// No transactions are used here, we keep track of duplication.
+    ///</summary>
+    public sealed class DispatchEventToMultipleConsumers : ISingleThreadMessageDispatcher
+    {
+        readonly ILifetimeScope _container;
+        readonly MessageDirectory _directory;
+        readonly IDictionary<Type, Type[]> _dispatcher = new Dictionary<Type, Type[]>();
+        readonly MessageDuplicationMemory _dispatchMemory;
 
-		public DispatchEventToMultipleConsumers(ILifetimeScope container, MessageDirectory directory,
-			MessageDuplicationManager memory)
-		{
-			_container = container;
-			_directory = directory;
-			_dispatchMemory = memory.GetOrAdd(this);
-		}
+        public DispatchEventToMultipleConsumers(ILifetimeScope container, MessageDirectory directory,
+            MessageDuplicationManager memory)
+        {
+            _container = container;
+            _directory = directory;
+            _dispatchMemory = memory.GetOrAdd(this);
+        }
 
-		public void Init()
-		{
-			foreach (var message in _directory.Messages)
-			{
-				if (message.AllConsumers.Length > 0)
-				{
-					_dispatcher.Add(message.MessageType, message.AllConsumers);
-				}
-			}
-		}
+        public void Init()
+        {
+            foreach (var message in _directory.Messages)
+            {
+                if (message.AllConsumers.Length > 0)
+                {
+                    _dispatcher.Add(message.MessageType, message.AllConsumers);
+                }
+            }
+        }
 
-		public void DispatchMessage(MessageEnvelope unpacked)
-		{
-			if (_dispatchMemory.DoWeRemember(unpacked.EnvelopeId))
-				return;
+        public void DispatchMessage(MessageEnvelope unpacked)
+        {
+            if (_dispatchMemory.DoWeRemember(unpacked.EnvelopeId))
+                return;
 
-			if (unpacked.Items.Length != 1)
-				throw new InvalidOperationException(
-					"Batch message arrived to the shared scope. Are you batching events or dispatching commands to shared scope?");
+            if (unpacked.Items.Length != 1)
+                throw new InvalidOperationException(
+                    "Batch message arrived to the shared scope. Are you batching events or dispatching commands to shared scope?");
 
-			// we get failure if one of the subscribers fails
-			Type[] consumerTypes;
+            // we get failure if one of the subscribers fails
+            Type[] consumerTypes;
 
-			var item = unpacked.Items[0];
-			if (_dispatcher.TryGetValue(item.MappedType, out consumerTypes))
-			{
-				using (var unit = _container.BeginLifetimeScope(DispatcherUtil.UnitOfWorkTag))
-				{
-					foreach (var consumerType in consumerTypes)
-					{
-						using (var scope = unit.BeginLifetimeScope(DispatcherUtil.ScopeTag))
-						{
-							var consumer = scope.Resolve(consumerType);
-							_directory.InvokeConsume(consumer, item.Content);
-						}
-					}
-				}
-			}
-			// else -> we don't have consumers. It's OK for the event
+            var item = unpacked.Items[0];
+            if (_dispatcher.TryGetValue(item.MappedType, out consumerTypes))
+            {
+                using (var unit = _container.BeginLifetimeScope(DispatcherUtil.UnitOfWorkTag))
+                {
+                    foreach (var consumerType in consumerTypes)
+                    {
+                        using (var scope = unit.BeginLifetimeScope(DispatcherUtil.ScopeTag))
+                        {
+                            var consumer = scope.Resolve(consumerType);
+                            _directory.InvokeConsume(consumer, item.Content);
+                        }
+                    }
+                }
+            }
+            // else -> we don't have consumers. It's OK for the event
 
-			_dispatchMemory.Memorize(unpacked.EnvelopeId);
-		}
-	}
+            _dispatchMemory.Memorize(unpacked.EnvelopeId);
+        }
+    }
 }

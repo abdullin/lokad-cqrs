@@ -12,59 +12,60 @@ using Lokad.Cqrs.Core.Inbox;
 
 namespace Lokad.Cqrs.Feature.MemoryPartition
 {
-	public sealed class MemoryPartitionInbox : IPartitionInbox
-	{
-		readonly BlockingCollection<MessageEnvelope>[] _queues;
-		readonly string[] _names;
-		readonly MemoryFutureList[] _future;
+    public sealed class MemoryPartitionInbox : IPartitionInbox
+    {
+        readonly BlockingCollection<MessageEnvelope>[] _queues;
+        readonly string[] _names;
+        readonly MemoryFutureList[] _future;
 
-		public MemoryPartitionInbox(BlockingCollection<MessageEnvelope>[] queues, string[] names, MemoryFutureList[] future)
-		{
-			_queues = queues;
-			_names = names;
-			_future = future;
-		}
+        public MemoryPartitionInbox(BlockingCollection<MessageEnvelope>[] queues, string[] names,
+            MemoryFutureList[] future)
+        {
+            _queues = queues;
+            _names = names;
+            _future = future;
+        }
 
-		public void Init()
-		{
-		}
+        public void Init()
+        {
+        }
 
-		public void AckMessage(MessageContext message)
-		{
-			// do nothing
-		}
+        public void AckMessage(MessageContext message)
+        {
+            // do nothing
+        }
 
-		public bool TakeMessage(CancellationToken token, out MessageContext context)
-		{
-			MessageEnvelope envelope;
+        public bool TakeMessage(CancellationToken token, out MessageContext context)
+        {
+            MessageEnvelope envelope;
 
-			while (!token.IsCancellationRequested)
-			{
-				// if incoming message is delayed and in future -> push it to the timer queue.
-				// timer will be responsible for publishing back.
+            while (!token.IsCancellationRequested)
+            {
+                // if incoming message is delayed and in future -> push it to the timer queue.
+                // timer will be responsible for publishing back.
 
-				var result = BlockingCollection<MessageEnvelope>.TakeFromAny(_queues, out envelope);
-				if (result >= 0)
-				{
-					if (envelope.DeliverOn > DateTimeOffset.UtcNow)
-					{
-						// future message
-						_future[result].PutMessage(envelope);
-						continue;
-					}
-					context = new MessageContext(result, envelope, _names[result]);
-					return true;
-				}
-			}
-			context = null;
-			return false;
-		}
+                var result = BlockingCollection<MessageEnvelope>.TakeFromAny(_queues, out envelope);
+                if (result >= 0)
+                {
+                    if (envelope.DeliverOn > DateTimeOffset.UtcNow)
+                    {
+                        // future message
+                        _future[result].PutMessage(envelope);
+                        continue;
+                    }
+                    context = new MessageContext(result, envelope, _names[result]);
+                    return true;
+                }
+            }
+            context = null;
+            return false;
+        }
 
-		public void TryNotifyNack(MessageContext context)
-		{
-			var id = (int) context.TransportMessage;
+        public void TryNotifyNack(MessageContext context)
+        {
+            var id = (int) context.TransportMessage;
 
-			_queues[id].Add(context.Unpacked);
-		}
-	}
+            _queues[id].Add(context.Unpacked);
+        }
+    }
 }

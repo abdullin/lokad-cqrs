@@ -14,70 +14,70 @@ using Lokad.Cqrs.Core.Outbox;
 
 namespace Lokad.Cqrs.Feature.MemoryPartition
 {
-	public sealed class MemoryPartitionFactory : IQueueWriterFactory, IEngineProcess
-	{
-		readonly ConcurrentDictionary<string, BlockingCollection<MessageEnvelope>> _delivery =
-			new ConcurrentDictionary<string, BlockingCollection<MessageEnvelope>>();
+    public sealed class MemoryPartitionFactory : IQueueWriterFactory, IEngineProcess
+    {
+        readonly ConcurrentDictionary<string, BlockingCollection<MessageEnvelope>> _delivery =
+            new ConcurrentDictionary<string, BlockingCollection<MessageEnvelope>>();
 
-		readonly ConcurrentDictionary<string, MemoryFutureList> _pending =
-			new ConcurrentDictionary<string, MemoryFutureList>();
+        readonly ConcurrentDictionary<string, MemoryFutureList> _pending =
+            new ConcurrentDictionary<string, MemoryFutureList>();
 
 
-		public bool TryGetWriteQueue(string name, out IQueueWriter writer)
-		{
-			const string prefix = "memory:";
-			if (name.StartsWith(prefix, StringComparison.InvariantCultureIgnoreCase))
-			{
-				var cleaned = name.Remove(0, prefix.Length).Trim();
-				var queue = _delivery.GetOrAdd(cleaned, s => new BlockingCollection<MessageEnvelope>());
-				writer = new MemoryQueueWriter(queue);
-				return true;
-			}
-			writer = null;
-			return false;
-		}
+        public bool TryGetWriteQueue(string name, out IQueueWriter writer)
+        {
+            const string prefix = "memory:";
+            if (name.StartsWith(prefix, StringComparison.InvariantCultureIgnoreCase))
+            {
+                var cleaned = name.Remove(0, prefix.Length).Trim();
+                var queue = _delivery.GetOrAdd(cleaned, s => new BlockingCollection<MessageEnvelope>());
+                writer = new MemoryQueueWriter(queue);
+                return true;
+            }
+            writer = null;
+            return false;
+        }
 
-		public MemoryPartitionInbox GetMemoryInbox(string[] queueNames)
-		{
-			var queues = queueNames
-				.Select(n => _delivery.GetOrAdd(n, s => new BlockingCollection<MessageEnvelope>()))
-				.ToArray();
+        public MemoryPartitionInbox GetMemoryInbox(string[] queueNames)
+        {
+            var queues = queueNames
+                .Select(n => _delivery.GetOrAdd(n, s => new BlockingCollection<MessageEnvelope>()))
+                .ToArray();
 
-			var pending = queueNames
-				.Select(n => _pending.GetOrAdd(n, s => new MemoryFutureList()))
-				.ToArray();
+            var pending = queueNames
+                .Select(n => _pending.GetOrAdd(n, s => new MemoryFutureList()))
+                .ToArray();
 
-			return new MemoryPartitionInbox(queues, queueNames, pending);
-		}
+            return new MemoryPartitionInbox(queues, queueNames, pending);
+        }
 
-		public void Dispose()
-		{
-		}
+        public void Dispose()
+        {
+        }
 
-		public void Initialize()
-		{
-		}
+        public void Initialize()
+        {
+        }
 
-		public Task Start(CancellationToken token)
-		{
-			return Task.Factory.StartNew(() =>
-				{
-					while (!token.IsCancellationRequested)
-					{
-						foreach (var list in _pending)
-						{
-							MessageEnvelope envelope;
-							while (list.Value.TakePendingMessage(out envelope))
-							{
-								_delivery
-									.GetOrAdd(list.Key, n => new BlockingCollection<MessageEnvelope>())
-									.Add(envelope);
-							}
-						}
+        public Task Start(CancellationToken token)
+        {
+            return Task.Factory.StartNew(() =>
+                {
+                    while (!token.IsCancellationRequested)
+                    {
+                        foreach (var list in _pending)
+                        {
+                            MessageEnvelope envelope;
+                            while (list.Value.TakePendingMessage(out envelope))
+                            {
+                                _delivery
+                                    .GetOrAdd(list.Key, n => new BlockingCollection<MessageEnvelope>())
+                                    .Add(envelope);
+                            }
+                        }
 
-						token.WaitHandle.WaitOne(TimeSpan.FromSeconds(1));
-					}
-				});
-		}
-	}
+                        token.WaitHandle.WaitOne(TimeSpan.FromSeconds(1));
+                    }
+                });
+        }
+    }
 }

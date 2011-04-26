@@ -12,24 +12,24 @@ using Lokad.Cqrs.Core.Directory;
 
 namespace Lokad.Cqrs.Core.Dispatch
 {
-	static class DispatcherUtil
-	{
-		public const string UnitOfWorkTag = "UnitOfWork";
-		public const string ScopeTag = "Scope";
+    static class DispatcherUtil
+    {
+        public const string UnitOfWorkTag = "UnitOfWork";
+        public const string ScopeTag = "Scope";
 
-		public static void ThrowIfCommandHasMultipleConsumers(IEnumerable<MessageInfo> commands)
-		{
-			var multipleConsumers = commands
-				.Where(c => c.AllConsumers.Length > 1)
-				.Select(c => c.MessageType.FullName);
+        public static void ThrowIfCommandHasMultipleConsumers(IEnumerable<MessageInfo> commands)
+        {
+            var multipleConsumers = commands
+                .Where(c => c.AllConsumers.Length > 1)
+                .Select(c => c.MessageType.FullName);
 
-			if (multipleConsumers.Any())
-			{
-				var joined = string.Join("; ", multipleConsumers.ToArray());
+            if (multipleConsumers.Any())
+            {
+                var joined = string.Join("; ", multipleConsumers.ToArray());
 
-				throw new InvalidOperationException(
-					"These messages have multiple consumers. Did you intend to declare them as events? " + joined);
-			}
-		}
-	}
+                throw new InvalidOperationException(
+                    "These messages have multiple consumers. Did you intend to declare them as events? " + joined);
+            }
+        }
+    }
 }

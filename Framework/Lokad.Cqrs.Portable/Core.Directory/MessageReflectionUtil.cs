@@ -12,35 +12,35 @@ using System.Reflection;
 
 namespace Lokad.Cqrs.Core.Directory
 {
-	static class MessageReflectionUtil
-	{
-		public static MethodInfo ExpressConsumer<THandler>(Expression<Action<THandler>> expression)
-		{
-			if (expression == null) throw new ArgumentNullException("expression");
+    static class MessageReflectionUtil
+    {
+        public static MethodInfo ExpressConsumer<THandler>(Expression<Action<THandler>> expression)
+        {
+            if (expression == null) throw new ArgumentNullException("expression");
 
-			if (expression.Body.NodeType != ExpressionType.Call)
-				throw new ArgumentException("Expected 'Call' expression.");
-
-
-			if (false == typeof (THandler).IsGenericType)
-				throw new InvalidOperationException("Type should be a generic like 'IConsumeMessage<IMessage>'");
-
-			var generic = typeof (THandler).GetGenericTypeDefinition();
+            if (expression.Body.NodeType != ExpressionType.Call)
+                throw new ArgumentException("Expected 'Call' expression.");
 
 
-			var methodInfo = ((MethodCallExpression) expression.Body).Method;
+            if (false == typeof (THandler).IsGenericType)
+                throw new InvalidOperationException("Type should be a generic like 'IConsumeMessage<IMessage>'");
 
-			var parameters = methodInfo.GetParameters();
-			if ((parameters.Length != 1)) //|| (parameters[0].ParameterType != typeof (string))
-				throw new InvalidOperationException("Expression should consume object like: 'i => i.Consume(null)'");
+            var generic = typeof (THandler).GetGenericTypeDefinition();
 
-			var method = generic
-				.GetMethods()
-				.Where(mi => mi.Name == methodInfo.Name)
-				.Where(mi => mi.GetParameters().Length == 1)
-				.Where(mi => mi.ContainsGenericParameters)
-				.First();
-			return method;
-		}
-	}
+
+            var methodInfo = ((MethodCallExpression) expression.Body).Method;
+
+            var parameters = methodInfo.GetParameters();
+            if ((parameters.Length != 1)) //|| (parameters[0].ParameterType != typeof (string))
+                throw new InvalidOperationException("Expression should consume object like: 'i => i.Consume(null)'");
+
+            var method = generic
+                .GetMethods()
+                .Where(mi => mi.Name == methodInfo.Name)
+                .Where(mi => mi.GetParameters().Length == 1)
+                .Where(mi => mi.ContainsGenericParameters)
+                .First();
+            return method;
+        }
+    }
 }

@@ -11,45 +11,45 @@ using Microsoft.WindowsAzure.ServiceRuntime;
 
 namespace Lokad.Cqrs.Build
 {
-	/// <summary>
-	/// Settings provider built on top of the Windows Azure
-	/// </summary>
-	public sealed class CloudSettingsProvider
-	{
-		static readonly bool HasCloudEnvironment;
+    /// <summary>
+    /// Settings provider built on top of the Windows Azure
+    /// </summary>
+    public sealed class CloudSettingsProvider
+    {
+        static readonly bool HasCloudEnvironment;
 
-		static CloudSettingsProvider()
-		{
-			try
-			{
-				if (RoleEnvironment.IsAvailable)
-					HasCloudEnvironment = true;
-			}
-			catch (RoleEnvironmentException)
-			{
-				// no environment
-			}
-		}
+        static CloudSettingsProvider()
+        {
+            try
+            {
+                if (RoleEnvironment.IsAvailable)
+                    HasCloudEnvironment = true;
+            }
+            catch (RoleEnvironmentException)
+            {
+                // no environment
+            }
+        }
 
-		public Maybe<string> GetString(string key)
-		{
-			string result = null;
-			if (HasCloudEnvironment)
-			{
-				try
-				{
-					result = RoleEnvironment.GetConfigurationSettingValue(key);
-				}
-				catch (RoleEnvironmentException)
-				{
-					// no setting in dev?
-				}
-			}
-			if (string.IsNullOrEmpty(result))
-			{
-				result = ConfigurationManager.AppSettings[key];
-			}
-			return string.IsNullOrEmpty(result) ? Maybe<string>.Empty : result;
-		}
-	}
+        public Maybe<string> GetString(string key)
+        {
+            string result = null;
+            if (HasCloudEnvironment)
+            {
+                try
+                {
+                    result = RoleEnvironment.GetConfigurationSettingValue(key);
+                }
+                catch (RoleEnvironmentException)
+                {
+                    // no setting in dev?
+                }
+            }
+            if (string.IsNullOrEmpty(result))
+            {
+                result = ConfigurationManager.AppSettings[key];
+            }
+            return string.IsNullOrEmpty(result) ? Maybe<string>.Empty : result;
+        }
+    }
 }

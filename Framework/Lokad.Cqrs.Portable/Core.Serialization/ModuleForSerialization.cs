@@ -12,38 +12,38 @@ using Lokad.Cqrs.Core.Envelope;
 
 namespace Lokad.Cqrs.Core.Serialization
 {
-	public sealed class ModuleForSerialization : BuildSyntaxHelper, IModule
-	{
-		readonly ContainerBuilder _builder = new ContainerBuilder();
+    public sealed class ModuleForSerialization : BuildSyntaxHelper, IModule
+    {
+        readonly ContainerBuilder _builder = new ContainerBuilder();
 
-		public void RegisterDataSerializer<TSerializer>() where TSerializer : IDataSerializer
-		{
-			_builder
-				.RegisterType<TSerializer>()
-				.As<IDataSerializer>()
-				.SingleInstance();
-		}
+        public void RegisterDataSerializer<TSerializer>() where TSerializer : IDataSerializer
+        {
+            _builder
+                .RegisterType<TSerializer>()
+                .As<IDataSerializer>()
+                .SingleInstance();
+        }
 
-		public void RegisterEnvelopeSerializer<TEnvelopeSerializer>() where TEnvelopeSerializer : IEnvelopeSerializer
-		{
-			_builder
-				.RegisterType<TEnvelopeSerializer>()
-				.As<IEnvelopeSerializer>()
-				.SingleInstance();
-		}
+        public void RegisterEnvelopeSerializer<TEnvelopeSerializer>() where TEnvelopeSerializer : IEnvelopeSerializer
+        {
+            _builder
+                .RegisterType<TEnvelopeSerializer>()
+                .As<IEnvelopeSerializer>()
+                .SingleInstance();
+        }
 
-		public void UseDataContractSerializer()
-		{
-			RegisterDataSerializer<DataSerializerWithDataContracts>();
-			RegisterEnvelopeSerializer<EnvelopeSerializerWithDataContracts>();
-		}
+        public void UseDataContractSerializer()
+        {
+            RegisterDataSerializer<DataSerializerWithDataContracts>();
+            RegisterEnvelopeSerializer<EnvelopeSerializerWithDataContracts>();
+        }
 
-		public void Configure(IComponentRegistry componentRegistry)
-		{
-			_builder.RegisterType<EnvelopeStreamer>().As<IEnvelopeStreamer>()
-				.SingleInstance();
+        public void Configure(IComponentRegistry componentRegistry)
+        {
+            _builder.RegisterType<EnvelopeStreamer>().As<IEnvelopeStreamer>()
+                .SingleInstance();
 
-			_builder.Update(componentRegistry);
-		}
-	}
+            _builder.Update(componentRegistry);
+        }
+    }
 }

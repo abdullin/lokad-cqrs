@@ -1,4 +1,11 @@
-﻿using System;
+﻿#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
+
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
+using System;
 using System.Runtime.Serialization;
 using System.Threading;
 using Lokad.Cqrs.Build.Engine;
@@ -7,100 +14,101 @@ using NUnit.Framework;
 
 namespace Lokad.Cqrs
 {
-	[TestFixture]
-	public sealed class MemoryConfigurationTests
-	{
-		// ReSharper disable InconsistentNaming
+    [TestFixture]
+    public sealed class MemoryConfigurationTests
+    {
+        // ReSharper disable InconsistentNaming
 
-		#region Domain
-		[DataContract]
-		public sealed class Message1 : IMessage
-		{
-			[DataMember]
-			public readonly int Block;
+        #region Domain
 
-			public Message1(int block)
-			{
-				Block = block;
-			}
-		}
+        [DataContract]
+        public sealed class Message1 : IMessage
+        {
+            [DataMember] public readonly int Block;
 
-		public sealed class Consumer : IConsume<Message1>
-		{
-			readonly IMessageSender _sender;
-			readonly ManualResetEventSlim _slim;
+            public Message1(int block)
+            {
+                Block = block;
+            }
+        }
 
-			public Consumer(IMessageSender sender, ManualResetEventSlim slim)
-			{
-				_sender = sender;
-				_slim = slim;
-			}
+        public sealed class Consumer : IConsume<Message1>
+        {
+            readonly IMessageSender _sender;
+            readonly ManualResetEventSlim _slim;
 
-			public void Consume(Message1 message)
-			{
-				if (message.Block < 5)
-				{
-					_sender.Send(new Message1(message.Block + 1));
-				}
-				else
-				{
-					_slim.Set();
-				}
-			}
-		}
+            public Consumer(IMessageSender sender, ManualResetEventSlim slim)
+            {
+                _sender = sender;
+                _slim = slim;
+            }
 
-		#endregion
+            public void Consume(Message1 message)
+            {
+                if (message.Block < 5)
+                {
+                    _sender.Send(new Message1(message.Block + 1));
+                }
+                else
+                {
+                    _slim.Set();
+                }
+            }
+        }
 
-		static void TestConfiguration(Action<CloudEngineBuilder> config)
-		{
-			var h = new ManualResetEventSlim();
+        #endregion
 
-			var engine = new CloudEngineBuilder()
-					.RegisterInstance(h)
-					.DomainIs(d =>
-					{
-						d.InCurrentAssembly();
-						d.WithDefaultInterfaces();
-						d.WhereMessagesAre<Message1>();
-					});
+        static void TestConfiguration(Action<CloudEngineBuilder> config)
+        {
+            var h = new ManualResetEventSlim();
 
-			config(engine);
+            var engine = new CloudEngineBuilder()
+                .RegisterInstance(h)
+                .DomainIs(d =>
+                    {
+                        d.InCurrentAssembly();
+                        d.WithDefaultInterfaces();
+                        d.WhereMessagesAre<Message1>();
+                    });
 
-			using (var eng = engine.Build())
-			using (var t = new CancellationTokenSource())
-			{
-				eng.Start(t.Token);
-				eng.Resolve<IMessageSender>().Send(new Message1(0));
-				var signaled = h.Wait(TimeSpan.FromSeconds(5), t.Token);
-				Assert.IsTrue(signaled);
-			}
-		}
+            config(engine);
 
-		[Test]
-		public void PartitionWithRouter()
-		{
-			TestConfiguration(x => x
-				.AddMessageClient("memory:in")
-				.AddMemoryRouter("in", me => "memory:do")
-				.AddMemoryPartition("do"));
-		}
+            using (var eng = engine.Build())
+            using (var t = new CancellationTokenSource())
+            {
+                eng.Start(t.Token);
+                eng.Resolve<IMessageSender>().Send(new Message1(0));
+                var signaled = h.Wait(TimeSpan.FromSeconds(5), t.Token);
+                Assert.IsTrue(signaled);
+            }
+        }
 
-		[Test]
-		public void Direct()
-		{
-			TestConfiguration(x => x
-				.AddMessageClient("memory:in")
-				.AddMemoryPartition("in"));
-		}
+        [Test]
+        public void PartitionWithRouter()
+        {
+            TestConfiguration(x => x
+                .AddMessageClient("memory:in")
+                .AddMemoryRouter("in", me => "memory:do")
+                .AddMemoryPartition("do"));
+        }
 
-		[Test]
-		public void RouterChain()
-		{
-			TestConfiguration(x => x
-				.AddMessageClient("memory:in")
-				.AddMemoryRouter("in", me => (((Message1)me.Items[0].Content).Block % 2) == 0 ? "memory:do1" : "memory:do2")
-				.AddMemoryPartition("do1")
-				.AddMemoryPartition("do2"));
-		}
-	}
+        [Test]
+        public void Direct()
+        {
+            TestConfiguration(x => x
+                .AddMessageClient("memory:in")
+                .AddMemoryPartition("in"));
+        }
+
+        [Test]
+        public void RouterChain()
+        {
+            TestConfiguration(x => x
+                .AddMessageClient("memory:in")
+                .AddMemoryRouter("in",
+                    me => (((Message1) me.Items[0].Content).Block%2) == 0 ? "memory:do1" : "memory:do2")
+                .AddMemoryPartition("do1")
+                .AddMemoryPartition("do2"));
+        }
+    }
 }

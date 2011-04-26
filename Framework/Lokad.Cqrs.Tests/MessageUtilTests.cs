@@ -1,6 +1,6 @@
-﻿#region (c) 2010 Lokad Open Source - New BSD License 
+﻿#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
 
-// Copyright (c) Lokad 2010, http://www.lokad.com
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
 // This code is released as Open Source under the terms of the New BSD Licence
 
 #endregion
@@ -10,26 +10,22 @@ using ProtoBuf;
 
 namespace Lokad.Cqrs.Tests
 {
-	[TestFixture]
-	public sealed class MessageUtilTests
-	{
-		// ReSharper disable InconsistentNaming
+    [TestFixture]
+    public sealed class MessageUtilTests
+    {
+        // ReSharper disable InconsistentNaming
 
 
-		[ProtoContract]
-		sealed class MyEvent
-		{
-			[ProtoMember(1)]
-			public string VariableName { get; set; }
-		}
+        [ProtoContract]
+        sealed class MyEvent
+        {
+            [ProtoMember(1)]
+            public string VariableName { get; set; }
+        }
 
-		[Test]
-		public void StreamingRoundtrips()
-		{
-			
-
-
-
-		}
-	}
+        [Test]
+        public void StreamingRoundtrips()
+        {
+        }
+    }
 }

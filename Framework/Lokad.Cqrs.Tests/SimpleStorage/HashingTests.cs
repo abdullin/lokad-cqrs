@@ -1,6 +1,6 @@
-﻿#region (c) 2010 Lokad Open Source - New BSD License 
+﻿#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
 
-// Copyright (c) Lokad 2010, http://www.lokad.com
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
 // This code is released as Open Source under the terms of the New BSD Licence
 
 #endregion
@@ -16,40 +16,38 @@ using NUnit.Framework;
 
 namespace Lokad.Cqrs.Tests.Storage
 {
-	[TestFixture]
-	public sealed class HashingTests
-	{
-		// ReSharper disable InconsistentNaming
+    [TestFixture]
+    public sealed class HashingTests
+    {
+        // ReSharper disable InconsistentNaming
 
-		[Test, Explicit]
-		public void Test()
-		{
-			var client = BlobStorage.GetCustom();
-			
-			client.RetryPolicy = RetryPolicies.NoRetry();
+        [Test, Explicit]
+        public void Test()
+        {
+            var client = BlobStorage.GetCustom();
 
-			var root = new BlobStorageRoot(client);
-			var cont = root.GetContainer("tests").Create();
+            client.RetryPolicy = RetryPolicies.NoRetry();
 
-			var storageItem = cont.GetItem("test");
+            var root = new BlobStorageRoot(client);
+            var cont = root.GetContainer("tests").Create();
+
+            var storageItem = cont.GetItem("test");
 
 
-			storageItem.Write(w => w.WriteByte(1), options:StorageWriteOptions.CompressIfPossible);
-			storageItem.ReadInto((props, stream) => StreamUtil.BlockCopy(stream, new MemoryStream(), 10));
+            storageItem.Write(w => w.WriteByte(1), options : StorageWriteOptions.CompressIfPossible);
+            storageItem.ReadInto((props, stream) => StreamUtil.BlockCopy(stream, new MemoryStream(), 10));
 
-			var format = storageItem.GetInfo();
-			Console.WriteLine("MD5: {0}", format.Value.Properties.GetValue("ContentMD5").GetValue("None"));
+            var format = storageItem.GetInfo();
+            Console.WriteLine("MD5: {0}", format.Value.Properties.GetValue("ContentMD5").GetValue("None"));
 
-			//storageItem.ReadText();
-		}
+            //storageItem.ReadText();
+        }
 
-		static CloudBlobClient GetFiddler()
-		{
-			const string uri = "http://ipv4.fiddler:10000/devstoreaccount1";
-			var credentials = CloudStorageAccount.DevelopmentStorageAccount.Credentials;
-			return new CloudBlobClient(uri, credentials);
-		}
-
-		
-	}
+        static CloudBlobClient GetFiddler()
+        {
+            const string uri = "http://ipv4.fiddler:10000/devstoreaccount1";
+            var credentials = CloudStorageAccount.DevelopmentStorageAccount.Credentials;
+            return new CloudBlobClient(uri, credentials);
+        }
+    }
 }

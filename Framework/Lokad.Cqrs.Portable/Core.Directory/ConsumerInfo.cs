@@ -10,16 +10,16 @@ using System.Diagnostics;
 
 namespace Lokad.Cqrs.Core.Directory
 {
-	[DebuggerDisplay("{ConsumerType.Name}")]
-	public sealed class ConsumerInfo
-	{
-		public readonly Type ConsumerType;
-		public readonly Type[] MessageTypes;
+    [DebuggerDisplay("{ConsumerType.Name}")]
+    public sealed class ConsumerInfo
+    {
+        public readonly Type ConsumerType;
+        public readonly Type[] MessageTypes;
 
-		public ConsumerInfo(Type consumerType, Type[] messageTypes)
-		{
-			ConsumerType = consumerType;
-			MessageTypes = messageTypes;
-		}
-	}
+        public ConsumerInfo(Type consumerType, Type[] messageTypes)
+        {
+            ConsumerType = consumerType;
+            MessageTypes = messageTypes;
+        }
+    }
 }

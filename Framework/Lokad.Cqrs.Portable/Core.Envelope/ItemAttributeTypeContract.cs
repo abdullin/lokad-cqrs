@@ -7,9 +7,9 @@
 
 namespace Lokad.Cqrs.Core.Envelope
 {
-	public enum ItemAttributeTypeContract
-	{
-		CustomString,
-		CustomNumber
-	}
+    public enum ItemAttributeTypeContract
+    {
+        CustomString,
+        CustomNumber
+    }
 }

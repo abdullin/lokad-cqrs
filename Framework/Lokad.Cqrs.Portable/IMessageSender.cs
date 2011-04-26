@@ -9,19 +9,19 @@ using System;
 
 namespace Lokad.Cqrs
 {
-	/// <summary>
-	/// Generic message publishing interface that is provided by the infrastructure, should user configure it for publishing
-	/// </summary>
-	public interface IMessageSender
-	{
-		/// <summary>
-		/// Sends the specified messages to the designated recipient.
-		/// </summary>
-		/// <param name="message">The message to send.</param>
-		void Send(object message);
+    /// <summary>
+    /// Generic message publishing interface that is provided by the infrastructure, should user configure it for publishing
+    /// </summary>
+    public interface IMessageSender
+    {
+        /// <summary>
+        /// Sends the specified messages to the designated recipient.
+        /// </summary>
+        /// <param name="message">The message to send.</param>
+        void Send(object message);
 
-		void DelaySend(TimeSpan timeout, object message);
-		void SendBatch(params object[] messageItems);
-		void DelaySendBatch(TimeSpan timeout, params object[] messageItems);
-	}
+        void DelaySend(TimeSpan timeout, object message);
+        void SendBatch(params object[] messageItems);
+        void DelaySendBatch(TimeSpan timeout, params object[] messageItems);
+    }
 }

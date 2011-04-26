@@ -13,56 +13,58 @@ using Lokad.Cqrs.Build;
 
 namespace Lokad.Cqrs.Core.Outbox
 {
-	public sealed class SendMessageModule : BuildSyntaxHelper, IModule
-	{
-		readonly string _queueName;
-		readonly ContainerBuilder _builder = new ContainerBuilder();
+    public sealed class SendMessageModule : BuildSyntaxHelper, IModule
+    {
+        readonly string _queueName;
+        readonly ContainerBuilder _builder = new ContainerBuilder();
 
-		public SendMessageModule(string queueName)
-		{
-			_queueName = queueName;
-		}
+        public SendMessageModule(string queueName)
+        {
+            _queueName = queueName;
+        }
 
 
-		DefaultMessageSender BuildDefaultMessageSender(IComponentContext c)
-		{
-			var factories = c.Resolve<IEnumerable<IQueueWriterFactory>>();
+        DefaultMessageSender BuildDefaultMessageSender(IComponentContext c)
+        {
+            var factories = c.Resolve<IEnumerable<IQueueWriterFactory>>();
 
-			var queues = new List<IQueueWriter>(1);
-			foreach (var factory in factories)
-			{
-				IQueueWriter writer;
-				if (factory.TryGetWriteQueue(_queueName, out writer))
-				{
-					queues.Add(writer);
-				}
-			}
+            var queues = new List<IQueueWriter>(1);
+            foreach (var factory in factories)
+            {
+                IQueueWriter writer;
+                if (factory.TryGetWriteQueue(_queueName, out writer))
+                {
+                    queues.Add(writer);
+                }
+            }
 
-			if (queues.Count == 0)
-			{
-				string message = string.Format("There are no queues for the '{0}'. Did you forget to register a factory?",
-					_queueName);
-				throw new InvalidOperationException(message);
-			}
-			if (queues.Count > 1)
-			{
-				string message = string.Format(
-					"There are multiple queues for name '{0}'. Have you registered duplicate factories?", _queueName);
-				throw new InvalidOperationException(message);
-			}
+            if (queues.Count == 0)
+            {
+                string message =
+                    string.Format("There are no queues for the '{0}'. Did you forget to register a factory?",
+                        _queueName);
+                throw new InvalidOperationException(message);
+            }
+            if (queues.Count > 1)
+            {
+                string message = string.Format(
+                    "There are multiple queues for name '{0}'. Have you registered duplicate factories?", _queueName);
+                throw new InvalidOperationException(message);
+            }
 
-			var observer = c.Resolve<ISystemObserver>();
+            var observer = c.Resolve<ISystemObserver>();
 
-			return new DefaultMessageSender(queues[0], observer, _queueName);
-		}
+            return new DefaultMessageSender(queues[0], observer, _queueName);
+        }
 
-		public void Configure(IComponentRegistry componentRegistry)
-		{
-			Assert(!string.IsNullOrEmpty(_queueName), "Empty Queue name is set for SendMessageModule. Please set 'QueueName'.");
-			Assert(ContainsQueuePrefix(_queueName), "Queue {0} should have queue provider name", _queueName);
+        public void Configure(IComponentRegistry componentRegistry)
+        {
+            Assert(!string.IsNullOrEmpty(_queueName),
+                "Empty Queue name is set for SendMessageModule. Please set 'QueueName'.");
+            Assert(ContainsQueuePrefix(_queueName), "Queue {0} should have queue provider name", _queueName);
 
-			_builder.Register(BuildDefaultMessageSender).SingleInstance().As<IMessageSender>();
-			_builder.Update(componentRegistry);
-		}
-	}
+            _builder.Register(BuildDefaultMessageSender).SingleInstance().As<IMessageSender>();
+            _builder.Update(componentRegistry);
+        }
+    }
 }

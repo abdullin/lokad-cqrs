@@ -12,74 +12,74 @@ using Lokad.Cqrs.Core.Directory;
 
 namespace Lokad.Cqrs.Core.Dispatch
 {
-	/// <summary>
-	/// Dispatch command batches to a single consumer. Uses sliding cache to 
-	/// reduce message duplication
-	/// </summary>
-	public sealed class DispatchCommandBatchToSingleConsumer : ISingleThreadMessageDispatcher
-	{
-		readonly ILifetimeScope _container;
-		readonly IDictionary<Type, Type> _messageConsumers = new Dictionary<Type, Type>();
-		readonly MessageDirectory _messageDirectory;
-		readonly MessageDuplicationMemory _memory;
+    /// <summary>
+    /// Dispatch command batches to a single consumer. Uses sliding cache to 
+    /// reduce message duplication
+    /// </summary>
+    public sealed class DispatchCommandBatchToSingleConsumer : ISingleThreadMessageDispatcher
+    {
+        readonly ILifetimeScope _container;
+        readonly IDictionary<Type, Type> _messageConsumers = new Dictionary<Type, Type>();
+        readonly MessageDirectory _messageDirectory;
+        readonly MessageDuplicationMemory _memory;
 
-		public DispatchCommandBatchToSingleConsumer(ILifetimeScope container, MessageDirectory messageDirectory,
-			MessageDuplicationManager manager)
-		{
-			_container = container;
-			_messageDirectory = messageDirectory;
-			_memory = manager.GetOrAdd(this);
-		}
+        public DispatchCommandBatchToSingleConsumer(ILifetimeScope container, MessageDirectory messageDirectory,
+            MessageDuplicationManager manager)
+        {
+            _container = container;
+            _messageDirectory = messageDirectory;
+            _memory = manager.GetOrAdd(this);
+        }
 
-		public void DispatchMessage(MessageEnvelope message)
-		{
-			// already dispatched
-			if (_memory.DoWeRemember(message.EnvelopeId))
-				return;
+        public void DispatchMessage(MessageEnvelope message)
+        {
+            // already dispatched
+            if (_memory.DoWeRemember(message.EnvelopeId))
+                return;
 
-			// empty message, hm...
-			if (message.Items.Length == 0)
-				return;
+            // empty message, hm...
+            if (message.Items.Length == 0)
+                return;
 
-			// verify that all consumers are available
-			foreach (var item in message.Items)
-			{
-				if (!_messageConsumers.ContainsKey(item.MappedType))
-				{
-					throw new InvalidOperationException("Couldn't find consumer for " + item.MappedType);
-				}
-			}
+            // verify that all consumers are available
+            foreach (var item in message.Items)
+            {
+                if (!_messageConsumers.ContainsKey(item.MappedType))
+                {
+                    throw new InvalidOperationException("Couldn't find consumer for " + item.MappedType);
+                }
+            }
 
-			using (var unit = _container.BeginLifetimeScope(DispatcherUtil.UnitOfWorkTag))
-			{
-				foreach (var item in message.Items)
-				{
-					// we're dispatching them inside single lifetime scope
-					// meaning same transaction,
-					using (var scope = unit.BeginLifetimeScope(DispatcherUtil.ScopeTag))
-					{
-						var consumerType = _messageConsumers[item.MappedType];
-						{
-							var consumer = scope.Resolve(consumerType);
-							_messageDirectory.InvokeConsume(consumer, item.Content);
-						}
-					}
-				}
-			}
-			_memory.Memorize(message.EnvelopeId);
-		}
+            using (var unit = _container.BeginLifetimeScope(DispatcherUtil.UnitOfWorkTag))
+            {
+                foreach (var item in message.Items)
+                {
+                    // we're dispatching them inside single lifetime scope
+                    // meaning same transaction,
+                    using (var scope = unit.BeginLifetimeScope(DispatcherUtil.ScopeTag))
+                    {
+                        var consumerType = _messageConsumers[item.MappedType];
+                        {
+                            var consumer = scope.Resolve(consumerType);
+                            _messageDirectory.InvokeConsume(consumer, item.Content);
+                        }
+                    }
+                }
+            }
+            _memory.Memorize(message.EnvelopeId);
+        }
 
 
-		public void Init()
-		{
-			DispatcherUtil.ThrowIfCommandHasMultipleConsumers(_messageDirectory.Messages);
-			foreach (var messageInfo in _messageDirectory.Messages)
-			{
-				if (messageInfo.AllConsumers.Length > 0)
-				{
-					_messageConsumers[messageInfo.MessageType] = messageInfo.AllConsumers[0];
-				}
-			}
-		}
-	}
+        public void Init()
+        {
+            DispatcherUtil.ThrowIfCommandHasMultipleConsumers(_messageDirectory.Messages);
+            foreach (var messageInfo in _messageDirectory.Messages)
+            {
+                if (messageInfo.AllConsumers.Length > 0)
+                {
+                    _messageConsumers[messageInfo.MessageType] = messageInfo.AllConsumers[0];
+                }
+            }
+        }
+    }
 }

@@ -7,17 +7,17 @@
 
 namespace Lokad.Cqrs.Core.Inbox
 {
-	public sealed class MessageContext
-	{
-		public readonly object TransportMessage;
-		public readonly MessageEnvelope Unpacked;
-		public readonly string QueueName;
+    public sealed class MessageContext
+    {
+        public readonly object TransportMessage;
+        public readonly MessageEnvelope Unpacked;
+        public readonly string QueueName;
 
-		public MessageContext(object transportMessage, MessageEnvelope unpacked, string queueName)
-		{
-			TransportMessage = transportMessage;
-			QueueName = queueName;
-			Unpacked = unpacked;
-		}
-	}
+        public MessageContext(object transportMessage, MessageEnvelope unpacked, string queueName)
+        {
+            TransportMessage = transportMessage;
+            QueueName = queueName;
+            Unpacked = unpacked;
+        }
+    }
 }

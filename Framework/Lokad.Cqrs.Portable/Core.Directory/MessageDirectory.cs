@@ -12,43 +12,43 @@ using Lokad.Cqrs.Core.Evil;
 
 namespace Lokad.Cqrs.Core.Directory
 {
-	public sealed class MessageDirectory : IKnowSerializationTypes
-	{
-		readonly string _consumeMethodName;
-		readonly ConsumerInfo[] _consumers;
-		readonly ICollection<MessageInfo> _messages;
-		readonly Type[] _knownTypes;
+    public sealed class MessageDirectory : IKnowSerializationTypes
+    {
+        readonly string _consumeMethodName;
+        readonly ConsumerInfo[] _consumers;
+        readonly ICollection<MessageInfo> _messages;
+        readonly Type[] _knownTypes;
 
-		public MessageDirectory(string consumeMethodName, ConsumerInfo[] consumers, ICollection<MessageInfo> messages)
-		{
-			_consumeMethodName = consumeMethodName;
-			_consumers = consumers;
-			_messages = messages;
+        public MessageDirectory(string consumeMethodName, ConsumerInfo[] consumers, ICollection<MessageInfo> messages)
+        {
+            _consumeMethodName = consumeMethodName;
+            _consumers = consumers;
+            _messages = messages;
 
-			_knownTypes = messages
-				.Where(m => false == m.MessageType.IsAbstract)
-				.Select(m => m.MessageType)
-				.ToArray();
-		}
+            _knownTypes = messages
+                .Where(m => false == m.MessageType.IsAbstract)
+                .Select(m => m.MessageType)
+                .ToArray();
+        }
 
-		public ICollection<ConsumerInfo> Consumers
-		{
-			get { return _consumers; }
-		}
+        public ICollection<ConsumerInfo> Consumers
+        {
+            get { return _consumers; }
+        }
 
-		public ICollection<MessageInfo> Messages
-		{
-			get { return _messages; }
-		}
+        public ICollection<MessageInfo> Messages
+        {
+            get { return _messages; }
+        }
 
-		public void InvokeConsume(object consumer, object message)
-		{
-			InvocationUtil.InvokeConsume(consumer, message, _consumeMethodName);
-		}
+        public void InvokeConsume(object consumer, object message)
+        {
+            InvocationUtil.InvokeConsume(consumer, message, _consumeMethodName);
+        }
 
-		public IEnumerable<Type> GetKnownTypes()
-		{
-			return _knownTypes;
-		}
-	}
+        public IEnumerable<Type> GetKnownTypes()
+        {
+            return _knownTypes;
+        }
+    }
 }

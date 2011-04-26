@@ -7,9 +7,9 @@
 
 namespace Lokad.Cqrs.Core.Outbox
 {
-	public interface IQueueWriter
-	{
-		void PutMessage(MessageEnvelope envelope);
-		void Init();
-	}
+    public interface IQueueWriter
+    {
+        void PutMessage(MessageEnvelope envelope);
+        void Init();
+    }
 }

@@ -7,15 +7,15 @@
 
 namespace Lokad.Cqrs
 {
-	/// <summary>
-	/// Sends notification to the system. This is a strongly-typed equivalent of logging
-	/// </summary>
-	public interface ISystemObserver
-	{
-		/// <summary>
-		/// Notifies the observer about the specified @event.
-		/// </summary>
-		/// <param name="event">The @event.</param>
-		void Notify(ISystemEvent @event);
-	}
+    /// <summary>
+    /// Sends notification to the system. This is a strongly-typed equivalent of logging
+    /// </summary>
+    public interface ISystemObserver
+    {
+        /// <summary>
+        /// Notifies the observer about the specified @event.
+        /// </summary>
+        /// <param name="event">The @event.</param>
+        void Notify(ISystemEvent @event);
+    }
 }

@@ -15,81 +15,81 @@ using Microsoft.WindowsAzure;
 
 namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
 {
-	public sealed class AzurePartitionFactory : IEngineProcess
-	{
-		readonly CloudStorageAccount _account;
-		readonly IEnvelopeStreamer _streamer;
-		readonly ISystemObserver _observer;
+    public sealed class AzurePartitionFactory : IEngineProcess
+    {
+        readonly CloudStorageAccount _account;
+        readonly IEnvelopeStreamer _streamer;
+        readonly ISystemObserver _observer;
 
-		readonly ConcurrentBag<AzurePartitionScheduler> _schedulers = new ConcurrentBag<AzurePartitionScheduler>();
+        readonly ConcurrentBag<AzurePartitionScheduler> _schedulers = new ConcurrentBag<AzurePartitionScheduler>();
 
 
-		public AzurePartitionFactory(CloudStorageAccount account, IEnvelopeStreamer streamer,
-			ISystemObserver observer)
-		{
-			_account = account;
-			_streamer = streamer;
-			_observer = observer;
-		}
+        public AzurePartitionFactory(CloudStorageAccount account, IEnvelopeStreamer streamer,
+            ISystemObserver observer)
+        {
+            _account = account;
+            _streamer = streamer;
+            _observer = observer;
+        }
 
-		public IPartitionInbox GetNotifier(string[] queueNames)
-		{
-			var queues = queueNames
-				.Select(name => new StatelessAzureQueueReader(_account, name, _observer, _streamer))
-				.ToArray();
+        public IPartitionInbox GetNotifier(string[] queueNames)
+        {
+            var queues = queueNames
+                .Select(name => new StatelessAzureQueueReader(_account, name, _observer, _streamer))
+                .ToArray();
 
-			var futures = queueNames
-				.Select(name => new StatelessAzureFutureList(_account, name, _observer, _streamer))
-				.ToArray();
+            var futures = queueNames
+                .Select(name => new StatelessAzureFutureList(_account, name, _observer, _streamer))
+                .ToArray();
 
-			var writers = queueNames
-				.Select(name => new StatelessAzureQueueWriter(_streamer, _account, name))
-				.ToArray();
+            var writers = queueNames
+                .Select(name => new StatelessAzureQueueWriter(_streamer, _account, name))
+                .ToArray();
 
-			_schedulers.Add(new AzurePartitionScheduler(writers, futures));
+            _schedulers.Add(new AzurePartitionScheduler(writers, futures));
 
-			return new AzurePartitionInbox(queues, futures, BuildDecayPolicy(TimeSpan.FromSeconds(2)));
-		}
+            return new AzurePartitionInbox(queues, futures, BuildDecayPolicy(TimeSpan.FromSeconds(2)));
+        }
 
-		static Func<uint, TimeSpan> BuildDecayPolicy(TimeSpan maxDecay)
-		{
-			//var seconds = (Rand.Next(0, 1000) / 10000d).Seconds();
-			var seconds = maxDecay.TotalSeconds;
-			return l =>
-				{
-					if (l >= 31)
-					{
-						return maxDecay;
-					}
+        static Func<uint, TimeSpan> BuildDecayPolicy(TimeSpan maxDecay)
+        {
+            //var seconds = (Rand.Next(0, 1000) / 10000d).Seconds();
+            var seconds = maxDecay.TotalSeconds;
+            return l =>
+                {
+                    if (l >= 31)
+                    {
+                        return maxDecay;
+                    }
 
-					var foo = Math.Pow(2, (l - 1)/5.0)/64d*seconds;
+                    var foo = Math.Pow(2, (l - 1)/5.0)/64d*seconds;
 
-					return TimeSpan.FromSeconds(foo);
-				};
-		}
+                    return TimeSpan.FromSeconds(foo);
+                };
+        }
 
-		public void Dispose()
-		{
-		}
+        public void Dispose()
+        {
+        }
 
-		public void Initialize()
-		{
-		}
+        public void Initialize()
+        {
+        }
 
-		public Task Start(CancellationToken token)
-		{
-			return Task.Factory.StartNew(() =>
-				{
-					while (!token.IsCancellationRequested)
-					{
-						foreach (var scheduler in _schedulers)
-						{
-							scheduler.DispatchDelayedMessages();
-						}
+        public Task Start(CancellationToken token)
+        {
+            return Task.Factory.StartNew(() =>
+                {
+                    while (!token.IsCancellationRequested)
+                    {
+                        foreach (var scheduler in _schedulers)
+                        {
+                            scheduler.DispatchDelayedMessages();
+                        }
 
-						token.WaitHandle.WaitOne(TimeSpan.FromSeconds(2));
-					}
-				});
-		}
-	}
+                        token.WaitHandle.WaitOne(TimeSpan.FromSeconds(2));
+                    }
+                });
+        }
+    }
 }

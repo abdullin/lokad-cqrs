@@ -1,15 +1,22 @@
-﻿namespace Lokad.Cqrs.Feature.AzurePartition.Events
+﻿#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
+
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
+namespace Lokad.Cqrs.Feature.AzurePartition.Events
 {
-	public sealed class RetrievedPoisonMessage : ISystemEvent
+    public sealed class RetrievedPoisonMessage : ISystemEvent
 
-	{
-		public string QueueName { get; private set; }
-		public string MessageId { get; private set; }
+    {
+        public string QueueName { get; private set; }
+        public string MessageId { get; private set; }
 
-		public RetrievedPoisonMessage(string queueName, string messageId)
-		{
-			QueueName = queueName;
-			MessageId = messageId;
-		}
-	}
+        public RetrievedPoisonMessage(string queueName, string messageId)
+        {
+            QueueName = queueName;
+            MessageId = messageId;
+        }
+    }
 }

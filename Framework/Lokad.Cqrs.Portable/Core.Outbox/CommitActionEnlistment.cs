@@ -10,34 +10,34 @@ using System.Transactions;
 
 namespace Lokad.Cqrs.Core.Outbox
 {
-	sealed class CommitActionEnlistment : IEnlistmentNotification
-	{
-		readonly Action _commit;
+    sealed class CommitActionEnlistment : IEnlistmentNotification
+    {
+        readonly Action _commit;
 
-		public CommitActionEnlistment(Action commit)
-		{
-			_commit = commit;
-		}
+        public CommitActionEnlistment(Action commit)
+        {
+            _commit = commit;
+        }
 
-		public void Prepare(PreparingEnlistment preparingEnlistment)
-		{
-			preparingEnlistment.Prepared();
-		}
+        public void Prepare(PreparingEnlistment preparingEnlistment)
+        {
+            preparingEnlistment.Prepared();
+        }
 
-		public void Commit(Enlistment enlistment)
-		{
-			_commit();
-			enlistment.Done();
-		}
+        public void Commit(Enlistment enlistment)
+        {
+            _commit();
+            enlistment.Done();
+        }
 
-		public void Rollback(Enlistment enlistment)
-		{
-			enlistment.Done();
-		}
+        public void Rollback(Enlistment enlistment)
+        {
+            enlistment.Done();
+        }
 
-		public void InDoubt(Enlistment enlistment)
-		{
-			enlistment.Done();
-		}
-	}
+        public void InDoubt(Enlistment enlistment)
+        {
+            enlistment.Done();
+        }
+    }
 }

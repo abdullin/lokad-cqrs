@@ -9,14 +9,14 @@ using System;
 
 namespace Lokad.Cqrs.Feature.Logging
 {
-	/// <summary>
-	/// <see cref="ISystemObserver"/> that does not do anything
-	/// </summary>
-	[Serializable]
-	public sealed class NullSystemObserver : ISystemObserver
-	{
-		public void Notify(ISystemEvent @event)
-		{
-		}
-	}
+    /// <summary>
+    /// <see cref="ISystemObserver"/> that does not do anything
+    /// </summary>
+    [Serializable]
+    public sealed class NullSystemObserver : ISystemObserver
+    {
+        public void Notify(ISystemEvent @event)
+        {
+        }
+    }
 }

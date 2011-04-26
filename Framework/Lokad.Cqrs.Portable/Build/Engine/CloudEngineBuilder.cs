@@ -21,150 +21,152 @@ using Lokad.Cqrs.Feature.MemoryPartition;
 
 namespace Lokad.Cqrs.Build.Engine
 {
-	/// <summary>
-	/// Fluent API for creating and configuring <see cref="CloudEngineHost"/>
-	/// </summary>
-	public class CloudEngineBuilder : BuildSyntaxHelper
-	{
-		HashSet<IModule> _moduleEnlistments = new HashSet<IModule>();
+    /// <summary>
+    /// Fluent API for creating and configuring <see cref="CloudEngineHost"/>
+    /// </summary>
+    public class CloudEngineBuilder : BuildSyntaxHelper
+    {
+        HashSet<IModule> _moduleEnlistments = new HashSet<IModule>();
 
-		bool IsEnlisted<TModule>() where TModule : IModule
-		{
-			return _moduleEnlistments.Count(x => x is TModule) > 0;
-		}
+        bool IsEnlisted<TModule>() where TModule : IModule
+        {
+            return _moduleEnlistments.Count(x => x is TModule) > 0;
+        }
 
-		public void Enlist<TModule>(Action<TModule> config) where TModule : IModule, new()
-		{
-			var m = new TModule();
-			config(m);
-			_moduleEnlistments.Add(m);
-		}
+        public void Enlist<TModule>(Action<TModule> config) where TModule : IModule, new()
+        {
+            var m = new TModule();
+            config(m);
+            _moduleEnlistments.Add(m);
+        }
 
-		public void Enlist(IModule module)
-		{
-			_moduleEnlistments.Add(module);
-		}
-
-
-		public CloudEngineBuilder AddMemoryPartition(string[] queues, Action<ModuleForMemoryPartition> config)
-		{
-			foreach (var queue in queues)
-			{
-				Assert(!ContainsQueuePrefix(queue), "Queue '{0}' should not contain queue prefix, since it's memory already", queue);
-			}
-			var module = new ModuleForMemoryPartition(queues);
-			config(module);
-			Enlist(module);
-			return this;
-		}
-
-		public CloudEngineBuilder RegisterSystemObserver(ISystemObserver observer)
-		{
-			Builder.RegisterInstance(observer);
-			return this;
-		}
+        public void Enlist(IModule module)
+        {
+            _moduleEnlistments.Add(module);
+        }
 
 
-		public CloudEngineBuilder AddMemoryPartition(params string[] queues)
-		{
-			return AddMemoryPartition(queues, m => { });
-		}
+        public CloudEngineBuilder AddMemoryPartition(string[] queues, Action<ModuleForMemoryPartition> config)
+        {
+            foreach (var queue in queues)
+            {
+                Assert(!ContainsQueuePrefix(queue),
+                    "Queue '{0}' should not contain queue prefix, since it's memory already", queue);
+            }
+            var module = new ModuleForMemoryPartition(queues);
+            config(module);
+            Enlist(module);
+            return this;
+        }
 
-		public CloudEngineBuilder RegisterInstance<T>(T instance) where T : class
-		{
-			Builder.RegisterInstance(instance);
-			return this;
-		}
-
-		public CloudEngineBuilder AddMemoryPartition(string queueName, Action<ModuleForMemoryPartition> config)
-		{
-			return AddMemoryPartition(new string[] {queueName}, config);
-		}
-
-		public CloudEngineBuilder AddMemoryRouter(string queueName, Func<MessageEnvelope, string> config)
-		{
-			return AddMemoryPartition(queueName, m => m.Dispatch<DispatchMessagesToRoute>(x => x.SpecifyRouter(config)));
-		}
+        public CloudEngineBuilder RegisterSystemObserver(ISystemObserver observer)
+        {
+            Builder.RegisterInstance(observer);
+            return this;
+        }
 
 
-		/// <summary>
-		/// Configures the message domain for the instance of <see cref="CloudEngineHost"/>.
-		/// </summary>
-		/// <param name="config">configuration syntax.</param>
-		/// <returns>same builder for inline multiple configuration statements</returns>
-		public CloudEngineBuilder DomainIs(Action<ModuleForMessageDirectory> config)
-		{
-			Enlist(config);
-			return this;
-		}
+        public CloudEngineBuilder AddMemoryPartition(params string[] queues)
+        {
+            return AddMemoryPartition(queues, m => { });
+        }
 
-		/// <summary>
-		/// Creates default message sender for the instance of <see cref="CloudEngineHost"/>
-		/// </summary>
-		/// <returns>same builder for inline multiple configuration statements</returns>
-		public CloudEngineBuilder AddMessageClient(string queueName)
-		{
-			var m = new SendMessageModule(queueName);
-			Enlist(m);
-			return this;
-		}
+        public CloudEngineBuilder RegisterInstance<T>(T instance) where T : class
+        {
+            Builder.RegisterInstance(instance);
+            return this;
+        }
 
-		public readonly ContainerBuilder Builder = new ContainerBuilder();
+        public CloudEngineBuilder AddMemoryPartition(string queueName, Action<ModuleForMemoryPartition> config)
+        {
+            return AddMemoryPartition(new string[] {queueName}, config);
+        }
 
-		public CloudEngineBuilder Serialization(Action<ModuleForSerialization> config)
-		{
-			var m = new ModuleForSerialization();
-			config(m);
-			Enlist(m);
-			return this;
-		}
-
-		/// <summary>
-		/// Builds this <see cref="CloudEngineHost"/>.
-		/// </summary>
-		/// <returns>new instance of cloud engine host</returns>
-		public CloudEngineHost Build()
-		{
-			// nonconditional registrations
-			// System presets
-			RegisterSystemObserver(new TraceSystemObserver());
-
-			Builder.RegisterType<DispatcherProcess>();
-			Builder.RegisterType<MessageDuplicationManager>().SingleInstance();
-
-			// some defaults
-			Builder.RegisterType<CloudEngineHost>().SingleInstance();
-
-			// conditional registrations and defaults
-			if (!IsEnlisted<ModuleForMessageDirectory>())
-			{
-				DomainIs(m =>
-					{
-						m.WithDefaultInterfaces();
-						m.InUserAssemblies();
-					});
-			}
-			if (!IsEnlisted<ModuleForSerialization>())
-			{
-				Serialization(x => x.UseDataContractSerializer());
-			}
-
-			if (IsEnlisted<ModuleForMemoryPartition>())
-			{
-				Builder.RegisterType<MemoryPartitionFactory>().As<IQueueWriterFactory, IEngineProcess, MemoryPartitionFactory>().
-					SingleInstance();
-			}
+        public CloudEngineBuilder AddMemoryRouter(string queueName, Func<MessageEnvelope, string> config)
+        {
+            return AddMemoryPartition(queueName, m => m.Dispatch<DispatchMessagesToRoute>(x => x.SpecifyRouter(config)));
+        }
 
 
-			foreach (var module in _moduleEnlistments)
-			{
-				Builder.RegisterModule(module);
-			}
+        /// <summary>
+        /// Configures the message domain for the instance of <see cref="CloudEngineHost"/>.
+        /// </summary>
+        /// <param name="config">configuration syntax.</param>
+        /// <returns>same builder for inline multiple configuration statements</returns>
+        public CloudEngineBuilder DomainIs(Action<ModuleForMessageDirectory> config)
+        {
+            Enlist(config);
+            return this;
+        }
 
-			var container = Builder.Build();
-			var host = container.Resolve<CloudEngineHost>(TypedParameter.From(container));
-			host.Initialize();
-			return host;
-		}
-	}
+        /// <summary>
+        /// Creates default message sender for the instance of <see cref="CloudEngineHost"/>
+        /// </summary>
+        /// <returns>same builder for inline multiple configuration statements</returns>
+        public CloudEngineBuilder AddMessageClient(string queueName)
+        {
+            var m = new SendMessageModule(queueName);
+            Enlist(m);
+            return this;
+        }
+
+        public readonly ContainerBuilder Builder = new ContainerBuilder();
+
+        public CloudEngineBuilder Serialization(Action<ModuleForSerialization> config)
+        {
+            var m = new ModuleForSerialization();
+            config(m);
+            Enlist(m);
+            return this;
+        }
+
+        /// <summary>
+        /// Builds this <see cref="CloudEngineHost"/>.
+        /// </summary>
+        /// <returns>new instance of cloud engine host</returns>
+        public CloudEngineHost Build()
+        {
+            // nonconditional registrations
+            // System presets
+            RegisterSystemObserver(new TraceSystemObserver());
+
+            Builder.RegisterType<DispatcherProcess>();
+            Builder.RegisterType<MessageDuplicationManager>().SingleInstance();
+
+            // some defaults
+            Builder.RegisterType<CloudEngineHost>().SingleInstance();
+
+            // conditional registrations and defaults
+            if (!IsEnlisted<ModuleForMessageDirectory>())
+            {
+                DomainIs(m =>
+                    {
+                        m.WithDefaultInterfaces();
+                        m.InUserAssemblies();
+                    });
+            }
+            if (!IsEnlisted<ModuleForSerialization>())
+            {
+                Serialization(x => x.UseDataContractSerializer());
+            }
+
+            if (IsEnlisted<ModuleForMemoryPartition>())
+            {
+                Builder.RegisterType<MemoryPartitionFactory>().As
+                    <IQueueWriterFactory, IEngineProcess, MemoryPartitionFactory>().
+                    SingleInstance();
+            }
+
+
+            foreach (var module in _moduleEnlistments)
+            {
+                Builder.RegisterModule(module);
+            }
+
+            var container = Builder.Build();
+            var host = container.Resolve<CloudEngineHost>(TypedParameter.From(container));
+            host.Initialize();
+            return host;
+        }
+    }
 }

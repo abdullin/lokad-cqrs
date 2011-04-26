@@ -17,57 +17,58 @@ using Lokad.Cqrs.Core.Evil;
 
 namespace Lokad.Cqrs.Build.Engine
 {
-	public sealed class CloudEngineHost : IDisposable
-	{
-		public ILifetimeScope Container { get; private set; }
-		readonly ISystemObserver _observer;
-		readonly IEnumerable<IEngineProcess> _serverProcesses;
+    public sealed class CloudEngineHost : IDisposable
+    {
+        public ILifetimeScope Container { get; private set; }
+        readonly ISystemObserver _observer;
+        readonly IEnumerable<IEngineProcess> _serverProcesses;
 
-		public CloudEngineHost(
-			ILifetimeScope container,
-			ISystemObserver observer,
-			IEnumerable<IEngineProcess> serverProcesses)
-		{
-			Container = container;
-			_serverProcesses = serverProcesses;
-			_observer = observer;
-		}
+        public CloudEngineHost(
+            ILifetimeScope container,
+            ISystemObserver observer,
+            IEnumerable<IEngineProcess> serverProcesses)
+        {
+            Container = container;
+            _serverProcesses = serverProcesses;
+            _observer = observer;
+        }
 
-		public Task Start(CancellationToken token)
-		{
-			var tasks = _serverProcesses.Select(p => p.Start(token)).ToArray();
-			var names = _serverProcesses.Select(p => string.Format("{0}({1:X8})", p.GetType().Name, p.GetHashCode())).ToArray();
+        public Task Start(CancellationToken token)
+        {
+            var tasks = _serverProcesses.Select(p => p.Start(token)).ToArray();
+            var names =
+                _serverProcesses.Select(p => string.Format("{0}({1:X8})", p.GetType().Name, p.GetHashCode())).ToArray();
 
-			_observer.Notify(new HostStarted(names));
+            _observer.Notify(new HostStarted(names));
 
-			return Task.Factory.ContinueWhenAll(tasks, t => _observer.Notify(new HostStopped()));
-		}
+            return Task.Factory.ContinueWhenAll(tasks, t => _observer.Notify(new HostStopped()));
+        }
 
-		public void Initialize()
-		{
-			_observer.Notify(new HostInitializationStarted());
-			foreach (var process in _serverProcesses)
-			{
-				process.Initialize();
-			}
-			_observer.Notify(new HostInitialized());
-		}
+        public void Initialize()
+        {
+            _observer.Notify(new HostInitializationStarted());
+            foreach (var process in _serverProcesses)
+            {
+                process.Initialize();
+            }
+            _observer.Notify(new HostInitialized());
+        }
 
-		public TService Resolve<TService>()
-		{
-			try
-			{
-				return Container.Resolve<TService>();
-			}
-			catch (TargetInvocationException e)
-			{
-				throw InvocationUtil.Inner(e);
-			}
-		}
+        public TService Resolve<TService>()
+        {
+            try
+            {
+                return Container.Resolve<TService>();
+            }
+            catch (TargetInvocationException e)
+            {
+                throw InvocationUtil.Inner(e);
+            }
+        }
 
-		public void Dispose()
-		{
-			Container.Dispose();
-		}
-	}
+        public void Dispose()
+        {
+            Container.Dispose();
+        }
+    }
 }

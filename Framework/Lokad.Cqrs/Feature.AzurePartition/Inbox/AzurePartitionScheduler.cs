@@ -7,24 +7,24 @@
 
 namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
 {
-	public sealed class AzurePartitionScheduler
-	{
-		readonly StatelessAzureQueueWriter[] _writers;
-		readonly StatelessAzureFutureList[] _futures;
+    public sealed class AzurePartitionScheduler
+    {
+        readonly StatelessAzureQueueWriter[] _writers;
+        readonly StatelessAzureFutureList[] _futures;
 
-		public AzurePartitionScheduler(StatelessAzureQueueWriter[] writers, StatelessAzureFutureList[] futures)
-		{
-			_writers = writers;
-			_futures = futures;
-		}
+        public AzurePartitionScheduler(StatelessAzureQueueWriter[] writers, StatelessAzureFutureList[] futures)
+        {
+            _writers = writers;
+            _futures = futures;
+        }
 
-		public void DispatchDelayedMessages()
-		{
-			for (int i = 0; i < _futures.Length; i++)
-			{
-				var writer = _writers[i];
-				_futures[i].TranferPendingMessages(writer.PutMessage);
-			}
-		}
-	}
+        public void DispatchDelayedMessages()
+        {
+            for (int i = 0; i < _futures.Length; i++)
+            {
+                var writer = _writers[i];
+                _futures[i].TranferPendingMessages(writer.PutMessage);
+            }
+        }
+    }
 }
