@@ -5,7 +5,7 @@ namespace Lokad.Cqrs
     /// <summary>
     /// Default implementations of the domain-specific interfaces
     /// </summary>
-    public static class Domain
+    public static class Declare
     {
         public interface Event : IMessage
         {
