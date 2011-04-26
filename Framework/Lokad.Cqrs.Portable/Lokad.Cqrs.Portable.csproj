@@ -90,6 +90,7 @@
     <Compile Include="Core.Outbox\CommitActionEnlistment.cs" />
     <Compile Include="Core.Outbox\DefaultMessageSender.cs" />
     <Compile Include="Core.Outbox\SendMessageModule.cs" />
+    <Compile Include="Domain.cs" />
     <Compile Include="Feature.Logging\NullSystemObserver.cs" />
     <Compile Include="Feature.Logging\TraceSystemObserver.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryFutureList.cs" />
