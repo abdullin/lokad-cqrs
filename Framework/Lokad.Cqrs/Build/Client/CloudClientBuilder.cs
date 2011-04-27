@@ -64,9 +64,9 @@ namespace Lokad.Cqrs.Build.Client
             return this;
         }
 
-        public CloudClientBuilder Azure(Action<ModuleForAzure> config)
+        public CloudClientBuilder Azure(Action<AzureModule> config)
         {
-            var m = new ModuleForAzure();
+            var m = new AzureModule();
             config(m);
             Builder.RegisterModule(m);
             return this;

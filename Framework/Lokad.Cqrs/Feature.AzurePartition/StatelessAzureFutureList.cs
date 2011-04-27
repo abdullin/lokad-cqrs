@@ -24,12 +24,12 @@ namespace Lokad.Cqrs.Feature.AzurePartition
         readonly CloudBlob _blob;
 
 
-        public StatelessAzureFutureList(CloudStorageAccount account, string queueName, ISystemObserver observer,
+        public StatelessAzureFutureList(CloudBlobContainer container, ISystemObserver observer,
             IEnvelopeStreamer streamer)
         {
             _observer = observer;
             _streamer = streamer;
-            _container = account.CreateCloudBlobClient().GetContainerReference(queueName);
+            _container = container;
             _blob = _container.GetBlobReference("__schedule.bin");
         }
 

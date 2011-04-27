@@ -18,6 +18,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
     public sealed class StatelessAzureQueueReader
     {
         readonly IEnvelopeStreamer _streamer;
+        readonly TimeSpan _visibilityTimeout;
         readonly ISystemObserver _observer;
 
         readonly CloudBlobContainer _cloudBlob;
@@ -32,30 +33,20 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 
 
         public StatelessAzureQueueReader(
-            CloudStorageAccount account,
-            string queueName,
+            string name,
+            CloudQueue primaryQueue,
+            CloudBlobContainer container,
+            Lazy<CloudQueue> poisonQueue,
             ISystemObserver provider,
-            IEnvelopeStreamer streamer)
+            IEnvelopeStreamer streamer, TimeSpan visibilityTimeout)
         {
-            var blobClient = account.CreateCloudBlobClient();
-            blobClient.RetryPolicy = RetryPolicies.NoRetry();
-
-            _cloudBlob = blobClient.GetContainerReference(queueName);
-
-            var queueClient = account.CreateCloudQueueClient();
-            queueClient.RetryPolicy = RetryPolicies.NoRetry();
-            _queue = queueClient.GetQueueReference(queueName);
-            _posionQueue = new Lazy<CloudQueue>(() =>
-                {
-                    var queue = queueClient.GetQueueReference(queueName + "-poison");
-                    queue.CreateIfNotExist();
-                    return queue;
-                }, LazyThreadSafetyMode.ExecutionAndPublication);
-
+            _cloudBlob = container;
+            _queue = primaryQueue;
+            _posionQueue = poisonQueue;
             _observer = provider;
-
-            _queueName = queueName;
+            _queueName = name;
             _streamer = streamer;
+            _visibilityTimeout = visibilityTimeout;
         }
 
         public void SetupForTesting()
@@ -84,7 +75,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             CloudQueueMessage message;
             try
             {
-                message = _queue.GetMessage(TimeSpan.FromMilliseconds(1));
+                message = _queue.GetMessage(_visibilityTimeout);
             }
             catch (Exception ex)
             {

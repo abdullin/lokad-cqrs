@@ -43,7 +43,18 @@ namespace Lokad.Cqrs.Core.Dispatch
 
         public Task Start(CancellationToken token)
         {
-            return Task.Factory.StartNew(() => ReceiveMessages(token), token);
+            return Task.Factory
+                .StartNew(() =>
+                    {
+                        try
+                        {
+                            ReceiveMessages(token);
+                        }
+                        catch(ObjectDisposedException)
+                        {
+                            // suppress
+                        }
+                    }, token);
         }
 
 

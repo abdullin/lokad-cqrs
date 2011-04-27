@@ -83,10 +83,13 @@ namespace Lokad.Cqrs.Tests
         [TearDown]
         public void TearDown()
         {
-            
+            _source.Dispose();
+            _source = null;
+
+            _host = null;
         }
 
-        public void RunEngineTillStopped(Action whenStarted)
+        protected void RunEngineTillStopped(Action whenStarted)
         {
             var identifyNested =
                 new[] { typeof(AzureEngineFixture), GetType() }
@@ -98,32 +101,28 @@ namespace Lokad.Cqrs.Tests
 
             var engine = new CloudEngineBuilder()
                 .RegisterInstance<IObserver<ISystemEvent>>(_events)
-                .RegisterInstance(this)
-                .AddMessageClient("azure-dev:inda")
-                .Azure(m => m.AddPartition("inda"))
+                .AddMessageClient("default:inda")
+                .Azure(m => m.AddPartition(p =>
+                    {
+                        p.QueueVisibilityTimeout(50);
+                        p.WhenFactoryCreated(c => c.SetupForTesting());
+                    }, "inda"))
                 .DomainIs(d => d.WhereMessages(t => identifyNested.Contains(t)).InCurrentAssembly());
 
             _whenConfiguring(engine);
 
             using (_host = engine.Build())
-            using (var t = _source)
             {
-                // wipe the queues
-                _host.Resolve<AzurePartitionFactory>().SetupForTesting();
-
-
-
-                _host.Start(t.Token);
+                _host.Start(_source.Token);
 
                 whenStarted();
 
-                if (!t.Token.WaitHandle.WaitOne(5000))
+                if (!_source.Token.WaitHandle.WaitOne(5000))
                 {
-                    t.Cancel();
+                    Trace.WriteLine("Force cancel");
+                    _source.Cancel();
                 }
             }
-            _source = null;
-            _host = null;
         }
 
     }

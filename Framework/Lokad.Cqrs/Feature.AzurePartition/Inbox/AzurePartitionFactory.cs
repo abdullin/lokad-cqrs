@@ -11,25 +11,68 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Lokad.Cqrs.Core.Inbox;
-using Microsoft.WindowsAzure;
+using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
 {
-    public sealed class AzurePartitionFactory : IEngineProcess
+    public sealed class AzureSchedulingProcess : IEngineProcess
     {
-        readonly CloudStorageAccount _account;
+        readonly ConcurrentBag<StatelessAzureScheduler> _schedulers = new ConcurrentBag<StatelessAzureScheduler>();
+
+        public void Dispose()
+        {
+        }
+
+        public void Initialize()
+        {
+        }
+
+        public Task Start(CancellationToken token)
+        {
+            return Task.Factory.StartNew(() =>
+            {
+                while (!token.IsCancellationRequested)
+                {
+                    foreach (var scheduler in _schedulers)
+                    {
+                        scheduler.DispatchDelayedMessages();
+                    }
+
+                    token.WaitHandle.WaitOne(TimeSpan.FromSeconds(2));
+                }
+            });
+        }
+
+        public void AddScheduler(StatelessAzureScheduler scheduler)
+        {
+            _schedulers.Add(scheduler);
+        }
+    }
+
+    
+    public sealed class AzurePartitionFactory 
+    {
         readonly IEnvelopeStreamer _streamer;
         readonly ISystemObserver _observer;
+        readonly IAzureClientConfiguration _configuration;
 
-        readonly ConcurrentBag<AzurePartitionScheduler> _schedulers = new ConcurrentBag<AzurePartitionScheduler>();
+        
+        readonly TimeSpan _queueVisibilityTimeout;
+        readonly AzureSchedulingProcess _process;
 
         readonly ConcurrentDictionary<string, AzurePartitionInboxIntake> _intakes = new ConcurrentDictionary<string, AzurePartitionInboxIntake>();
 
-        public AzurePartitionFactory(CloudStorageAccount account, IEnvelopeStreamer streamer,
-            ISystemObserver observer)
+        public AzurePartitionFactory(
+            IEnvelopeStreamer streamer, 
+            ISystemObserver observer,
+            IAzureClientConfiguration configuration, 
+            TimeSpan queueVisibilityTimeout,
+            AzureSchedulingProcess process)
         {
-            _account = account;
             _streamer = streamer;
+            _queueVisibilityTimeout = queueVisibilityTimeout;
+            _process = process;
+            _configuration = configuration;
             _observer = observer;
         }
 
@@ -43,9 +86,19 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
 
         AzurePartitionInboxIntake BuildIntake(string name)
         {
-            var reader = new StatelessAzureQueueReader(_account, name, _observer, _streamer);
-            var future = new StatelessAzureFutureList(_account, name, _observer, _streamer);
-            var writer = new StatelessAzureQueueWriter(_streamer, _account, name);
+            var queue = _configuration.BuildQueue(name);
+            var container = _configuration.BuildContainer(name);
+            
+            var poisonQueue = new Lazy<CloudQueue>(() =>
+                {
+                    var queueReference = _configuration.BuildQueue(name + "-poison");
+                    queueReference.CreateIfNotExist();
+                    return queueReference;
+                }, LazyThreadSafetyMode.ExecutionAndPublication);
+
+            var reader = new StatelessAzureQueueReader(name, queue, container, poisonQueue,  _observer, _streamer, _queueVisibilityTimeout);
+            var future = new StatelessAzureFutureList(container, _observer, _streamer);
+            var writer = new StatelessAzureQueueWriter(_streamer, container, queue);
 
             return new AzurePartitionInboxIntake(name, writer, reader, future);
         }
@@ -60,7 +113,9 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
             var writers = intakes.Select(i => i.Writer).ToArray();
             var futures = intakes.Select(i => i.Future).ToArray();
             var readers = intakes.Select(i => i.Reader).ToArray();
-            _schedulers.Add(new AzurePartitionScheduler(writers, futures));
+
+            var scheduler = new StatelessAzureScheduler(writers, futures);
+            _process.AddScheduler(scheduler);
 
             var decayPolicy = BuildDecayPolicy(TimeSpan.FromSeconds(2));
             return new AzurePartitionInbox(readers, futures, decayPolicy);
@@ -88,29 +143,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
                 };
         }
 
-        public void Dispose()
-        {
-        }
-
-        public void Initialize()
-        {
-        }
-
-        public Task Start(CancellationToken token)
-        {
-            return Task.Factory.StartNew(() =>
-                {
-                    while (!token.IsCancellationRequested)
-                    {
-                        foreach (var scheduler in _schedulers)
-                        {
-                            scheduler.DispatchDelayedMessages();
-                        }
-
-                        token.WaitHandle.WaitOne(TimeSpan.FromSeconds(2));
-                    }
-                });
-        }
+   
 
         
     }

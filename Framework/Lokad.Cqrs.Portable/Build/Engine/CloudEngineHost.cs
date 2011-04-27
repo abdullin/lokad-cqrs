@@ -36,12 +36,27 @@ namespace Lokad.Cqrs.Build.Engine
         public Task Start(CancellationToken token)
         {
             var tasks = _serverProcesses.Select(p => p.Start(token)).ToArray();
+
+            if (tasks.Length == 0)
+            {
+                throw new InvalidOperationException(string.Format("There were no instances of '{0}' registered", typeof(IEngineProcess).Name));
+            }
+
             var names =
                 _serverProcesses.Select(p => string.Format("{0}({1:X8})", p.GetType().Name, p.GetHashCode())).ToArray();
 
             _observer.Notify(new HostStarted(names));
 
-            return Task.Factory.ContinueWhenAll(tasks, t => _observer.Notify(new HostStopped()));
+            return Task.Factory.StartNew(() =>
+                {
+                    try
+                    {
+                        Task.WaitAll(tasks, token);
+                    }
+                    catch(OperationCanceledException)
+                    {}
+                    _observer.Notify(new HostStopped());
+                });
         }
 
         public void Initialize()

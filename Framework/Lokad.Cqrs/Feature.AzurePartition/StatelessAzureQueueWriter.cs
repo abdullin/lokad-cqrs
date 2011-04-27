@@ -40,17 +40,11 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             return new CloudQueueMessage(blob);
         }
 
-        public StatelessAzureQueueWriter(IEnvelopeStreamer streamer, CloudStorageAccount account, string queueName)
+        public StatelessAzureQueueWriter(IEnvelopeStreamer streamer, CloudBlobContainer container, CloudQueue queue)
         {
             _streamer = streamer;
-            var blobClient = account.CreateCloudBlobClient();
-            blobClient.RetryPolicy = RetryPolicies.NoRetry();
-
-            _cloudBlob = blobClient.GetContainerReference(queueName);
-
-            var queueClient = account.CreateCloudQueueClient();
-            queueClient.RetryPolicy = RetryPolicies.NoRetry();
-            _queue = queueClient.GetQueueReference(queueName);
+            _cloudBlob = container;
+            _queue = queue;
         }
 
         public void Init()

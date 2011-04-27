@@ -7,12 +7,12 @@
 
 namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
 {
-    public sealed class AzurePartitionScheduler
+    public sealed class StatelessAzureScheduler
     {
         readonly StatelessAzureQueueWriter[] _writers;
         readonly StatelessAzureFutureList[] _futures;
 
-        public AzurePartitionScheduler(StatelessAzureQueueWriter[] writers, StatelessAzureFutureList[] futures)
+        public StatelessAzureScheduler(StatelessAzureQueueWriter[] writers, StatelessAzureFutureList[] futures)
         {
             _writers = writers;
             _futures = futures;

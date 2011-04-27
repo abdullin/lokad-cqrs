@@ -52,7 +52,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Build\ModuleForAzure.cs" />
+    <Compile Include="Build\AzureModule.cs" />
     <Compile Include="Build\ModuleExtensionForSerialization.cs" />
     <Compile Include="Build\Client\CloudClient.cs" />
     <Compile Include="Build\Client\CloudClientBuilder.cs" />
@@ -82,7 +82,9 @@
     <Compile Include="Evil\Maybe.1.cs" />
     <Compile Include="Evil\Maybe.cs" />
     <Compile Include="Feature.AtomicStorage\Azure\IAzureAtomicStorageStrategy.cs" />
-    <Compile Include="Feature.AzurePartition\Inbox\AzurePartitionScheduler.cs" />
+    <Compile Include="Build\AzureClientConfigurationBuilder.cs" />
+    <Compile Include="Feature.AzurePartition\Inbox\StatelessAzureScheduler.cs" />
+    <Compile Include="Feature.AzurePartition\Inbox\AzurePartitionConfigurator.cs" />
     <Compile Include="Feature.AzurePartition\StatelessAzureFutureList.cs" />
     <Compile Include="Feature.AzurePartition\Inbox\AzurePartitionInbox.cs" />
     <Compile Include="Feature.AzurePartition\Inbox\AzurePartitionFactory.cs" />
@@ -93,7 +95,7 @@
     <Compile Include="Feature.AzurePartition\Events\MessageAcked.cs" />
     <Compile Include="Core.Transport\GetMessageResult.cs" />
     <Compile Include="Core.Transport\GetMessageResultState.cs" />
-    <Compile Include="Feature.AzurePartition\Inbox\ModuleForAzurePartition.cs" />
+    <Compile Include="Feature.AzurePartition\Inbox\AzurePartitionModule.cs" />
     <Compile Include="Feature.AzurePartition\Events\MessageDirectoryCreated.cs" />
     <Compile Include="Feature.StreamingStorage\ExtendStorageItem.cs" />
     <Compile Include="Feature.StreamingStorage\Files\FileStorageContainer.cs" />
@@ -114,6 +116,7 @@
     <Compile Include="Feature.StreamingStorage\StorageItemNotFoundException.cs" />
     <Compile Include="Feature.StreamingStorage\StorageWriteOptions.cs" />
     <Compile Include="Feature.StreamingStorage\StreamUtil.cs" />
+    <Compile Include="IAzureClientConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Feature.StreamingStorage\Azure\BlobStorageContainer.cs" />
     <Compile Include="Feature.StreamingStorage\Azure\BlobStorageItem.cs" />
