@@ -131,17 +131,6 @@ namespace Lokad.Cqrs.Tests
             }
         }
 
-        [Test]
-        public void Test2()
-        {
-            using (var host = BuildHost())
-            using (var cts = new CancellationTokenSource())
-            {
-                host.Start(cts.Token);
-                Console.WriteLine("Press any key to stop");
-                Console.ReadKey(true);
-                cts.Cancel(true);
-            }
-        }
+        
     }
 }

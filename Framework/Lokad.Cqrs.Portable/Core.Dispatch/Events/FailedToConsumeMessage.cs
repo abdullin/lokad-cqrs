@@ -21,5 +21,10 @@ namespace Lokad.Cqrs.Core.Dispatch.Events
             EnvelopeId = envelopeId;
             QueueName = queueName;
         }
+
+        public override string ToString()
+        {
+            return string.Format("Failed to consume {0} from '{1}': {2}", EnvelopeId, QueueName, Exception.Message);
+        }
     }
 }

@@ -32,7 +32,12 @@ namespace Lokad.Cqrs.Core.Dispatch
         {
             var route = _routerRule(message);
 
-            var items = route.Split(new[] {':'}, 1);
+            // allow discarding messages, if explicitly allowed
+            if (route == "memory:null")
+                return;
+
+
+            var items = route.Split(new[] {':'}, 2);
             string queueName;
             string endpoint;
 
@@ -47,14 +52,20 @@ namespace Lokad.Cqrs.Core.Dispatch
                 queueName = items[1];
             }
 
+            int routed = 0;
+
             foreach (var factory in _queueFactory)
             {
                 IQueueWriter writer;
                 if (factory.TryGetWriteQueue(endpoint, queueName, out writer))
                 {
                     writer.PutMessage(message);
+                    routed += 1;
                 }
             }
+
+            if (routed == 0)
+                throw new InvalidOperationException(string.Format("Route '{0}' was not handled by any single dispatcher. Did you want to send to 'memory:null' instead?", route));
         }
 
         public void SpecifyRouter(Func<MessageEnvelope, string> router)
