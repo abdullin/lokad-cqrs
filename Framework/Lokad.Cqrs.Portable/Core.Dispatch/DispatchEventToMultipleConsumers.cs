@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using Autofac;
 using Lokad.Cqrs.Core.Directory;
+using Lokad.Cqrs.Core.Dispatch.Events;
 
 namespace Lokad.Cqrs.Core.Dispatch
 {
@@ -22,11 +23,13 @@ namespace Lokad.Cqrs.Core.Dispatch
         readonly MessageDirectory _directory;
         readonly IDictionary<Type, Type[]> _dispatcher = new Dictionary<Type, Type[]>();
         readonly MessageDuplicationMemory _dispatchMemory;
+        readonly ISystemObserver _observer;
 
         public DispatchEventToMultipleConsumers(ILifetimeScope container, MessageDirectory directory,
-            MessageDuplicationManager memory)
+            MessageDuplicationManager memory, ISystemObserver observer)
         {
             _container = container;
+            _observer = observer;
             _directory = directory;
             _dispatchMemory = memory.GetOrAdd(this);
         }
@@ -68,6 +71,10 @@ namespace Lokad.Cqrs.Core.Dispatch
                         }
                     }
                 }
+            }
+            else
+            {
+                _observer.Notify(new EventHadNoConsumers(unpacked.EnvelopeId, item.MappedType));
             }
             // else -> we don't have consumers. It's OK for the event
 

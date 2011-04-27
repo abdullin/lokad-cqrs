@@ -1,13 +1,12 @@
-﻿using System;
-using System.Linq;
-using Lokad.Cqrs.Build.Engine;
-using Lokad.Cqrs.Core.Dispatch.Events;
+﻿using Lokad.Cqrs.Build.Engine;
 using Lokad.Cqrs.Scenarios;
+using Lokad.Cqrs.Tests;
+using Microsoft.WindowsAzure;
 using NUnit.Framework;
 
-namespace Lokad.Cqrs.Tests
+namespace Lokad.Cqrs
 {
-    public static class Azure
+    public static class AzureScenarios
     {
         // ReSharper disable InconsistentNaming
 
@@ -17,9 +16,16 @@ namespace Lokad.Cqrs.Tests
             {
                 builder.Azure(m =>
                     {
-                        m.SendToAzureByDefault("in");
-                        m.AddPartition("in");
+                        m.AddAzureAccount("azure-dev", CloudStorageAccount.DevelopmentStorageAccount);
+                        m.AddAzurePartition("azure-dev", new []{"incoming"},c =>
+                            {
+                                c.QueueVisibilityTimeout(1);
+                                c.WhenFactoryCreated(f => f.SetupForTesting());
+                            });
+                        m.AddAzureSender("azure-dev", "incoming");
+                        
                     });
+                
             }
         }
 

@@ -44,7 +44,7 @@ namespace Lokad.Cqrs.Build
         /// <returns>
         /// same builder for inling multiple configuration statements
         /// </returns>
-        public AzureModule AddAccount(string accountId, CloudStorageAccount account, Action<AzureClientConfigurationBuilder> tuning)
+        public AzureModule AddAzureAccount(string accountId, CloudStorageAccount account, Action<AzureClientConfigurationBuilder> tuning)
         {
             var builder = new AzureClientConfigurationBuilder(account, accountId);
             tuning(builder);
@@ -60,13 +60,20 @@ namespace Lokad.Cqrs.Build
         /// <returns>
         /// same builder for inling multiple configuration statements
         /// </returns>
-        public AzureModule AddAccount(string accountId, CloudStorageAccount account)
+        public AzureModule AddAzureAccount(string accountId, CloudStorageAccount account)
         {
-            return AddAccount(accountId, account, builder => { });
+            return AddAzureAccount(accountId, account, builder => { });
+        }
+
+        public AzureModule AddAzureSender(string accountId, string queueName)
+        {
+            var sms = new SendMessageModule(accountId, queueName);
+            _partitions.Add(sms);
+            return this;
         }
 
 
-        public AzureModule AddPartition(Action<AzurePartitionModule> config, params string[] queues)
+        public AzureModule AddAzurePartition(string accountId, string[] queues, Action<AzurePartitionModule> config)
         {
             foreach (var queue in queues)
             {
@@ -76,7 +83,7 @@ namespace Lokad.Cqrs.Build
                 Assert(QueueName.IsMatch(queue), "Queue name should match regex '{0}'", QueueName.ToString());
             }
 
-            var module = new AzurePartitionModule(queues);
+            var module = new AzurePartitionModule(accountId, queues);
             config(module);
             _partitions.Add(module);
             return this;
@@ -84,9 +91,11 @@ namespace Lokad.Cqrs.Build
 
         
 
-        public AzureModule AddPartition(params string[] queues)
+        public AzureModule AddAzurePartition(string accountId, string firstQueue, params string[] otherQueues)
         {
-            return AddPartition(m => { }, queues);
+            var queues = Enumerable.Repeat(firstQueue, 1).Concat(otherQueues).ToArray();
+            
+            return AddAzurePartition(accountId, queues, m => { });
         }
 
 
@@ -98,7 +107,7 @@ namespace Lokad.Cqrs.Build
             if (!_configs.ContainsKey("azure-dev"))
             {
 
-                AddAccount("azure-dev", CloudStorageAccount.DevelopmentStorageAccount);
+                AddAzureAccount("azure-dev", CloudStorageAccount.DevelopmentStorageAccount);
             }
 
             foreach (var config in _configs)

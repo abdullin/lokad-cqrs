@@ -81,29 +81,35 @@ namespace Lokad.Cqrs
         [Test]
         public void PartitionWithRouter()
         {
-            TestConfiguration(x => x
-                .AddMessageClient("memory:in")
-                .AddMemoryRouter("in", me => "memory:do")
-                .AddMemoryPartition("do"));
+            TestConfiguration(x => x.Memory(m =>
+                {
+                    m.AddMemorySender("in");
+                    m.AddMemoryRouter("in", me => "memory:do");
+                    m.AddMemoryPartition("do");
+                }));
         }
 
         [Test]
         public void Direct()
         {
-            TestConfiguration(x => x
-                .AddMessageClient("memory:in")
-                .AddMemoryPartition("in"));
+            TestConfiguration(x => x.Memory(m =>
+                {
+                    m.AddMemorySender("in");
+                    m.AddMemoryPartition("in");
+                }));
         }
 
         [Test]
         public void RouterChain()
         {
-            TestConfiguration(x => x
-                .AddMessageClient("memory:in")
-                .AddMemoryRouter("in",
-                    me => (((Message1) me.Items[0].Content).Block%2) == 0 ? "memory:do1" : "memory:do2")
-                .AddMemoryPartition("do1")
-                .AddMemoryPartition("do2"));
+            TestConfiguration(x => x.Memory(m =>
+                {
+                    m.AddMemorySender("in");
+                    m.AddMemoryRouter("in",
+                        me => (((Message1) me.Items[0].Content).Block%2) == 0 ? "memory:do1" : "memory:do2");
+                    m.AddMemoryPartition("do1");
+                    m.AddMemoryPartition("do2");
+                }));
         }
     }
 }

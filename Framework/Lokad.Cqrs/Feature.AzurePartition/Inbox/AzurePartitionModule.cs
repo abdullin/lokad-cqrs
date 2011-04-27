@@ -27,9 +27,9 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
 
         string _accountName;
 
-        public AzurePartitionModule(string[] queueNames)
+        public AzurePartitionModule(string accountId, string[] queueNames)
         {
-            _accountName = "default";
+            _accountName = accountId;
             _queueNames = queueNames.ToSet();
             Dispatch<DispatchEventToMultipleConsumers>(x => { });
         }

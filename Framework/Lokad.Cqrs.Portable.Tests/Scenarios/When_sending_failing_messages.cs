@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Lokad.Cqrs.Core.Dispatch.Events;
+using Lokad.Cqrs.Core.Inbox;
 using Lokad.Cqrs.Tests;
 using NUnit.Framework;
 
@@ -37,13 +38,18 @@ namespace Lokad.Cqrs.Scenarios
                 {
                     if (++counter != 4)
                         throw new InvalidOperationException();
-                    CompleteTestAndStopEngine();
                 });
 
             var captured = 0;
             Events
-                .Where(t => t is FailedToConsumeMessage).Subscribe(t => captured++);
+                .OfType<FailedToConsumeMessage>()
+                .Subscribe(t => captured++);
 
+            Events
+                .OfType<MessageAcked>()
+                .Subscribe(m => CompleteTestAndStopEngine());
+
+            
             RunEngineTillStopped(() => SendString("do"));
 
             Assert.IsTrue(TestCompleted);

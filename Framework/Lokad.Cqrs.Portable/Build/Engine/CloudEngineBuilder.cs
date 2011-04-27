@@ -74,19 +74,6 @@ namespace Lokad.Cqrs.Build.Engine
             return this;
         }
 
-        /// <summary>
-        /// Creates default message sender for the instance of <see cref="CloudEngineHost"/>
-        /// </summary>
-        /// <returns>same builder for inline multiple configuration statements</returns>
-        public CloudEngineBuilder AddMessageClient(string endpoint, string queueName)
-        {
-            var m = new SendMessageModule(endpoint, queueName);
-            Enlist(m);
-            return this;
-        }
-
-
-
         public readonly ContainerBuilder Builder = new ContainerBuilder();
 
         public CloudEngineBuilder Serialization(Action<ModuleForSerialization> config)

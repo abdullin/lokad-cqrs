@@ -45,6 +45,7 @@
     <Compile Include="Build\Engine\MemoryModule.cs" />
     <Compile Include="Core.Dispatch\Events\QuarantinedMessage.cs" />
     <Compile Include="Core.Dispatch\MemoryQuarantine.cs" />
+    <Compile Include="Core.Inbox\MessageAcked.cs" />
     <Compile Include="Core.Outbox\EnvelopeSent.cs" />
     <Compile Include="Core.Serialization\ModuleForSerialization.cs" />
     <Compile Include="Build\Engine\CloudEngineBuilder.cs" />

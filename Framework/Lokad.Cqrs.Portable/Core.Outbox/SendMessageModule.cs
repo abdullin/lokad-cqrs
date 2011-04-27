@@ -19,7 +19,7 @@ namespace Lokad.Cqrs.Core.Outbox
         readonly string _endpoint;
         readonly ContainerBuilder _builder = new ContainerBuilder();
 
-        public SendMessageModule(string queueName, string endpoint)
+        public SendMessageModule(string endpoint, string queueName)
         {
             _queueName = queueName;
             _endpoint = endpoint;
@@ -61,10 +61,6 @@ namespace Lokad.Cqrs.Core.Outbox
 
         public void Configure(IComponentRegistry componentRegistry)
         {
-            Assert(!string.IsNullOrEmpty(_queueName),
-                "Empty Queue name is set for SendMessageModule. Please set 'QueueName'.");
-            Assert(ContainsQueuePrefix(_queueName), "Queue {0} should have queue provider name", _queueName);
-
             _builder.Register(BuildDefaultMessageSender).SingleInstance().As<IMessageSender>();
             _builder.Update(componentRegistry);
         }

@@ -15,20 +15,8 @@ namespace Lokad.Cqrs.Tests
         void Config(CloudEngineBuilder builder);
     }
 
-    public abstract class EngineFixture<TEngineProvider>
-        where TEngineProvider : IConfigureEngineForFixture, new()
+    public static class EngineFixtureContracts
     {
-        CancellationTokenSource _source;
-        CloudEngineHost _host;
-        Subject<ISystemEvent> _events;
-
-        public IObservable<ISystemEvent> Events
-        {
-            get { return _events; }
-        }
-
-        Action<CloudEngineBuilder> _configureEngineForTest;
-
         [DataContract]
         public sealed class StringCommand : Define.Command
         {
@@ -51,6 +39,23 @@ namespace Lokad.Cqrs.Tests
                 _action(message.Data);
             }
         }
+    }
+
+    public abstract class EngineFixture<TEngineProvider>
+        where TEngineProvider : IConfigureEngineForFixture, new()
+    {
+        CancellationTokenSource _source;
+        CloudEngineHost _host;
+        Subject<ISystemEvent> _events;
+
+        public IObservable<ISystemEvent> Events
+        {
+            get { return _events; }
+        }
+
+        Action<CloudEngineBuilder> _configureEngineForTest;
+
+        
 
         public bool TestCompleted { get; set; }
 
@@ -73,7 +78,7 @@ namespace Lokad.Cqrs.Tests
 
         protected void SendString(string data)
         {
-            Sender.Send(new StringCommand { Data = data });
+            Sender.Send(new EngineFixtureContracts.StringCommand { Data = data });
         }
 
         [SetUp]
@@ -97,7 +102,7 @@ namespace Lokad.Cqrs.Tests
         protected void RunEngineTillStopped(Action whenStarted)
         {
             var identifyNested =
-                new[] { typeof(EngineFixture<TEngineProvider>), GetType() }
+                new[] { typeof(EngineFixtureContracts), GetType() }
                     .SelectMany(t => t.GetNestedTypes())
                     .Where(t => typeof(IMessage).IsAssignableFrom(t))
                     .Where(t => !t.IsAbstract)

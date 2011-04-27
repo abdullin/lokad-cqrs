@@ -41,7 +41,16 @@ namespace Lokad.Cqrs.Core.Serialization
             foreach (var type in _knownTypes)
             {
                 var reference = DataContractUtil.GetContractReference(type);
-                _contract2Type.Add(reference, type);
+                try
+                {
+                    _contract2Type.Add(reference, type);
+                }
+                catch(ArgumentException ex)
+                {
+                    var format = string.Format("Failed to add contract reference '{0}'", reference);
+                    throw new InvalidOperationException(format, ex);
+                }
+                
                 _type2Contract.Add(type, reference);
             }
         }
@@ -51,7 +60,7 @@ namespace Lokad.Cqrs.Core.Serialization
         /// </summary>
         /// <param name="know">The know.</param>
         public DataSerializerWithDataContracts(IEnumerable<IKnowSerializationTypes> know)
-            : this(new HashSet<Type>(know.SelectMany(t => t.GetKnownTypes())))
+            : this(new HashSet<Type>(know.SelectMany(t => t.GetKnownTypes()).Distinct()))
         {
         }
 

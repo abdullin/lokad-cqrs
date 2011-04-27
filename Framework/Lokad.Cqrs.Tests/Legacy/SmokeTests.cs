@@ -32,29 +32,23 @@ namespace Lokad.Cqrs.Tests
 
             engine.Azure(x =>
                 {
-                    x.AddPartition("azure:process-vip");
-                    x.AddAccount("azure", CloudStorageAccount.DevelopmentStorageAccount);
+                    x.AddAzurePartition("azure","process-vip");
+                    x.AddAzureAccount("azure", CloudStorageAccount.DevelopmentStorageAccount);
                 });
             engine.Memory(x =>
                 {
-                    
-                    x.AddPartition("memory:process-all");
-                    x.AddRouter("memory:inbox", e =>
+                    x.AddMemoryPartition("process-all");
+                    x.AddMemoryRouter("inbox", e =>
                         {
                             if (e.Items.Any(i => i.MappedType == typeof (VipMessage)))
                                 return "azure:process-vip";
                             return "memory:process-all";
                         });
+                    x.AddMemorySender("inbox");
                 });
 
 
-            engine.AddMessageClient("memory:inbox");
-
-            engine.Memory(m =>
-                {
-                    m.AddRouter("inbox", )
-                        .AddPartition("process-all");
-                });
+            
             
 
             

@@ -17,7 +17,7 @@ namespace Lokad.Cqrs.Build.Engine
 
         readonly IList<IModule> _modules = new List<IModule>();
 
-        public MemoryModule AddPartition(string[] queues, Action<ModuleForMemoryPartition> config)
+        public MemoryModule AddMemoryPartition(string[] queues, Action<ModuleForMemoryPartition> config)
         {
             foreach (var queue in queues)
             {
@@ -30,16 +30,19 @@ namespace Lokad.Cqrs.Build.Engine
             return this;
         }
 
-        const string MemoryDefaultQueue = "memory";
         public void Configure(IComponentRegistry componentRegistry)
         {
             var builder = new ContainerBuilder();
 
-            if (_modules.OfType<MemoryModule>().Any())
+            if (_modules.OfType<ModuleForMemoryPartition>().Any())
             {
                 builder.RegisterType<MemoryPartitionFactory>().As
                     <IQueueWriterFactory, IEngineProcess, MemoryPartitionFactory>().
                     SingleInstance();
+            }
+            foreach (var module in _modules)
+            {
+                builder.RegisterModule(module);
             }
 
 
@@ -48,21 +51,28 @@ namespace Lokad.Cqrs.Build.Engine
         }
 
 
-        public MemoryModule AddPartition(params string[] queues)
+        public MemoryModule AddMemoryPartition(params string[] queues)
         {
-            return AddPartition(queues, m => { });
+            return AddMemoryPartition(queues, m => { });
+        }
+
+        public void AddMemorySender(string queueName)
+        {
+            _modules.Add(new SendMessageModule("memory", queueName));
         }
 
 
 
-        public MemoryModule AddPartition(string queueName, Action<ModuleForMemoryPartition> config)
+        public MemoryModule AddMemoryPartition(string queueName, Action<ModuleForMemoryPartition> config)
         {
-            return AddPartition(new string[] { queueName }, config);
+            return AddMemoryPartition(new string[] { queueName }, config);
         }
 
-        public MemoryModule AddRouter(string queueName, Func<MessageEnvelope, string> config)
+        public MemoryModule AddMemoryRouter(string queueName, Func<MessageEnvelope, string> config)
         {
-            return AddPartition(queueName, m => m.Dispatch<DispatchMessagesToRoute>(x => x.SpecifyRouter(config)));
+            return AddMemoryPartition(queueName, m => m.Dispatch<DispatchMessagesToRoute>(x => x.SpecifyRouter(config)));
         }
+
+        
     }
 }

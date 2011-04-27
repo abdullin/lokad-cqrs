@@ -15,7 +15,7 @@ using NUnit.Framework;
 
 namespace Lokad.Cqrs
 {
-    public static class Memory
+    public static class MemoryScenarios
     {
         // ReSharper disable InconsistentNaming
 
@@ -23,9 +23,11 @@ namespace Lokad.Cqrs
         {
             public void Config(CloudEngineBuilder builder)
             {
-                builder
-                    .Memory(x => x.AddPartition("memory:in"))
-                    .AddMessageClient("memory:in");
+                builder.Memory(x =>
+                        {
+                            x.AddMemoryPartition("in");
+                            x.AddMemorySender("in");
+                        });
             }
         }
 

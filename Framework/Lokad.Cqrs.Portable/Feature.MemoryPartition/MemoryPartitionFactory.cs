@@ -25,7 +25,7 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
 
         public bool TryGetWriteQueue(string endpoint, string queueName, out IQueueWriter writer)
         {
-            if (queueName != "memory")
+            if (endpoint != "memory")
             {
                 writer = null;
                 return false;
