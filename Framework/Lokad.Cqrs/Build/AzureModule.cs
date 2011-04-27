@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Autofac;
 using Autofac.Core;
+using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Core.Outbox;
 using Lokad.Cqrs.Feature.AzurePartition.Inbox;
 using Lokad.Cqrs.Feature.AzurePartition.Sender;
@@ -95,6 +96,10 @@ namespace Lokad.Cqrs.Build
             AddAzureProcess(accountId, queues, m => { });
         }
 
+        public void AddAzureRouter(string accountId, string queueName, Func<MessageEnvelope, string> config)
+        {
+            AddAzureProcess(accountId, new[] {queueName}, m => m.Dispatch<DispatchMessagesToRoute>(x => x.SpecifyRouter(config)));
+        }
 
 
         public void Configure(IComponentRegistry componentRegistry)
