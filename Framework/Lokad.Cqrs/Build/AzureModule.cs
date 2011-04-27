@@ -71,7 +71,7 @@ namespace Lokad.Cqrs.Build
         }
 
 
-        public void AddAzurePartition(string accountId, string[] queues, Action<AzurePartitionModule> config)
+        public void AddAzureProcess(string accountId, string[] queues, Action<AzurePartitionModule> config)
         {
             foreach (var queue in queues)
             {
@@ -88,11 +88,11 @@ namespace Lokad.Cqrs.Build
 
         
 
-        public void AddAzurePartition(string accountId, string firstQueue, params string[] otherQueues)
+        public void AddAzureProcess(string accountId, string firstQueue, params string[] otherQueues)
         {
             var queues = Enumerable.Repeat(firstQueue, 1).Concat(otherQueues).ToArray();
             
-            AddAzurePartition(accountId, queues, m => { });
+            AddAzureProcess(accountId, queues, m => { });
         }
 
 

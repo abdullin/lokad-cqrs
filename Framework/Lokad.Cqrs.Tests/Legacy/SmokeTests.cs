@@ -5,7 +5,6 @@
 
 #endregion
 
-using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -28,30 +27,23 @@ namespace Lokad.Cqrs.Tests
         static CloudEngineHost BuildHost()
         {
             var engine = new CloudEngineBuilder();
-
-
             engine.Azure(x =>
                 {
-                    x.AddAzurePartition("azure","process-vip");
-                    x.AddAzureAccount("azure", CloudStorageAccount.DevelopmentStorageAccount);
+                    x.AddAzureAccount("dev-store", CloudStorageAccount.DevelopmentStorageAccount);
+                    x.AddAzureProcess("dev-store", "process-vip");
                 });
             engine.Memory(x =>
                 {
-                    x.AddMemoryPartition("process-all");
+                    x.AddMemoryProcess("process-all");
                     x.AddMemoryRouter("inbox", e =>
                         {
                             if (e.Items.Any(i => i.MappedType == typeof (VipMessage)))
-                                return "azure:process-vip";
+                                return "dev-store:process-vip";
                             return "memory:process-all";
                         });
                     x.AddMemorySender("inbox");
                 });
 
-
-            
-            
-
-            
 
             return engine.Build();
         }
@@ -130,7 +122,5 @@ namespace Lokad.Cqrs.Tests
                 }
             }
         }
-
-        
     }
 }

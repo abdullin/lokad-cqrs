@@ -17,7 +17,7 @@ namespace Lokad.Cqrs.Build.Engine
 
         readonly IList<IModule> _modules = new List<IModule>();
 
-        public MemoryModule AddMemoryPartition(string[] queues, Action<ModuleForMemoryPartition> config)
+        public void AddMemoryProcess(string[] queues, Action<ModuleForMemoryPartition> config)
         {
             foreach (var queue in queues)
             {
@@ -27,7 +27,6 @@ namespace Lokad.Cqrs.Build.Engine
             var module = new ModuleForMemoryPartition(queues);
             config(module);
             _modules.Add(module);
-            return this;
         }
 
         public void Configure(IComponentRegistry componentRegistry)
@@ -51,9 +50,9 @@ namespace Lokad.Cqrs.Build.Engine
         }
 
 
-        public MemoryModule AddMemoryPartition(params string[] queues)
+        public void AddMemoryProcess(params string[] queues)
         {
-            return AddMemoryPartition(queues, m => { });
+            AddMemoryProcess(queues, m => { });
         }
 
         public void AddMemorySender(string queueName)
@@ -63,16 +62,14 @@ namespace Lokad.Cqrs.Build.Engine
 
 
 
-        public MemoryModule AddMemoryPartition(string queueName, Action<ModuleForMemoryPartition> config)
+        public void AddMemoryProcess(string queueName, Action<ModuleForMemoryPartition> config)
         {
-            return AddMemoryPartition(new string[] { queueName }, config);
+            AddMemoryProcess(new string[] { queueName }, config);
         }
 
-        public MemoryModule AddMemoryRouter(string queueName, Func<MessageEnvelope, string> config)
+        public void AddMemoryRouter(string queueName, Func<MessageEnvelope, string> config)
         {
-            return AddMemoryPartition(queueName, m => m.Dispatch<DispatchMessagesToRoute>(x => x.SpecifyRouter(config)));
+            AddMemoryProcess(queueName, m => m.Dispatch<DispatchMessagesToRoute>(x => x.SpecifyRouter(config)));
         }
-
-        
     }
 }

@@ -85,7 +85,7 @@ namespace Lokad.Cqrs
                 {
                     m.AddMemorySender("in");
                     m.AddMemoryRouter("in", me => "memory:do");
-                    m.AddMemoryPartition("do");
+                    m.AddMemoryProcess("do");
                 }));
         }
 
@@ -95,7 +95,7 @@ namespace Lokad.Cqrs
             TestConfiguration(x => x.Memory(m =>
                 {
                     m.AddMemorySender("in");
-                    m.AddMemoryPartition("in");
+                    m.AddMemoryProcess("in");
                 }));
         }
 
@@ -107,8 +107,8 @@ namespace Lokad.Cqrs
                     m.AddMemorySender("in");
                     m.AddMemoryRouter("in",
                         me => (((Message1) me.Items[0].Content).Block%2) == 0 ? "memory:do1" : "memory:do2");
-                    m.AddMemoryPartition("do1");
-                    m.AddMemoryPartition("do2");
+                    m.AddMemoryProcess("do1");
+                    m.AddMemoryProcess("do2");
                 }));
         }
     }

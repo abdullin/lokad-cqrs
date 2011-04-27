@@ -25,7 +25,7 @@ namespace Lokad.Cqrs
             {
                 builder.Memory(x =>
                         {
-                            x.AddMemoryPartition("in");
+                            x.AddMemoryProcess("in");
                             x.AddMemorySender("in");
                         });
             }

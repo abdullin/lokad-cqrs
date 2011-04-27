@@ -17,7 +17,7 @@ namespace Lokad.Cqrs
                 builder.Azure(m =>
                     {
                         m.AddAzureAccount("azure-dev", CloudStorageAccount.DevelopmentStorageAccount);
-                        m.AddAzurePartition("azure-dev", new []{"incoming"},c =>
+                        m.AddAzureProcess("azure-dev", new []{"incoming"},c =>
                             {
                                 c.QueueVisibilityTimeout(1);
                                 c.WhenFactoryCreated(f => f.SetupForTesting());
