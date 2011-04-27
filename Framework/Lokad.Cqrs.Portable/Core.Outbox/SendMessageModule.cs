@@ -16,11 +16,13 @@ namespace Lokad.Cqrs.Core.Outbox
     public sealed class SendMessageModule : BuildSyntaxHelper, IModule
     {
         readonly string _queueName;
+        readonly string _endpoint;
         readonly ContainerBuilder _builder = new ContainerBuilder();
 
-        public SendMessageModule(string queueName)
+        public SendMessageModule(string queueName, string endpoint)
         {
             _queueName = queueName;
+            _endpoint = endpoint;
         }
 
 
@@ -32,7 +34,7 @@ namespace Lokad.Cqrs.Core.Outbox
             foreach (var factory in factories)
             {
                 IQueueWriter writer;
-                if (factory.TryGetWriteQueue(_queueName, out writer))
+                if (factory.TryGetWriteQueue(_endpoint, _queueName, out writer))
                 {
                     queues.Add(writer);
                 }

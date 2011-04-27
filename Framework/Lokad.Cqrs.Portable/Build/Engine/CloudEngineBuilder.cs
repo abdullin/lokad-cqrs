@@ -15,7 +15,6 @@ using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Core.Outbox;
 using Lokad.Cqrs.Core.Serialization;
 using Lokad.Cqrs.Feature.Logging;
-using Lokad.Cqrs.Feature.MemoryPartition;
 
 // ReSharper disable UnusedMethodReturnValue.Global
 
@@ -46,18 +45,7 @@ namespace Lokad.Cqrs.Build.Engine
         }
 
 
-        public CloudEngineBuilder AddMemoryPartition(string[] queues, Action<ModuleForMemoryPartition> config)
-        {
-            foreach (var queue in queues)
-            {
-                Assert(!ContainsQueuePrefix(queue),
-                    "Queue '{0}' should not contain queue prefix, since it's memory already", queue);
-            }
-            var module = new ModuleForMemoryPartition(queues);
-            config(module);
-            Enlist(module);
-            return this;
-        }
+      
 
         public CloudEngineBuilder RegisterSystemObserver(ISystemObserver observer)
         {
@@ -72,26 +60,7 @@ namespace Lokad.Cqrs.Build.Engine
         }
 
 
-        public CloudEngineBuilder AddMemoryPartition(params string[] queues)
-        {
-            return AddMemoryPartition(queues, m => { });
-        }
-
-        public CloudEngineBuilder RegisterInstance<T>(T instance) where T : class
-        {
-            Builder.RegisterInstance(instance);
-            return this;
-        }
-
-        public CloudEngineBuilder AddMemoryPartition(string queueName, Action<ModuleForMemoryPartition> config)
-        {
-            return AddMemoryPartition(new string[] {queueName}, config);
-        }
-
-        public CloudEngineBuilder AddMemoryRouter(string queueName, Func<MessageEnvelope, string> config)
-        {
-            return AddMemoryPartition(queueName, m => m.Dispatch<DispatchMessagesToRoute>(x => x.SpecifyRouter(config)));
-        }
+     
 
 
         /// <summary>
@@ -109,12 +78,14 @@ namespace Lokad.Cqrs.Build.Engine
         /// Creates default message sender for the instance of <see cref="CloudEngineHost"/>
         /// </summary>
         /// <returns>same builder for inline multiple configuration statements</returns>
-        public CloudEngineBuilder AddMessageClient(string queueName)
+        public CloudEngineBuilder AddMessageClient(string endpoint, string queueName)
         {
-            var m = new SendMessageModule(queueName);
+            var m = new SendMessageModule(endpoint, queueName);
             Enlist(m);
             return this;
         }
+
+
 
         public readonly ContainerBuilder Builder = new ContainerBuilder();
 
@@ -123,6 +94,19 @@ namespace Lokad.Cqrs.Build.Engine
             var m = new ModuleForSerialization();
             config(m);
             Enlist(m);
+            return this;
+        }
+        public CloudEngineBuilder RegisterInstance<T>(T instance) where T : class
+        {
+            Builder.RegisterInstance(instance);
+            return this;
+        }
+
+        public CloudEngineBuilder Memory(Action<MemoryModule> configure)
+        {
+            var m = new MemoryModule();
+            configure(m);
+            Builder.RegisterModule(m);
             return this;
         }
 
@@ -156,12 +140,6 @@ namespace Lokad.Cqrs.Build.Engine
                 Serialization(x => x.UseDataContractSerializer());
             }
 
-            if (IsEnlisted<ModuleForMemoryPartition>())
-            {
-                Builder.RegisterType<MemoryPartitionFactory>().As
-                    <IQueueWriterFactory, IEngineProcess, MemoryPartitionFactory>().
-                    SingleInstance();
-            }
 
 
             foreach (var module in _moduleEnlistments)

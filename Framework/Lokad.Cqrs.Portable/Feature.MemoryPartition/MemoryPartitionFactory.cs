@@ -23,18 +23,17 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
             new ConcurrentDictionary<string, MemoryFutureList>();
 
 
-        public bool TryGetWriteQueue(string name, out IQueueWriter writer)
+        public bool TryGetWriteQueue(string endpoint, string queueName, out IQueueWriter writer)
         {
-            const string prefix = "memory:";
-            if (name.StartsWith(prefix, StringComparison.InvariantCultureIgnoreCase))
+            if (queueName != "memory")
             {
-                var cleaned = name.Remove(0, prefix.Length).Trim();
-                var queue = _delivery.GetOrAdd(cleaned, s => new BlockingCollection<MessageEnvelope>());
-                writer = new MemoryQueueWriter(queue);
-                return true;
+                writer = null;
+                return false;
             }
-            writer = null;
-            return false;
+            
+            var queue = _delivery.GetOrAdd(queueName, s => new BlockingCollection<MessageEnvelope>());
+            writer = new MemoryQueueWriter(queue);
+            return true;
         }
 
         public MemoryPartitionInbox GetMemoryInbox(string[] queueNames)

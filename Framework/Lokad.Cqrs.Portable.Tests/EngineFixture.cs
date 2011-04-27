@@ -6,12 +6,17 @@ using System.Runtime.Serialization;
 using System.Threading;
 using Lokad.Cqrs.Build.Engine;
 using Lokad.Cqrs.Core.Directory.Default;
-using Lokad.Cqrs.Feature.AzurePartition.Inbox;
 using NUnit.Framework;
 
 namespace Lokad.Cqrs.Tests
 {
-    public abstract class AzureEngineFixture
+    public interface IConfigureEngineForFixture
+    {
+        void Config(CloudEngineBuilder builder);
+    }
+
+    public abstract class EngineFixture<TEngineProvider>
+        where TEngineProvider : IConfigureEngineForFixture, new()
     {
         CancellationTokenSource _source;
         CloudEngineHost _host;
@@ -22,7 +27,7 @@ namespace Lokad.Cqrs.Tests
             get { return _events; }
         }
 
-        Action<CloudEngineBuilder> _whenConfiguring;
+        Action<CloudEngineBuilder> _configureEngineForTest;
 
         [DataContract]
         public sealed class StringCommand : Define.Command
@@ -63,7 +68,7 @@ namespace Lokad.Cqrs.Tests
 
         protected void EnlistHandler(Action<string> data)
         {
-            _whenConfiguring += builder => builder.RegisterInstance(data);
+            _configureEngineForTest += builder => builder.RegisterInstance(data);
         }
 
         protected void SendString(string data)
@@ -76,7 +81,7 @@ namespace Lokad.Cqrs.Tests
         {
             _source = new CancellationTokenSource();
             _events = new Subject<ISystemEvent>();
-            _whenConfiguring = builder => { };
+            _configureEngineForTest = builder => { };
             TestCompleted = false;
         }
 
@@ -92,26 +97,22 @@ namespace Lokad.Cqrs.Tests
         protected void RunEngineTillStopped(Action whenStarted)
         {
             var identifyNested =
-                new[] { typeof(AzureEngineFixture), GetType() }
+                new[] { typeof(EngineFixture<TEngineProvider>), GetType() }
                     .SelectMany(t => t.GetNestedTypes())
                     .Where(t => typeof(IMessage).IsAssignableFrom(t))
                     .Where(t => !t.IsAbstract)
                     .ToArray();
 
-
-            var engine = new CloudEngineBuilder()
+            var builder = new CloudEngineBuilder()
                 .RegisterInstance<IObserver<ISystemEvent>>(_events)
-                .AddMessageClient("default:inda")
-                .Azure(m => m.AddPartition(p =>
-                    {
-                        p.QueueVisibilityTimeout(50);
-                        p.WhenFactoryCreated(c => c.SetupForTesting());
-                    }, "inda"))
-                .DomainIs(d => d.WhereMessages(t => identifyNested.Contains(t)).InCurrentAssembly());
+                .DomainIs(d => d
+                    .WhereMessages(t => identifyNested.Contains(t))
+                    .InCurrentAssembly());
 
-            _whenConfiguring(engine);
+            new TEngineProvider().Config(builder);
+            _configureEngineForTest(builder);
 
-            using (_host = engine.Build())
+            using (_host = builder.Build())
             {
                 _host.Start(_source.Token);
 
@@ -124,6 +125,5 @@ namespace Lokad.Cqrs.Tests
                 }
             }
         }
-
     }
 }

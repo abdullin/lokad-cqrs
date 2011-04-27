@@ -1,57 +1,29 @@
 ﻿using System;
 using System.Linq;
+using Lokad.Cqrs.Build.Engine;
 using Lokad.Cqrs.Core.Dispatch.Events;
+using Lokad.Cqrs.Scenarios;
 using NUnit.Framework;
 
 namespace Lokad.Cqrs.Tests
 {
-    [TestFixture]
-    public sealed class AzureQuarantineTests : AzureEngineFixture
+    public static class Azure
     {
         // ReSharper disable InconsistentNaming
 
-
-        [Test]
-        public void FailureEndsWithQuarantine()
+        public sealed class AzureConfig : IConfigureEngineForFixture
         {
-            EnlistHandler(x =>
-                {
-                    throw new InvalidOperationException("Fail: " + x);
-                });
-
-            Events
-                .OfType<QuarantinedMessage>()
-                .Subscribe(cm =>
+            public void Config(CloudEngineBuilder builder)
+            {
+                builder.Azure(m =>
                     {
-                        Assert.AreEqual("Fail: try", cm.LastException.Message);
-                        CompleteTestAndStopEngine();
+                        m.SendToAzureByDefault("in");
+                        m.AddPartition("in");
                     });
-
-            RunEngineTillStopped(() => SendString("try"));
-
-            Assert.IsTrue(TestCompleted);
+            }
         }
 
-        [Test]
-        public void FewFailuresDoNotQuarantine()
-        {
-            var counter = 0;
-            EnlistHandler(x =>
-                {
-                    if (++counter != 4)
-                        throw new InvalidOperationException();
-                    CompleteTestAndStopEngine();
-                });
-
-            var captured = 0;
-            Events
-                .Where(t => t is FailedToConsumeMessage)
-                .Subscribe(t => captured++);
-
-            RunEngineTillStopped(() => SendString("do"));
-
-            Assert.IsTrue(TestCompleted);
-            Assert.AreEqual(3, captured);
-        }
+        [TestFixture]
+        public sealed class AzureQuarantine : When_sending_failing_messages<AzureConfig> { }
     }
 }

@@ -45,9 +45,9 @@ namespace Lokad.Cqrs.Build.Client
         /// Creates default message sender for the instance of <see cref="CloudClient"/>
         /// </summary>
         /// <returns>same builder for inline multiple configuration statements</returns>
-        public CloudClientBuilder AddMessageClient(string queueName)
+        public CloudClientBuilder AddMessageClient(string queueName, string endpointName)
         {
-            Builder.RegisterModule(new SendMessageModule(queueName));
+            Builder.RegisterModule(new SendMessageModule(queueName, endpointName));
             return this;
         }
 

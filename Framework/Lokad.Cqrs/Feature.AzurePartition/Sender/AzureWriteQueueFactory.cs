@@ -31,20 +31,16 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Sender
         }
 
 
-        public bool TryGetWriteQueue(string queueName, out IQueueWriter writer)
+        public bool TryGetWriteQueue(string endpointName, string queueName, out IQueueWriter writer)
         {
             foreach (var configuration in _configurations)
             {
-                var accountName = configuration.AccountName;
-                var match = accountName + ":";
-                if (!queueName.StartsWith(match, StringComparison.InvariantCultureIgnoreCase)) continue;
-
-                var cleanedName = queueName.Remove(0, match.Length).TrimStart();
+                if (endpointName != configuration.AccountName) continue;
 
                 writer = _writeQueues.GetOrAdd(queueName, name =>
                     {
-                        var queue = configuration.BuildQueue(cleanedName);
-                        var container = configuration.BuildContainer(cleanedName);
+                        var queue = configuration.BuildQueue(name);
+                        var container = configuration.BuildContainer(name);
                         var v = new StatelessAzureQueueWriter(_streamer, container, queue);
                         v.Init();
                         return v;
@@ -55,5 +51,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Sender
             writer = null;
             return false;
         }
+
+        
     }
 }

@@ -13,6 +13,7 @@ using System.Threading;
 using Lokad.Cqrs.Build.Engine;
 using Lokad.Cqrs.Core.Directory.Default;
 using Lokad.Cqrs.Evil;
+using Microsoft.WindowsAzure;
 using NUnit.Framework;
 
 namespace Lokad.Cqrs.Tests
@@ -27,17 +28,36 @@ namespace Lokad.Cqrs.Tests
         static CloudEngineHost BuildHost()
         {
             var engine = new CloudEngineBuilder();
+
+
+            engine.Azure(x =>
+                {
+                    x.AddPartition("azure:process-vip");
+                    x.AddAccount("azure", CloudStorageAccount.DevelopmentStorageAccount);
+                });
+            engine.Memory(x =>
+                {
+                    
+                    x.AddPartition("memory:process-all");
+                    x.AddRouter("memory:inbox", e =>
+                        {
+                            if (e.Items.Any(i => i.MappedType == typeof (VipMessage)))
+                                return "azure:process-vip";
+                            return "memory:process-all";
+                        });
+                });
+
+
             engine.AddMessageClient("memory:inbox");
 
-            engine.AddMemoryPartition("process-all");
-            engine.Azure(x => x.AddPartition("process-vip"));
-
-            engine.AddMemoryRouter("inbox", e =>
+            engine.Memory(m =>
                 {
-                    if (e.Items.Any(i => i.MappedType == typeof (VipMessage)))
-                        return "azure-dev:process-vip";
-                    return "memory:process-all";
+                    m.AddRouter("inbox", )
+                        .AddPartition("process-all");
                 });
+            
+
+            
 
             return engine.Build();
         }

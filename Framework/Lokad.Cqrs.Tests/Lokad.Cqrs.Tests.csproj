@@ -60,7 +60,6 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AzureEngineFixture.cs" />
     <Compile Include="AzureQuarantineTests.cs" />
     <Compile Include="Legacy\DomainTests.cs" />
     <Compile Include="Legacy\Durability\LegacyCompatibilityTests.cs" />
@@ -86,6 +85,10 @@
     <Compile Include="Legacy\SimpleStorage\When_reading_item_in.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Lokad.Cqrs.Portable.Tests\Lokad.Cqrs.Portable.Tests.csproj">
+      <Project>{96E3B247-C04C-4138-A042-7969562B4B0F}</Project>
+      <Name>Lokad.Cqrs.Portable.Tests</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Lokad.Cqrs.Portable\Lokad.Cqrs.Portable.csproj">
       <Project>{4E2E749C-4D6F-4EF8-8E9D-96D467306997}</Project>
       <Name>Lokad.Cqrs.Portable</Name>

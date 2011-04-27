@@ -29,42 +29,12 @@ namespace Lokad.Cqrs.Build
     public sealed class AzureModule : BuildSyntaxHelper, IModule
     {
 
-
         static readonly Regex QueueName = new Regex("^[A-Za-z][A-Za-z0-9]{2,62}", RegexOptions.Compiled);
 
         readonly IDictionary<string,AzureClientConfiguration> _configs = new Dictionary<string, AzureClientConfiguration>();
-        readonly IList<AzurePartitionModule> _partitions = new List<AzurePartitionModule>();
+        readonly IList<IModule> _partitions = new List<IModule>();
 
 
-
-        /// <summary>
-        /// Uses development storage account defined in the string.
-        /// </summary>
-        /// <param name="accountString">The account string.</param>
-        /// <param name="tuning">Configuration syntax</param>
-        /// <returns>
-        /// same builder for inling multiple configuration statements
-        /// </returns>
-        /// <seealso cref="CloudStorageAccount.Parse"/>
-        public AzureModule AddAccount(string accountString, Action<AzureClientConfigurationBuilder> tuning)
-        {
-            var account = CloudStorageAccount.Parse(accountString);
-            AddAccount(account, tuning);
-            return this;
-        }
-
-        /// <summary>
-        /// Uses development storage account defined in the string.
-        /// </summary>
-        /// <param name="accountString">The account string.</param>
-        /// <returns>
-        /// same builder for inling multiple configuration statements
-        /// </returns>
-        /// <seealso cref="CloudStorageAccount.Parse"/>
-        public AzureModule AddAccount(string accountString)
-        {
-            return AddAccount(accountString, builder => { });
-        }
 
         /// <summary>
         /// Registers the specified storage account as default into the container
@@ -74,9 +44,9 @@ namespace Lokad.Cqrs.Build
         /// <returns>
         /// same builder for inling multiple configuration statements
         /// </returns>
-        public AzureModule AddAccount(CloudStorageAccount account, Action<AzureClientConfigurationBuilder> tuning)
+        public AzureModule AddAccount(string accountId, CloudStorageAccount account, Action<AzureClientConfigurationBuilder> tuning)
         {
-            var builder = new AzureClientConfigurationBuilder(account);
+            var builder = new AzureClientConfigurationBuilder(account, accountId);
             tuning(builder);
             var configuration = builder.Build();
             _configs.Add(configuration.AccountName, configuration);
@@ -90,9 +60,9 @@ namespace Lokad.Cqrs.Build
         /// <returns>
         /// same builder for inling multiple configuration statements
         /// </returns>
-        public AzureModule AddAccount(CloudStorageAccount account)
+        public AzureModule AddAccount(string accountId, CloudStorageAccount account)
         {
-            return AddAccount(account, builder => { });
+            return AddAccount(accountId, account, builder => { });
         }
 
 
@@ -119,20 +89,16 @@ namespace Lokad.Cqrs.Build
             return AddPartition(m => { }, queues);
         }
 
-        public AzureModule()
-        {
-            AddAccount(CloudStorageAccount.DevelopmentStorageAccount);
-        }
 
 
         public void Configure(IComponentRegistry componentRegistry)
         {
             var builder = new ContainerBuilder();
 
-            if (!_configs.ContainsKey("default") && _configs.Count == 1)
+            if (!_configs.ContainsKey("azure-dev"))
             {
-                var account = _configs.Values.First();
-                AddAccount(account.Account, acm => acm.WithCustomName("default"));
+
+                AddAccount("azure-dev", CloudStorageAccount.DevelopmentStorageAccount);
             }
 
             foreach (var config in _configs)

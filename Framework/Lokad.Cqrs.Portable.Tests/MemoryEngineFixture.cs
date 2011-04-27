@@ -99,8 +99,7 @@ namespace Lokad.Cqrs
             var engine = new CloudEngineBuilder()
                 .RegisterInstance<IObserver<ISystemEvent>>(_events)
                 .RegisterInstance(this)
-                .AddMessageClient("memory:in")
-                .AddMemoryPartition("in")
+                
                 .DomainIs(d => d.WhereMessages(t => identifyNested.Contains(t)).InCurrentAssembly());
 
             _whenConfiguring(engine);

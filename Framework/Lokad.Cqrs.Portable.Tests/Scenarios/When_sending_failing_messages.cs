@@ -1,27 +1,24 @@
 ﻿using System;
-using Lokad.Cqrs.Core.Dispatch.Events;
-using NUnit.Framework;
 using System.Linq;
+using Lokad.Cqrs.Core.Dispatch.Events;
+using Lokad.Cqrs.Tests;
+using NUnit.Framework;
 
-namespace Lokad.Cqrs
+namespace Lokad.Cqrs.Scenarios
 {
-    [TestFixture]
-    public sealed class MemoryQuarantineTests : MemoryEngineFixture
+    public abstract class When_sending_failing_messages<TEngineProvider> : EngineFixture<TEngineProvider> 
+        where TEngineProvider : IConfigureEngineForFixture, new()
     {
-        // ReSharper disable InconsistentNaming
-
-     
         [Test]
-        public void FailureEndsWithQuarantine()
+        public void Permanent_failure_ends_with_quarnine()
         {
             EnlistHandler(x =>
                 {
-                    throw new InvalidOperationException("Fail: "+x);
+                    throw new InvalidOperationException("Fail: " + x);
                 });
 
             Events
-                .OfType<QuarantinedMessage>()
-                .Subscribe(cm =>
+                .OfType<QuarantinedMessage>().Subscribe(cm =>
                     {
                         Assert.AreEqual("Fail: try", cm.LastException.Message);
                         CompleteTestAndStopEngine();
@@ -33,7 +30,7 @@ namespace Lokad.Cqrs
         }
 
         [Test]
-        public void FewFailuresDoNotQuarantine()
+        public void Transient_failures_are_retried()
         {
             var counter = 0;
             EnlistHandler(x =>
@@ -45,8 +42,7 @@ namespace Lokad.Cqrs
 
             var captured = 0;
             Events
-                .Where(t => t is FailedToConsumeMessage)
-                .Subscribe(t => captured ++);
+                .Where(t => t is FailedToConsumeMessage).Subscribe(t => captured++);
 
             RunEngineTillStopped(() => SendString("do"));
 

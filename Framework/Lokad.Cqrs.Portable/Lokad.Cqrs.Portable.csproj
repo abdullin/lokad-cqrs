@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Build\BuildSyntaxHelper.cs" />
+    <Compile Include="Build\Engine\MemoryModule.cs" />
     <Compile Include="Core.Dispatch\Events\QuarantinedMessage.cs" />
     <Compile Include="Core.Dispatch\MemoryQuarantine.cs" />
     <Compile Include="Core.Outbox\EnvelopeSent.cs" />

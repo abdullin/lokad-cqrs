@@ -32,10 +32,25 @@ namespace Lokad.Cqrs.Core.Dispatch
         {
             var route = _routerRule(message);
 
+            var items = route.Split(new[] {':'}, 1);
+            string queueName;
+            string endpoint;
+
+            if (items.Length == 1)
+            {
+                queueName = route;
+                endpoint = "default";
+            }
+            else
+            {
+                endpoint = items[0];
+                queueName = items[1];
+            }
+
             foreach (var factory in _queueFactory)
             {
                 IQueueWriter writer;
-                if (factory.TryGetWriteQueue(route, out writer))
+                if (factory.TryGetWriteQueue(endpoint, queueName, out writer))
                 {
                     writer.PutMessage(message);
                 }

@@ -13,8 +13,7 @@ namespace Lokad.Cqrs.Build
 
         Action<CloudQueueClient> _queueClientConfiguration;
         Action<CloudBlobClient> _blobClientConfiguration;
-
-        string _customName;
+        readonly string _accountId;
         
 
         public AzureClientConfigurationBuilder ConfigureQueueClient(Action<CloudQueueClient> configure, bool replaceOld = false)
@@ -44,27 +43,23 @@ namespace Lokad.Cqrs.Build
         }
 
 
-        public AzureClientConfigurationBuilder WithCustomName(string customName)
-        {
-            _customName = customName;
-            return this;
-        }
         
 
 
 
-        public AzureClientConfigurationBuilder(CloudStorageAccount account)
+        public AzureClientConfigurationBuilder(CloudStorageAccount account, string accountId)
         {
             // defaults
             _queueClientConfiguration = client => client.RetryPolicy = RetryPolicies.NoRetry();
             _blobClientConfiguration = client => client.RetryPolicy = RetryPolicies.NoRetry();
             _account = account;
+            _accountId = accountId;
         }
 
         internal AzureClientConfiguration Build()
         {
-            var accountName = _customName ?? _account.Credentials.AccountName;
-            return new AzureClientConfiguration(_account, _queueClientConfiguration, _blobClientConfiguration, accountName);
+            
+            return new AzureClientConfiguration(_account, _queueClientConfiguration, _blobClientConfiguration, _accountId);
         }
     }
 
