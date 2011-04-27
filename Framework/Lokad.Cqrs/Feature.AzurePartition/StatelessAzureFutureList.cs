@@ -38,6 +38,14 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             _container.CreateIfNotExist();
         }
 
+        public void SetupForTesting()
+        {
+            foreach (var item in _container.ListBlobs())
+            {
+                ((CloudBlockBlob)item).Delete();
+            }
+        }
+
         public void PutMessage(MessageEnvelope envelope)
         {
             if (envelope.DeliverOn == default(DateTimeOffset))

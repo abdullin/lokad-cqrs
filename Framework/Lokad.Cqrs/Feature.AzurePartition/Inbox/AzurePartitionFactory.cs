@@ -23,6 +23,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
 
         readonly ConcurrentBag<AzurePartitionScheduler> _schedulers = new ConcurrentBag<AzurePartitionScheduler>();
 
+        readonly ConcurrentDictionary<string, AzurePartitionInboxIntake> _intakes = new ConcurrentDictionary<string, AzurePartitionInboxIntake>();
 
         public AzurePartitionFactory(CloudStorageAccount account, IEnvelopeStreamer streamer,
             ISystemObserver observer)
@@ -32,23 +33,37 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
             _observer = observer;
         }
 
+        public void SetupForTesting()
+        {
+            foreach (var intake in _intakes.Values)
+            {
+                intake.SetupForTesting();
+            }
+        }
+
+        AzurePartitionInboxIntake BuildIntake(string name)
+        {
+            var reader = new StatelessAzureQueueReader(_account, name, _observer, _streamer);
+            var future = new StatelessAzureFutureList(_account, name, _observer, _streamer);
+            var writer = new StatelessAzureQueueWriter(_streamer, _account, name);
+
+            return new AzurePartitionInboxIntake(name, writer, reader, future);
+        }
+
         public IPartitionInbox GetNotifier(string[] queueNames)
         {
-            var queues = queueNames
-                .Select(name => new StatelessAzureQueueReader(_account, name, _observer, _streamer))
+
+            var intakes = queueNames
+                .Select(name => _intakes.GetOrAdd(name, BuildIntake))
                 .ToArray();
 
-            var futures = queueNames
-                .Select(name => new StatelessAzureFutureList(_account, name, _observer, _streamer))
-                .ToArray();
-
-            var writers = queueNames
-                .Select(name => new StatelessAzureQueueWriter(_streamer, _account, name))
-                .ToArray();
-
+            var writers = intakes.Select(i => i.Writer).ToArray();
+            var futures = intakes.Select(i => i.Future).ToArray();
+            var readers = intakes.Select(i => i.Reader).ToArray();
             _schedulers.Add(new AzurePartitionScheduler(writers, futures));
 
-            return new AzurePartitionInbox(queues, futures, BuildDecayPolicy(TimeSpan.FromSeconds(2)));
+            var decayPolicy = BuildDecayPolicy(TimeSpan.FromSeconds(2));
+            return new AzurePartitionInbox(readers, futures, decayPolicy);
         }
 
         static Func<uint, TimeSpan> BuildDecayPolicy(TimeSpan maxDecay)
@@ -95,6 +110,30 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
                         token.WaitHandle.WaitOne(TimeSpan.FromSeconds(2));
                     }
                 });
+        }
+
+        
+    }
+
+    public sealed class AzurePartitionInboxIntake
+    {
+        public readonly string Name;
+        public readonly StatelessAzureQueueWriter Writer;
+        public readonly StatelessAzureQueueReader Reader;
+        public readonly StatelessAzureFutureList Future;
+
+        public AzurePartitionInboxIntake(string name, StatelessAzureQueueWriter writer, StatelessAzureQueueReader reader, StatelessAzureFutureList future)
+        {
+            Name = name;
+            Future = future;
+            Writer = writer;
+            Reader = reader;
+        }
+
+        public void SetupForTesting()
+        {
+            Reader.SetupForTesting();
+            Future.SetupForTesting();
         }
     }
 }

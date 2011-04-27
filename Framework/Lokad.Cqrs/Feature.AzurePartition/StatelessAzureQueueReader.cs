@@ -58,6 +58,19 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             _streamer = streamer;
         }
 
+        public void SetupForTesting()
+        {
+            if (_queue.Exists())
+            {
+                _queue.Clear();
+            }
+            _cloudBlob.CreateIfNotExist();
+            foreach (var blob in _cloudBlob.ListBlobs())
+            {
+                ((CloudBlockBlob)blob).DeleteIfExists();
+            }
+        }
+
 
         public void Initialize()
         {
@@ -71,7 +84,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             CloudQueueMessage message;
             try
             {
-                message = _queue.GetMessage(TimeSpan.FromSeconds(0));
+                message = _queue.GetMessage(TimeSpan.FromMilliseconds(1));
             }
             catch (Exception ex)
             {

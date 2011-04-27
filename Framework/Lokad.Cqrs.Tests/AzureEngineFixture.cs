@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 using System.Threading;
 using Lokad.Cqrs.Build.Engine;
 using Lokad.Cqrs.Core.Directory.Default;
+using Lokad.Cqrs.Feature.AzurePartition.Inbox;
 using NUnit.Framework;
 
 namespace Lokad.Cqrs.Tests
@@ -107,6 +108,11 @@ namespace Lokad.Cqrs.Tests
             using (_host = engine.Build())
             using (var t = _source)
             {
+                // wipe the queues
+                _host.Resolve<AzurePartitionFactory>().SetupForTesting();
+
+
+
                 _host.Start(t.Token);
 
                 whenStarted();

@@ -19,5 +19,10 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Events
             Exception = exception;
             QueueName = queueName;
         }
+
+        public override string ToString()
+        {
+            return string.Format("Failed to read from '{0}': {1}", QueueName, this.Exception.Message);
+        }
     }
 }
