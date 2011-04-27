@@ -44,13 +44,12 @@ namespace Lokad.Cqrs.Build
         /// <returns>
         /// same builder for inling multiple configuration statements
         /// </returns>
-        public AzureModule AddAzureAccount(string accountId, CloudStorageAccount account, Action<AzureClientConfigurationBuilder> tuning)
+        public void AddAzureAccount(string accountId, CloudStorageAccount account, Action<AzureClientConfigurationBuilder> tuning)
         {
             var builder = new AzureClientConfigurationBuilder(account, accountId);
             tuning(builder);
             var configuration = builder.Build();
             _configs.Add(configuration.AccountName, configuration);
-            return this;
         }
 
         /// <summary>
@@ -60,20 +59,19 @@ namespace Lokad.Cqrs.Build
         /// <returns>
         /// same builder for inling multiple configuration statements
         /// </returns>
-        public AzureModule AddAzureAccount(string accountId, CloudStorageAccount account)
+        public void AddAzureAccount(string accountId, CloudStorageAccount account)
         {
-            return AddAzureAccount(accountId, account, builder => { });
+            AddAzureAccount(accountId, account, builder => { });
         }
 
-        public AzureModule AddAzureSender(string accountId, string queueName)
+        public void AddAzureSender(string accountId, string queueName)
         {
             var sms = new SendMessageModule(accountId, queueName);
             _partitions.Add(sms);
-            return this;
         }
 
 
-        public AzureModule AddAzurePartition(string accountId, string[] queues, Action<AzurePartitionModule> config)
+        public void AddAzurePartition(string accountId, string[] queues, Action<AzurePartitionModule> config)
         {
             foreach (var queue in queues)
             {
@@ -86,16 +84,15 @@ namespace Lokad.Cqrs.Build
             var module = new AzurePartitionModule(accountId, queues);
             config(module);
             _partitions.Add(module);
-            return this;
         }
 
         
 
-        public AzureModule AddAzurePartition(string accountId, string firstQueue, params string[] otherQueues)
+        public void AddAzurePartition(string accountId, string firstQueue, params string[] otherQueues)
         {
             var queues = Enumerable.Repeat(firstQueue, 1).Concat(otherQueues).ToArray();
             
-            return AddAzurePartition(accountId, queues, m => { });
+            AddAzurePartition(accountId, queues, m => { });
         }
 
 
