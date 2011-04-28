@@ -25,6 +25,7 @@ namespace Lokad.Cqrs.Core.Directory
         MethodInvokerHint _hint;
 
         Func<MessageEnvelope, MessageItem, object> _contextFactory;
+        Type _contextFactoryType;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ModuleForMessageDirectory"/> class.
@@ -40,16 +41,8 @@ namespace Lokad.Cqrs.Core.Directory
 
         public void ContextFactory<TResult>(Func<MessageEnvelope,MessageItem, TResult> result)
 		{
-			if (!_hint.HasContext)
-			{
-				throw new InvalidOperationException("Declaring interface type does not have context parameter");
-			}
-			if (!_hint.MessageContextType.Value.IsAssignableFrom(typeof(TResult)))
-			{
-				throw new InvalidOperationException("Passed lambda returns object instance that is not assignable to: " + _hint.MessageContextType.Value);
-			}
-
             _contextFactory = (envelope, item) => result(envelope, item);
+            _contextFactoryType = typeof (TResult);
 		}
 
 
@@ -201,6 +194,15 @@ namespace Lokad.Cqrs.Core.Directory
 
         void IModule.Configure(IComponentRegistry componentRegistry)
         {
+            if (_hint.HasContext)
+            {
+                if (!_hint.MessageContextType.Value.IsAssignableFrom(_contextFactoryType))
+                {
+                    throw new InvalidOperationException("Passed lambda returns object instance that is not assignable to: " + _hint.MessageContextType.Value);
+                }
+            }
+            
+
             var handler = new MethodInvoker(_contextFactory, _hint);
 
             _scanner.Constrain(_hint);
