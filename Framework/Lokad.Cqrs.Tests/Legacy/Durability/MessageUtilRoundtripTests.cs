@@ -9,7 +9,7 @@ using System;
 using Lokad.Cqrs.Core.Envelope;
 using NUnit.Framework;
 
-namespace Lokad.Cqrs.Durability
+namespace Lokad.Cqrs.Legacy.Durability
 {
     // ReSharper disable UnusedMember.Global
     // ReSharper disable InconsistentNaming

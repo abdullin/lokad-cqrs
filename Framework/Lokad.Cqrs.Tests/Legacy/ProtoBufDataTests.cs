@@ -9,7 +9,7 @@ using System.Runtime.Serialization;
 using Lokad.Cqrs.Core.Serialization;
 using NUnit.Framework;
 
-namespace Lokad.Cqrs.ProtoBuf.Tests
+namespace Lokad.Cqrs.Legacy
 {
     [TestFixture]
     public sealed class ProtoBufDataTests : Fixture

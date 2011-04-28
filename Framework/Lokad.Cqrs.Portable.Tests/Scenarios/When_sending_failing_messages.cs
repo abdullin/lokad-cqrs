@@ -2,7 +2,6 @@
 using System.Linq;
 using Lokad.Cqrs.Core.Dispatch.Events;
 using Lokad.Cqrs.Core.Inbox;
-using Lokad.Cqrs.Tests;
 using NUnit.Framework;
 
 namespace Lokad.Cqrs.Scenarios

@@ -13,7 +13,7 @@ using Lokad.Cqrs.Core.Serialization;
 
 // ReSharper disable InconsistentNaming
 
-namespace Lokad.Cqrs.ProtoBuf.Tests
+namespace Lokad.Cqrs.Legacy
 {
     public abstract class Fixture
     {

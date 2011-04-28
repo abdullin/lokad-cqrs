@@ -15,7 +15,7 @@ using Lokad.Cqrs.Build.Engine;
 using Lokad.Cqrs.Core.Directory.Default;
 using NUnit.Framework;
 
-namespace Lokad.Cqrs.Tests
+namespace Lokad.Cqrs
 {
     public abstract class EngineFixture
     {

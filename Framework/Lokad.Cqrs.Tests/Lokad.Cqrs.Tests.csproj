@@ -64,7 +64,6 @@
     <Compile Include="Legacy\DomainTests.cs" />
     <Compile Include="Legacy\Durability\LegacyCompatibilityTests.cs" />
     <Compile Include="Legacy\Durability\TestSerializer.cs" />
-    <Compile Include="Legacy\ExtendMaybe.cs" />
     <Compile Include="Legacy\Fixture.cs" />
     <Compile Include="Legacy\Durability\MessageUtilRoundtripTests.cs" />
     <Compile Include="Legacy\MessageUtilTests.cs" />
@@ -74,15 +73,7 @@
     <Compile Include="Legacy\ProtoBufXmlTests.cs" />
     <Compile Include="Legacy\SmokeTests.cs" />
     <Compile Include="Legacy\SimpleStorage\BlobStorage.cs" />
-    <Compile Include="Legacy\SimpleStorage\FileStorage.cs" />
     <Compile Include="Legacy\SimpleStorage\HashingTests.cs" />
-    <Compile Include="Legacy\SimpleStorage\ITestStorage.cs" />
-    <Compile Include="Legacy\SimpleStorage\StorageItemFixture.cs" />
-    <Compile Include="Legacy\SimpleStorage\When_checking_item_in.cs" />
-    <Compile Include="Legacy\SimpleStorage\When_copying_items_in.cs" />
-    <Compile Include="Legacy\SimpleStorage\When_deleting_item_in.cs" />
-    <Compile Include="Legacy\SimpleStorage\When_writing_item_in.cs" />
-    <Compile Include="Legacy\SimpleStorage\When_reading_item_in.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Lokad.Cqrs.Portable.Tests\Lokad.Cqrs.Portable.Tests.csproj">

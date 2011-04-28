@@ -13,7 +13,7 @@ using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
 using NUnit.Framework;
 
-namespace Lokad.Cqrs.Tests.Storage
+namespace Lokad.Cqrs.Legacy.SimpleStorage
 {
     [TestFixture]
     public sealed class HashingTests

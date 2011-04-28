@@ -14,7 +14,7 @@ using ProtoBuf;
 // ReSharper disable UnusedMember.Global
 // ReSharper disable InconsistentNaming
 
-namespace Lokad.Cqrs.Durability
+namespace Lokad.Cqrs.Legacy.Durability
 {
     [TestFixture]
     public sealed class LegacyCompatibilityTests

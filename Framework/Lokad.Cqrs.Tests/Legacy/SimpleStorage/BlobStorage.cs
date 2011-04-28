@@ -7,16 +7,15 @@
 
 using System.IO;
 using Lokad.Cqrs.Feature.StreamingStorage;
+using Lokad.Cqrs.Feature.StreamingStorage.Scenarios;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
 using NUnit.Framework;
 
 // ReSharper disable InconsistentNaming
 
-namespace Lokad.Cqrs.Tests.Storage
+namespace Lokad.Cqrs.Legacy.SimpleStorage
 {
-    using Here = BlobStorage;
-
     public sealed class BlobStorage : ITestStorage
     {
         CloudBlobClient _client = GetCustom(); //CloudStorageAccount.DevelopmentStorageAccount.CreateCloudBlobClient();
@@ -48,32 +47,32 @@ namespace Lokad.Cqrs.Tests.Storage
 
         [TestFixture]
         public sealed class When_checking_blob_item
-            : When_checking_item_in<Here>
+            : When_checking_item_in<BlobStorage>
         {
         }
 
         [TestFixture]
         public sealed class When_copying_blob_item
-            : When_copying_items_in<Here>
+            : When_copying_items_in<BlobStorage>
         {
         }
 
         [TestFixture]
         public sealed class When_deleting_blob_item :
-            When_deleting_item_in<Here>
+            When_deleting_item_in<BlobStorage>
         {
         }
 
         [TestFixture]
         public sealed class When_reading_blob_item :
-            When_reading_item_in<Here>
+            When_reading_item_in<BlobStorage>
         {
         }
 
 
         [TestFixture]
         public sealed class When_reading_blob_item_with_gzip :
-            When_reading_item_in<Here>
+            When_reading_item_in<BlobStorage>
         {
             public When_reading_blob_item_with_gzip()
             {
@@ -84,13 +83,13 @@ namespace Lokad.Cqrs.Tests.Storage
 
         [TestFixture]
         public sealed class When_writing_blob_item
-            : When_writing_item_in<Here>
+            : When_writing_item_in<BlobStorage>
         {
         }
 
         [TestFixture]
         public sealed class When_writing_blob_item_with_gzip
-            : When_writing_item_in<Here>
+            : When_writing_item_in<BlobStorage>
         {
             public When_writing_blob_item_with_gzip()
             {

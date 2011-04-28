@@ -10,7 +10,7 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using Lokad.Cqrs.Core.Envelope;
 
-namespace Lokad.Cqrs.Durability
+namespace Lokad.Cqrs.Legacy.Durability
 {
     sealed class TestSerializer : IDataSerializer, IEnvelopeSerializer
     {

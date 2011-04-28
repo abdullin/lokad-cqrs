@@ -51,6 +51,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EngineFixture.cs" />
+    <Compile Include="ExtendMaybe.cs" />
+    <Compile Include="Feature.StreamingStorage\FileStorage.cs" />
+    <Compile Include="Feature.StreamingStorage\ITestStorage.cs" />
+    <Compile Include="Feature.StreamingStorage\StorageItemFixture.cs" />
+    <Compile Include="Feature.StreamingStorage\Scenarios\When_checking_item_in.cs" />
+    <Compile Include="Feature.StreamingStorage\Scenarios\When_copying_items_in.cs" />
+    <Compile Include="Feature.StreamingStorage\Scenarios\When_deleting_item_in.cs" />
+    <Compile Include="Feature.StreamingStorage\Scenarios\When_reading_item_in.cs" />
+    <Compile Include="Feature.StreamingStorage\Scenarios\When_writing_item_in.cs" />
     <Compile Include="MemoryConfigurationTests.cs" />
     <Compile Include="MemoryScenarios.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

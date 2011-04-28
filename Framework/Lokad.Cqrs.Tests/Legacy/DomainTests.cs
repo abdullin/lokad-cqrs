@@ -10,7 +10,7 @@ using System.Linq;
 using Lokad.Cqrs.Core.Directory;
 using NUnit.Framework;
 
-namespace Lokad.Cqrs.Tests
+namespace Lokad.Cqrs.Legacy
 {
     [TestFixture]
     public sealed class DomainTests
