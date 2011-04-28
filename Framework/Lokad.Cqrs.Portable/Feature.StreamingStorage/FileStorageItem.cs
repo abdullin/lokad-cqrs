@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 
-namespace Lokad.Cqrs.Feature.StreamingStorage.Files
+namespace Lokad.Cqrs.Feature.StreamingStorage
 {
     /// <summary>
     /// File-based implementation of the <see cref="IStorageItem"/>

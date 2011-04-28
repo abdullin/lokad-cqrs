@@ -7,7 +7,6 @@
 
 using System.IO;
 using Lokad.Cqrs.Feature.StreamingStorage;
-using Lokad.Cqrs.Feature.StreamingStorage.Azure;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
 using NUnit.Framework;

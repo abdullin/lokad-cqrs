@@ -7,7 +7,7 @@
 
 using Microsoft.WindowsAzure.StorageClient;
 
-namespace Lokad.Cqrs.Feature.StreamingStorage.Azure
+namespace Lokad.Cqrs.Feature.StreamingStorage
 {
     /// <summary>
     /// Windows Azure implementation of storage 

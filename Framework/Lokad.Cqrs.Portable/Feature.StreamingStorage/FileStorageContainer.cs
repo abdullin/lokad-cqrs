@@ -7,7 +7,7 @@
 
 using System.IO;
 
-namespace Lokad.Cqrs.Feature.StreamingStorage.Files
+namespace Lokad.Cqrs.Feature.StreamingStorage
 {
     /// <summary>
     /// Storage container using <see cref="System.IO"/> for persisting data

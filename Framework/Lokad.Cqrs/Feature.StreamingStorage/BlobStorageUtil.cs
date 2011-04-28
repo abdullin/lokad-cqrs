@@ -13,7 +13,7 @@ using System.IO.Compression;
 using System.Security.Cryptography;
 using Microsoft.WindowsAzure.StorageClient;
 
-namespace Lokad.Cqrs.Feature.StreamingStorage.Azure
+namespace Lokad.Cqrs.Feature.StreamingStorage
 {
     static class BlobStorageUtil
     {

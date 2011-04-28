@@ -7,7 +7,6 @@
 
 using System.IO;
 using Lokad.Cqrs.Feature.StreamingStorage;
-using Lokad.Cqrs.Feature.StreamingStorage.Files;
 using NUnit.Framework;
 
 // ReSharper disable InconsistentNaming

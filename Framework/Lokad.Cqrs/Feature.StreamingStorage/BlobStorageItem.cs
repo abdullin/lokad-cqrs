@@ -8,10 +8,9 @@
 using System;
 using System.IO;
 using System.Net;
-using Lokad.Cqrs.Evil;
 using Microsoft.WindowsAzure.StorageClient;
 
-namespace Lokad.Cqrs.Feature.StreamingStorage.Azure
+namespace Lokad.Cqrs.Feature.StreamingStorage
 {
     /// <summary>
     /// Azure BLOB implementation of the <see cref="IStorageItem"/>
