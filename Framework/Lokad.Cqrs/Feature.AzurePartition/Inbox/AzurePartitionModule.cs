@@ -71,10 +71,12 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
             var log = context.Resolve<ISystemObserver>();
 
 
-            var dir = context.Resolve<MessageDirectoryBuilder>();
-            var directory = dir.BuildDirectory(_filter.DoesPassFilter);
-            var typedParameter = TypedParameter.From(directory);
-            var dispatcher = (ISingleThreadMessageDispatcher) context.Resolve(_dispatcher.Item1, typedParameter);
+            var builder = context.Resolve<MessageDirectoryBuilder>();
+
+            var map = builder.BuildActivationMap(_filter.DoesPassFilter);
+            var directory = TypedParameter.From(map);
+
+            var dispatcher = (ISingleThreadMessageDispatcher) context.Resolve(_dispatcher.Item1, directory);
             _dispatcher.Item2(dispatcher);
             dispatcher.Init();
 

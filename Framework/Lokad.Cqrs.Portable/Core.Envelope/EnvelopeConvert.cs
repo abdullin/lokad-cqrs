@@ -21,9 +21,6 @@ namespace Lokad.Cqrs.Core.Envelope
             {
                 switch (attribute.Type)
                 {
-                    case EnvelopeAttributeTypeContract.CreatedUtc:
-                        dict[MessageAttributes.EnvelopeCreatedUtc] = DateTimeOffset.Parse(attribute.StringValue);
-                        break;
                     case EnvelopeAttributeTypeContract.Sender:
                         dict[MessageAttributes.EnvelopeSender] = attribute.CustomName;
                         break;
@@ -116,13 +113,6 @@ namespace Lokad.Cqrs.Core.Envelope
             {
                 switch (attrib.Key)
                 {
-                    case MessageAttributes.EnvelopeCreatedUtc:
-                        contracts[pos] = new EnvelopeAttributeContract
-                            {
-                                Type = EnvelopeAttributeTypeContract.CreatedUtc,
-                                StringValue = ((DateTimeOffset) attrib.Value).ToString("o")
-                            };
-                        break;
                     case MessageAttributes.EnvelopeSender:
                         contracts[pos] = new EnvelopeAttributeContract
                             {

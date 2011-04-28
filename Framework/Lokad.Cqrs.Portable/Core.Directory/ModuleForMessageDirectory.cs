@@ -6,6 +6,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 using Autofac;
@@ -21,7 +22,10 @@ namespace Lokad.Cqrs.Core.Directory
     {
         readonly DomainAssemblyScanner _scanner = new DomainAssemblyScanner();
         readonly ContainerBuilder _builder;
-        bool _messageSignatureSpecified = false;
+        MethodInvokerHint _hint;
+
+        Func<MessageEnvelope, MessageItem, object> _contextFactory;
+        Type _contextFactoryType;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ModuleForMessageDirectory"/> class.
@@ -29,34 +33,24 @@ namespace Lokad.Cqrs.Core.Directory
         public ModuleForMessageDirectory()
         {
             _builder = new ContainerBuilder();
+
+            InvocationHandlerBySample<IConsume<IMessage>>(a => a.Consume(null, null));
+            ContextFactory((envelope, item) => new MessageContext(envelope.EnvelopeId, envelope.CreatedOn));
+ 
         }
 
-        /// <summary>
-        /// Uses default interfaces and conventions.
-        /// </summary>
-        /// <returns>same module instance for chaining fluent configurations</returns>
-        public ModuleForMessageDirectory WithDefaultInterfaces()
-        {
-            ConsumerMethodSample<IConsume<IMessage>>(i => i.Consume(null));
-            WhereMessagesAre<IMessage>();
-            WhereConsumersAre<IConsumeMessage>();
+        public void ContextFactory<TResult>(Func<MessageEnvelope,MessageItem, TResult> result)
+		{
+            _contextFactory = (envelope, item) => result(envelope, item);
+            _contextFactoryType = typeof (TResult);
+		}
 
-            _messageSignatureSpecified = true;
-            return this;
-        }
 
-        /// <summary>
-        /// Provides sample of the custom consuming method expression. By default we expect it to be <see cref="IConsume{TMessage}.Consume"/>.
-        /// </summary>
-        /// <typeparam name="THandler">The type of the handler.</typeparam>
-        /// <param name="expression">The expression.</param>
-        /// <returns>same module instance for chaining fluent configurations</returns>
-        public ModuleForMessageDirectory ConsumerMethodSample<THandler>(Expression<Action<THandler>> expression)
-        {
-            _scanner.ConsumerMethodSample(expression);
-            _messageSignatureSpecified = true;
-            return this;
-        }
+
+		public void InvocationHandlerBySample<THandler>(Expression<Action<THandler>> action)
+		{
+			_hint = MethodInvokerHint.FromConsumerSample(action);
+		}
 
         /// <summary>
         /// <para>Specifies custom rule for finding messages - where they derive from the provided interface. </para>
@@ -183,31 +177,47 @@ namespace Lokad.Cqrs.Core.Directory
             return this;
         }
 
+        sealed class SerializationList : IKnowSerializationTypes
+        {
+            public SerializationList(ICollection<Type> types)
+            {
+                _types = types;
+            }
+
+            readonly ICollection<Type> _types;
+            public IEnumerable<Type> GetKnownTypes()
+            {
+                return _types;
+            }
+        }
+
 
         void IModule.Configure(IComponentRegistry componentRegistry)
         {
-            if (!_messageSignatureSpecified)
+            if (_hint.HasContext)
             {
-                WithDefaultInterfaces();
-            }
-
-            var mappings = _scanner.Build();
-
-            var directoryBuilder = new MessageDirectoryBuilder(mappings, _scanner.ConsumingMethod.Name);
-
-            var directory = directoryBuilder.BuildDirectory(m => true);
-
-
-            foreach (var consumer in directory.Consumers)
-            {
-                if (!consumer.ConsumerType.IsAbstract)
+                if (!_hint.MessageContextType.Value.IsAssignableFrom(_contextFactoryType))
                 {
-                    _builder.RegisterType(consumer.ConsumerType);
+                    throw new InvalidOperationException("Passed lambda returns object instance that is not assignable to: " + _hint.MessageContextType.Value);
                 }
             }
+            
 
-            _builder.RegisterInstance(directoryBuilder).As<MessageDirectoryBuilder>();
-            _builder.RegisterInstance(directory).As<MessageDirectory, IKnowSerializationTypes>();
+            var handler = new MethodInvoker(_contextFactory, _hint);
+
+            _scanner.Constrain(_hint);
+            var mappings = _scanner.Build(_hint.ConsumerTypeDefinition);
+            var builder = new MessageDirectoryBuilder(mappings);
+            var messages = builder.ListMessagesToSerialize();
+
+            foreach (var consumer in builder.ListConsumersToActivate())
+            {
+                _builder.RegisterType(consumer);
+            }
+
+            _builder.RegisterInstance(builder).As<MessageDirectoryBuilder>();
+            _builder.RegisterInstance(new SerializationList(messages)).As<IKnowSerializationTypes>();
+            _builder.RegisterInstance(handler).As<IMethodInvoker>();
             _builder.Update(componentRegistry);
         }
 

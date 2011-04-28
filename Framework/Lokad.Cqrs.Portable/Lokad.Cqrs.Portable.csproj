@@ -43,6 +43,12 @@
   <ItemGroup>
     <Compile Include="Build\BuildSyntaxHelper.cs" />
     <Compile Include="Build\Engine\MemoryModule.cs" />
+    <Compile Include="MessageContext.cs" />
+    <Compile Include="Core.Directory\IMethodInvoker.cs" />
+    <Compile Include="Core.Directory\MessageActivationMap.cs" />
+    <Compile Include="Core.Directory\MessageDirectoryFilter.cs" />
+    <Compile Include="Core.Directory\MethodInvoker.cs" />
+    <Compile Include="Core.Directory\MethodInvokerHint.cs" />
     <Compile Include="Core.Dispatch\Events\QuarantinedMessage.cs" />
     <Compile Include="Core.Dispatch\MemoryQuarantine.cs" />
     <Compile Include="Core.Dispatch\Events\MessageAcked.cs" />
@@ -54,12 +60,10 @@
     <Compile Include="Build\Engine\Events\HostInitialized.cs" />
     <Compile Include="Build\Engine\Events\HostStarted.cs" />
     <Compile Include="Build\Engine\Events\HostStopped.cs" />
-    <Compile Include="Core.Directory\ConsumerInfo.cs" />
     <Compile Include="Core.Directory\DomainAssemblyScanner.cs" />
     <Compile Include="Core.Directory\ModuleForMessageDirectory.cs" />
-    <Compile Include="Core.Directory\MessageDirectory.cs" />
     <Compile Include="Core.Directory\MessageDirectoryBuilder.cs" />
-    <Compile Include="Core.Directory\MessageInfo.cs" />
+    <Compile Include="Core.Directory\MessageActivationInfo.cs" />
     <Compile Include="Core.Directory\MessageMapping.cs" />
     <Compile Include="Core.Directory\MessageReflectionUtil.cs" />
     <Compile Include="Core.Dispatch\DispatchCommandBatchToSingleConsumer.cs" />
@@ -76,7 +80,7 @@
     <Compile Include="Core.Envelope\MessageItemBuilder.cs" />
     <Compile Include="Core.Evil\InvocationUtil.cs" />
     <Compile Include="Core.Inbox\IPartitionInbox.cs" />
-    <Compile Include="Core.Inbox\MessageContext.cs" />
+    <Compile Include="Core.Inbox\EnvelopeTransportContext.cs" />
     <Compile Include="Core.Envelope\EnvelopeSerializerWithDataContracts.cs" />
     <Compile Include="Core.Envelope\EnvelopeConvert.cs" />
     <Compile Include="Core.Envelope\EnvelopeAttributeContract.cs" />

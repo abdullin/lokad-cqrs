@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Lokad.Cqrs.Core.Envelope;
 
 namespace Lokad.Cqrs
 {
@@ -18,24 +19,29 @@ namespace Lokad.Cqrs
     {
         public readonly string EnvelopeId;
         public DateTimeOffset DeliverOn;
+        public readonly DateTimeOffset CreatedOn;
         readonly IDictionary<string, object> _attributes = new Dictionary<string, object>();
         
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
         public readonly MessageItem[] Items;
 
         public MessageEnvelope(string envelopeId, IDictionary<string, object> attributes, MessageItem[] items,
-            DateTimeOffset deliverOn)
+            DateTimeOffset deliverOn, DateTimeOffset createdOn)
         {
             EnvelopeId = envelopeId;
             DeliverOn = deliverOn;
             _attributes = attributes;
             Items = items;
+            CreatedOn = createdOn;
         }
 
+        
         public object GetAttribute(string name)
         {
             return _attributes[name];
         }
+
+        
 
         public ICollection<KeyValuePair<string, object>> GetAllAttributes()
         {

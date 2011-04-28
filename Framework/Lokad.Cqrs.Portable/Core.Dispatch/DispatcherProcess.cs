@@ -63,7 +63,7 @@ namespace Lokad.Cqrs.Core.Dispatch
             using (var source = CancellationTokenSource.CreateLinkedTokenSource(_disposal.Token, outer))
             {
                 var token = source.Token;
-                MessageContext context;
+                EnvelopeTransportContext context;
                 while (_inbox.TakeMessage(token, out context))
                 {
                     var processed = false;

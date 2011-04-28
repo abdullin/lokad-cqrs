@@ -18,12 +18,6 @@ namespace Lokad.Cqrs.Core.Directory
         readonly HashSet<Assembly> _assemblies = new HashSet<Assembly>();
         readonly HashSet<Predicate<Type>> _handlerSelector = new HashSet<Predicate<Type>>();
         readonly HashSet<Predicate<Type>> _serializableSelector = new HashSet<Predicate<Type>>();
-        MethodInfo _consumingMethod;
-
-        public MethodInfo ConsumingMethod
-        {
-            get { return _consumingMethod; }
-        }
 
         public DomainAssemblyScanner WithAssemblyOf<T>()
         {
@@ -49,11 +43,6 @@ namespace Lokad.Cqrs.Core.Directory
             return this;
         }
 
-        public DomainAssemblyScanner ConsumerMethodSample<THandler>(Expression<Action<THandler>> expression)
-        {
-            _consumingMethod = MessageReflectionUtil.ExpressConsumer(expression);
-            return this;
-        }
 
         public static bool IsUserAssembly(Assembly a)
         {
@@ -66,11 +55,17 @@ namespace Lokad.Cqrs.Core.Directory
             return true;
         }
 
-        public IEnumerable<MessageMapping> Build()
-        {
-            if (null == _consumingMethod)
-                throw new InvalidOperationException("Consuming method has not been defined");
+      	public void Constrain(MethodInvokerHint hint)
+		{
+			WhereMessages(t => hint.MessageInterface.IsAssignableFrom(t));
+			WhereConsumers(type => type.GetInterfaces().Where(i => i.IsGenericType)
+				.Any(i => i.GetGenericTypeDefinition() == hint.ConsumerTypeDefinition));
+		}
 
+
+        public IEnumerable<MessageMapping> Build(Type consumerInterfaceDefinition)
+        {
+            
             if (!_assemblies.Any())
             {
                 var userAssemblies = AppDomain.CurrentDomain.GetAssemblies().Where(IsUserAssembly);
@@ -96,7 +91,7 @@ namespace Lokad.Cqrs.Core.Directory
 
             var consumingDirectly = consumerTypes
                 .SelectMany(consumerType =>
-                    GetConsumedMessages(consumerType, _consumingMethod.DeclaringType)
+                    ListMessagesConsumedByInterfaces(consumerType, consumerInterfaceDefinition)
                         .Select(messageType => new MessageMapping(consumerType, messageType, true)))
                 .ToArray();
 
@@ -134,7 +129,7 @@ namespace Lokad.Cqrs.Core.Directory
             return result;
         }
 
-        static IEnumerable<Type> GetConsumedMessages(Type consumerType, Type consumerTypeDefinition)
+        static IEnumerable<Type> ListMessagesConsumedByInterfaces(Type consumerType, Type consumerTypeDefinition)
         {
             var interfaces = consumerType
                 .GetInterfaces()

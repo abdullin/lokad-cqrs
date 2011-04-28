@@ -41,16 +41,16 @@ namespace Lokad.Cqrs.Core.Envelope
         }
 
 
-        public byte[] SaveDataMessage(MessageEnvelope builder)
+        public byte[] SaveDataMessage(MessageEnvelope envelope)
         {
             //  string contract, Guid messageId, Uri sender, 
-            var itemContracts = new ItemContract[builder.Items.Length];
+            var itemContracts = new ItemContract[envelope.Items.Length];
             using (var content = new MemoryStream())
             {
                 int position = 0;
-                for (int i = 0; i < builder.Items.Length; i++)
+                for (int i = 0; i < envelope.Items.Length; i++)
                 {
-                    var item = builder.Items[i];
+                    var item = envelope.Items[i];
 
                     string name;
                     if (!_dataSerializer.TryGetContractNameByType(item.MappedType, out name))
@@ -67,11 +67,11 @@ namespace Lokad.Cqrs.Core.Envelope
                     position += size;
                 }
 
-                var envelopeAttribs = EnvelopeConvert.EnvelopeAttributesToContract(builder.GetAllAttributes());
+                var envelopeAttribs = EnvelopeConvert.EnvelopeAttributesToContract(envelope.GetAllAttributes());
 
 
-                var contract = new EnvelopeContract(builder.EnvelopeId, envelopeAttribs, itemContracts,
-                    builder.DeliverOn);
+                var contract = new EnvelopeContract(envelope.EnvelopeId, envelopeAttribs, itemContracts,
+                    envelope.DeliverOn, envelope.CreatedOn);
 
                 using (var stream = new MemoryStream())
                 {
@@ -163,7 +163,7 @@ namespace Lokad.Cqrs.Core.Envelope
             }
 
             var envelopeAttributes = EnvelopeConvert.EnvelopeAttributesFromContract(envelope.EnvelopeAttributes);
-            return new MessageEnvelope(envelope.EnvelopeId, envelopeAttributes, items, envelope.DeliverOnUtc);
+            return new MessageEnvelope(envelope.EnvelopeId, envelopeAttributes, items, envelope.DeliverOnUtc, envelope.CreatedOnUtc);
         }
     }
 }

@@ -41,16 +41,18 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
             return this;
         }
 
-
         IEngineProcess BuildConsumingProcess(IComponentContext context)
         {
             var log = context.Resolve<ISystemObserver>();
 
 
-            var dir = context.Resolve<MessageDirectoryBuilder>();
-            var directory = dir.BuildDirectory(_filter.DoesPassFilter);
-            var typedParameter = TypedParameter.From(directory);
-            var dispatcher = (ISingleThreadMessageDispatcher) context.Resolve(_dispatcher.Item1, typedParameter);
+            var builder = context.Resolve<MessageDirectoryBuilder>();
+
+            var activations = builder.BuildActivationMap(_filter.DoesPassFilter);
+
+            var directory = TypedParameter.From(activations);
+
+            var dispatcher = (ISingleThreadMessageDispatcher) context.Resolve(_dispatcher.Item1, directory);
             _dispatcher.Item2(dispatcher);
             dispatcher.Init();
 

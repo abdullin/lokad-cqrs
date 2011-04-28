@@ -27,15 +27,17 @@ namespace Lokad.Cqrs.Core.Envelope
         [Test]
         public void Envelope_attributes_should_be_present()
         {
-            var offset = DateTimeOffset.UtcNow;
+            var time = DateTimeOffset.UtcNow;
             var builder = new MessageEnvelopeBuilder("my-id");
             builder.Attributes["Custom"] = 1;
-            builder.Attributes[MessageAttributes.EnvelopeCreatedUtc] = offset;
+            
 
             var envelope = RoundtripViaSerializer(builder);
 
             Assert.AreEqual(1, envelope.GetAttribute("Custom"));
-            Assert.AreEqual(offset, envelope.GetAttribute(MessageAttributes.EnvelopeCreatedUtc));
+
+            Assert.IsTrue(envelope.CreatedOn >= time);
+            Assert.IsTrue(envelope.CreatedOn <= DateTimeOffset.UtcNow);
         }
 
         [Test]

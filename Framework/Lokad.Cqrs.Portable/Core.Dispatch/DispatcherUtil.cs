@@ -17,7 +17,7 @@ namespace Lokad.Cqrs.Core.Dispatch
         public const string UnitOfWorkTag = "UnitOfWork";
         public const string ScopeTag = "Scope";
 
-        public static void ThrowIfCommandHasMultipleConsumers(IEnumerable<MessageInfo> commands)
+        public static void ThrowIfCommandHasMultipleConsumers(IEnumerable<MessageActivationInfo> commands)
         {
             var multipleConsumers = commands
                 .Where(c => c.AllConsumers.Length > 1)

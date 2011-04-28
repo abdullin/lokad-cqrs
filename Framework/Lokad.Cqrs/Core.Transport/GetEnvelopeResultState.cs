@@ -7,7 +7,7 @@
 
 namespace Lokad.Cqrs.Core.Transport
 {
-    public enum GetMessageResultState
+    public enum GetEnvelopeResultState
     {
         Success,
         Empty,

@@ -50,4 +50,6 @@ namespace Lokad.Cqrs
             return string.Format("[{0}]", Content.ToString());
         }
     }
+
+
 }

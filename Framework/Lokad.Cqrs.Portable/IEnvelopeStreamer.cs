@@ -10,7 +10,7 @@ namespace Lokad.Cqrs
     public interface IEnvelopeStreamer
     {
         byte[] SaveReferenceMessage(EnvelopeReference reference);
-        byte[] SaveDataMessage(MessageEnvelope builder);
+        byte[] SaveDataMessage(MessageEnvelope envelope);
         bool TryReadAsReference(byte[] buffer, out EnvelopeReference reference);
         MessageEnvelope ReadDataMessage(byte[] buffer);
     }
