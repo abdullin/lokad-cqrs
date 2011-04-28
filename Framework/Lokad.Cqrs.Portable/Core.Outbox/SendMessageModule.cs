@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using Autofac;
 using Autofac.Core;
 using Lokad.Cqrs.Build;
@@ -18,6 +19,7 @@ namespace Lokad.Cqrs.Core.Outbox
         readonly string _queueName;
         readonly string _endpoint;
         readonly ContainerBuilder _builder = new ContainerBuilder();
+        Func<string> _keyGenerator = () => Guid.NewGuid().ToString().ToLowerInvariant();
 
         public SendMessageModule(string endpoint, string queueName)
         {
@@ -25,6 +27,20 @@ namespace Lokad.Cqrs.Core.Outbox
             _endpoint = endpoint;
         }
 
+        public void IdGenerator(Func<string> generator)
+        {
+            _keyGenerator = generator;
+        }
+
+        public void IdGeneratorForTests()
+        {
+            long id = 0;
+            IdGenerator(() =>
+                {
+                    Interlocked.Increment(ref id);
+                    return id.ToString("0000");
+                });
+        }
 
         DefaultMessageSender BuildDefaultMessageSender(IComponentContext c)
         {
@@ -56,7 +72,7 @@ namespace Lokad.Cqrs.Core.Outbox
 
             var observer = c.Resolve<ISystemObserver>();
 
-            return new DefaultMessageSender(queues[0], observer, _queueName);
+            return new DefaultMessageSender(queues[0], observer, _queueName, _keyGenerator);
         }
 
         public void Configure(IComponentRegistry componentRegistry)

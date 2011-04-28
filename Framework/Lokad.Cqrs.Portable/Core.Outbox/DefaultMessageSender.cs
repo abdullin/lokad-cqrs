@@ -17,12 +17,14 @@ namespace Lokad.Cqrs.Core.Outbox
         readonly IQueueWriter _queue;
         readonly ISystemObserver _observer;
         readonly string _queueName;
+        readonly Func<string> _idGenerator;
 
-        public DefaultMessageSender(IQueueWriter queue, ISystemObserver observer, string queueName)
+        public DefaultMessageSender(IQueueWriter queue, ISystemObserver observer, string queueName, Func<string> idGenerator)
         {
             _queue = queue;
             _observer = observer;
             _queueName = queueName;
+            _idGenerator = idGenerator;
         }
 
         public void Send(object message)
@@ -45,7 +47,7 @@ namespace Lokad.Cqrs.Core.Outbox
             if (messageItems.Length == 0)
                 return;
 
-            var id = Guid.NewGuid().ToString().ToLowerInvariant();
+            var id = _idGenerator();
             var builder = MessageEnvelopeBuilder.FromItems(id, messageItems);
             if (timeout != default(TimeSpan))
             {

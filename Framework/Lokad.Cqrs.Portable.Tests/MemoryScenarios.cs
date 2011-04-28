@@ -5,12 +5,7 @@
 
 #endregion
 
-using System;
-using System.Linq;
-using Lokad.Cqrs.Build.Engine;
-using Lokad.Cqrs.Core.Dispatch.Events;
 using Lokad.Cqrs.Scenarios;
-using Lokad.Cqrs.Tests;
 using NUnit.Framework;
 
 namespace Lokad.Cqrs
@@ -19,7 +14,7 @@ namespace Lokad.Cqrs
     {
         // ReSharper disable InconsistentNaming
 
-        
+
         [TestFixture]
         public sealed class MemoryQuarantine : When_sending_failing_messages
         {
@@ -28,10 +23,9 @@ namespace Lokad.Cqrs
                 EnlistFixtureConfig(builder => builder.Memory(x =>
                     {
                         x.AddMemoryProcess("in");
-                        x.AddMemorySender("in");
+                        x.AddMemorySender("in", m => m.IdGeneratorForTests());
                     }));
             }
         }
     }
-
 }

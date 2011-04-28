@@ -57,7 +57,14 @@ namespace Lokad.Cqrs.Build.Engine
 
         public void AddMemorySender(string queueName)
         {
-            _modules.Add(new SendMessageModule("memory", queueName));
+            AddMemorySender(queueName, module => { });
+        }
+
+        public void AddMemorySender(string queueName, Action<SendMessageModule> config)
+        {
+            var module = new SendMessageModule("memory", queueName);
+            config(module);
+            _modules.Add(module);
         }
 
 

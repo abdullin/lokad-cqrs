@@ -33,7 +33,7 @@ namespace Lokad.Cqrs.Build
         static readonly Regex QueueName = new Regex("^[A-Za-z][A-Za-z0-9]{2,62}", RegexOptions.Compiled);
 
         readonly IDictionary<string,AzureClientConfiguration> _configs = new Dictionary<string, AzureClientConfiguration>();
-        readonly IList<IModule> _partitions = new List<IModule>();
+        readonly IList<IModule> _modules = new List<IModule>();
 
 
 
@@ -65,12 +65,17 @@ namespace Lokad.Cqrs.Build
             AddAzureAccount(accountId, account, builder => { });
         }
 
-        public void AddAzureSender(string accountId, string queueName)
+        public void AddAzureSender(string accountId, string queueName, Action<SendMessageModule> configure)
         {
-            var sms = new SendMessageModule(accountId, queueName);
-            _partitions.Add(sms);
+            var module = new SendMessageModule(accountId, queueName);
+            configure(module);
+            _modules.Add(module);
         }
 
+        public void AddAzureSender(string accountId, string queueName)
+        {
+            AddAzureSender(accountId, queueName, m => { });
+        }
 
         public void AddAzureProcess(string accountId, string[] queues, Action<AzurePartitionModule> config)
         {
@@ -84,7 +89,7 @@ namespace Lokad.Cqrs.Build
 
             var module = new AzurePartitionModule(accountId, queues);
             config(module);
-            _partitions.Add(module);
+            _modules.Add(module);
         }
 
         
@@ -117,7 +122,7 @@ namespace Lokad.Cqrs.Build
                 builder.RegisterInstance(config.Value).As<IAzureClientConfiguration>();
             }
 
-            foreach (var partition in _partitions)
+            foreach (var partition in _modules)
             {
                 builder.RegisterModule(partition);
             }

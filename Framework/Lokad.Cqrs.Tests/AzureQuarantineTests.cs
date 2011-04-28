@@ -23,15 +23,8 @@ namespace Lokad.Cqrs
                                 c.QueueVisibilityTimeout(1);
                                 c.WhenFactoryCreated(f => f.SetupForTesting());
                             });
-                        m.AddAzureSender("azure-dev", "incoming");
-
+                        m.AddAzureSender("azure-dev", "incoming", x => x.IdGeneratorForTests());
                     }));
-
-                EnlistFixtureConfig(b => b.Memory(x =>
-                {
-                    x.AddMemoryProcess("in");
-                    x.AddMemorySender("in");
-                }));
             }
         }
     }
