@@ -12,20 +12,20 @@ namespace Lokad.Cqrs.Core.Envelope
 {
     static class EnvelopeConvert
     {
-        public static IDictionary<string, object> AttributesFromContract(
+        public static IDictionary<string, object> EnvelopeAttributesFromContract(
             IEnumerable<EnvelopeAttributeContract> attributes)
         {
             var dict = new Dictionary<string, object>();
 
-            foreach (EnvelopeAttributeContract attribute in attributes)
+            foreach (var attribute in attributes)
             {
                 switch (attribute.Type)
                 {
                     case EnvelopeAttributeTypeContract.CreatedUtc:
-                        dict[EnvelopeAttributes.CreatedUtc] = DateTimeOffset.Parse(attribute.StringValue);
+                        dict[MessageAttributes.EnvelopeCreatedUtc] = DateTimeOffset.Parse(attribute.StringValue);
                         break;
                     case EnvelopeAttributeTypeContract.Sender:
-                        dict[EnvelopeAttributes.Sender] = attribute.CustomName;
+                        dict[MessageAttributes.EnvelopeSender] = attribute.CustomName;
                         break;
                     case EnvelopeAttributeTypeContract.CustomString:
                         dict[attribute.CustomName] = attribute.StringValue;
@@ -40,7 +40,7 @@ namespace Lokad.Cqrs.Core.Envelope
             return dict;
         }
 
-        public static IDictionary<string, object> AttributesFromContract(IEnumerable<ItemAttributeContract> attributes)
+        public static IDictionary<string, object> ItemAttributesFromContract(IEnumerable<ItemAttributeContract> attributes)
         {
             var dict = new Dictionary<string, object>();
 
@@ -65,21 +65,45 @@ namespace Lokad.Cqrs.Core.Envelope
             ICollection<KeyValuePair<string, object>> attributes)
         {
             var contracts = new ItemAttributeContract[attributes.Count];
-            int pos = 0;
+            var pos = 0;
 
             foreach (var attrib in attributes)
             {
                 switch (attrib.Key)
                 {
                     default:
-                        contracts[pos] = new ItemAttributeContract();
-                        throw new NotImplementedException("serializing item attributes is not supported now");
+                        contracts[pos] = ItemAttributeValueToContract(attrib.Key, attrib.Value);
+                        break;
+
                 }
 
                 pos += 1;
             }
 
             return contracts;
+        }
+
+        static ItemAttributeContract ItemAttributeValueToContract(string name, object value)
+        {
+            if (value is string)
+            {
+                return new ItemAttributeContract
+                {
+                    Type = ItemAttributeTypeContract.CustomString,
+                    CustomName = name,
+                    StringValue = (string)value
+                };
+            }
+            if ((value is long) || (value is int) || (value is short))
+            {
+                return new ItemAttributeContract
+                    {
+                        Type = ItemAttributeTypeContract.CustomNumber,
+                        CustomName = name,
+                        NumberValue = Convert.ToInt64(value)
+                    };
+            }
+            throw new NotSupportedException("serialization of generic attributes is not supported yet");
         }
 
         public static EnvelopeAttributeContract[] EnvelopeAttributesToContract(
@@ -92,14 +116,14 @@ namespace Lokad.Cqrs.Core.Envelope
             {
                 switch (attrib.Key)
                 {
-                    case EnvelopeAttributes.CreatedUtc:
+                    case MessageAttributes.EnvelopeCreatedUtc:
                         contracts[pos] = new EnvelopeAttributeContract
                             {
                                 Type = EnvelopeAttributeTypeContract.CreatedUtc,
                                 StringValue = ((DateTimeOffset) attrib.Value).ToString("o")
                             };
                         break;
-                    case EnvelopeAttributes.Sender:
+                    case MessageAttributes.EnvelopeSender:
                         contracts[pos] = new EnvelopeAttributeContract
                             {
                                 Type = EnvelopeAttributeTypeContract.Sender,

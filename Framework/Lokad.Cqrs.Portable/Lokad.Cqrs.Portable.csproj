@@ -86,7 +86,7 @@
     <Compile Include="Core.Envelope\ItemAttributeContract.cs" />
     <Compile Include="Core.Envelope\ItemAttributeTypeContract.cs" />
     <Compile Include="Core.Envelope\ItemContract.cs" />
-    <Compile Include="Core.Envelope\EnvelopeAttributes.cs" />
+    <Compile Include="Core.Envelope\MessageAttributes.cs" />
     <Compile Include="Core.Envelope\MessageHeader.cs" />
     <Compile Include="Core.Directory\Default\IConsume.cs" />
     <Compile Include="Core.Directory\Default\IConsumeMessage.cs" />

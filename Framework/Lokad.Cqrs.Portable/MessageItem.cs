@@ -23,6 +23,22 @@ namespace Lokad.Cqrs
             return _attributes;
         }
 
+        public bool TryGetAttribute(string name, out object result)
+        {
+            return _attributes.TryGetValue(name, out result);
+        }
+
+        public long GetAttributeNumber(string name, long defaultValue)
+        {
+            object value;
+            if (_attributes.TryGetValue(name, out value))
+            {
+                return (long) value;
+            }
+            return defaultValue;
+        }
+
+
         public MessageItem(Type mappedType, object content, IDictionary<string, object> attributes)
         {
             MappedType = mappedType;

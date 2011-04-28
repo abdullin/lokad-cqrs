@@ -40,12 +40,12 @@ namespace Lokad.Cqrs.Core.Envelope
             var offset = DateTimeOffset.UtcNow;
             var builder = new MessageEnvelopeBuilder("my-id");
             builder.Attributes["Custom"] = 1;
-            builder.Attributes[EnvelopeAttributes.CreatedUtc] = offset;
+            builder.Attributes[MessageAttributes.EnvelopeCreatedUtc] = offset;
 
             var envelope = RoundtripViaSerializer(builder);
 
             Assert.AreEqual(1, envelope.GetAttribute("Custom"));
-            Assert.AreEqual(offset, envelope.GetAttribute(EnvelopeAttributes.CreatedUtc));
+            Assert.AreEqual(offset, envelope.GetAttribute(MessageAttributes.EnvelopeCreatedUtc));
         }
 
         [Test]
@@ -68,7 +68,9 @@ namespace Lokad.Cqrs.Core.Envelope
             for (int i = 0; i < 5; i++)
             {
                 var content = new string('*',i);
-                builder.AddItem(new MyMessage(content));
+                var added = builder.AddItem(new MyMessage(content));
+
+                added.AddNumber("hum", i);
             }
 
             var envelope = RoundtripViaSerializer(builder);
@@ -77,11 +79,11 @@ namespace Lokad.Cqrs.Core.Envelope
 
             for (int i = 0; i < 5; i++)
             {
-                Assert.AreEqual(new string('*', i), ((MyMessage)envelope.Items[i].Content).Value);
+                var messageItem = envelope.Items[i];
+                Assert.AreEqual(new string('*', i), ((MyMessage)messageItem.Content).Value);
+                Assert.AreEqual(i, messageItem.GetAttributeNumber("hum", -1)); 
             }
         }
-
-      
 
         [Serializable]
         sealed class MyMessage 

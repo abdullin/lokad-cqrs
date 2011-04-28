@@ -14,7 +14,7 @@ namespace Lokad.Cqrs
     /// </summary>
     /// <typeparam name="T">underlying type</typeparam>
     [Serializable]
-    public sealed class Maybe<T> : IEquatable<Maybe<T>>
+    public sealed class Maybe<T> : IEquatable<Maybe<T>> 
     {
         readonly T _value;
         readonly bool _hasValue;
@@ -326,6 +326,8 @@ namespace Lokad.Cqrs
             return new Maybe<T>(item);
         }
 
+
+
         /// <summary>
         /// Performs an explicit conversion from <see cref="Maybe{T}"/> to <typeparamref name="T"/>.
         /// </summary>
@@ -338,6 +340,8 @@ namespace Lokad.Cqrs
 
             return item.Value;
         }
+
+
 
         /// <summary>
         /// Returns a <see cref="System.String"/> that represents this instance.

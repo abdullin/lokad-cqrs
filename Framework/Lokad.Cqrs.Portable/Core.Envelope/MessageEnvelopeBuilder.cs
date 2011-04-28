@@ -23,7 +23,7 @@ namespace Lokad.Cqrs.Core.Envelope
             EnvelopeId = envelopeId;
         }
 
-        public void AddItem<T>(T item)
+        public MessageItemToSave AddItem<T>(T item)
         {
             // add KVPs after
             var t = typeof (T);
@@ -34,6 +34,7 @@ namespace Lokad.Cqrs.Core.Envelope
 
             var messageItemToSave = new MessageItemToSave(t, item);
             Items.Add(messageItemToSave);
+            return messageItemToSave;
         }
 
         public void DelayBy(TimeSpan span)
@@ -49,7 +50,7 @@ namespace Lokad.Cqrs.Core.Envelope
                 builder.AddItem(item);
             }
             var created = DateTimeOffset.UtcNow;
-            builder.Attributes.Add(EnvelopeAttributes.CreatedUtc, created);
+            builder.Attributes.Add(MessageAttributes.EnvelopeCreatedUtc, created);
             return builder;
         }
 

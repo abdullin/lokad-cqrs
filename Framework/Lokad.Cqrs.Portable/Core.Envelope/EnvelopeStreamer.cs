@@ -139,7 +139,7 @@ namespace Lokad.Cqrs.Core.Envelope
             for (int i = 0; i < items.Length; i++)
             {
                 var itemContract = envelope.Items[i];
-                var attributes = EnvelopeConvert.AttributesFromContract(itemContract.Attributes);
+                var attributes = EnvelopeConvert.ItemAttributesFromContract(itemContract.Attributes);
                 Type contractType;
 
                 var itemPosition = MessageHeader.FixedSize + (int)header.EnvelopeBytes + (int)itemContract.ContentPosition;
@@ -162,7 +162,7 @@ namespace Lokad.Cqrs.Core.Envelope
                 }
             }
 
-            var envelopeAttributes = EnvelopeConvert.AttributesFromContract(envelope.EnvelopeAttributes);
+            var envelopeAttributes = EnvelopeConvert.EnvelopeAttributesFromContract(envelope.EnvelopeAttributes);
             return new MessageEnvelope(envelope.EnvelopeId, envelopeAttributes, items, envelope.DeliverOnUtc);
         }
     }

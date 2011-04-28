@@ -39,5 +39,8 @@ namespace Lokad.Cqrs
         /// Optional empty string
         /// </summary>
         public static readonly Maybe<string> String = Maybe<string>.Empty;
+
+        public static readonly Maybe<int> Int32 = Maybe<int>.Empty;
+        public static readonly Maybe<long > Int64 = Maybe<long>.Empty;
     }
 }
