@@ -23,7 +23,7 @@ namespace Lokad.Cqrs.Legacy.SimpleStorage
         [Test, Explicit]
         public void Test()
         {
-            var client = BlobScenarioTests.GetCustom();
+            var client = Play_all_for_BlobStreaming.GetCustom();
 
             client.RetryPolicy = RetryPolicies.NoRetry();
 

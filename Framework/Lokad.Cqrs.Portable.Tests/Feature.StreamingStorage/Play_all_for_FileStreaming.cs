@@ -14,11 +14,11 @@ using NUnit.Framework;
 namespace Lokad.Cqrs.Feature.StreamingStorage
 {
 
-    public sealed class FileStorageScenarioTests : ITestStorage
+    public sealed class Play_all_for_FileStreaming : ITestStorage
     {
         readonly DirectoryInfo _root;
 
-        public FileStorageScenarioTests()
+        public Play_all_for_FileStreaming()
         {
             var root = Path.Combine(Path.GetTempPath(), "file-storage-tests");
             _root = new DirectoryInfo(root);
@@ -38,31 +38,31 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
 
         [TestFixture]
         public sealed class When_deleting_blob_item :
-            When_deleting_item_in<FileStorageScenarioTests>
+            When_deleting_item_in<Play_all_for_FileStreaming>
         {
         }
 
         [TestFixture]
         public sealed class When_reading_blob_item :
-            When_reading_item_in<FileStorageScenarioTests>
+            When_reading_item_in<Play_all_for_FileStreaming>
         {
         }
 
         [TestFixture]
         public sealed class When_writing_blob_item
-            : When_writing_item_in<FileStorageScenarioTests>
+            : When_writing_item_in<Play_all_for_FileStreaming>
         {
         }
 
         [TestFixture]
         public sealed class When_copying_blob_item
-            : When_copying_items_in<FileStorageScenarioTests>
+            : When_copying_items_in<Play_all_for_FileStreaming>
         {
         }
 
         [TestFixture]
         public sealed class When_checking_blob_item
-            : When_checking_item_in<FileStorageScenarioTests>
+            : When_checking_item_in<Play_all_for_FileStreaming>
         {
         }
     }

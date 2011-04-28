@@ -70,7 +70,7 @@
     <Compile Include="Legacy\ProtoBufNativeTests.cs" />
     <Compile Include="Legacy\ProtoBufXmlTests.cs" />
     <Compile Include="Legacy\SmokeTests.cs" />
-    <Compile Include="Feature.StreamingStorage\BlobScenarioTests.cs" />
+    <Compile Include="Feature.StreamingStorage\Play_all_for_BlobStreaming.cs" />
     <Compile Include="Feature.StreamingStorage\HashingTests.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -16,9 +16,9 @@ using NUnit.Framework;
 
 namespace Lokad.Cqrs.Legacy.SimpleStorage
 {
-    public sealed class BlobScenarioTests : ITestStorage
+    public sealed class Play_all_for_BlobStreaming : ITestStorage
     {
-        CloudBlobClient _client = GetCustom(); //CloudStorageAccount.DevelopmentStorageAccount.CreateCloudBlobClient();
+        CloudBlobClient _client = CloudStorageAccount.DevelopmentStorageAccount.CreateCloudBlobClient();
 
         public IStorageContainer GetContainer(string path)
         {
@@ -37,7 +37,7 @@ namespace Lokad.Cqrs.Legacy.SimpleStorage
             return StorageWriteOptions.None;
         }
 
-        public BlobScenarioTests UseLocalFiddler()
+        public Play_all_for_BlobStreaming UseLocalFiddler()
         {
             const string uri = "http://ipv4.fiddler:10000/devstoreaccount1";
             var credentials = CloudStorageAccount.DevelopmentStorageAccount.Credentials;
@@ -47,32 +47,32 @@ namespace Lokad.Cqrs.Legacy.SimpleStorage
 
         [TestFixture]
         public sealed class When_checking_blob_item
-            : When_checking_item_in<BlobScenarioTests>
+            : When_checking_item_in<Play_all_for_BlobStreaming>
         {
         }
 
         [TestFixture]
         public sealed class When_copying_blob_item
-            : When_copying_items_in<BlobScenarioTests>
+            : When_copying_items_in<Play_all_for_BlobStreaming>
         {
         }
 
         [TestFixture]
         public sealed class When_deleting_blob_item :
-            When_deleting_item_in<BlobScenarioTests>
+            When_deleting_item_in<Play_all_for_BlobStreaming>
         {
         }
 
         [TestFixture]
         public sealed class When_reading_blob_item :
-            When_reading_item_in<BlobScenarioTests>
+            When_reading_item_in<Play_all_for_BlobStreaming>
         {
         }
 
 
         [TestFixture]
         public sealed class When_reading_blob_item_with_gzip :
-            When_reading_item_in<BlobScenarioTests>
+            When_reading_item_in<Play_all_for_BlobStreaming>
         {
             public When_reading_blob_item_with_gzip()
             {
@@ -83,13 +83,13 @@ namespace Lokad.Cqrs.Legacy.SimpleStorage
 
         [TestFixture]
         public sealed class When_writing_blob_item
-            : When_writing_item_in<BlobScenarioTests>
+            : When_writing_item_in<Play_all_for_BlobStreaming>
         {
         }
 
         [TestFixture]
         public sealed class When_writing_blob_item_with_gzip
-            : When_writing_item_in<BlobScenarioTests>
+            : When_writing_item_in<Play_all_for_BlobStreaming>
         {
             public When_writing_blob_item_with_gzip()
             {
