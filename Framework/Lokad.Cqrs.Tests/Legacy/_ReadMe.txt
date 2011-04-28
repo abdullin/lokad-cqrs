@@ -1,1 +1,0 @@
-Core unit tests for Lokad.CQRS project
