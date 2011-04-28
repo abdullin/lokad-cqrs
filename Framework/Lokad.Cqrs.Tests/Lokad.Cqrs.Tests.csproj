@@ -64,7 +64,7 @@
     <Compile Include="Legacy\Durability\LegacyCompatibilityTests.cs" />
     <Compile Include="Legacy\Fixture.cs" />
     <Compile Include="Legacy\MessageUtilTests.cs" />
-    <Compile Include="Core.Envelope\Play_all_for_DataContracts.cs" />
+    <Compile Include="Core.Envelope\Play_all_for_ProtoBuf.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Legacy\ProtoBufDataTests.cs" />
     <Compile Include="Legacy\ProtoBufNativeTests.cs" />

@@ -10,9 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
-using Lokad.Cqrs.Core.Envelope;
 using Lokad.Cqrs.Evil;
-using ProtoBuf;
 
 namespace Lokad.Cqrs.Core.Serialization
 {
@@ -90,19 +88,6 @@ namespace Lokad.Cqrs.Core.Serialization
         public bool TryGetContractTypeByName(string contractName, out Type contractType)
         {
             return _contract2Type.TryGetValue(contractName, out contractType);
-        }
-    }
-
-    public sealed class EnvelopeSerializerWithProtoBuf : IEnvelopeSerializer
-    {
-        public void SerializeEnvelope(Stream stream, EnvelopeContract contract)
-        {
-            Serializer.Serialize(stream, contract);
-        }
-
-        public EnvelopeContract DeserializeEnvelope(Stream stream)
-        {
-            return Serializer.Deserialize<EnvelopeContract>(stream);
         }
     }
 }
