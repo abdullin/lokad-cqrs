@@ -10,7 +10,7 @@ using NUnit.Framework;
 
 namespace Lokad.Cqrs
 {
-    public static class MemoryScenarios
+    public static class Play_all_for_memory
     {
         // ReSharper disable InconsistentNaming
 

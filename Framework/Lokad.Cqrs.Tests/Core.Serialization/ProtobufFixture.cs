@@ -9,13 +9,12 @@ using System;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Runtime.Serialization;
-using Lokad.Cqrs.Core.Serialization;
 
 // ReSharper disable InconsistentNaming
 
-namespace Lokad.Cqrs.Legacy
+namespace Lokad.Cqrs.Core.Serialization
 {
-    public abstract class Fixture
+    public abstract class ProtobufFixture
     {
         static readonly ConcurrentDictionary<Type, IFormatter> Dict = new ConcurrentDictionary<Type, IFormatter>();
 

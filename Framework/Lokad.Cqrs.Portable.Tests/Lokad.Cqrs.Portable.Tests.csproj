@@ -68,7 +68,7 @@
     <Compile Include="Feature.StreamingStorage\Scenarios\When_reading_item_in.cs" />
     <Compile Include="Feature.StreamingStorage\Scenarios\When_writing_item_in.cs" />
     <Compile Include="MemoryConfigurationTests.cs" />
-    <Compile Include="MemoryScenarios.cs" />
+    <Compile Include="Play_all_for_memory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scenarios\When_sending_failing_messages.cs" />
   </ItemGroup>

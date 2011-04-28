@@ -5,14 +5,13 @@
 
 #endregion
 
-using Lokad.Cqrs.Core.Serialization;
 using NUnit.Framework;
 using ProtoBuf;
 
-namespace Lokad.Cqrs.Legacy
+namespace Lokad.Cqrs.Core.Serialization
 {
     [TestFixture]
-    public sealed class ProtoBufNativeTests : Fixture
+    public sealed class ProtoBufNativeTests : ProtobufFixture
     {
         // ReSharper disable InconsistentNaming
 

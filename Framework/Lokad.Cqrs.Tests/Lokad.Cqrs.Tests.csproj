@@ -62,13 +62,12 @@
   <ItemGroup>
     <Compile Include="AzureQuarantineTests.cs" />
     <Compile Include="Legacy\Durability\LegacyCompatibilityTests.cs" />
-    <Compile Include="Legacy\Fixture.cs" />
-    <Compile Include="Legacy\MessageUtilTests.cs" />
+    <Compile Include="Core.Serialization\ProtobufFixture.cs" />
     <Compile Include="Core.Envelope\Play_all_for_ProtoBuf.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Legacy\ProtoBufDataTests.cs" />
-    <Compile Include="Legacy\ProtoBufNativeTests.cs" />
-    <Compile Include="Legacy\ProtoBufXmlTests.cs" />
+    <Compile Include="Core.Serialization\ProtoBufDataTests.cs" />
+    <Compile Include="Core.Serialization\ProtoBufNativeTests.cs" />
+    <Compile Include="Core.Serialization\ProtoBufXmlTests.cs" />
     <Compile Include="Legacy\SmokeTests.cs" />
     <Compile Include="Feature.StreamingStorage\Play_all_for_BlobStreaming.cs" />
     <Compile Include="Feature.StreamingStorage\HashingTests.cs" />

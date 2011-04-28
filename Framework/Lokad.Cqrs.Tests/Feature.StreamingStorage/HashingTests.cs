@@ -8,12 +8,11 @@
 using System;
 using System.IO;
 using Lokad.Cqrs.Evil;
-using Lokad.Cqrs.Feature.StreamingStorage;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
 using NUnit.Framework;
 
-namespace Lokad.Cqrs.Legacy.SimpleStorage
+namespace Lokad.Cqrs.Feature.StreamingStorage
 {
     [TestFixture]
     public sealed class HashingTests

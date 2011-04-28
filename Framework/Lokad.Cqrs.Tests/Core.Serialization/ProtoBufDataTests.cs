@@ -6,13 +6,12 @@
 #endregion
 
 using System.Runtime.Serialization;
-using Lokad.Cqrs.Core.Serialization;
 using NUnit.Framework;
 
-namespace Lokad.Cqrs.Legacy
+namespace Lokad.Cqrs.Core.Serialization
 {
     [TestFixture]
-    public sealed class ProtoBufDataTests : Fixture
+    public sealed class ProtoBufDataTests : ProtobufFixture
     {
         // ReSharper disable InconsistentNaming
 
@@ -68,6 +67,7 @@ namespace Lokad.Cqrs.Legacy
         [DataContract(Namespace = "Custom", Name = "Type")]
         public sealed class CustomDataClass : IExtensibleDataObject
         {
+
             public ExtensionDataObject ExtensionData { get; set; }
         }
     }

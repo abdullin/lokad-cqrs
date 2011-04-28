@@ -6,7 +6,6 @@
 #endregion
 
 using System.IO;
-using Lokad.Cqrs.Feature.StreamingStorage;
 using Lokad.Cqrs.Feature.StreamingStorage.Scenarios;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
@@ -14,7 +13,7 @@ using NUnit.Framework;
 
 // ReSharper disable InconsistentNaming
 
-namespace Lokad.Cqrs.Legacy.SimpleStorage
+namespace Lokad.Cqrs.Feature.StreamingStorage
 {
     public sealed class Play_all_for_BlobStreaming : ITestStorage
     {
