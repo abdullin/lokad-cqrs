@@ -95,6 +95,14 @@
     <Compile Include="Core.Outbox\DefaultMessageSender.cs" />
     <Compile Include="Core.Outbox\SendMessageModule.cs" />
     <Compile Include="Define.cs" />
+    <Compile Include="Feature.AtomicStorage\ExtendIAtomicSingletonReader.cs" />
+    <Compile Include="Feature.AtomicStorage\ExtendIAtomicSingletonWriter.cs" />
+    <Compile Include="Feature.AtomicStorage\IAtomicEntity.cs" />
+    <Compile Include="Feature.AtomicStorage\IAtomicEntityReader.cs" />
+    <Compile Include="Feature.AtomicStorage\IAtomicEntityWriter.cs" />
+    <Compile Include="Feature.AtomicStorage\IAtomicSingleton.cs" />
+    <Compile Include="Feature.AtomicStorage\IAtomicSingletonReader.cs" />
+    <Compile Include="Feature.AtomicStorage\IAtomicSingletonWriter.cs" />
     <Compile Include="Feature.Logging\NullSystemObserver.cs" />
     <Compile Include="Feature.Logging\DefaultSystemObserver.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryFutureList.cs" />

@@ -7,7 +7,7 @@
 
 using Autofac;
 
-namespace Lokad.Cqrs.Feature.AtomicStorage.Azure
+namespace Lokad.Cqrs.Feature.AtomicStorage
 {
     /// <summary>
     /// Autofac module for Lokad.CQRS engine. It initializes view containers 

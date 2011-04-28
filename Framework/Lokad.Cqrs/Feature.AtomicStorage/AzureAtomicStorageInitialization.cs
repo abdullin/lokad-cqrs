@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using Lokad.Cqrs.Evil;
 using Microsoft.WindowsAzure.StorageClient;
 
-namespace Lokad.Cqrs.Feature.AtomicStorage.Azure
+namespace Lokad.Cqrs.Feature.AtomicStorage
 {
     sealed class AzureAtomicStorageInitialization : IEngineProcess
     {

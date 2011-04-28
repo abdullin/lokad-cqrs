@@ -8,15 +8,15 @@
 using System;
 using Microsoft.WindowsAzure.StorageClient;
 
-namespace Lokad.Cqrs.Feature.AtomicStorage.Azure
+namespace Lokad.Cqrs.Feature.AtomicStorage
 {
-    public sealed class AzureAtomicSingletonWriter<TView> : IAtomicSingletonWriter<TView>
+    public sealed class AzureAtomicSingletonReader<TView> : IAtomicSingletonReader<TView>
         where TView : IAtomicSingleton
     {
         readonly CloudBlobClient _client;
         readonly IAzureAtomicStorageStrategy _strategy;
 
-        public AzureAtomicSingletonWriter(CloudBlobClient client, IAzureAtomicStorageStrategy strategy)
+        public AzureAtomicSingletonReader(CloudBlobClient client, IAzureAtomicStorageStrategy strategy)
         {
             _client = client;
             _strategy = strategy;
@@ -32,28 +32,24 @@ namespace Lokad.Cqrs.Feature.AtomicStorage.Azure
         }
 
 
-        public void AddOrUpdate(Func<TView> addFactory, Action<TView> updateFactory)
+        public Maybe<TView> Get()
         {
             var blob = GetBlob();
-
-            TView view;
+            string text;
             try
             {
-                var downloadText = blob.DownloadText();
-                view = _strategy.Deserialize<TView>(downloadText);
-                updateFactory(view);
+                // no retries and small timeout
+                text = blob.DownloadText(new BlobRequestOptions
+                    {
+                        RetryPolicy = RetryPolicies.NoRetry(),
+                        Timeout = TimeSpan.FromSeconds(3)
+                    });
             }
             catch (StorageClientException ex)
             {
-                view = addFactory();
+                return Maybe<TView>.Empty;
             }
-
-            blob.UploadText(_strategy.Serialize(view));
-        }
-
-        public void Delete()
-        {
-            GetBlob().DeleteIfExists();
+            return _strategy.Deserialize<TView>(text);
         }
     }
 }

@@ -5,7 +5,6 @@
 
 #endregion
 
-using Lokad.Cqrs.Evil;
 
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {

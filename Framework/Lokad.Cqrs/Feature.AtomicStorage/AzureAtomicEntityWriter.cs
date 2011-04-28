@@ -6,10 +6,9 @@
 #endregion
 
 using System;
-using Lokad.Cqrs.Evil;
 using Microsoft.WindowsAzure.StorageClient;
 
-namespace Lokad.Cqrs.Feature.AtomicStorage.Azure
+namespace Lokad.Cqrs.Feature.AtomicStorage
 {
     /// <summary>
     /// Azure implementation of the view reader/writer

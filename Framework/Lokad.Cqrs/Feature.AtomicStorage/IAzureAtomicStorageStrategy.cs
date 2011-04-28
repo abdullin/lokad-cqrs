@@ -7,7 +7,7 @@
 
 using System;
 
-namespace Lokad.Cqrs.Feature.AtomicStorage.Azure
+namespace Lokad.Cqrs.Feature.AtomicStorage
 {
     public interface IAzureAtomicStorageStrategy
     {

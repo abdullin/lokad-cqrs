@@ -7,7 +7,7 @@
 
 using Autofac;
 
-namespace Lokad.Cqrs.Feature.AtomicStorage.Azure
+namespace Lokad.Cqrs.Feature.AtomicStorage
 {
     public sealed class AzureAtomicStorageReaderModule : Module
     {
