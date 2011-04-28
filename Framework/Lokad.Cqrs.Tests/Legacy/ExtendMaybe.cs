@@ -7,6 +7,7 @@
 
 using System;
 using System.Linq.Expressions;
+using Lokad.Cqrs;
 using Lokad.Cqrs.Evil;
 using NUnit.Framework;
 

@@ -112,6 +112,8 @@
     <Compile Include="Core.Outbox\IQueueWriterFactory.cs" />
     <Compile Include="ISystemEvent.cs" />
     <Compile Include="ISystemObserver.cs" />
+    <Compile Include="Maybe.1.cs" />
+    <Compile Include="Maybe.cs" />
     <Compile Include="MessageEnvelope.cs" />
     <Compile Include="MessageItem.cs" />
     <Compile Include="EnvelopeReference.cs" />

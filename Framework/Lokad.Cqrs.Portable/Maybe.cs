@@ -7,27 +7,13 @@
 
 using System;
 
-namespace Lokad.Cqrs.Evil
+namespace Lokad.Cqrs
 {
     /// <summary>
     /// Helper routines for <see cref="Maybe{T}"/>
     /// </summary>
     public static class Maybe
     {
-        //public static T? ToNullable<T>(this Maybe<T> maybe) where T : struct
-        //{
-        //    return maybe.HasValue
-        //        ? maybe.Value
-        //        : new T?();
-        //}
-
-        //public static Maybe<T> ToMaybe<T>(this T? nullable) where T : struct
-        //{
-        //    return nullable.HasValue
-        //        ? nullable.Value
-        //        : Maybe<T>.Empty;
-        //}
-
         /// <summary>
         /// Creates new <see cref="Maybe{T}"/> from the provided value
         /// </summary>

@@ -79,8 +79,6 @@
     <Compile Include="Evil\ExtendIEnumerable.cs" />
     <Compile Include="Evil\ExtendInt32.cs" />
     <Compile Include="Evil\Filter.cs" />
-    <Compile Include="Evil\Maybe.1.cs" />
-    <Compile Include="Evil\Maybe.cs" />
     <Compile Include="Feature.AtomicStorage\Azure\IAzureAtomicStorageStrategy.cs" />
     <Compile Include="Build\AzureClientConfigurationBuilder.cs" />
     <Compile Include="Feature.AzurePartition\Inbox\StatelessAzureScheduler.cs" />
