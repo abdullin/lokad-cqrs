@@ -87,7 +87,6 @@
     <Compile Include="Core.Transport\GetMessageResult.cs" />
     <Compile Include="Core.Transport\GetMessageResultState.cs" />
     <Compile Include="Feature.AzurePartition\Inbox\AzurePartitionModule.cs" />
-    <Compile Include="Feature.AzurePartition\Events\MessageDirectoryCreated.cs" />
     <Compile Include="IAzureClientConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Feature.StreamingStorage\BlobStorageContainer.cs" />

@@ -17,80 +17,77 @@ namespace Lokad.Cqrs.Core.Directory
     public sealed class MessageDirectoryBuilder
     {
         readonly IEnumerable<MessageMapping> _mappings;
-        readonly string _methodName;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageDirectoryBuilder"/> class.
         /// </summary>
         /// <param name="mappings">The message mappings.</param>
-        /// <param name="methodName">Name of the method for the invocation.</param>
-        public MessageDirectoryBuilder(IEnumerable<MessageMapping> mappings, string methodName)
+        public MessageDirectoryBuilder(IEnumerable<MessageMapping> mappings)
         {
             _mappings = mappings;
-            _methodName = methodName;
         }
 
-        public MessageDirectory BuildDirectory(Func<MessageMapping, bool> filter)
+        public ICollection<Type> BuildSerializationRegistry()
+        {
+            return _mappings
+                .Select(x => x.Message)
+                .Where(x => !x.IsAbstract)
+                .Distinct()
+                .ToArray();
+        }
+
+        public ICollection<Type> BuildConsumerTypes()
+        {
+            return _mappings
+                .Select(x => x.Consumer)
+                .Where(x => !x.IsAbstract)
+                .Distinct()
+                .ToArray();
+        }
+
+        public MessageActivationMap BuildActivationMap(Func<MessageMapping, bool> filter)
         {
             var mappings = _mappings.Where(filter);
 
-            var consumers = mappings
-                .GroupBy(x => x.Consumer)
-                .Select(x =>
-                    {
-                        var directs = x
-                            .Where(m => m.Direct)
-                            .Select(m => m.Message)
-                            .Distinct();
 
-                        var assignables = x
-                            .Select(m => m.Message)
-                            .Where(t => directs.Any(d => d.IsAssignableFrom(t)))
-                            .Distinct();
-
-                        return new ConsumerInfo(x.Key, assignables.ToArray());
-                    })
-                .ToArray();
 
 
             var messages = mappings
                 .ToLookup(x => x.Message)
                 .Select(x =>
-                    {
-                        var domainConsumers = x
-                            .Where(t => t.Consumer != typeof (MessageMapping.BusNull))
-                            .ToArray();
+                {
+                    var domainConsumers = x
+                        .Where(t => t.Consumer != typeof(MessageMapping.BusNull))
+                        .ToArray();
 
-                        return new MessageInfo
-                            {
-                                MessageType = x.Key,
-                                AllConsumers = domainConsumers.Select(m => m.Consumer).Distinct().ToArray(),
-                                DerivedConsumers =
-                                    domainConsumers.Where(m => !m.Direct).Select(m => m.Consumer).Distinct().ToArray(),
-                                DirectConsumers =
-                                    domainConsumers.Where(m => m.Direct).Select(m => m.Consumer).Distinct().ToArray(),
-                            };
-                    }).ToList();
+                    return new MessageActivationInfo
+                    {
+                        MessageType = x.Key,
+                        AllConsumers = domainConsumers.Select(m => m.Consumer).Distinct().ToArray(),
+                        DerivedConsumers =
+                            domainConsumers.Where(m => !m.Direct).Select(m => m.Consumer).Distinct().ToArray(),
+                        DirectConsumers =
+                            domainConsumers.Where(m => m.Direct).Select(m => m.Consumer).Distinct().ToArray(),
+                    };
+                }).ToList();
 
             var includedTypes = new HashSet<Type>(messages.Select(m => m.MessageType));
 
             // message directory should still include all messages for the serializers
             var orphanedMessages = _mappings
                 .Where(m => !includedTypes.Contains(m.Message))
-                .Select(m => new MessageInfo
-                    {
-                        MessageType = m.Message,
-                        AllConsumers = Type.EmptyTypes,
-                        DerivedConsumers = Type.EmptyTypes,
-                        DirectConsumers = Type.EmptyTypes
-                    });
+                .Select(m => new MessageActivationInfo
+                {
+                    MessageType = m.Message,
+                    AllConsumers = Type.EmptyTypes,
+                    DerivedConsumers = Type.EmptyTypes,
+                    DirectConsumers = Type.EmptyTypes
+                });
 
             messages.AddRange(orphanedMessages);
-
-            return new MessageDirectory(_methodName, consumers, messages.ToArray());
+            
+            return new MessageActivationMap(messages);
         }
-
-        public string ConsumingMethodName { get { return _methodName; } }
     }
 
     public sealed class MessageDirectoryFilter

@@ -116,11 +116,7 @@ namespace Lokad.Cqrs.Build.Engine
             // conditional registrations and defaults
             if (!IsEnlisted<ModuleForMessageDirectory>())
             {
-                DomainIs(m =>
-                    {
-                        m.WithDefaultInterfaces();
-                        m.InUserAssemblies();
-                    });
+                DomainIs(m => m.InUserAssemblies());
             }
             if (!IsEnlisted<ModuleForSerialization>())
             {

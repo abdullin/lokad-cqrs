@@ -20,12 +20,12 @@ namespace Lokad.Cqrs.Core.Dispatch
     {
         readonly ILifetimeScope _container;
         readonly IDictionary<Type, Type> _messageConsumers = new Dictionary<Type, Type>();
-        readonly MessageDirectory _messageDirectory;
+        readonly MessageActivationMap _messageDirectory;
         readonly MessageDuplicationMemory _memory;
-        readonly IConsumerInvoker _invoker;
+        readonly IMethodInvoker _invoker;
 
-        public DispatchCommandBatchToSingleConsumer(ILifetimeScope container, MessageDirectory messageDirectory,
-            MessageDuplicationManager manager, IConsumerInvoker invoker)
+        public DispatchCommandBatchToSingleConsumer(ILifetimeScope container, MessageActivationMap messageDirectory,
+            MessageDuplicationManager manager, IMethodInvoker invoker)
         {
             _container = container;
             _invoker = invoker;
@@ -74,8 +74,9 @@ namespace Lokad.Cqrs.Core.Dispatch
 
         public void Init()
         {
-            DispatcherUtil.ThrowIfCommandHasMultipleConsumers(_messageDirectory.Messages);
-            foreach (var messageInfo in _messageDirectory.Messages)
+            var infos = _messageDirectory.Infos;
+            DispatcherUtil.ThrowIfCommandHasMultipleConsumers(infos);
+            foreach (var messageInfo in infos)
             {
                 if (messageInfo.AllConsumers.Length > 0)
                 {

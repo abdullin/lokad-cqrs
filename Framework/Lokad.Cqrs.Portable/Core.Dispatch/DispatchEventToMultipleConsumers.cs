@@ -20,14 +20,14 @@ namespace Lokad.Cqrs.Core.Dispatch
     public sealed class DispatchEventToMultipleConsumers : ISingleThreadMessageDispatcher
     {
         readonly ILifetimeScope _container;
-        readonly MessageDirectory _directory;
+        readonly MessageActivationMap _directory;
         readonly IDictionary<Type, Type[]> _dispatcher = new Dictionary<Type, Type[]>();
         readonly MessageDuplicationMemory _dispatchMemory;
         readonly ISystemObserver _observer;
-        readonly IConsumerInvoker _invoker;
+        readonly IMethodInvoker _invoker;
 
-        public DispatchEventToMultipleConsumers(ILifetimeScope container, MessageDirectory directory,
-            MessageDuplicationManager memory, ISystemObserver observer, IConsumerInvoker invoker)
+        public DispatchEventToMultipleConsumers(ILifetimeScope container, MessageActivationMap directory,
+            MessageDuplicationManager memory, ISystemObserver observer, IMethodInvoker invoker)
         {
             _container = container;
             _invoker = invoker;
@@ -38,7 +38,7 @@ namespace Lokad.Cqrs.Core.Dispatch
 
         public void Init()
         {
-            foreach (var message in _directory.Messages)
+            foreach (var message in _directory.Infos)
             {
                 if (message.AllConsumers.Length > 0)
                 {

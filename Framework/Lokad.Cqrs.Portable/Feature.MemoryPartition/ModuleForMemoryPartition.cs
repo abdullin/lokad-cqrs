@@ -48,10 +48,11 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
 
             var builder = context.Resolve<MessageDirectoryBuilder>();
 
-            var directory = TypedParameter.From(builder.BuildDirectory(_filter.DoesPassFilter));
-            var invoker = TypedParameter.From<IConsumerInvoker>(new DirectConsumer(builder.ConsumingMethodName));
+            var activations = builder.BuildActivationMap(_filter.DoesPassFilter);
 
-            var dispatcher = (ISingleThreadMessageDispatcher) context.Resolve(_dispatcher.Item1, directory, invoker);
+            var directory = TypedParameter.From(activations);
+
+            var dispatcher = (ISingleThreadMessageDispatcher) context.Resolve(_dispatcher.Item1, directory);
             _dispatcher.Item2(dispatcher);
             dispatcher.Init();
 

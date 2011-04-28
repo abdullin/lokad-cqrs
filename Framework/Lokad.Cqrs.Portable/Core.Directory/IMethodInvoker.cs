@@ -1,6 +1,6 @@
 ﻿namespace Lokad.Cqrs.Core.Directory
 {
-    public interface IConsumerInvoker
+    public interface IMethodInvoker
     {
         void InvokeConsume(object consumer, MessageItem item, MessageEnvelope envelope);
     }

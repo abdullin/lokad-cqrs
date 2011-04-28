@@ -43,7 +43,11 @@
   <ItemGroup>
     <Compile Include="Build\BuildSyntaxHelper.cs" />
     <Compile Include="Build\Engine\MemoryModule.cs" />
-    <Compile Include="Core.Directory\IConsumerInvoker.cs" />
+    <Compile Include="Core.Directory\Default\MessageDetail.cs" />
+    <Compile Include="Core.Directory\IMethodInvoker.cs" />
+    <Compile Include="Core.Directory\MessageActivationMap.cs" />
+    <Compile Include="Core.Directory\MethodInvoker.cs" />
+    <Compile Include="Core.Directory\MethodInvokerHint.cs" />
     <Compile Include="Core.Dispatch\Events\QuarantinedMessage.cs" />
     <Compile Include="Core.Dispatch\MemoryQuarantine.cs" />
     <Compile Include="Core.Dispatch\Events\MessageAcked.cs" />
@@ -55,12 +59,10 @@
     <Compile Include="Build\Engine\Events\HostInitialized.cs" />
     <Compile Include="Build\Engine\Events\HostStarted.cs" />
     <Compile Include="Build\Engine\Events\HostStopped.cs" />
-    <Compile Include="Core.Directory\ConsumerInfo.cs" />
     <Compile Include="Core.Directory\DomainAssemblyScanner.cs" />
     <Compile Include="Core.Directory\ModuleForMessageDirectory.cs" />
-    <Compile Include="Core.Directory\MessageDirectory.cs" />
     <Compile Include="Core.Directory\MessageDirectoryBuilder.cs" />
-    <Compile Include="Core.Directory\MessageInfo.cs" />
+    <Compile Include="Core.Directory\MessageActivationInfo.cs" />
     <Compile Include="Core.Directory\MessageMapping.cs" />
     <Compile Include="Core.Directory\MessageReflectionUtil.cs" />
     <Compile Include="Core.Dispatch\DispatchCommandBatchToSingleConsumer.cs" />
@@ -106,7 +108,6 @@
     <Compile Include="Feature.AtomicStorage\IAtomicSingletonWriter.cs" />
     <Compile Include="Feature.Logging\NullSystemObserver.cs" />
     <Compile Include="Feature.Logging\DefaultSystemObserver.cs" />
-    <Compile Include="Core.Directory\DirectConsumer.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryFutureList.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryPartitionFactory.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryPartitionInbox.cs" />
