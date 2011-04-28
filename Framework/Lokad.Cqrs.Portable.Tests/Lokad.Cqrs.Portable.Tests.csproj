@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="Core.Directory\MessageDirectoryTests.cs" />
     <Compile Include="Core.Envelope\Play_all_for_DataContracts.cs" />
+    <Compile Include="Core.Envelope\Play_all_for_Memory.cs" />
     <Compile Include="Core.Envelope\Scenarios\DataSerializerWithBinaryFormatter.cs" />
     <Compile Include="Core.Envelope\Scenarios\When_envelope_is_serialized.cs" />
     <Compile Include="Core.Envelope\Scenarios\EnvelopeSerializerWithBinaryFormatter.cs" />

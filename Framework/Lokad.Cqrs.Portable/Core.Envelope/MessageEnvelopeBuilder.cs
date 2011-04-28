@@ -16,14 +16,14 @@ namespace Lokad.Cqrs.Core.Envelope
         public readonly IDictionary<string, object> Attributes = new Dictionary<string, object>();
         public DateTimeOffset DeliverOn;
 
-        public readonly IList<MessageItemToSave> Items = new List<MessageItemToSave>();
+        public readonly IList<MessageItemBuilder> Items = new List<MessageItemBuilder>();
 
         public MessageEnvelopeBuilder(string envelopeId)
         {
             EnvelopeId = envelopeId;
         }
 
-        public MessageItemToSave AddItem<T>(T item)
+        public MessageItemBuilder AddItem<T>(T item)
         {
             // add KVPs after
             var t = typeof (T);
@@ -32,7 +32,7 @@ namespace Lokad.Cqrs.Core.Envelope
                 t = item.GetType();
             }
 
-            var messageItemToSave = new MessageItemToSave(t, item);
+            var messageItemToSave = new MessageItemBuilder(t, item);
             Items.Add(messageItemToSave);
             return messageItemToSave;
         }

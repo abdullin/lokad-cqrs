@@ -73,7 +73,7 @@
     <Compile Include="Core.Dispatch\MessageDuplicationManager.cs" />
     <Compile Include="Core.Dispatch\MessageDuplicationMemory.cs" />
     <Compile Include="Core.Envelope\MessageEnvelopeBuilder.cs" />
-    <Compile Include="Core.Envelope\MessageItemToSave.cs" />
+    <Compile Include="Core.Envelope\MessageItemBuilder.cs" />
     <Compile Include="Core.Evil\InvocationUtil.cs" />
     <Compile Include="Core.Inbox\IPartitionInbox.cs" />
     <Compile Include="Core.Inbox\MessageContext.cs" />

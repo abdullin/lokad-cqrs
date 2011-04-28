@@ -12,9 +12,11 @@ namespace Lokad.Cqrs.Core.Envelope
     [TestFixture]
     public sealed class Play_all_for_BinaryFormatter : When_envelope_is_serialized
     {
-        protected override IEnvelopeSerializer GetSerializer()
+        readonly IEnvelopeStreamer _streamer = BuildStreamer(new EnvelopeSerializerWithBinaryFormatter());
+        protected override MessageEnvelope RoundtripViaSerializer(MessageEnvelopeBuilder builder)
         {
-            return new EnvelopeSerializerWithBinaryFormatter();
+            var bytes = _streamer.SaveDataMessage(builder.Build());
+            return _streamer.ReadDataMessage(bytes);
         }
     }
 }

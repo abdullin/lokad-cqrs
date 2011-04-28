@@ -9,21 +9,11 @@ namespace Lokad.Cqrs.Core.Envelope
 
     public abstract class When_envelope_is_serialized
     {
-        protected abstract IEnvelopeSerializer GetSerializer();
-        readonly EnvelopeStreamer CurrentStreamer;
+        protected abstract MessageEnvelope RoundtripViaSerializer(MessageEnvelopeBuilder builder);
 
-        protected MessageEnvelope RoundtripViaSerializer(MessageEnvelopeBuilder builder)
+        protected static IEnvelopeStreamer BuildStreamer(IEnvelopeSerializer serializer)
         {
-            var envelope = builder.Build();
-            var bytes = CurrentStreamer.SaveDataMessage(envelope);
-            return CurrentStreamer.ReadDataMessage(bytes);
-        }
-
-        protected When_envelope_is_serialized()
-        {
-
-            var serializer = GetSerializer();
-            CurrentStreamer = new EnvelopeStreamer(serializer, new DataSerializerWithBinaryFormatter());
+            return new EnvelopeStreamer(serializer, new DataSerializerWithBinaryFormatter());
         }
 
         [Test]
