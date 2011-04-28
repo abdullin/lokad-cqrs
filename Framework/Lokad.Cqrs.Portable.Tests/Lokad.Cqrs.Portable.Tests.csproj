@@ -50,11 +50,17 @@
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core.Directory\MessageDirectoryTests.cs" />
+    <Compile Include="Core.Envelope\Play_all_for_DataContracts.cs" />
+    <Compile Include="Core.Envelope\Scenarios\DataSerializerWithBinaryFormatter.cs" />
+    <Compile Include="Core.Envelope\Scenarios\When_envelope_is_serialized.cs" />
+    <Compile Include="Core.Envelope\Scenarios\EnvelopeSerializerWithBinaryFormatter.cs" />
+    <Compile Include="Core.Envelope\Play_all_for_BinaryFormatter.cs" />
     <Compile Include="EngineFixture.cs" />
     <Compile Include="ExtendMaybe.cs" />
-    <Compile Include="Feature.StreamingStorage\FileStorage.cs" />
-    <Compile Include="Feature.StreamingStorage\ITestStorage.cs" />
-    <Compile Include="Feature.StreamingStorage\StorageItemFixture.cs" />
+    <Compile Include="Feature.StreamingStorage\FileStorageScenarioTests.cs" />
+    <Compile Include="Feature.StreamingStorage\Scenarios\ITestStorage.cs" />
+    <Compile Include="Feature.StreamingStorage\Scenarios\StorageItemFixture.cs" />
     <Compile Include="Feature.StreamingStorage\Scenarios\When_checking_item_in.cs" />
     <Compile Include="Feature.StreamingStorage\Scenarios\When_copying_items_in.cs" />
     <Compile Include="Feature.StreamingStorage\Scenarios\When_deleting_item_in.cs" />

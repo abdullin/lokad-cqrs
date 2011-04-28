@@ -16,7 +16,7 @@ using NUnit.Framework;
 
 namespace Lokad.Cqrs.Legacy.SimpleStorage
 {
-    public sealed class BlobStorage : ITestStorage
+    public sealed class BlobScenarioTests : ITestStorage
     {
         CloudBlobClient _client = GetCustom(); //CloudStorageAccount.DevelopmentStorageAccount.CreateCloudBlobClient();
 
@@ -37,7 +37,7 @@ namespace Lokad.Cqrs.Legacy.SimpleStorage
             return StorageWriteOptions.None;
         }
 
-        public BlobStorage UseLocalFiddler()
+        public BlobScenarioTests UseLocalFiddler()
         {
             const string uri = "http://ipv4.fiddler:10000/devstoreaccount1";
             var credentials = CloudStorageAccount.DevelopmentStorageAccount.Credentials;
@@ -47,32 +47,32 @@ namespace Lokad.Cqrs.Legacy.SimpleStorage
 
         [TestFixture]
         public sealed class When_checking_blob_item
-            : When_checking_item_in<BlobStorage>
+            : When_checking_item_in<BlobScenarioTests>
         {
         }
 
         [TestFixture]
         public sealed class When_copying_blob_item
-            : When_copying_items_in<BlobStorage>
+            : When_copying_items_in<BlobScenarioTests>
         {
         }
 
         [TestFixture]
         public sealed class When_deleting_blob_item :
-            When_deleting_item_in<BlobStorage>
+            When_deleting_item_in<BlobScenarioTests>
         {
         }
 
         [TestFixture]
         public sealed class When_reading_blob_item :
-            When_reading_item_in<BlobStorage>
+            When_reading_item_in<BlobScenarioTests>
         {
         }
 
 
         [TestFixture]
         public sealed class When_reading_blob_item_with_gzip :
-            When_reading_item_in<BlobStorage>
+            When_reading_item_in<BlobScenarioTests>
         {
             public When_reading_blob_item_with_gzip()
             {
@@ -83,13 +83,13 @@ namespace Lokad.Cqrs.Legacy.SimpleStorage
 
         [TestFixture]
         public sealed class When_writing_blob_item
-            : When_writing_item_in<BlobStorage>
+            : When_writing_item_in<BlobScenarioTests>
         {
         }
 
         [TestFixture]
         public sealed class When_writing_blob_item_with_gzip
-            : When_writing_item_in<BlobStorage>
+            : When_writing_item_in<BlobScenarioTests>
         {
             public When_writing_blob_item_with_gzip()
             {

@@ -13,7 +13,7 @@ using NUnit.Framework;
 namespace Lokad.Cqrs.Legacy
 {
     [TestFixture]
-    public sealed class DomainTests
+    public sealed class MessageDirectoryTests
     {
         // ReSharper disable InconsistentNaming
 
@@ -108,7 +108,7 @@ namespace Lokad.Cqrs.Legacy
                 .ConsumerMethodSample<IConsumeMessage<IMessage>>(m => m.Consume(null))
                 .WhereConsumers(t => typeof (IConsumeMessage).IsAssignableFrom(t))
                 .WhereMessages(t => typeof (IMessage).IsAssignableFrom(t))
-                .WithAssemblyOf<DomainTests>()
+                .WithAssemblyOf<MessageDirectoryTests>()
                 .Build()
                 .ToArray();
 

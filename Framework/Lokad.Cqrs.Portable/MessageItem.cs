@@ -7,9 +7,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Lokad.Cqrs
 {
+    //[DebuggerDisplay("{MappedType.Name} with {")]
     public sealed class MessageItem
     {
         public readonly Type MappedType;
@@ -26,6 +28,10 @@ namespace Lokad.Cqrs
             MappedType = mappedType;
             Content = content;
             _attributes = attributes;
+        }
+        public override string ToString()
+        {
+            return string.Format("[{0}]", Content.ToString());
         }
     }
 }
