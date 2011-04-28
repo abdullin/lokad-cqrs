@@ -135,7 +135,6 @@ namespace Lokad.Cqrs.Feature.AzurePartition
         {
             if (message == null) throw new ArgumentNullException("message");
             _queue.DeleteMessage((CloudQueueMessage) message.TransportMessage);
-            _observer.Notify(new MessageAcked(_queueName, message.Unpacked.EnvelopeId));
         }
 
         public void TryNotifyNack(MessageContext context)

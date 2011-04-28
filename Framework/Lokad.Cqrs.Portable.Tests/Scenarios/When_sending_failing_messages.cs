@@ -7,8 +7,9 @@ using NUnit.Framework;
 
 namespace Lokad.Cqrs.Scenarios
 {
-    public abstract class When_sending_failing_messages<TEngineProvider> : EngineFixture<TEngineProvider> 
-        where TEngineProvider : IConfigureEngineForFixture, new()
+    // ReSharper disable InconsistentNaming
+
+    public abstract class When_sending_failing_messages: EngineFixture
     {
         [Test]
         public void Permanent_failure_ends_with_quarnine()

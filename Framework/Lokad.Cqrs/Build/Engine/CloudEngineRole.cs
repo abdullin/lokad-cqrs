@@ -65,10 +65,9 @@ namespace Lokad.Cqrs.Build.Engine
 
     public static class ExtendCloudEngineBuilder
     {
-        public static CloudEngineBuilder Azure(this CloudEngineBuilder @this, Action<AzureModule> config)
+        public static void Azure(this CloudEngineBuilder @this, Action<AzureModule> config)
         {
             @this.Enlist(config);
-            return @this;
         }
     }
 }

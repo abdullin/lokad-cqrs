@@ -19,20 +19,19 @@ namespace Lokad.Cqrs
     {
         // ReSharper disable InconsistentNaming
 
-        public sealed class MemoryConfig : IConfigureEngineForFixture
+        
+        [TestFixture]
+        public sealed class MemoryQuarantine : When_sending_failing_messages
         {
-            public void Config(CloudEngineBuilder builder)
+            public MemoryQuarantine()
             {
-                builder.Memory(x =>
-                        {
-                            x.AddMemoryProcess("in");
-                            x.AddMemorySender("in");
-                        });
+                EnlistFixtureConfig(builder => builder.Memory(x =>
+                    {
+                        x.AddMemoryProcess("in");
+                        x.AddMemorySender("in");
+                    }));
             }
         }
-
-        [TestFixture]
-        public sealed class MemoryQuarantine : When_sending_failing_messages<MemoryConfig> {}
     }
 
 }

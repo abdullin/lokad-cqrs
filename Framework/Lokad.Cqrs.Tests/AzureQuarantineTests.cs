@@ -10,26 +10,29 @@ namespace Lokad.Cqrs
     {
         // ReSharper disable InconsistentNaming
 
-        public sealed class AzureConfig : IConfigureEngineForFixture
+        [TestFixture]
+        public sealed class AzureQuarantine : When_sending_failing_messages
         {
-            public void Config(CloudEngineBuilder builder)
+            public AzureQuarantine()
             {
-                builder.Azure(m =>
+                EnlistFixtureConfig(b => b.Azure(m =>
                     {
                         m.AddAzureAccount("azure-dev", CloudStorageAccount.DevelopmentStorageAccount);
-                        m.AddAzureProcess("azure-dev", new []{"incoming"},c =>
+                        m.AddAzureProcess("azure-dev", new[] {"incoming"}, c =>
                             {
                                 c.QueueVisibilityTimeout(1);
                                 c.WhenFactoryCreated(f => f.SetupForTesting());
                             });
                         m.AddAzureSender("azure-dev", "incoming");
-                        
-                    });
-                
+
+                    }));
+
+                EnlistFixtureConfig(b => b.Memory(x =>
+                {
+                    x.AddMemoryProcess("in");
+                    x.AddMemorySender("in");
+                }));
             }
         }
-
-        [TestFixture]
-        public sealed class AzureQuarantine : When_sending_failing_messages<AzureConfig> { }
     }
 }

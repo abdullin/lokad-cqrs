@@ -92,6 +92,7 @@ namespace Lokad.Cqrs.Core.Dispatch
                         {
                             _inbox.AckMessage(context);
                             _quarantine.Clear(context);
+                            _observer.Notify(new MessageAcked(context.QueueName, context.Unpacked.EnvelopeId));
                         }
                     }
                     catch (Exception ex)

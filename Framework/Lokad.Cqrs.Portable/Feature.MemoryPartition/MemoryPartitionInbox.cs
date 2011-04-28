@@ -32,7 +32,7 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
 
         public void AckMessage(MessageContext message)
         {
-            // do nothing
+            
         }
 
         public bool TakeMessage(CancellationToken token, out MessageContext context)

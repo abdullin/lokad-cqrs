@@ -1,4 +1,4 @@
-﻿namespace Lokad.Cqrs.Core.Inbox
+﻿namespace Lokad.Cqrs.Core.Dispatch.Events
 {
     public sealed class MessageAcked : ISystemEvent
     {

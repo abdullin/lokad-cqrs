@@ -4,19 +4,76 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading;
+using System.Threading.Tasks;
 using Lokad.Cqrs.Build.Engine;
 using Lokad.Cqrs.Core.Directory.Default;
 using NUnit.Framework;
 
 namespace Lokad.Cqrs.Tests
 {
-    public interface IConfigureEngineForFixture
+    public abstract class EngineFixture
     {
-        void Config(CloudEngineBuilder builder);
-    }
+        CancellationTokenSource _source;
+        CloudEngineHost _host;
+        Subject<ISystemEvent> _events;
 
-    public static class EngineFixtureContracts
-    {
+        protected IObservable<ISystemEvent> Events
+        {
+            get { return _events; }
+        }
+
+        Action<CloudEngineBuilder> _configureForTest;
+
+        Action<CloudEngineBuilder> _configureForFixture = builder => { };
+
+        public bool TestCompleted { get; set; }
+
+        public void CompleteTestAndStopEngine()
+        {
+            Trace.WriteLine("completing test");
+            Trace.Flush();
+            TestCompleted = true;
+            _source.Cancel();
+        }
+
+        protected IMessageSender Sender
+        {
+            get { return _host.Resolve<IMessageSender>(); }
+        }
+
+        protected void EnlistHandler(Action<string> data)
+        {
+            _configureForTest += builder => builder.RegisterInstance(data);
+        }
+
+        protected void EnlistFixtureConfig(Action<CloudEngineBuilder> config)
+        {
+            _configureForFixture += config;
+        }
+
+        protected void SendString(string data)
+        {
+            Sender.Send(new StringCommand { Data = data });
+        }
+
+        [SetUp]
+        public void SetUp()
+        {
+            _source = new CancellationTokenSource();
+            _events = new Subject<ISystemEvent>();
+            _configureForTest = builder => { };
+            TestCompleted = false;
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _source.Dispose();
+            _source = null;
+
+            _host = null;
+        }
+
         [DataContract]
         public sealed class StringCommand : Define.Command
         {
@@ -39,70 +96,11 @@ namespace Lokad.Cqrs.Tests
                 _action(message.Data);
             }
         }
-    }
-
-    public abstract class EngineFixture<TEngineProvider>
-        where TEngineProvider : IConfigureEngineForFixture, new()
-    {
-        CancellationTokenSource _source;
-        CloudEngineHost _host;
-        Subject<ISystemEvent> _events;
-
-        public IObservable<ISystemEvent> Events
-        {
-            get { return _events; }
-        }
-
-        Action<CloudEngineBuilder> _configureEngineForTest;
-
-        
-
-        public bool TestCompleted { get; set; }
-
-        public void CompleteTestAndStopEngine()
-        {
-            Trace.WriteLine("completing test");
-            TestCompleted = true;
-            _source.Cancel();
-        }
-
-        protected IMessageSender Sender
-        {
-            get { return _host.Resolve<IMessageSender>(); }
-        }
-
-        protected void EnlistHandler(Action<string> data)
-        {
-            _configureEngineForTest += builder => builder.RegisterInstance(data);
-        }
-
-        protected void SendString(string data)
-        {
-            Sender.Send(new EngineFixtureContracts.StringCommand { Data = data });
-        }
-
-        [SetUp]
-        public void SetUp()
-        {
-            _source = new CancellationTokenSource();
-            _events = new Subject<ISystemEvent>();
-            _configureEngineForTest = builder => { };
-            TestCompleted = false;
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            _source.Dispose();
-            _source = null;
-
-            _host = null;
-        }
 
         protected void RunEngineTillStopped(Action whenStarted)
         {
             var identifyNested =
-                new[] { typeof(EngineFixtureContracts), GetType() }
+                new[] { typeof(EngineFixture), GetType() }
                     .SelectMany(t => t.GetNestedTypes())
                     .Where(t => typeof(IMessage).IsAssignableFrom(t))
                     .Where(t => !t.IsAbstract)
@@ -114,8 +112,8 @@ namespace Lokad.Cqrs.Tests
                     .WhereMessages(t => identifyNested.Contains(t))
                     .InCurrentAssembly());
 
-            new TEngineProvider().Config(builder);
-            _configureEngineForTest(builder);
+            _configureForFixture(builder);
+            _configureForTest(builder);
 
             using (_host = builder.Build())
             {
@@ -123,10 +121,17 @@ namespace Lokad.Cqrs.Tests
 
                 whenStarted();
 
-                if (!_source.Token.WaitHandle.WaitOne(5000))
+                if (Debugger.IsAttached)
                 {
-                    Trace.WriteLine("Force cancel");
-                    _source.Cancel();
+                    _source.Token.WaitHandle.WaitOne();
+                }
+                else
+                {
+                    if (!_source.Token.WaitHandle.WaitOne(5000))
+                    {
+                        Trace.WriteLine("Force cancel");
+                        _source.Cancel();
+                    }
                 }
             }
         }

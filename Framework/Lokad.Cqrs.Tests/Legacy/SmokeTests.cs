@@ -37,9 +37,8 @@ namespace Lokad.Cqrs.Tests
                     x.AddMemoryProcess("process-all");
                     x.AddMemoryRouter("inbox", e =>
                         {
-                            if (e.Items.Any(i => i.MappedType == typeof (VipMessage)))
-                                return "dev-store:process-vip";
-                            return "memory:process-all";
+                            var isVip = e.Items.Any(i => i.MappedType == typeof (VipMessage));
+                            return isVip ? "dev-store:process-vip" : "memory:process-all";
                         });
                     x.AddMemorySender("inbox");
                 });
