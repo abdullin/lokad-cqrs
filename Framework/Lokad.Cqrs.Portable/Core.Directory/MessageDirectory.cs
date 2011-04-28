@@ -41,11 +41,6 @@ namespace Lokad.Cqrs.Core.Directory
             get { return _messages; }
         }
 
-        public void InvokeConsume(object consumer, object message)
-        {
-            InvocationUtil.InvokeConsume(consumer, message, _consumeMethodName);
-        }
-
         public IEnumerable<Type> GetKnownTypes()
         {
             return _knownTypes;

@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Build\BuildSyntaxHelper.cs" />
     <Compile Include="Build\Engine\MemoryModule.cs" />
+    <Compile Include="Core.Directory\IConsumerInvoker.cs" />
     <Compile Include="Core.Dispatch\Events\QuarantinedMessage.cs" />
     <Compile Include="Core.Dispatch\MemoryQuarantine.cs" />
     <Compile Include="Core.Dispatch\Events\MessageAcked.cs" />
@@ -105,6 +106,7 @@
     <Compile Include="Feature.AtomicStorage\IAtomicSingletonWriter.cs" />
     <Compile Include="Feature.Logging\NullSystemObserver.cs" />
     <Compile Include="Feature.Logging\DefaultSystemObserver.cs" />
+    <Compile Include="Core.Directory\DirectConsumer.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryFutureList.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryPartitionFactory.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryPartitionInbox.cs" />

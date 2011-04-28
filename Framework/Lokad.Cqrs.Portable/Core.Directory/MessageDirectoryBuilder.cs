@@ -89,6 +89,8 @@ namespace Lokad.Cqrs.Core.Directory
 
             return new MessageDirectory(_methodName, consumers, messages.ToArray());
         }
+
+        public string ConsumingMethodName { get { return _methodName; } }
     }
 
     public sealed class MessageDirectoryFilter

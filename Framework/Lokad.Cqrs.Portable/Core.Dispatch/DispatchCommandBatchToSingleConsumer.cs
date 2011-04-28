@@ -22,11 +22,13 @@ namespace Lokad.Cqrs.Core.Dispatch
         readonly IDictionary<Type, Type> _messageConsumers = new Dictionary<Type, Type>();
         readonly MessageDirectory _messageDirectory;
         readonly MessageDuplicationMemory _memory;
+        readonly IConsumerInvoker _invoker;
 
         public DispatchCommandBatchToSingleConsumer(ILifetimeScope container, MessageDirectory messageDirectory,
-            MessageDuplicationManager manager)
+            MessageDuplicationManager manager, IConsumerInvoker invoker)
         {
             _container = container;
+            _invoker = invoker;
             _messageDirectory = messageDirectory;
             _memory = manager.GetOrAdd(this);
         }
@@ -61,7 +63,7 @@ namespace Lokad.Cqrs.Core.Dispatch
                         var consumerType = _messageConsumers[item.MappedType];
                         {
                             var consumer = scope.Resolve(consumerType);
-                            _messageDirectory.InvokeConsume(consumer, item.Content);
+                            _invoker.InvokeConsume(consumer, item, message);
                         }
                     }
                 }
