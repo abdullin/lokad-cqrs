@@ -40,7 +40,7 @@ namespace Lokad.Cqrs.Legacy
                             var isVip = e.Items.Any(i => i.MappedType == typeof (VipMessage));
                             return isVip ? "dev-store:process-vip" : "memory:process-all";
                         });
-                    x.AddMemorySender("inbox");
+                    x.AddMemorySender("inbox", cm => cm.IdGeneratorForTests());
                 });
 
 
@@ -65,26 +65,26 @@ namespace Lokad.Cqrs.Legacy
 
         public sealed class DoSomething : IConsume<VipMessage>, IConsume<UsualMessage>
         {
-            void Print(string value)
+            void Print(string value, MessageDetail detail)
             {
                 if (value.Length > 20)
                 {
-                    Trace.WriteLine(string.Format("{0}... ({1})", value.Substring(0, 16), value.Length));
+                    Trace.WriteLine(string.Format("[{0}]: {1}... ({2})", detail.EnvelopeId, value.Substring(0, 16), value.Length));
                 }
                 else
                 {
-                    Trace.WriteLine(string.Format("{0}", value));
+                    Trace.WriteLine(string.Format("[{0}]: {1}", value, detail.EnvelopeId));
                 }
             }
 
-            public void Consume(UsualMessage message)
+            public void Consume(UsualMessage message, MessageDetail detail)
             {
-                Print(message.Word);
+                Print(message.Word, detail);
             }
 
-            public void Consume(VipMessage message)
+            public void Consume(VipMessage message, MessageDetail detail)
             {
-                Print(message.Word);
+                Print(message.Word, detail);
             }
         }
 

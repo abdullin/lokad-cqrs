@@ -34,7 +34,7 @@ namespace Lokad.Cqrs.Core.Directory
         {
             _builder = new ContainerBuilder();
 
-            InvocationHandlerBySample<IConsume<IMessage>>(a => a.Consume(null));
+            InvocationHandlerBySample<IConsume<IMessage>>(a => a.Consume(null, null));
             ContextFactory((envelope, item) => new MessageDetail(envelope.EnvelopeId));
  
         }
