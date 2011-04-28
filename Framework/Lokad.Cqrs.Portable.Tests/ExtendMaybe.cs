@@ -7,11 +7,9 @@
 
 using System;
 using System.Linq.Expressions;
-using Lokad.Cqrs;
-using Lokad.Cqrs.Evil;
 using NUnit.Framework;
 
-namespace Lokad.Testing
+namespace Lokad.Cqrs
 {
     /// <summary>
     /// Extends <see cref="Maybe{T}"/> for the purposes of testing

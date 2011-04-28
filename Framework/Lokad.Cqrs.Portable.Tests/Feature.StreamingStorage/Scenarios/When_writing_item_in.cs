@@ -6,12 +6,11 @@
 #endregion
 
 using System;
-using Lokad.Cqrs.Feature.StreamingStorage;
 using NUnit.Framework;
 
 // ReSharper disable InconsistentNaming
 
-namespace Lokad.Cqrs.Tests.Storage
+namespace Lokad.Cqrs.Feature.StreamingStorage.Scenarios
 {
     public abstract class When_writing_item_in<TStorage> : StorageItemFixture<TStorage>
         where TStorage : ITestStorage, new()

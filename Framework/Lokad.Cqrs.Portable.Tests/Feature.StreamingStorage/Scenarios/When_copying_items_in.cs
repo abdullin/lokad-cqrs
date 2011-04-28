@@ -10,7 +10,7 @@ using NUnit.Framework;
 
 // ReSharper disable InconsistentNaming
 
-namespace Lokad.Cqrs.Tests.Storage
+namespace Lokad.Cqrs.Feature.StreamingStorage.Scenarios
 {
     public abstract class When_copying_items_in<T> : StorageItemFixture<T> where T : ITestStorage, new()
     {

@@ -5,9 +5,7 @@
 
 #endregion
 
-using Lokad.Cqrs.Feature.StreamingStorage;
-
-namespace Lokad.Cqrs.Tests.Storage
+namespace Lokad.Cqrs.Feature.StreamingStorage
 {
     public interface ITestStorage
     {

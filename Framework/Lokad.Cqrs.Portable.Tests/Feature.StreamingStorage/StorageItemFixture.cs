@@ -6,11 +6,10 @@
 #endregion
 
 using System;
-using Lokad.Cqrs.Feature.StreamingStorage;
 using NUnit.Framework;
 using NUnit.Framework.SyntaxHelpers;
 
-namespace Lokad.Cqrs.Tests.Storage
+namespace Lokad.Cqrs.Feature.StreamingStorage
 {
     public abstract class StorageItemFixture<TStorage>
         where TStorage : ITestStorage, new()

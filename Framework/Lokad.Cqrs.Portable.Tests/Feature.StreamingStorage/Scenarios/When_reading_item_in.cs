@@ -7,13 +7,11 @@
 
 using System;
 using System.Threading;
-using Lokad.Cqrs.Evil;
-using Lokad.Cqrs.Feature.StreamingStorage;
 using NUnit.Framework;
 
 // ReSharper disable InconsistentNaming
 
-namespace Lokad.Cqrs.Tests.Storage
+namespace Lokad.Cqrs.Feature.StreamingStorage.Scenarios
 {
     public abstract class When_reading_item_in<TStorage> :
         StorageItemFixture<TStorage> where TStorage : ITestStorage, new()
@@ -56,7 +54,7 @@ namespace Lokad.Cqrs.Tests.Storage
             Write(TestItem, Guid.Empty);
             var info = TestItem.GetInfo().Value.LastModifiedUtc;
 
-            Thread.Sleep(1.Seconds());
+            Thread.Sleep(TimeSpan.FromMilliseconds(500));
             ExpectConditionFailed(() => TryToRead(TestItem, StorageCondition.IfModifiedSince(info)));
         }
 

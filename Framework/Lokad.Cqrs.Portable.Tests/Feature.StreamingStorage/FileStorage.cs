@@ -6,15 +6,13 @@
 #endregion
 
 using System.IO;
-using Lokad.Cqrs.Feature.StreamingStorage;
+using Lokad.Cqrs.Feature.StreamingStorage.Scenarios;
 using NUnit.Framework;
 
 // ReSharper disable InconsistentNaming
 
-namespace Lokad.Cqrs.Tests.Storage
+namespace Lokad.Cqrs.Feature.StreamingStorage
 {
-    using Here = FileStorage;
-
     public sealed class FileStorage : ITestStorage
     {
         readonly DirectoryInfo _root;
@@ -39,31 +37,31 @@ namespace Lokad.Cqrs.Tests.Storage
 
         [TestFixture]
         public sealed class When_deleting_blob_item :
-            When_deleting_item_in<Here>
+            When_deleting_item_in<FileStorage>
         {
         }
 
         [TestFixture]
         public sealed class When_reading_blob_item :
-            When_reading_item_in<Here>
+            When_reading_item_in<FileStorage>
         {
         }
 
         [TestFixture]
         public sealed class When_writing_blob_item
-            : When_writing_item_in<Here>
+            : When_writing_item_in<FileStorage>
         {
         }
 
         [TestFixture]
         public sealed class When_copying_blob_item
-            : When_copying_items_in<Here>
+            : When_copying_items_in<FileStorage>
         {
         }
 
         [TestFixture]
         public sealed class When_checking_blob_item
-            : When_checking_item_in<Here>
+            : When_checking_item_in<FileStorage>
         {
         }
     }
