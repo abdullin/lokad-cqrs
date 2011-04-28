@@ -84,8 +84,8 @@
     <Compile Include="Feature.AzurePartition\Events\FailedToDeserializeMessage.cs" />
     <Compile Include="Feature.AzurePartition\Events\FailedToReadMessage.cs" />
     <Compile Include="Feature.AzurePartition\Events\MessageAcked.cs" />
-    <Compile Include="Core.Transport\GetMessageResult.cs" />
-    <Compile Include="Core.Transport\GetMessageResultState.cs" />
+    <Compile Include="Core.Transport\GetEnvelopeResult.cs" />
+    <Compile Include="Core.Transport\GetEnvelopeResultState.cs" />
     <Compile Include="Feature.AzurePartition\Inbox\AzurePartitionModule.cs" />
     <Compile Include="IAzureClientConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

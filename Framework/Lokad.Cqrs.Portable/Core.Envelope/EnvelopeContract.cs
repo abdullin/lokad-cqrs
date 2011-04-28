@@ -18,14 +18,16 @@ namespace Lokad.Cqrs.Core.Envelope
         [DataMember(Order = 3)] public readonly ItemContract[] Items;
 
         [DataMember(Order = 4)] public readonly DateTimeOffset DeliverOnUtc;
+        [DataMember(Order = 5)] public readonly DateTimeOffset CreatedOnUtc;
 
         public EnvelopeContract(string envelopeId, EnvelopeAttributeContract[] envelopeAttributes, ItemContract[] items,
-            DateTimeOffset deliverOnUtc)
+            DateTimeOffset deliverOnUtc, DateTimeOffset createdOnUtc)
         {
             EnvelopeId = envelopeId;
             DeliverOnUtc = deliverOnUtc;
             EnvelopeAttributes = envelopeAttributes;
             Items = items;
+            CreatedOnUtc = createdOnUtc;
         }
 
 // ReSharper disable UnusedMember.Local

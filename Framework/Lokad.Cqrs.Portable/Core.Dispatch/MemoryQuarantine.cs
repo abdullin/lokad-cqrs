@@ -8,7 +8,7 @@ namespace Lokad.Cqrs.Core.Dispatch
     {
         readonly ConcurrentDictionary<string,int> _failures = new ConcurrentDictionary<string, int>();
 
-        public bool Accept(MessageContext context, Exception ex)
+        public bool Accept(EnvelopeTransportContext context, Exception ex)
         {
             var current = _failures.AddOrUpdate(context.Unpacked.EnvelopeId, s => 1, (s1, i) => i + 1);
             if (current < 4)
@@ -21,7 +21,7 @@ namespace Lokad.Cqrs.Core.Dispatch
             return true;
         }
 
-        public void Clear(MessageContext context)
+        public void Clear(EnvelopeTransportContext context)
         {
             int value;
             _failures.TryRemove(context.Unpacked.EnvelopeId, out value);

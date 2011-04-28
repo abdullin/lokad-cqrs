@@ -97,7 +97,7 @@ namespace Lokad.Cqrs
                 _action = action;
             }
 
-            public void Consume(StringCommand message, MessageDetail detail)
+            public void Consume(StringCommand message, MessageContext context)
             {
                 _action(message.Data);
             }

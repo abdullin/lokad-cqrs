@@ -70,7 +70,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             
         }
 
-        public GetMessageResult TryGetMessage()
+        public GetEnvelopeResult TryGetMessage()
         {
             CloudQueueMessage message;
             try
@@ -80,23 +80,23 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             catch (Exception ex)
             {
                 _observer.Notify(new FailedToReadMessage(ex, _queueName));
-                return GetMessageResult.Error();
+                return GetEnvelopeResult.Error();
             }
 
             if (null == message)
             {
-                return GetMessageResult.Empty;
+                return GetEnvelopeResult.Empty;
             }
             
             try
             {
                 var unpacked = DownloadPackage(message);
-                return GetMessageResult.Success(unpacked);
+                return GetEnvelopeResult.Success(unpacked);
             }
             catch (StorageClientException ex)
             {
                 _observer.Notify(new FailedToAccessStorage(ex, _queue.Name, message.Id));
-                return GetMessageResult.Retry;
+                return GetEnvelopeResult.Retry;
             }
             catch (Exception ex)
             {
@@ -105,11 +105,11 @@ namespace Lokad.Cqrs.Feature.AzurePartition
                 // new poison details
                 _posionQueue.Value.AddMessage(message);
                 _queue.DeleteMessage(message);
-                return GetMessageResult.Retry;
+                return GetEnvelopeResult.Retry;
             }
         }
 
-        MessageContext DownloadPackage(CloudQueueMessage message)
+        EnvelopeTransportContext DownloadPackage(CloudQueueMessage message)
         {
             var buffer = message.AsBytes;
 
@@ -123,21 +123,21 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             }
 
             var m = _streamer.ReadDataMessage(buffer);
-            return new MessageContext(message, m, _queueName);
+            return new EnvelopeTransportContext(message, m, _queueName);
         }
 
 
         /// <summary>
         /// ACKs the message by deleting it from the queue.
         /// </summary>
-        /// <param name="message">The message context to ACK.</param>
-        public void AckMessage(MessageContext message)
+        /// <param name="envelope">The message context to ACK.</param>
+        public void AckMessage(EnvelopeTransportContext envelope)
         {
-            if (message == null) throw new ArgumentNullException("message");
-            _queue.DeleteMessage((CloudQueueMessage) message.TransportMessage);
+            if (envelope == null) throw new ArgumentNullException("message");
+            _queue.DeleteMessage((CloudQueueMessage) envelope.TransportMessage);
         }
 
-        public void TryNotifyNack(MessageContext context)
+        public void TryNotifyNack(EnvelopeTransportContext context)
         {
             // we don't do anything. Azure queues have visibility
         }

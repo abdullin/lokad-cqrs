@@ -43,7 +43,7 @@ namespace Lokad.Cqrs
                 _slim = slim;
             }
 
-            public void Consume(Message1 message, MessageDetail detail)
+            public void Consume(Message1 message, MessageContext context)
             {
                 if (message.Block < 5)
                 {

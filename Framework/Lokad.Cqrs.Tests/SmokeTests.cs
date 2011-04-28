@@ -65,26 +65,26 @@ namespace Lokad.Cqrs.Legacy
 
         public sealed class DoSomething : IConsume<VipMessage>, IConsume<UsualMessage>
         {
-            void Print(string value, MessageDetail detail)
+            void Print(string value, MessageContext context)
             {
                 if (value.Length > 20)
                 {
-                    Trace.WriteLine(string.Format("[{0}]: {1}... ({2})", detail.EnvelopeId, value.Substring(0, 16), value.Length));
+                    Trace.WriteLine(string.Format("[{0}]: {1}... ({2})", context.EnvelopeId, value.Substring(0, 16), value.Length));
                 }
                 else
                 {
-                    Trace.WriteLine(string.Format("[{0}]: {1}", value, detail.EnvelopeId));
+                    Trace.WriteLine(string.Format("[{0}]: {1}", value, context.EnvelopeId));
                 }
             }
 
-            public void Consume(UsualMessage message, MessageDetail detail)
+            public void Consume(UsualMessage message, MessageContext context)
             {
-                Print(message.Word, detail);
+                Print(message.Word, context);
             }
 
-            public void Consume(VipMessage message, MessageDetail detail)
+            public void Consume(VipMessage message, MessageContext context)
             {
-                Print(message.Word, detail);
+                Print(message.Word, context);
             }
         }
 
