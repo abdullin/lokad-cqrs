@@ -93,7 +93,7 @@ namespace Lokad.Cqrs.Core.Directory
             public void Consume(DoSomethingCommand message) {}
         }
 
-        public sealed class OrphanCommand : IDomainCommand {}
+        public sealed class NonHandledCommand : IDomainCommand {}
 
         #endregion
     }

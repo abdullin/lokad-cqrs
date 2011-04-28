@@ -27,7 +27,7 @@ namespace Lokad.Cqrs.Core.Directory
             _mappings = mappings;
         }
 
-        public ICollection<Type> BuildSerializationRegistry()
+        public ICollection<Type> ListMessagesToSerialize()
         {
             return _mappings
                 .Select(x => x.Message)
@@ -36,7 +36,7 @@ namespace Lokad.Cqrs.Core.Directory
                 .ToArray();
         }
 
-        public ICollection<Type> BuildConsumerTypes()
+        public ICollection<Type> ListConsumersToActivate()
         {
             return _mappings
                 .Select(x => x.Consumer)

@@ -208,9 +208,9 @@ namespace Lokad.Cqrs.Core.Directory
             _scanner.Constrain(_hint);
             var mappings = _scanner.Build(_hint.ConsumerTypeDefinition);
             var builder = new MessageDirectoryBuilder(mappings);
-            var messages = builder.BuildSerializationRegistry();
+            var messages = builder.ListMessagesToSerialize();
 
-            foreach (var consumer in builder.BuildConsumerTypes())
+            foreach (var consumer in builder.ListConsumersToActivate())
             {
                 _builder.RegisterType(consumer);
             }

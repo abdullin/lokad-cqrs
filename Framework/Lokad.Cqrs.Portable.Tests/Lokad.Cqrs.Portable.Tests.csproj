@@ -55,6 +55,8 @@
     <Compile Include="Core.Directory\When_activations_constrained_to_message_interface.cs" />
     <Compile Include="Core.Directory\When_activation_map_constrained_to_catch_all_consumer.cs" />
     <Compile Include="Core.Directory\When_activations_constrained_to_handler_type_with_interface.cs" />
+    <Compile Include="Core.Directory\When_builder_is_available.cs" />
+    <Compile Include="Core.Directory\When_there_are_no_catch_all_handlers.cs" />
     <Compile Include="Core.Envelope\Play_all_for_DataContracts.cs" />
     <Compile Include="Core.Envelope\Play_all_for_Memory.cs" />
     <Compile Include="Core.Envelope\Scenarios\DataSerializerWithBinaryFormatter.cs" />
