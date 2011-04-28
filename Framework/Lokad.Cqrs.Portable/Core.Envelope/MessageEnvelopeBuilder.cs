@@ -60,7 +60,7 @@ namespace Lokad.Cqrs.Core.Envelope
 
             for (int i = 0; i < items.Length; i++)
             {
-                var save = Items[0];
+                var save = Items[i];
                 var attribs = new Dictionary<string, object>(save.Attributes);
                 items[i] = new MessageItem(save.MappedType, save.Content, attribs);
             }

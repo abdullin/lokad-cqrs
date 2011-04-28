@@ -10,22 +10,24 @@ using System.Runtime.Serialization;
 
 namespace Lokad.Cqrs.Core.Envelope
 {
-    [DataContract, Serializable]
+    [DataContract(Namespace = "Lokad.Cqrs.v2"), Serializable]
     public sealed class ItemContract
     {
         [DataMember(Order = 1)] public readonly string ContractName;
-        [DataMember(Order = 2)] public readonly int ContentSize;
-        [DataMember(Order = 3)] public ItemAttributeContract[] Attributes;
+        [DataMember(Order = 2)] public readonly long ContentSize;
+        [DataMember(Order = 3)] public readonly long ContentPosition;
+        [DataMember(Order = 4)] public ItemAttributeContract[] Attributes;
 
         ItemContract()
         {
             Attributes = Empty;
         }
 
-        public ItemContract(string contractName, int contentSize, ItemAttributeContract[] attributes)
+        public ItemContract(string contractName, long contentSize, long contentPosition, ItemAttributeContract[] attributes)
         {
             ContractName = contractName;
             ContentSize = contentSize;
+            ContentPosition = contentPosition;
             Attributes = attributes;
         }
 

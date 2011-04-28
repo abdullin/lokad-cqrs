@@ -52,12 +52,12 @@ namespace Lokad.Cqrs.Core.Envelope
         public void Payload_should_be_serialized()
         {
             var builder = new MessageEnvelopeBuilder("my-id");
-            builder.AddItem(new MyMessage(42));
+            builder.AddItem(new MyMessage("42"));
 
             var envelope = RoundtripViaSerializer(builder);
 
             Assert.AreEqual(1, envelope.Items.Length);
-            Assert.AreEqual(42, ((MyMessage)envelope.Items[0].Content).Value);
+            Assert.AreEqual("42", ((MyMessage)envelope.Items[0].Content).Value);
         }
 
         [Test]
@@ -67,16 +67,17 @@ namespace Lokad.Cqrs.Core.Envelope
 
             for (int i = 0; i < 5; i++)
             {
-                builder.AddItem(new MyMessage(i));
+                var content = new string('*',i);
+                builder.AddItem(new MyMessage(content));
             }
-            
+
             var envelope = RoundtripViaSerializer(builder);
 
             Assert.AreEqual(5, envelope.Items.Length);
 
             for (int i = 0; i < 5; i++)
             {
-                Assert.AreEqual(i, ((MyMessage)envelope.Items[i].Content).Value);
+                Assert.AreEqual(new string('*', i), ((MyMessage)envelope.Items[i].Content).Value);
             }
         }
 
@@ -85,9 +86,10 @@ namespace Lokad.Cqrs.Core.Envelope
         [Serializable]
         sealed class MyMessage 
         {
-            public readonly int Value;
+            
+            public readonly string Value;
 
-            public MyMessage(int value)
+            public MyMessage(string value)
             {
                 Value = value;
             }

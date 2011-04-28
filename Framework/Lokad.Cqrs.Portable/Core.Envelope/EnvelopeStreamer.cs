@@ -62,7 +62,7 @@ namespace Lokad.Cqrs.Core.Envelope
                     _dataSerializer.Serialize(item.Content, content);
                     int size = (int) content.Position - position;
                     var attribContracts = EnvelopeConvert.ItemAttributesToContract(item.GetAllAttributes());
-                    itemContracts[i] = new ItemContract(name, size, attribContracts);
+                    itemContracts[i] = new ItemContract(name, size, position, attribContracts);
 
                     position += size;
                 }
@@ -133,9 +133,7 @@ namespace Lokad.Cqrs.Core.Envelope
             {
                 envelope = _envelopeSerializer.DeserializeEnvelope(stream);
             }
-            int index = MessageHeader.FixedSize + (int) header.EnvelopeBytes;
-            //var count = (int)header.ContentLength;
-
+            
             var items = new MessageItem[envelope.Items.Length];
 
             for (int i = 0; i < items.Length; i++)
@@ -143,11 +141,14 @@ namespace Lokad.Cqrs.Core.Envelope
                 var itemContract = envelope.Items[i];
                 var attributes = EnvelopeConvert.AttributesFromContract(itemContract.Attributes);
                 Type contractType;
+
+                var itemPosition = MessageHeader.FixedSize + (int)header.EnvelopeBytes + (int)itemContract.ContentPosition;
+                var itemSize = (int)itemContract.ContentSize;
                 if (_dataSerializer.TryGetContractTypeByName(itemContract.ContractName, out contractType))
                 {
-                    using (var stream = new MemoryStream(buffer, index, itemContract.ContentSize))
+                    using (var stream = new MemoryStream(buffer, itemPosition, itemSize))
                     {
-                        object instance = _dataSerializer.Deserialize(stream, contractType);
+                        var instance = _dataSerializer.Deserialize(stream, contractType);
 
                         items[i] = new MessageItem(contractType, instance, attributes);
                     }
@@ -156,11 +157,9 @@ namespace Lokad.Cqrs.Core.Envelope
                 {
                     // we can't deserialize. Keep it as buffer
                     var bufferInstance = new byte[itemContract.ContentSize];
-                    Buffer.BlockCopy(buffer, index, bufferInstance, 0, itemContract.ContentSize);
+                    Buffer.BlockCopy(buffer, itemPosition, bufferInstance, 0, itemSize);
                     items[i] = new MessageItem(null, bufferInstance, attributes);
                 }
-
-                index += itemContract.ContentSize;
             }
 
             var envelopeAttributes = EnvelopeConvert.AttributesFromContract(envelope.EnvelopeAttributes);
