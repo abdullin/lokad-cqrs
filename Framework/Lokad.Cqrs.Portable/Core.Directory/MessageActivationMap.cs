@@ -13,7 +13,7 @@ namespace Lokad.Cqrs.Core.Directory
             Infos = infos;
         }
 
-        public ICollection<Type> QueryAllConsumingTypes()
+        public ICollection<Type> QueryDistinctConsumingTypes()
         {
             return Infos
                 .SelectMany(m => m.AllConsumers)

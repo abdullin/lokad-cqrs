@@ -49,9 +49,6 @@ namespace Lokad.Cqrs.Core.Directory
         {
             var mappings = _mappings.Where(filter);
 
-
-
-
             var messages = mappings
                 .ToLookup(x => x.Message)
                 .Select(x =>
@@ -71,20 +68,8 @@ namespace Lokad.Cqrs.Core.Directory
                     };
                 }).ToList();
 
-            var includedTypes = new HashSet<Type>(messages.Select(m => m.MessageType));
 
-            // message directory should still include all messages for the serializers
-            var orphanedMessages = _mappings
-                .Where(m => !includedTypes.Contains(m.Message))
-                .Select(m => new MessageActivationInfo
-                {
-                    MessageType = m.Message,
-                    AllConsumers = Type.EmptyTypes,
-                    DerivedConsumers = Type.EmptyTypes,
-                    DirectConsumers = Type.EmptyTypes
-                });
 
-            messages.AddRange(orphanedMessages);
             
             return new MessageActivationMap(messages);
         }
