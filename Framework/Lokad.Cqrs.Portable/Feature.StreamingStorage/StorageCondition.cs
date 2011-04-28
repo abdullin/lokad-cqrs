@@ -8,7 +8,6 @@
 using System;
 using System.Globalization;
 using System.Linq;
-using Lokad.Cqrs.Evil;
 
 namespace Lokad.Cqrs.Feature.StreamingStorage
 {

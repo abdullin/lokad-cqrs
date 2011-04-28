@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
-using Lokad.Cqrs.Evil;
 
 namespace Lokad.Cqrs.Feature.StreamingStorage.Files
 {

@@ -87,39 +87,23 @@
     <Compile Include="Core.Transport\GetMessageResultState.cs" />
     <Compile Include="Feature.AzurePartition\Inbox\AzurePartitionModule.cs" />
     <Compile Include="Feature.AzurePartition\Events\MessageDirectoryCreated.cs" />
-    <Compile Include="Feature.StreamingStorage\ExtendStorageItem.cs" />
-    <Compile Include="Feature.StreamingStorage\Files\FileStorageContainer.cs" />
-    <Compile Include="Feature.StreamingStorage\Files\FileStorageItem.cs" />
-    <Compile Include="Feature.StreamingStorage\IStorageContainer.cs" />
-    <Compile Include="Feature.StreamingStorage\IStorageItem.cs" />
-    <Compile Include="Feature.StreamingStorage\IStorageRoot.cs" />
-    <Compile Include="Feature.StreamingStorage\LocalStorageInfo.cs" />
-    <Compile Include="Feature.StreamingStorage\ReaderDelegate.cs" />
-    <Compile Include="Feature.StreamingStorage\StorageBaseException.cs" />
-    <Compile Include="Feature.StreamingStorage\StorageCondition.cs" />
-    <Compile Include="Feature.StreamingStorage\StorageConditionFailedException.cs" />
-    <Compile Include="Feature.StreamingStorage\StorageConditionType.cs" />
-    <Compile Include="Feature.StreamingStorage\StorageContainerNotFoundException.cs" />
-    <Compile Include="Feature.StreamingStorage\StorageErrors.cs" />
-    <Compile Include="Feature.StreamingStorage\StorageItemInfo.cs" />
-    <Compile Include="Feature.StreamingStorage\StorageItemIntegrityException.cs" />
-    <Compile Include="Feature.StreamingStorage\StorageItemNotFoundException.cs" />
-    <Compile Include="Feature.StreamingStorage\StorageWriteOptions.cs" />
-    <Compile Include="Feature.StreamingStorage\StreamUtil.cs" />
     <Compile Include="IAzureClientConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Feature.StreamingStorage\Azure\BlobStorageContainer.cs" />
-    <Compile Include="Feature.StreamingStorage\Azure\BlobStorageItem.cs" />
-    <Compile Include="Feature.StreamingStorage\Azure\BlobStorageRoot.cs" />
-    <Compile Include="Feature.StreamingStorage\Azure\BlobStorageUtil.cs" />
-    <Compile Include="Feature.StreamingStorage\Azure\SuppressFlushForStream.cs" />
+    <Compile Include="Feature.StreamingStorage\BlobStorageContainer.cs" />
+    <Compile Include="Feature.StreamingStorage\BlobStorageItem.cs" />
+    <Compile Include="Feature.StreamingStorage\BlobStorageRoot.cs" />
+    <Compile Include="Feature.StreamingStorage\BlobStorageUtil.cs" />
+    <Compile Include="Feature.StreamingStorage\SuppressFlushForStream.cs" />
     <Compile Include="Feature.AzurePartition\StatelessAzureQueueWriter.cs" />
     <Compile Include="Feature.AzurePartition\Sender\AzureWriteQueueFactory.cs" />
     <Compile Include="Core.Serialization\AttributeHelper.cs" />
     <Compile Include="Core.Serialization\DataSerializerWithProtoBuf.cs" />
     <Compile Include="Core.Serialization\ProtoBufUtil.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Feature.StreamingStorage\Azure\" />
+    <Folder Include="Feature.StreamingStorage\Files\" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Lokad.Cqrs.Portable\Lokad.Cqrs.Portable.csproj">
       <Project>{4E2E749C-4D6F-4EF8-8E9D-96D467306997}</Project>
