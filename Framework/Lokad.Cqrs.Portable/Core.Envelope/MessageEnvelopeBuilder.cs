@@ -14,7 +14,7 @@ namespace Lokad.Cqrs.Core.Envelope
     {
         public readonly string EnvelopeId;
         internal readonly IDictionary<string, object> Attributes = new Dictionary<string, object>();
-        DateTimeOffset _deliverOn;
+        DateTime _deliverOnUtc;
 
         public readonly IList<MessageItemBuilder> Items = new List<MessageItemBuilder>();
 
@@ -48,7 +48,7 @@ namespace Lokad.Cqrs.Core.Envelope
 
         public void DelayBy(TimeSpan span)
         {
-            _deliverOn = DateTimeOffset.UtcNow + span;
+            _deliverOnUtc = DateTime.UtcNow + span;
         }
 
         public static MessageEnvelopeBuilder FromItems(string envelopeId, params object[] items)
@@ -74,8 +74,8 @@ namespace Lokad.Cqrs.Core.Envelope
                 var attribs = new Dictionary<string, object>(save.Attributes);
                 items[i] = new ImmutableMessage(save.MappedType, save.Content, attribs, i);
             }
-            DateTimeOffset created = DateTimeOffset.UtcNow;
-            return new ImmutableEnvelope(EnvelopeId, attributes, items, _deliverOn, created);
+            var created = DateTime.UtcNow;
+            return new ImmutableEnvelope(EnvelopeId, attributes, items, _deliverOnUtc, created);
         }
     }
 }

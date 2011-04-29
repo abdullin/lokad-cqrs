@@ -16,12 +16,11 @@ namespace Lokad.Cqrs.Core.Envelope
         [DataMember(Order = 1)] public readonly string EnvelopeId;
         [DataMember(Order = 2)] public readonly EnvelopeAttributeContract[] EnvelopeAttributes;
         [DataMember(Order = 3)] public readonly ItemContract[] Items;
-
-        [DataMember(Order = 4)] public readonly DateTimeOffset DeliverOnUtc;
-        [DataMember(Order = 5)] public readonly DateTimeOffset CreatedOnUtc;
+        [DataMember(Order = 4)] public readonly DateTime DeliverOnUtc;
+        [DataMember(Order = 5)] public readonly DateTime CreatedOnUtc;
 
         public EnvelopeContract(string envelopeId, EnvelopeAttributeContract[] envelopeAttributes, ItemContract[] items,
-            DateTimeOffset deliverOnUtc, DateTimeOffset createdOnUtc)
+            DateTime deliverOnUtc, DateTime createdOnUtc)
         {
             EnvelopeId = envelopeId;
             DeliverOnUtc = deliverOnUtc;

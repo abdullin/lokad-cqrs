@@ -47,7 +47,7 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
                 var result = BlockingCollection<ImmutableEnvelope>.TakeFromAny(_queues, out envelope);
                 if (result >= 0)
                 {
-                    if (envelope.DeliverOn > DateTimeOffset.UtcNow)
+                    if (envelope.DeliverOnUtc > DateTime.UtcNow)
                     {
                         // future message
                         _future[result].PutMessage(envelope);

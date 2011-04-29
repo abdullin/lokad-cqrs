@@ -17,21 +17,21 @@ namespace Lokad.Cqrs
     public class ImmutableEnvelope
     {
         public readonly string EnvelopeId;
-        public readonly DateTimeOffset DeliverOn;
-        public readonly DateTimeOffset CreatedOn;
+        public readonly DateTime DeliverOnUtc;
+        public readonly DateTime CreatedOnUtc;
         readonly IDictionary<string, object> _attributes = new Dictionary<string, object>();
         
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
         public readonly ImmutableMessage[] Items;
 
         public ImmutableEnvelope(string envelopeId, IDictionary<string, object> attributes, ImmutableMessage[] items,
-            DateTimeOffset deliverOn, DateTimeOffset createdOn)
+            DateTime deliverOnUtc, DateTime createdOnUtc)
         {
             EnvelopeId = envelopeId;
-            DeliverOn = deliverOn;
+            DeliverOnUtc = deliverOnUtc;
             _attributes = attributes;
             Items = items;
-            CreatedOn = createdOn;
+            CreatedOnUtc = createdOnUtc;
         }
 
         public long GetAttributeNumber(string name, long defaultValue)

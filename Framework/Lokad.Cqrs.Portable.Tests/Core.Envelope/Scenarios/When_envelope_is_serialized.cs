@@ -1,7 +1,7 @@
 ﻿using System;
 using NUnit.Framework;
 
-namespace Lokad.Cqrs.Core.Envelope
+namespace Lokad.Cqrs.Core.Envelope.Scenarios
 {
     // ReSharper disable UnusedMember.Global
     // ReSharper disable InconsistentNaming
@@ -27,7 +27,7 @@ namespace Lokad.Cqrs.Core.Envelope
         [Test]
         public void Envelope_attributes_should_be_present()
         {
-            var time = DateTimeOffset.UtcNow;
+            var time = DateTime.UtcNow;
             var builder = new MessageEnvelopeBuilder("my-id");
             builder.AddNumber("Custom", 1);
             
@@ -35,9 +35,10 @@ namespace Lokad.Cqrs.Core.Envelope
             var envelope = RoundtripViaSerializer(builder);
 
             Assert.AreEqual(1, envelope.GetAttribute("Custom"));
-
-            Assert.IsTrue(envelope.CreatedOn >= time);
-            Assert.IsTrue(envelope.CreatedOn <= DateTimeOffset.UtcNow);
+            Assert.GreaterOrEqual(envelope.CreatedOnUtc, time, "start time");
+            var now = DateTime.UtcNow;
+            Assert.LessOrEqual(envelope.CreatedOnUtc, now, "now");
+            
         }
 
         [Test]

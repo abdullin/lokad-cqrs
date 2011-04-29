@@ -5,11 +5,15 @@
 
 #endregion
 
+using Lokad.Cqrs.Core.Envelope.Scenarios;
 using Lokad.Cqrs.Core.Serialization;
 using NUnit.Framework;
 
 namespace Lokad.Cqrs.Core.Envelope
 {
+
+    // ReSharper disable InconsistentNaming
+
     [TestFixture]
     public sealed class Play_all_for_ProtoBuf : When_envelope_is_serialized
     {

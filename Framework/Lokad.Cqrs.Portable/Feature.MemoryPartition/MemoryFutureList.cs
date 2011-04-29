@@ -29,7 +29,9 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
             var dateTimeOffset = DateTimeOffset.UtcNow;
             lock (_lock)
             {
-                envelope = _schedule.OrderBy(x => x.DeliverOn).FirstOrDefault(t => t.DeliverOn <= dateTimeOffset);
+                envelope = _schedule
+                    .OrderBy(x => x.DeliverOnUtc)
+                    .FirstOrDefault(t => t.DeliverOnUtc <= dateTimeOffset);
                 if (null != envelope)
                 {
                     _schedule.Remove(envelope);

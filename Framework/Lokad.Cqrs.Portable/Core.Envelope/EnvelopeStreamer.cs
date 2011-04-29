@@ -71,7 +71,7 @@ namespace Lokad.Cqrs.Core.Envelope
 
 
                 var contract = new EnvelopeContract(envelope.EnvelopeId, envelopeAttribs, itemContracts,
-                    envelope.DeliverOn, envelope.CreatedOn);
+                    envelope.DeliverOnUtc, envelope.CreatedOnUtc);
 
                 using (var stream = new MemoryStream())
                 {

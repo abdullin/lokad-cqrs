@@ -48,7 +48,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 
         public void PutMessage(ImmutableEnvelope envelope)
         {
-            if (envelope.DeliverOn == default(DateTimeOffset))
+            if (envelope.DeliverOnUtc == default(DateTime))
                 throw new InvalidOperationException();
 
 
@@ -78,7 +78,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             var bytes = _streamer.SaveDataMessage(envelope);
             _container.GetBlobReference(id).UploadByteArray(bytes);
 
-            view.References.Add(id, envelope.DeliverOn);
+            view.References.Add(id, envelope.DeliverOnUtc);
             using (var mem = new MemoryStream())
             {
                 Serializer.Serialize(mem, view);

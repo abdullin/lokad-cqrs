@@ -5,6 +5,7 @@
 
 #endregion
 
+using Lokad.Cqrs.Core.Envelope.Scenarios;
 using NUnit.Framework;
 
 namespace Lokad.Cqrs.Core.Envelope

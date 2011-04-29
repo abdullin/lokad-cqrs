@@ -35,7 +35,7 @@ namespace Lokad.Cqrs.Core.Directory
             _builder = new ContainerBuilder();
 
             HandlerSample<IConsume<IMessage>>(a => a.Consume(null, null));
-            ContextFactory((envelope, item) => new MessageContext(envelope.EnvelopeId, envelope.CreatedOn));
+            ContextFactory((envelope, item) => new MessageContext(envelope.EnvelopeId, envelope.CreatedOnUtc));
  
         }
 

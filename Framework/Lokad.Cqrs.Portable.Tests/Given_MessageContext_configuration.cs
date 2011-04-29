@@ -88,7 +88,7 @@ namespace Lokad.Cqrs
         {
             var messageId = string.Format("[{0}]-{1}", envelope.EnvelopeId, item.Index);
             var token = envelope.GetAttributeString("token", "");
-            return new MyContext(messageId, token, envelope.CreatedOn);
+            return new MyContext(messageId, token, envelope.CreatedOnUtc);
         }
 
         protected CloudEngineHost Engine;

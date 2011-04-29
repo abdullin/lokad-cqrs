@@ -74,7 +74,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
 
                             _emptyCycles = 0;
                             // future message
-                            if (message.Envelope.Unpacked.DeliverOn > DateTimeOffset.UtcNow)
+                            if (message.Envelope.Unpacked.DeliverOnUtc > DateTime.UtcNow)
                             {
                                 // save
                                 future.PutMessage(message.Envelope.Unpacked);
