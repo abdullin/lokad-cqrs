@@ -65,7 +65,7 @@ namespace Lokad.Cqrs.Core.Dispatch
             }
 
             if (routed == 0)
-                throw new InvalidOperationException(string.Format("Route '{0}' was not handled by any single dispatcher. Did you want to send to 'memory:null' instead?", route));
+                throw new InvalidOperationException(string.Format("Route '{0}' was not handled by any single dispatcher. Did you want to send to 'memory:null' or 'memory:{0}' instead?", route));
         }
 
         public void SpecifyRouter(Func<ImmutableEnvelope, string> router)

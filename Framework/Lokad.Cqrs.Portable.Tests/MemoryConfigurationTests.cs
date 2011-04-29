@@ -6,17 +6,14 @@
 #endregion
 
 using System;
-using System.Diagnostics;
-using System.Linq;
 using System.Collections.Generic;
 using System.Concurrency;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading;
 using Lokad.Cqrs.Build.Engine;
-using Lokad.Cqrs.Core.Directory.Default;
 using Lokad.Cqrs.Core.Dispatch.Events;
 using NUnit.Framework;
-using Autofac;
 
 namespace Lokad.Cqrs
 {
@@ -60,28 +57,9 @@ namespace Lokad.Cqrs
 
         static void TestConfiguration(Action<CloudEngineBuilder> config)
         {
-
             var events = new Subject<ISystemEvent>(Scheduler.TaskPool);
             var builder = new CloudEngineBuilder()
                 .EnlistObserver(events);
-
-            //events
-            //    .OfType<EnvelopeAcked>()
-            //    .BufferWithTimeOrCount(TimeSpan.FromSeconds(1), 10)
-            //    .Subscribe(li => Trace.WriteLine("Acked last second " + li.Count));
-
-            //events
-
-            //    .OfType<EnvelopeAcked>()
-            //    .WindowWithTime(TimeSpan.FromSeconds(1))
-            //    .SelectMany(x => x.Count())
-            //    .Where(i => i > 10)
-            //    .Throttle(TimeSpan.FromHours(1))
-            //    .Subscribe(c => Trace.WriteLine("More than 10 messages per sec: " + c));
-
-
-
-            
 
             config(builder);
 
@@ -96,7 +74,7 @@ namespace Lokad.Cqrs
                 engine.Start(t.Token);
                 engine.Resolve<IMessageSender>().SendOne(new Message1(0));
                 t.Token.WaitHandle.WaitOne(5000);
-                
+
                 Assert.IsTrue(t.IsCancellationRequested);
             }
         }
@@ -106,7 +84,7 @@ namespace Lokad.Cqrs
         {
             TestConfiguration(x => x.Memory(m =>
                 {
-                    m.AddMemorySender("in",module => module.IdGeneratorForTests());
+                    m.AddMemorySender("in", module => module.IdGeneratorForTests());
                     m.AddMemoryRouter("in", me => "memory:do");
                     m.AddMemoryProcess("do");
                 }));
@@ -117,8 +95,8 @@ namespace Lokad.Cqrs
         {
             TestConfiguration(x => x.Memory(m =>
                 {
-                    m.AddMemorySender("in", module => module.IdGeneratorForTests());
-                    m.AddMemoryProcess("in");
+                    m.AddMemorySender("do", module => module.IdGeneratorForTests());
+                    m.AddMemoryProcess("do");
                 }));
         }
 
@@ -130,8 +108,8 @@ namespace Lokad.Cqrs
                     m.AddMemorySender("in");
                     m.AddMemoryRouter("in",
                         me => (((Message1) me.Items[0].Content).Block%2) == 0 ? "memory:do1" : "memory:do2");
-                    m.AddMemoryProcess("do1");
-                    m.AddMemoryProcess("do2");
+                    m.AddMemoryRouter(new[]{"do1", "do2"}, me => "memory:do");
+                    m.AddMemoryProcess("do");
                 }));
         }
     }

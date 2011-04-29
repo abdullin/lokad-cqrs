@@ -71,12 +71,16 @@ namespace Lokad.Cqrs.Build.Engine
 
         public void AddMemoryProcess(string queueName, Action<ModuleForMemoryPartition> config)
         {
-            AddMemoryProcess(new string[] { queueName }, config);
+            AddMemoryProcess(new[] { queueName }, config);
         }
 
         public void AddMemoryRouter(string queueName, Func<ImmutableEnvelope, string> config)
         {
             AddMemoryProcess(queueName, m => m.Dispatch<DispatchMessagesToRoute>(x => x.SpecifyRouter(config)));
+        }
+        public void AddMemoryRouter(string[] queueNames, Func<ImmutableEnvelope, string> config)
+        {
+            AddMemoryProcess(queueNames, m => m.Dispatch<DispatchMessagesToRoute>(x => x.SpecifyRouter(config)));
         }
     }
 }
