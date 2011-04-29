@@ -18,7 +18,7 @@ namespace Lokad.Cqrs.Core.Serialization
         [Test]
         public void Roundtrip_Xml()
         {
-            var result = RoundTrip(new SimpleXmlClass()
+            var result = RoundTrip(new SimpleXmlClass
                 {
                     Value = "value"
                 });
@@ -41,7 +41,7 @@ namespace Lokad.Cqrs.Core.Serialization
         }
 
 
-        [XmlType()]
+        [XmlType]
         public sealed class SimpleXmlClass
         {
             [XmlElement(Order = 1)]

@@ -20,7 +20,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
 
         public void DispatchDelayedMessages()
         {
-            for (int i = 0; i < _futures.Length; i++)
+            for (var i = 0; i < _futures.Length; i++)
             {
                 var writer = _writers[i];
                 _futures[i].TranferPendingMessages(writer.PutMessage);

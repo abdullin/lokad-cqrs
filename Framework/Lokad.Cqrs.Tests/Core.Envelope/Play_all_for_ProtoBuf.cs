@@ -6,12 +6,10 @@
 #endregion
 
 using Lokad.Cqrs.Core.Envelope.Scenarios;
-using Lokad.Cqrs.Core.Serialization;
 using NUnit.Framework;
 
 namespace Lokad.Cqrs.Core.Envelope
 {
-
     // ReSharper disable InconsistentNaming
 
     [TestFixture]

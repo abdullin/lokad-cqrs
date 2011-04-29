@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace Lokad.Cqrs
 {
@@ -47,11 +46,10 @@ namespace Lokad.Cqrs
             Content = content;
             _attributes = attributes;
         }
+
         public override string ToString()
         {
             return string.Format("[{0}]", Content.ToString());
         }
     }
-
-
 }

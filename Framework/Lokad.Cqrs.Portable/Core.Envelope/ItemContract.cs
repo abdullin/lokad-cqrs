@@ -16,7 +16,7 @@ namespace Lokad.Cqrs.Core.Envelope
         [DataMember(Order = 1)] public readonly string ContractName;
         [DataMember(Order = 2)] public readonly long ContentSize;
         [DataMember(Order = 3)] public readonly long ContentPosition;
-        [DataMember(Order = 4)] public ItemAttributeContract[] Attributes;
+        [DataMember(Order = 4)] public readonly ItemAttributeContract[] Attributes;
 
         ItemContract()
         {

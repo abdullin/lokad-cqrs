@@ -7,7 +7,6 @@
 
 using System;
 using System.ComponentModel;
-using Autofac.Core;
 
 namespace Lokad.Cqrs.Build
 {
@@ -28,7 +27,6 @@ namespace Lokad.Cqrs.Build
                 throw new InvalidOperationException(string.Format(text, args));
         }
 
-        
 
         /// <summary>
         /// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.

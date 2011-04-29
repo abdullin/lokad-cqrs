@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Build\AzureModule.cs" />
+    <Compile Include="Build\Engine\ExtendCloudEngineBuilder.cs" />
     <Compile Include="Build\ModuleExtensionForSerialization.cs" />
     <Compile Include="Build\Client\CloudClient.cs" />
     <Compile Include="Build\Client\CloudClientBuilder.cs" />
@@ -75,7 +76,6 @@
     <Compile Include="Feature.AtomicStorage\IAzureAtomicStorageStrategy.cs" />
     <Compile Include="Build\AzureClientConfigurationBuilder.cs" />
     <Compile Include="Feature.AzurePartition\Inbox\StatelessAzureScheduler.cs" />
-    <Compile Include="Feature.AzurePartition\Inbox\AzurePartitionConfigurator.cs" />
     <Compile Include="Feature.AzurePartition\StatelessAzureFutureList.cs" />
     <Compile Include="Feature.AzurePartition\Inbox\AzurePartitionInbox.cs" />
     <Compile Include="Feature.AzurePartition\Inbox\AzurePartitionFactory.cs" />
@@ -83,7 +83,6 @@
     <Compile Include="Feature.AzurePartition\Events\FailedToAccessStorage.cs" />
     <Compile Include="Feature.AzurePartition\Events\FailedToDeserializeMessage.cs" />
     <Compile Include="Feature.AzurePartition\Events\FailedToReadMessage.cs" />
-    <Compile Include="Feature.AzurePartition\Events\MessageAcked.cs" />
     <Compile Include="Core.Transport\GetEnvelopeResult.cs" />
     <Compile Include="Core.Transport\GetEnvelopeResultState.cs" />
     <Compile Include="Feature.AzurePartition\Inbox\AzurePartitionModule.cs" />

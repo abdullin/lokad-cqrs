@@ -1,8 +1,7 @@
 ﻿using System.IO;
-using Lokad.Cqrs.Core.Envelope;
 using ProtoBuf;
 
-namespace Lokad.Cqrs.Core.Serialization
+namespace Lokad.Cqrs.Core.Envelope
 {
     public sealed class EnvelopeSerializerWithProtoBuf : IEnvelopeSerializer
     {

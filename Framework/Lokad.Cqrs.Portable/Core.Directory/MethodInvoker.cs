@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Reflection;
-using Lokad.Cqrs.Core.Evil;
+using Lokad.Cqrs.Evil;
 
 namespace Lokad.Cqrs.Core.Directory
 {

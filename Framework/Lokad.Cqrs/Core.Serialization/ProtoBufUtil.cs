@@ -9,7 +9,6 @@ using System;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using Lokad.Cqrs.Evil;
 using ProtoBuf;
 
 namespace Lokad.Cqrs.Core.Serialization

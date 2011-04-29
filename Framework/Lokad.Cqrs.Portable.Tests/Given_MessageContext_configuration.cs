@@ -80,8 +80,8 @@ namespace Lokad.Cqrs
 
             var observer = new Subject<ISystemEvent>();
             builder.EnlistObserver(observer);
-            Events = observer;
-            Engine = builder.Build();
+            _events = observer;
+            _engine = builder.Build();
         }
 
         static MyContext BuildContextOnTheFly(ImmutableEnvelope envelope, ImmutableMessage item)
@@ -91,20 +91,20 @@ namespace Lokad.Cqrs
             return new MyContext(messageId, token, envelope.CreatedOnUtc);
         }
 
-        protected CloudEngineHost Engine;
-        protected IObservable<ISystemEvent> Events;
+        CloudEngineHost _engine;
+        IObservable<ISystemEvent> _events;
 
 
         [Test]
         public void Test()
         {
             using (var t = new CancellationTokenSource())
-            using (Events
+            using (_events
                 .OfType<EnvelopeAcked>()
                 .Subscribe(a => t.Cancel()))
             {
-                Engine.Start(t.Token);
-                var sender = Engine.Resolve<IMessageSender>();
+                _engine.Start(t.Token);
+                var sender = _engine.Resolve<IMessageSender>();
 
                 sender.SendBatch(new object[]
                     {
@@ -126,7 +126,7 @@ namespace Lokad.Cqrs
         [TestFixtureTearDown]
         public void FixtureTearDown()
         {
-            Engine.Dispose();
+            _engine.Dispose();
         }
 
         // ReSharper disable InconsistentNaming

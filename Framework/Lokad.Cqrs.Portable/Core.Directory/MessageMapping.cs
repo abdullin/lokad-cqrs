@@ -46,7 +46,7 @@ namespace Lokad.Cqrs.Core.Directory
         {
             unchecked
             {
-                int result = (Consumer != null ? Consumer.GetHashCode() : 0);
+                var result = (Consumer != null ? Consumer.GetHashCode() : 0);
                 result = (result*397) ^ (Message != null ? Message.GetHashCode() : 0);
                 result = (result*397) ^ Direct.GetHashCode();
                 return result;

@@ -20,8 +20,6 @@ namespace Lokad.Cqrs.Build.Engine
         /// <returns></returns>
         protected abstract CloudEngineHost BuildHost();
 
-        protected event Action<CloudEngineHost> WhenEngineStarts = host => { };
-
         CloudEngineHost _host;
         readonly CancellationTokenSource _source = new CancellationTokenSource();
 
@@ -38,7 +36,6 @@ namespace Lokad.Cqrs.Build.Engine
         public override void Run()
         {
             _task = _host.Start(_source.Token);
-            WhenEngineStarts(_host);
             _source.Token.WaitHandle.WaitOne();
         }
 
@@ -60,16 +57,6 @@ namespace Lokad.Cqrs.Build.Engine
             _host.Dispose();
 
             base.OnStop();
-        }
-    }
-
-    public static class ExtendCloudEngineBuilder
-    {
-        public static void Azure(this CloudEngineBuilder @this, Action<AzureModule> config)
-        {
-            var module = new AzureModule();
-            config(module);
-            @this.EnlistModule(module);
         }
     }
 }

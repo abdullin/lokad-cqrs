@@ -9,7 +9,7 @@ using System;
 using NUnit.Framework;
 using NUnit.Framework.SyntaxHelpers;
 
-namespace Lokad.Cqrs.Feature.StreamingStorage
+namespace Lokad.Cqrs.Feature.StreamingStorage.Scenarios
 {
     public abstract class StorageItemFixture<TStorage>
         where TStorage : ITestStorage, new()

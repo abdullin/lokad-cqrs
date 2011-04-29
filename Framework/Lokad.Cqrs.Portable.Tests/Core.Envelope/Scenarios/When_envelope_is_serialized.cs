@@ -90,7 +90,7 @@ namespace Lokad.Cqrs.Core.Envelope.Scenarios
             }
             public override string ToString()
             {
-                return Value.ToString();
+                return Value;
             }
         }
     }

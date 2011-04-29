@@ -5,12 +5,10 @@
 
 #endregion
 
-using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using Lokad.Cqrs.Core.Outbox;
-using Lokad.Cqrs.Feature.AzurePartition.Inbox;
 
 namespace Lokad.Cqrs.Feature.AzurePartition.Sender
 {

@@ -15,7 +15,6 @@ using Lokad.Cqrs.Core.Outbox;
 using Lokad.Cqrs.Feature.AzurePartition.Inbox;
 using Lokad.Cqrs.Feature.AzurePartition.Sender;
 using Microsoft.WindowsAzure;
-using Microsoft.WindowsAzure.StorageClient;
 using System.Linq;
 
 // ReSharper disable UnusedMember.Global

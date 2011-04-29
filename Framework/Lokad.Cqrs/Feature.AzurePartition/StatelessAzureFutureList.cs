@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
 using ProtoBuf;
 
@@ -17,17 +16,14 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 {
     public sealed class StatelessAzureFutureList
     {
-        readonly ISystemObserver _observer;
         readonly IEnvelopeStreamer _streamer;
 
         readonly CloudBlobContainer _container;
         readonly CloudBlob _blob;
 
 
-        public StatelessAzureFutureList(CloudBlobContainer container, ISystemObserver observer,
-            IEnvelopeStreamer streamer)
+        public StatelessAzureFutureList(CloudBlobContainer container, IEnvelopeStreamer streamer)
         {
-            _observer = observer;
             _streamer = streamer;
             _container = container;
             _blob = _container.GetBlobReference("__schedule.bin");
@@ -42,7 +38,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
         {
             foreach (var item in _container.ListBlobs())
             {
-                ((CloudBlockBlob)item).Delete();
+                ((CloudBlockBlob) item).Delete();
             }
         }
 
@@ -135,7 +131,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
         [ProtoContract]
         public sealed class ScheduleItem
         {
-            [ProtoMember(1)] public IDictionary<string, DateTimeOffset> References =
+            [ProtoMember(1)] public readonly IDictionary<string, DateTimeOffset> References =
                 new Dictionary<string, DateTimeOffset>();
 
             public ScheduleItem()

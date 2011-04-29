@@ -15,7 +15,7 @@ using Lokad.Cqrs.Evil;
 using Microsoft.WindowsAzure;
 using NUnit.Framework;
 
-namespace Lokad.Cqrs.Legacy
+namespace Lokad.Cqrs
 {
     [TestFixture]
     public sealed class SmokeTests

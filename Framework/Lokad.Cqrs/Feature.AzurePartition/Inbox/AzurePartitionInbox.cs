@@ -62,7 +62,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
         {
             while (!token.IsCancellationRequested)
             {
-                for (int i = 0; i < _readers.Length; i++)
+                for (var i = 0; i < _readers.Length; i++)
                 {
                     var queue = _readers[i];
                     var future = _futures[i];

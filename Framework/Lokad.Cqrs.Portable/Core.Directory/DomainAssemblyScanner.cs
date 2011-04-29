@@ -8,7 +8,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 
 namespace Lokad.Cqrs.Core.Directory
@@ -63,17 +62,16 @@ namespace Lokad.Cqrs.Core.Directory
             return true;
         }
 
-      	public void Constrain(MethodInvokerHint hint)
-		{
-			WhereMessages(t => hint.MessageInterface.IsAssignableFrom(t));
-			WhereConsumers(type => type.GetInterfaces().Where(i => i.IsGenericType)
-				.Any(i => i.GetGenericTypeDefinition() == hint.ConsumerTypeDefinition));
-		}
+        public void Constrain(MethodInvokerHint hint)
+        {
+            WhereMessages(t => hint.MessageInterface.IsAssignableFrom(t));
+            WhereConsumers(type => type.GetInterfaces().Where(i => i.IsGenericType)
+                .Any(i => i.GetGenericTypeDefinition() == hint.ConsumerTypeDefinition));
+        }
 
 
         public IEnumerable<MessageMapping> Build(Type consumerInterfaceDefinition)
         {
-            
             if (!_assemblies.Any())
             {
                 var userAssemblies = AppDomain.CurrentDomain.GetAssemblies().Where(IsUserAssembly);
@@ -82,7 +80,7 @@ namespace Lokad.Cqrs.Core.Directory
                     _assemblies.Add(userAssembly);
                 }
             }
-            
+
 
             var types = _assemblies
                 .SelectMany(a => a.GetExportedTypes())

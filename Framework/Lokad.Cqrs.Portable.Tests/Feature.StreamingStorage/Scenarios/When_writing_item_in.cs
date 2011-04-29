@@ -15,10 +15,6 @@ namespace Lokad.Cqrs.Feature.StreamingStorage.Scenarios
     public abstract class When_writing_item_in<TStorage> : StorageItemFixture<TStorage>
         where TStorage : ITestStorage, new()
     {
-        protected When_writing_item_in()
-        {
-        }
-
         [Test]
         public void Missing_container_throws_container_not_found()
         {

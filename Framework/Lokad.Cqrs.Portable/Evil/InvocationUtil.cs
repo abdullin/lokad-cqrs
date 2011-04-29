@@ -6,10 +6,9 @@
 #endregion
 
 using System;
-using System.Diagnostics;
 using System.Reflection;
 
-namespace Lokad.Cqrs.Core.Evil
+namespace Lokad.Cqrs.Evil
 {
     /// <summary>
     /// Helper class for generating exceptions

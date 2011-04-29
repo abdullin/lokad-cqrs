@@ -5,6 +5,7 @@
 
 #endregion
 
+using Lokad.Cqrs.Core.Envelope;
 using Lokad.Cqrs.Core.Serialization;
 
 namespace Lokad.Cqrs.Build

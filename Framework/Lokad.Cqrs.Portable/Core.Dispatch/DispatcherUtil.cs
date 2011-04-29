@@ -23,13 +23,13 @@ namespace Lokad.Cqrs.Core.Dispatch
                 .Where(c => c.AllConsumers.Length > 1)
                 .Select(c => c.MessageType.FullName);
 
-            if (multipleConsumers.Any())
-            {
-                var joined = string.Join("; ", multipleConsumers.ToArray());
+            if (!multipleConsumers.Any())
+                return;
 
-                throw new InvalidOperationException(
-                    "These messages have multiple consumers. Did you intend to declare them as events? " + joined);
-            }
+            var joined = string.Join("; ", multipleConsumers.ToArray());
+
+            throw new InvalidOperationException(
+                "These messages have multiple consumers. Did you intend to declare them as events? " + joined);
         }
     }
 }

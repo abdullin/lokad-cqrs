@@ -22,7 +22,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Events
 
         public override string ToString()
         {
-            return string.Format("Failed to read from '{0}': {1}", QueueName, this.Exception.Message);
+            return string.Format("Failed to read from '{0}': {1}", QueueName, Exception.Message);
         }
     }
 }

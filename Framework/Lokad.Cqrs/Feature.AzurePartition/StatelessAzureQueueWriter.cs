@@ -7,7 +7,6 @@
 
 using System;
 using Lokad.Cqrs.Core.Outbox;
-using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs.Feature.AzurePartition

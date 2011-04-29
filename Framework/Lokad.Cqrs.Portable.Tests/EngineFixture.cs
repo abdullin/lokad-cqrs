@@ -33,9 +33,9 @@ namespace Lokad.Cqrs
 
         Action<CloudEngineBuilder> _configureForFixture = builder => { };
 
-        public bool TestCompleted { get; set; }
+        protected bool TestCompleted { get; private set; }
 
-        public void CompleteTestAndStopEngine()
+        protected void CompleteTestAndStopEngine()
         {
             Trace.WriteLine("completing test");
             Trace.Flush();
@@ -43,7 +43,7 @@ namespace Lokad.Cqrs
             _source.Cancel();
         }
 
-        protected IMessageSender Sender
+        IMessageSender Sender
         {
             get { return _host.Resolve<IMessageSender>(); }
         }

@@ -7,10 +7,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Autofac;
 using Autofac.Core;
 using Lokad.Cqrs.Core.Directory;
@@ -28,7 +25,7 @@ namespace Lokad.Cqrs.Build.Engine
     public class CloudEngineBuilder : BuildSyntaxHelper
     {
         readonly HashSet<IModule> _moduleEnlistments = new HashSet<IModule>();
-        
+
 
         bool IsEnlisted<TModule>() where TModule : IModule
         {
@@ -69,7 +66,6 @@ namespace Lokad.Cqrs.Build.Engine
             return this;
         }
 
-        
 
         public CloudEngineBuilder EnlistObserver(IObserver<ISystemEvent> observer)
         {
@@ -91,7 +87,7 @@ namespace Lokad.Cqrs.Build.Engine
             return this;
         }
 
-        public bool DisableDefaultObserver = false;
+        public bool DisableDefaultObserver { get; set; }
 
         /// <summary>
         /// Builds this <see cref="CloudEngineHost"/>.

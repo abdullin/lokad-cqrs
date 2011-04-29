@@ -79,7 +79,7 @@ namespace Lokad.Cqrs.Core.Envelope
                     stream.Seek(MessageHeader.FixedSize, SeekOrigin.Begin);
                     // save envelope attributes
                     _envelopeSerializer.SerializeEnvelope(stream, contract);
-                    long envelopeBytes = stream.Position - MessageHeader.FixedSize;
+                    var envelopeBytes = stream.Position - MessageHeader.FixedSize;
                     // copy data
                     content.WriteTo(stream);
                     // write the header
@@ -95,8 +95,8 @@ namespace Lokad.Cqrs.Core.Envelope
         {
             if (BytesStart(buffer, Reference))
             {
-                string text = Encoding.Unicode.GetString(buffer);
-                string[] args = text.Split(new[] {"\r\n"}, StringSplitOptions.RemoveEmptyEntries);
+                var text = Encoding.Unicode.GetString(buffer);
+                var args = text.Split(new[] {"\r\n"}, StringSplitOptions.RemoveEmptyEntries);
                 reference = new EnvelopeReference(args[1], args[2], args[3]);
                 return true;
             }
@@ -136,7 +136,7 @@ namespace Lokad.Cqrs.Core.Envelope
             
             var items = new ImmutableMessage[envelope.Items.Length];
 
-            for (int i = 0; i < items.Length; i++)
+            for (var i = 0; i < items.Length; i++)
             {
                 var itemContract = envelope.Items[i];
                 var attributes = EnvelopeConvert.ItemAttributesFromContract(itemContract.Attributes);
