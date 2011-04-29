@@ -13,7 +13,6 @@ using System.Threading;
 using Lokad.Cqrs.Build.Engine;
 using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Core.Dispatch.Events;
-using Lokad.Cqrs.Feature.Logging;
 using NUnit.Framework;
 
 namespace Lokad.Cqrs

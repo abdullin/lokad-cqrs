@@ -7,11 +7,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 
-namespace Lokad.Cqrs.Feature.Logging
+namespace Lokad.Cqrs.Core.Reactive
 {
     /// <summary>
     /// Simple <see cref="ISystemObserver"/> that writes to the <see cref="Trace.Listeners"/>
@@ -43,25 +42,6 @@ namespace Lokad.Cqrs.Feature.Logging
             {
                 observer.OnCompleted();
             }
-        }
-    }
-
-    public sealed class ImmediateTracingObserver : IObserver<ISystemEvent>
-    {
-        public void OnNext(ISystemEvent value)
-        {
-            Trace.WriteLine(value);
-            Trace.Flush();
-        }
-
-        public void OnError(Exception error)
-        {
-            Trace.WriteLine("!" + error.Message);
-        }
-
-        public void OnCompleted()
-        {
-            Trace.WriteLine("Observing completed");
         }
     }
 }

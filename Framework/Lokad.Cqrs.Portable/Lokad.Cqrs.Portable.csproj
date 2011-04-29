@@ -44,6 +44,7 @@
     <Compile Include="Build\BuildSyntaxHelper.cs" />
     <Compile Include="Build\Engine\MemoryModule.cs" />
     <Compile Include="Core.Dispatch\Events\EventHadNoConsumers.cs" />
+    <Compile Include="Core.Reactive\ImmediateTracingObserver.cs" />
     <Compile Include="MessageContext.cs" />
     <Compile Include="Core.Directory\IMethodInvoker.cs" />
     <Compile Include="Core.Directory\MessageActivationMap.cs" />
@@ -108,8 +109,7 @@
     <Compile Include="Feature.AtomicStorage\IAtomicSingleton.cs" />
     <Compile Include="Feature.AtomicStorage\IAtomicSingletonReader.cs" />
     <Compile Include="Feature.AtomicStorage\IAtomicSingletonWriter.cs" />
-    <Compile Include="Feature.Logging\NullSystemObserver.cs" />
-    <Compile Include="Feature.Logging\ReactiveSystemObserverAdapter.cs" />
+    <Compile Include="Core.Reactive\ReactiveSystemObserverAdapter.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryFutureList.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryPartitionFactory.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryPartitionInbox.cs" />
@@ -153,7 +153,9 @@
     <Compile Include="Core.Serialization\DataSerializerWithDataContracts.cs" />
     <Compile Include="Core.Serialization\DataContractUtil.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Feature.Logging\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

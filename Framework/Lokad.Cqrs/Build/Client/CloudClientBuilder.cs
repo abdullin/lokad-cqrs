@@ -9,9 +9,9 @@ using System;
 using Autofac;
 using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Outbox;
+using Lokad.Cqrs.Core.Reactive;
 using Lokad.Cqrs.Core.Serialization;
 using Lokad.Cqrs.Feature.AzurePartition.Sender;
-using Lokad.Cqrs.Feature.Logging;
 using Lokad.Cqrs.Feature.MemoryPartition;
 
 namespace Lokad.Cqrs.Build.Client
