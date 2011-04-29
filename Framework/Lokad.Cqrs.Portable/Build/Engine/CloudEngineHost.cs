@@ -45,7 +45,7 @@ namespace Lokad.Cqrs.Build.Engine
             var names =
                 _serverProcesses.Select(p => string.Format("{0}({1:X8})", p.GetType().Name, p.GetHashCode())).ToArray();
 
-            _observer.Notify(new HostStarted(names));
+            _observer.Notify(new EngineStarted(names));
 
             return Task.Factory.StartNew(() =>
                 {
@@ -55,18 +55,18 @@ namespace Lokad.Cqrs.Build.Engine
                     }
                     catch(OperationCanceledException)
                     {}
-                    _observer.Notify(new HostStopped());
+                    _observer.Notify(new EngineStopped());
                 });
         }
 
         public void Initialize()
         {
-            _observer.Notify(new HostInitializationStarted());
+            _observer.Notify(new EngineInitializationStarted());
             foreach (var process in _serverProcesses)
             {
                 process.Initialize();
             }
-            _observer.Notify(new HostInitialized());
+            _observer.Notify(new EngineInitialized());
         }
 
         public TService Resolve<TService>()

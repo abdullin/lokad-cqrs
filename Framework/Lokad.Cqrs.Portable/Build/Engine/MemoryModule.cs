@@ -74,7 +74,7 @@ namespace Lokad.Cqrs.Build.Engine
             AddMemoryProcess(new string[] { queueName }, config);
         }
 
-        public void AddMemoryRouter(string queueName, Func<MessageEnvelope, string> config)
+        public void AddMemoryRouter(string queueName, Func<ImmutableMessageEnvelope, string> config)
         {
             AddMemoryProcess(queueName, m => m.Dispatch<DispatchMessagesToRoute>(x => x.SpecifyRouter(config)));
         }

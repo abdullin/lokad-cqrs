@@ -54,19 +54,19 @@ namespace Lokad.Cqrs.Core.Envelope
             return builder;
         }
 
-        public MessageEnvelope Build()
+        public ImmutableMessageEnvelope Build()
         {
             var attributes = new Dictionary<string, object>(Attributes);
-            var items = new MessageItem[Items.Count];
+            var items = new ImmutableMessageItem[Items.Count];
 
             for (int i = 0; i < items.Length; i++)
             {
                 var save = Items[i];
                 var attribs = new Dictionary<string, object>(save.Attributes);
-                items[i] = new MessageItem(save.MappedType, save.Content, attribs);
+                items[i] = new ImmutableMessageItem(save.MappedType, save.Content, attribs);
             }
             DateTimeOffset created = DateTimeOffset.UtcNow;
-            return new MessageEnvelope(EnvelopeId, attributes, items, _deliverOn, created);
+            return new ImmutableMessageEnvelope(EnvelopeId, attributes, items, _deliverOn, created);
         }
     }
 }

@@ -13,10 +13,10 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
 {
     public sealed class MemoryFutureList
     {
-        readonly IList<MessageEnvelope> _schedule = new List<MessageEnvelope>();
+        readonly IList<ImmutableMessageEnvelope> _schedule = new List<ImmutableMessageEnvelope>();
         readonly object _lock = new object();
 
-        public void PutMessage(MessageEnvelope envelope)
+        public void PutMessage(ImmutableMessageEnvelope envelope)
         {
             lock (_lock)
             {
@@ -24,7 +24,7 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
             }
         }
 
-        public bool TakePendingMessage(out MessageEnvelope envelope)
+        public bool TakePendingMessage(out ImmutableMessageEnvelope envelope)
         {
             var dateTimeOffset = DateTimeOffset.UtcNow;
             lock (_lock)

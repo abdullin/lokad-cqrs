@@ -41,7 +41,7 @@ namespace Lokad.Cqrs.Core.Envelope
         }
 
 
-        public byte[] SaveDataMessage(MessageEnvelope envelope)
+        public byte[] SaveDataMessage(ImmutableMessageEnvelope envelope)
         {
             //  string contract, Guid messageId, Uri sender, 
             var itemContracts = new ItemContract[envelope.Items.Length];
@@ -119,7 +119,7 @@ namespace Lokad.Cqrs.Core.Envelope
         }
 
 
-        public MessageEnvelope ReadDataMessage(byte[] buffer)
+        public ImmutableMessageEnvelope ReadDataMessage(byte[] buffer)
         {
             var header = MessageHeader.ReadHeader(buffer);
 
@@ -134,7 +134,7 @@ namespace Lokad.Cqrs.Core.Envelope
                 envelope = _envelopeSerializer.DeserializeEnvelope(stream);
             }
             
-            var items = new MessageItem[envelope.Items.Length];
+            var items = new ImmutableMessageItem[envelope.Items.Length];
 
             for (int i = 0; i < items.Length; i++)
             {
@@ -150,7 +150,7 @@ namespace Lokad.Cqrs.Core.Envelope
                     {
                         var instance = _dataSerializer.Deserialize(stream, contractType);
 
-                        items[i] = new MessageItem(contractType, instance, attributes);
+                        items[i] = new ImmutableMessageItem(contractType, instance, attributes);
                     }
                 }
                 else
@@ -158,12 +158,12 @@ namespace Lokad.Cqrs.Core.Envelope
                     // we can't deserialize. Keep it as buffer
                     var bufferInstance = new byte[itemContract.ContentSize];
                     Buffer.BlockCopy(buffer, itemPosition, bufferInstance, 0, itemSize);
-                    items[i] = new MessageItem(null, bufferInstance, attributes);
+                    items[i] = new ImmutableMessageItem(null, bufferInstance, attributes);
                 }
             }
 
             var envelopeAttributes = EnvelopeConvert.EnvelopeAttributesFromContract(envelope.EnvelopeAttributes);
-            return new MessageEnvelope(envelope.EnvelopeId, envelopeAttributes, items, envelope.DeliverOnUtc, envelope.CreatedOnUtc);
+            return new ImmutableMessageEnvelope(envelope.EnvelopeId, envelopeAttributes, items, envelope.DeliverOnUtc, envelope.CreatedOnUtc);
         }
     }
 }

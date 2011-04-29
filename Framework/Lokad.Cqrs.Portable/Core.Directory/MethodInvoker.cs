@@ -8,12 +8,12 @@ namespace Lokad.Cqrs.Core.Directory
     public sealed class MethodInvoker : IMethodInvoker
     {
 
-        readonly Func<MessageEnvelope, MessageItem, object> _contextProvider;
+        readonly Func<ImmutableMessageEnvelope, ImmutableMessageItem, object> _contextProvider;
         readonly MethodInvokerHint _hint;
 
 
         [DebuggerNonUserCode]
-        public void InvokeConsume(object messageHandler, MessageItem item, MessageEnvelope envelope)
+        public void InvokeConsume(object messageHandler, ImmutableMessageItem item, ImmutableMessageEnvelope envelope)
         {
             var handlerType = messageHandler.GetType();
             var content = item.Content;
@@ -67,7 +67,7 @@ namespace Lokad.Cqrs.Core.Directory
             }
         }
 
-        public MethodInvoker(Func<MessageEnvelope, MessageItem, object> contextProvider, MethodInvokerHint hint)
+        public MethodInvoker(Func<ImmutableMessageEnvelope, ImmutableMessageItem, object> contextProvider, MethodInvokerHint hint)
         {
             _contextProvider = contextProvider;
             _hint = hint;

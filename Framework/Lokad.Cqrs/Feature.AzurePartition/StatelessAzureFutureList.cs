@@ -46,7 +46,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             }
         }
 
-        public void PutMessage(MessageEnvelope envelope)
+        public void PutMessage(ImmutableMessageEnvelope envelope)
         {
             if (envelope.DeliverOn == default(DateTimeOffset))
                 throw new InvalidOperationException();
@@ -86,7 +86,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             }
         }
 
-        public void TranferPendingMessages(Action<MessageEnvelope> atomicTranfer)
+        public void TranferPendingMessages(Action<ImmutableMessageEnvelope> atomicTranfer)
         {
             ScheduleItem view;
             try

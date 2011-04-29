@@ -9,7 +9,7 @@ namespace Lokad.Cqrs.Core.Envelope
 
     public abstract class When_envelope_is_serialized
     {
-        protected abstract MessageEnvelope RoundtripViaSerializer(MessageEnvelopeBuilder builder);
+        protected abstract ImmutableMessageEnvelope RoundtripViaSerializer(MessageEnvelopeBuilder builder);
 
         protected static IEnvelopeStreamer BuildStreamer(IEnvelopeSerializer serializer)
         {

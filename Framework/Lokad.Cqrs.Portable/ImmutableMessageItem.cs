@@ -12,7 +12,7 @@ using System.Diagnostics;
 namespace Lokad.Cqrs
 {
     //[DebuggerDisplay("{MappedType.Name} with {")]
-    public sealed class MessageItem
+    public sealed class ImmutableMessageItem
     {
         public readonly Type MappedType;
         public readonly object Content;
@@ -39,7 +39,7 @@ namespace Lokad.Cqrs
         }
 
 
-        public MessageItem(Type mappedType, object content, IDictionary<string, object> attributes)
+        public ImmutableMessageItem(Type mappedType, object content, IDictionary<string, object> attributes)
         {
             MappedType = mappedType;
             Content = content;

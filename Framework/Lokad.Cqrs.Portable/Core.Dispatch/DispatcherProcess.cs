@@ -74,11 +74,11 @@ namespace Lokad.Cqrs.Core.Dispatch
                     }
                     catch (Exception ex)
                     {
-                        _observer.Notify(new FailedToConsumeMessage(ex, context.Unpacked.EnvelopeId, context.QueueName));
+                        _observer.Notify(new EnvelopeDispatchFailed(context.Unpacked, context.QueueName, ex));
                         // if the code below fails, it will just cause everything to be reprocessed later
                         if (_quarantine.Accept(context, ex))
                         {
-                            _observer.Notify(new QuarantinedMessage(ex, context.Unpacked.EnvelopeId, context.QueueName));
+                            _observer.Notify(new EnvelopeQuarantined(ex, context.Unpacked.EnvelopeId, context.QueueName));
                             _inbox.AckMessage(context);
                         }
                         else
@@ -92,13 +92,13 @@ namespace Lokad.Cqrs.Core.Dispatch
                         {
                             _inbox.AckMessage(context);
                             _quarantine.Clear(context);
-                            _observer.Notify(new MessageAcked(context.QueueName, context.Unpacked.EnvelopeId));
+                            _observer.Notify(new EnvelopeAcked(context.QueueName, context.Unpacked.EnvelopeId));
                         }
                     }
                     catch (Exception ex)
                     {
                         // not a big deal. Message will be processed again.
-                        _observer.Notify(new FailedToAckMessage(ex, context.Unpacked.EnvelopeId, context.QueueName));
+                        _observer.Notify(new FailedToAckEnvelope(ex, context.Unpacked.EnvelopeId, context.QueueName));
                     }
                 }
             }

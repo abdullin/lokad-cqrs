@@ -33,7 +33,7 @@ namespace Lokad.Cqrs.Core.Dispatch
             _memory = manager.GetOrAdd(this);
         }
 
-        public void DispatchMessage(MessageEnvelope message)
+        public void DispatchMessage(ImmutableMessageEnvelope message)
         {
             // already dispatched
             if (_memory.DoWeRemember(message.EnvelopeId))

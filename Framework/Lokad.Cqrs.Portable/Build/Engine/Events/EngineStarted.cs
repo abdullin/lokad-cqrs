@@ -7,11 +7,11 @@
 
 namespace Lokad.Cqrs.Build.Engine.Events
 {
-    public sealed class HostStarted : ISystemEvent
+    public sealed class EngineStarted : ISystemEvent
     {
         public readonly string[] EngineProcesses;
 
-        public HostStarted(string[] engineProcesses)
+        public EngineStarted(string[] engineProcesses)
         {
             EngineProcesses = engineProcesses;
         }

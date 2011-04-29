@@ -77,13 +77,22 @@ namespace Lokad.Cqrs
                 .EnlistObserver(events);
 
             events
-                .OfType<MessageAcked>()
+                .OfType<EnvelopeAcked>()
                 .Subscribe(ma => Trace.WriteLine("Acked from" + ma.QueueName));
 
             events
-                .OfType<MessageAcked>()
+                .OfType<EnvelopeAcked>()
                 .BufferWithTimeOrCount(TimeSpan.FromSeconds(1), 10)
                 .Subscribe(li => Trace.WriteLine("Acked last second " + li.Count));
+
+            events
+                
+                .OfType<EnvelopeAcked>()
+                .WindowWithTime(TimeSpan.FromSeconds(1))
+                .SelectMany(x => x.Count())
+                .Where(i => i > 10)
+                .Throttle(TimeSpan.FromHours(1))
+                .Subscribe(c => Trace.WriteLine("More than 10 messages per sec: " + c));
 
 
 

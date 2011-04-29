@@ -10,10 +10,10 @@ namespace Lokad.Cqrs.Core.Inbox
     public sealed class EnvelopeTransportContext
     {
         public readonly object TransportMessage;
-        public readonly MessageEnvelope Unpacked;
+        public readonly ImmutableMessageEnvelope Unpacked;
         public readonly string QueueName;
 
-        public EnvelopeTransportContext(object transportMessage, MessageEnvelope unpacked, string queueName)
+        public EnvelopeTransportContext(object transportMessage, ImmutableMessageEnvelope unpacked, string queueName)
         {
             TransportMessage = transportMessage;
             QueueName = queueName;

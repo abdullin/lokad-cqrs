@@ -9,13 +9,13 @@ using System;
 
 namespace Lokad.Cqrs.Core.Dispatch.Events
 {
-    public sealed class FailedToConsumeMessage : ISystemEvent
+    public sealed class FailedToAckEnvelope : ISystemEvent
     {
         public Exception Exception { get; private set; }
         public string EnvelopeId { get; private set; }
         public string QueueName { get; private set; }
 
-        public FailedToConsumeMessage(Exception exception, string envelopeId, string queueName)
+        public FailedToAckEnvelope(Exception exception, string envelopeId, string queueName)
         {
             Exception = exception;
             EnvelopeId = envelopeId;
@@ -24,7 +24,7 @@ namespace Lokad.Cqrs.Core.Dispatch.Events
 
         public override string ToString()
         {
-            return string.Format("Failed to consume {0} from '{1}': {2}", EnvelopeId, QueueName, Exception.Message);
+            return string.Format("Failed to ack '{0}' from '{1}': {2}", EnvelopeId, QueueName, Exception.Message);
         }
     }
 }

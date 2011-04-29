@@ -7,7 +7,7 @@
 
 namespace Lokad.Cqrs.Build.Engine.Events
 {
-    public sealed class HostInitialized : ISystemEvent
+    public sealed class EngineInitializationStarted : ISystemEvent
     {
     }
 }

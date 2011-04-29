@@ -19,7 +19,7 @@ namespace Lokad.Cqrs.Scenarios
                 });
 
             Events
-                .OfType<QuarantinedMessage>().Subscribe(cm =>
+                .OfType<EnvelopeQuarantined>().Subscribe(cm =>
                     {
                         Assert.AreEqual("Fail: try", cm.LastException.Message);
                         CompleteTestAndStopEngine();
@@ -42,11 +42,11 @@ namespace Lokad.Cqrs.Scenarios
 
             var captured = 0;
             Events
-                .OfType<FailedToConsumeMessage>()
+                .OfType<EnvelopeDispatchFailed>()
                 .Subscribe(t => captured++);
 
             Events
-                .OfType<MessageAcked>()
+                .OfType<EnvelopeAcked>()
                 .Subscribe(m => CompleteTestAndStopEngine());
 
             

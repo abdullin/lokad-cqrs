@@ -14,7 +14,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 {
     public sealed class StatelessAzureQueueWriter : IQueueWriter
     {
-        public void PutMessage(MessageEnvelope envelope)
+        public void PutMessage(ImmutableMessageEnvelope envelope)
         {
             var packed = PrepareCloudMessage(envelope);
             _queue.AddMessage(packed);
@@ -24,7 +24,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
         const int CloudQueueLimit = 6144;
 
 
-        CloudQueueMessage PrepareCloudMessage(MessageEnvelope builder)
+        CloudQueueMessage PrepareCloudMessage(ImmutableMessageEnvelope builder)
         {
             var buffer = _streamer.SaveDataMessage(builder);
             if (buffer.Length < CloudQueueLimit)

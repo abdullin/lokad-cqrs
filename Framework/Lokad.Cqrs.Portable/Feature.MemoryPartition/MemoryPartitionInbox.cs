@@ -14,11 +14,11 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
 {
     public sealed class MemoryPartitionInbox : IPartitionInbox
     {
-        readonly BlockingCollection<MessageEnvelope>[] _queues;
+        readonly BlockingCollection<ImmutableMessageEnvelope>[] _queues;
         readonly string[] _names;
         readonly MemoryFutureList[] _future;
 
-        public MemoryPartitionInbox(BlockingCollection<MessageEnvelope>[] queues, string[] names,
+        public MemoryPartitionInbox(BlockingCollection<ImmutableMessageEnvelope>[] queues, string[] names,
             MemoryFutureList[] future)
         {
             _queues = queues;
@@ -37,14 +37,14 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
 
         public bool TakeMessage(CancellationToken token, out EnvelopeTransportContext context)
         {
-            MessageEnvelope envelope;
+            ImmutableMessageEnvelope envelope;
 
             while (!token.IsCancellationRequested)
             {
                 // if incoming message is delayed and in future -> push it to the timer queue.
                 // timer will be responsible for publishing back.
 
-                var result = BlockingCollection<MessageEnvelope>.TakeFromAny(_queues, out envelope);
+                var result = BlockingCollection<ImmutableMessageEnvelope>.TakeFromAny(_queues, out envelope);
                 if (result >= 0)
                 {
                     if (envelope.DeliverOn > DateTimeOffset.UtcNow)

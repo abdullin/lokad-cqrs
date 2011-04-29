@@ -7,7 +7,7 @@
 
 namespace Lokad.Cqrs.Build.Engine.Events
 {
-    public sealed class HostStopped : ISystemEvent
+    public sealed class EngineStopped : ISystemEvent
     {
     }
 }

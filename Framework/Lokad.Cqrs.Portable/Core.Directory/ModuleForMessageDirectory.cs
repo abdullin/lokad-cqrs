@@ -24,7 +24,7 @@ namespace Lokad.Cqrs.Core.Directory
         readonly ContainerBuilder _builder;
         MethodInvokerHint _hint;
 
-        Func<MessageEnvelope, MessageItem, object> _contextFactory;
+        Func<ImmutableMessageEnvelope, ImmutableMessageItem, object> _contextFactory;
         Type _contextFactoryType;
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace Lokad.Cqrs.Core.Directory
  
         }
 
-        public void ContextFactory<TResult>(Func<MessageEnvelope,MessageItem, TResult> result)
+        public void ContextFactory<TResult>(Func<ImmutableMessageEnvelope,ImmutableMessageItem, TResult> result)
 		{
             _contextFactory = (envelope, item) => result(envelope, item);
             _contextFactoryType = typeof (TResult);

@@ -1,11 +1,11 @@
 ﻿namespace Lokad.Cqrs.Core.Dispatch.Events
 {
-    public sealed class MessageAcked : ISystemEvent
+    public sealed class EnvelopeAcked : ISystemEvent
     {
         public string QueueName { get; private set; }
         public string EnvelopeId { get; private set; }
 
-        public MessageAcked(string queueName, string envelopeId)
+        public EnvelopeAcked(string queueName, string envelopeId)
         {
             QueueName = queueName;
             EnvelopeId = envelopeId;

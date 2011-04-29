@@ -47,7 +47,7 @@ namespace Lokad.Cqrs.Core.Dispatch
             }
         }
 
-        public void DispatchMessage(MessageEnvelope envelope)
+        public void DispatchMessage(ImmutableMessageEnvelope envelope)
         {
             if (_dispatchMemory.DoWeRemember(envelope.EnvelopeId))
                 return;
