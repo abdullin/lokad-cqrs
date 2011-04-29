@@ -13,7 +13,7 @@
 
         public override string ToString()
         {
-            return string.Format("Message {0} acked at {1}", EnvelopeId, QueueName);
+            return string.Format("[{0}] acked at '{1}'", EnvelopeId, QueueName);
         }
     }
 }

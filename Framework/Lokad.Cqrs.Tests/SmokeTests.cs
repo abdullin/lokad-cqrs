@@ -95,10 +95,10 @@ namespace Lokad.Cqrs.Legacy
             {
                 var client = host.Resolve<IMessageSender>();
 
-                client.Send(new VipMessage {Word = "VIP1 Message"});
-                client.Send(new UsualMessage {Word = "Usual Large:" + new string(')', 9000)});
-                client.DelaySend(3.Seconds(), new VipMessage {Word = "VIP Delayed Large :" + new string(')', 9000)});
-                client.DelaySend(2.Seconds(), new UsualMessage {Word = "Usual Delayed"});
+                client.SendOne(new VipMessage {Word = "VIP1 Message"});
+                client.SendOne(new UsualMessage {Word = "Usual Large:" + new string(')', 9000)});
+                client.SendOne(new VipMessage {Word = "VIP Delayed Large :" + new string(')', 9000)}, cb => cb.DelayBy(3.Seconds()));
+                client.SendOne(new UsualMessage {Word = "Usual Delayed"}, cb => cb.DelayBy(2.Seconds()));
 
                 //client.SendBatch(new VipMessage { Word = " VIP with usual "}, new UsualMessage() { Word = "Vip with usual"});
 

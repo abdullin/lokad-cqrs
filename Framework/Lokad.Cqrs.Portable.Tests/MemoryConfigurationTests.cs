@@ -28,7 +28,7 @@ namespace Lokad.Cqrs
         #region Domain
 
         [DataContract]
-        public sealed class Message1 : IMessage
+        public sealed class Message1 : Define.Command
         {
             [DataMember] public readonly int Block;
 
@@ -38,26 +38,20 @@ namespace Lokad.Cqrs
             }
         }
 
-        public sealed class Consumer : IConsume<Message1>
+        public sealed class Consumer : Define.Handler<Message1>
         {
             readonly IMessageSender _sender;
-            readonly ManualResetEventSlim _slim;
 
-            public Consumer(IMessageSender sender, ManualResetEventSlim slim)
+            public Consumer(IMessageSender sender)
             {
                 _sender = sender;
-                _slim = slim;
             }
 
             public void Consume(Message1 message, MessageContext context)
             {
                 if (message.Block < 5)
                 {
-                    _sender.Send(new Message1(message.Block + 1));
-                }
-                else
-                {
-                    _slim.Set();
+                    _sender.SendOne(new Message1(message.Block + 1));
                 }
             }
         }
@@ -66,48 +60,44 @@ namespace Lokad.Cqrs
 
         static void TestConfiguration(Action<CloudEngineBuilder> config)
         {
-            var h = new ManualResetEventSlim();
 
             var events = new Subject<ISystemEvent>(Scheduler.TaskPool);
-
-
-            var engine = new CloudEngineBuilder()
-                .Advanced(cb => cb.RegisterInstance(h))
-                .DomainIs(d => d.WhereMessagesAre<Message1>())
+            var builder = new CloudEngineBuilder()
                 .EnlistObserver(events);
 
-            events
-                .OfType<EnvelopeAcked>()
-                .Subscribe(ma => Trace.WriteLine("Acked from" + ma.QueueName));
+            //events
+            //    .OfType<EnvelopeAcked>()
+            //    .BufferWithTimeOrCount(TimeSpan.FromSeconds(1), 10)
+            //    .Subscribe(li => Trace.WriteLine("Acked last second " + li.Count));
 
-            events
-                .OfType<EnvelopeAcked>()
-                .BufferWithTimeOrCount(TimeSpan.FromSeconds(1), 10)
-                .Subscribe(li => Trace.WriteLine("Acked last second " + li.Count));
+            //events
 
-            events
-                
-                .OfType<EnvelopeAcked>()
-                .WindowWithTime(TimeSpan.FromSeconds(1))
-                .SelectMany(x => x.Count())
-                .Where(i => i > 10)
-                .Throttle(TimeSpan.FromHours(1))
-                .Subscribe(c => Trace.WriteLine("More than 10 messages per sec: " + c));
-
+            //    .OfType<EnvelopeAcked>()
+            //    .WindowWithTime(TimeSpan.FromSeconds(1))
+            //    .SelectMany(x => x.Count())
+            //    .Where(i => i > 10)
+            //    .Throttle(TimeSpan.FromHours(1))
+            //    .Subscribe(c => Trace.WriteLine("More than 10 messages per sec: " + c));
 
 
 
             
 
-            config(engine);
+            config(builder);
 
-            using (var eng = engine.Build())
+            using (var engine = builder.Build())
             using (var t = new CancellationTokenSource())
+            using (events
+                .OfType<EnvelopeAcked>()
+                .Where(ea => ea.QueueName == "do")
+                .Skip(5)
+                .Subscribe(c => t.Cancel()))
             {
-                eng.Start(t.Token);
-                eng.Resolve<IMessageSender>().Send(new Message1(0));
-                var signaled = h.Wait(TimeSpan.FromSeconds(5), t.Token);
-                Assert.IsTrue(signaled);
+                engine.Start(t.Token);
+                engine.Resolve<IMessageSender>().SendOne(new Message1(0));
+                t.Token.WaitHandle.WaitOne(5000);
+                
+                Assert.IsTrue(t.IsCancellationRequested);
             }
         }
 
@@ -127,7 +117,7 @@ namespace Lokad.Cqrs
         {
             TestConfiguration(x => x.Memory(m =>
                 {
-                    m.AddMemorySender("in");
+                    m.AddMemorySender("in", module => module.IdGeneratorForTests());
                     m.AddMemoryProcess("in");
                 }));
         }

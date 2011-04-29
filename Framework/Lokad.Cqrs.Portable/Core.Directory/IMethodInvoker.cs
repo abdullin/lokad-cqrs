@@ -2,6 +2,6 @@
 {
     public interface IMethodInvoker
     {
-        void InvokeConsume(object consumer, ImmutableMessageItem item, ImmutableMessageEnvelope envelope);
+        void InvokeConsume(object consumer, ImmutableMessage item, ImmutableEnvelope envelope);
     }
 }

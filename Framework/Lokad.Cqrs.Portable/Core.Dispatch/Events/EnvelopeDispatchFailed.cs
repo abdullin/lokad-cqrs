@@ -12,10 +12,10 @@ namespace Lokad.Cqrs.Core.Dispatch.Events
     public sealed class EnvelopeDispatchFailed : ISystemEvent
     {
         public Exception Exception { get; private set; }
-        public ImmutableMessageEnvelope Envelope { get; private set; }
+        public ImmutableEnvelope Envelope { get; private set; }
         public string QueueName { get; private set; }
 
-        public EnvelopeDispatchFailed(ImmutableMessageEnvelope envelope, string queueName, Exception exception)
+        public EnvelopeDispatchFailed(ImmutableEnvelope envelope, string queueName, Exception exception)
         {
             Exception = exception;
             Envelope = envelope;

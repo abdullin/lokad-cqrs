@@ -146,8 +146,8 @@
     <Compile Include="ISystemObserver.cs" />
     <Compile Include="Maybe.1.cs" />
     <Compile Include="Maybe.cs" />
-    <Compile Include="ImmutableMessageEnvelope.cs" />
-    <Compile Include="ImmutableMessageItem.cs" />
+    <Compile Include="ImmutableEnvelope.cs" />
+    <Compile Include="ImmutableMessage.cs" />
     <Compile Include="EnvelopeReference.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core.Serialization\DataSerializerWithDataContracts.cs" />

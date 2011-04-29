@@ -7,7 +7,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Autofac;
 using Autofac.Core;
 using Lokad.Cqrs.Core.Directory;
@@ -25,33 +28,28 @@ namespace Lokad.Cqrs.Build.Engine
     public class CloudEngineBuilder : BuildSyntaxHelper
     {
         readonly HashSet<IModule> _moduleEnlistments = new HashSet<IModule>();
+        
 
         bool IsEnlisted<TModule>() where TModule : IModule
         {
             return _moduleEnlistments.Count(x => x is TModule) > 0;
         }
 
-        public void Enlist<TModule>(Action<TModule> config) where TModule : IModule, new()
-        {
-            var m = new TModule();
-            config(m);
-            _moduleEnlistments.Add(m);
-        }
-
-        public void Enlist(IModule module)
+        public void EnlistModule(IModule module)
         {
             _moduleEnlistments.Add(module);
         }
-
 
         /// <summary>
         /// Configures the message domain for the instance of <see cref="CloudEngineHost"/>.
         /// </summary>
         /// <param name="config">configuration syntax.</param>
         /// <returns>same builder for inline multiple configuration statements</returns>
-        public CloudEngineBuilder DomainIs(Action<ModuleForMessageDirectory> config)
+        public CloudEngineBuilder Domain(Action<ModuleForMessageDirectory> config)
         {
-            Enlist(config);
+            var directory = new ModuleForMessageDirectory();
+            config(directory);
+            EnlistModule(directory);
             return this;
         }
 
@@ -67,13 +65,14 @@ namespace Lokad.Cqrs.Build.Engine
         {
             var m = new ModuleForSerialization();
             config(m);
-            Enlist(m);
+            EnlistModule(m);
             return this;
         }
 
+        
+
         public CloudEngineBuilder EnlistObserver(IObserver<ISystemEvent> observer)
         {
-
             Builder.RegisterInstance(observer);
             return this;
         }
@@ -91,6 +90,8 @@ namespace Lokad.Cqrs.Build.Engine
             Builder.RegisterModule(m);
             return this;
         }
+
+        public bool DisableDefaultObserver = false;
 
         /// <summary>
         /// Builds this <see cref="CloudEngineHost"/>.
@@ -111,7 +112,7 @@ namespace Lokad.Cqrs.Build.Engine
             // conditional registrations and defaults
             if (!IsEnlisted<ModuleForMessageDirectory>())
             {
-                DomainIs(m => m.InUserAssemblies());
+                Domain(m => m.InUserAssemblies());
             }
             if (!IsEnlisted<ModuleForSerialization>())
             {
@@ -134,18 +135,21 @@ namespace Lokad.Cqrs.Build.Engine
         void InnerSystemRegisterObservations()
         {
             Builder.RegisterType<ReactiveSystemObserverAdapter>().SingleInstance().As<ISystemObserver>();
-            Builder.RegisterCallback(ci =>
-                {
-                    var service = new TypedService(typeof(IObserver<ISystemEvent>));
-                    if (!ci.IsRegistered(service))
-                    {
-                        var builder = new ContainerBuilder();
-                        builder.RegisterType<ImmediateTracingObserver>()
-                            .As<IObserver<ISystemEvent>>()
-                            .SingleInstance();
-                        builder.Update(ci);
-                    }
-                });
+            if (!DisableDefaultObserver)
+            {
+                Builder.RegisterType<ImmediateTracingObserver>().As<IObserver<ISystemEvent>>().SingleInstance();
+            }
+
+            //Builder.RegisterCallback(ci =>
+            //    {
+            //        var service = new TypedService(typeof(IObserver<ISystemEvent>));
+            //        if (ci.IsRegistered(service)) return;
+            //        var builder = new ContainerBuilder();
+            //        builder.RegisterType<ImmediateTracingObserver>()
+            //            .As<IObserver<ISystemEvent>>()
+            //            .SingleInstance();
+            //        builder.Update(ci);
+            //    });
         }
     }
 }

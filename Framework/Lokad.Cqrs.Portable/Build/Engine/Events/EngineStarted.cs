@@ -18,7 +18,7 @@ namespace Lokad.Cqrs.Build.Engine.Events
 
         public override string ToString()
         {
-            return string.Format("Host started: {0}", string.Join(",", EngineProcesses));
+            return string.Format("Engine started: {0}", string.Join(",", EngineProcesses));
         }
     }
 }

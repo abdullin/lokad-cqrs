@@ -13,7 +13,7 @@ namespace Lokad.Cqrs.Core.Envelope
     public sealed class Play_all_for_DataContracts : When_envelope_is_serialized
     {
         readonly IEnvelopeStreamer _streamer = BuildStreamer(new EnvelopeSerializerWithDataContracts());
-        protected override ImmutableMessageEnvelope RoundtripViaSerializer(MessageEnvelopeBuilder builder)
+        protected override ImmutableEnvelope RoundtripViaSerializer(MessageEnvelopeBuilder builder)
         {
             var bytes = _streamer.SaveDataMessage(builder.Build());
             return _streamer.ReadDataMessage(bytes);

@@ -24,7 +24,7 @@ namespace Lokad.Cqrs.Core.Directory
         readonly ContainerBuilder _builder;
         MethodInvokerHint _hint;
 
-        Func<ImmutableMessageEnvelope, ImmutableMessageItem, object> _contextFactory;
+        Func<ImmutableEnvelope, ImmutableMessage, object> _contextFactory;
         Type _contextFactoryType;
 
         /// <summary>
@@ -34,12 +34,12 @@ namespace Lokad.Cqrs.Core.Directory
         {
             _builder = new ContainerBuilder();
 
-            InvocationHandlerBySample<IConsume<IMessage>>(a => a.Consume(null, null));
+            HandlerSample<IConsume<IMessage>>(a => a.Consume(null, null));
             ContextFactory((envelope, item) => new MessageContext(envelope.EnvelopeId, envelope.CreatedOn));
  
         }
 
-        public void ContextFactory<TResult>(Func<ImmutableMessageEnvelope,ImmutableMessageItem, TResult> result)
+        public void ContextFactory<TResult>(Func<ImmutableEnvelope,ImmutableMessage, TResult> result)
 		{
             _contextFactory = (envelope, item) => result(envelope, item);
             _contextFactoryType = typeof (TResult);
@@ -47,7 +47,7 @@ namespace Lokad.Cqrs.Core.Directory
 
 
 
-		public void InvocationHandlerBySample<THandler>(Expression<Action<THandler>> action)
+		public void HandlerSample<THandler>(Expression<Action<THandler>> action)
 		{
 			_hint = MethodInvokerHint.FromConsumerSample(action);
 		}
@@ -201,6 +201,7 @@ namespace Lokad.Cqrs.Core.Directory
                     throw new InvalidOperationException("Passed lambda returns object instance that is not assignable to: " + _hint.MessageContextType.Value);
                 }
             }
+            
             
 
             var handler = new MethodInvoker(_contextFactory, _hint);

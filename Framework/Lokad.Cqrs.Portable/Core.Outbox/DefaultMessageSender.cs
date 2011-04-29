@@ -27,32 +27,37 @@ namespace Lokad.Cqrs.Core.Outbox
             _idGenerator = idGenerator;
         }
 
-        public void Send(object message)
+        public void SendOne(object content)
         {
-            DelaySendBatch(default(TimeSpan), message);
+            InnerSendBatch(cb => { }, new[] {content});
         }
 
-        public void DelaySend(TimeSpan timeout, object message)
+        public void SendOne(object content, Action<MessageEnvelopeBuilder> configure)
         {
-            DelaySendBatch(timeout, message);
+            InnerSendBatch(configure, new[] {content});
         }
 
-        public void SendBatch(params object[] messageItems)
+
+        public void SendBatch(object[] content)
         {
-            DelaySendBatch(default(TimeSpan), messageItems);
+            InnerSendBatch(cb => { }, content);
         }
 
-        public void DelaySendBatch(TimeSpan timeout, params object[] messageItems)
+        public void SendBatch(object[] content, Action<MessageEnvelopeBuilder> builder)
         {
+            InnerSendBatch(builder, content);
+        }
+
+
+
+        void InnerSendBatch(Action<MessageEnvelopeBuilder> configure, object[] messageItems) {
             if (messageItems.Length == 0)
                 return;
 
             var id = _idGenerator();
             var builder = MessageEnvelopeBuilder.FromItems(id, messageItems);
-            if (timeout != default(TimeSpan))
-            {
-                builder.DelayBy(timeout);
-            }
+            
+            configure(builder);
             var envelope = builder.Build();
 
             if (Transaction.Current == null)

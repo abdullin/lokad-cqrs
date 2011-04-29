@@ -14,17 +14,17 @@ namespace Lokad.Cqrs
     /// <summary>
     /// Deserialized message representation
     /// </summary>
-    public class ImmutableMessageEnvelope
+    public class ImmutableEnvelope
     {
         public readonly string EnvelopeId;
-        public DateTimeOffset DeliverOn;
+        public readonly DateTimeOffset DeliverOn;
         public readonly DateTimeOffset CreatedOn;
         readonly IDictionary<string, object> _attributes = new Dictionary<string, object>();
         
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-        public readonly ImmutableMessageItem[] Items;
+        public readonly ImmutableMessage[] Items;
 
-        public ImmutableMessageEnvelope(string envelopeId, IDictionary<string, object> attributes, ImmutableMessageItem[] items,
+        public ImmutableEnvelope(string envelopeId, IDictionary<string, object> attributes, ImmutableMessage[] items,
             DateTimeOffset deliverOn, DateTimeOffset createdOn)
         {
             EnvelopeId = envelopeId;
@@ -34,7 +34,27 @@ namespace Lokad.Cqrs
             CreatedOn = createdOn;
         }
 
-        
+        public long GetAttributeNumber(string name, long defaultValue)
+        {
+            object value;
+            if (_attributes.TryGetValue(name, out value))
+            {
+                return (long) value;
+            }
+            return defaultValue;
+        }
+        public string GetAttributeString(string name, string defaultValue)
+        {
+            object value;
+            if (_attributes.TryGetValue(name, out value))
+            {
+                return (string)value;
+            }
+            return defaultValue;
+            
+        }
+
+
         public object GetAttribute(string name)
         {
             return _attributes[name];

@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -49,13 +50,14 @@ namespace Lokad.Cqrs.Build.Engine
 
             return Task.Factory.StartNew(() =>
                 {
+                    var watch = Stopwatch.StartNew();
                     try
                     {
                         Task.WaitAll(tasks, token);
                     }
                     catch(OperationCanceledException)
                     {}
-                    _observer.Notify(new EngineStopped());
+                    _observer.Notify(new EngineStopped(watch.Elapsed));
                 });
         }
 

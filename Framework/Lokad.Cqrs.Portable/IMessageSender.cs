@@ -6,6 +6,7 @@
 #endregion
 
 using System;
+using Lokad.Cqrs.Core.Envelope;
 
 namespace Lokad.Cqrs
 {
@@ -17,11 +18,13 @@ namespace Lokad.Cqrs
         /// <summary>
         /// Sends the specified messages to the designated recipient.
         /// </summary>
-        /// <param name="message">The message to send.</param>
-        void Send(object message);
+        /// <param name="content">The message to send.</param>
+        void SendOne(object content);
+        void SendOne(object content, Action<MessageEnvelopeBuilder> configure);
 
-        void DelaySend(TimeSpan timeout, object message);
-        void SendBatch(params object[] messageItems);
-        void DelaySendBatch(TimeSpan timeout, params object[] messageItems);
+
+        
+        void SendBatch(object[] content);
+        void SendBatch(object[] content, Action<MessageEnvelopeBuilder> builder);
     }
 }

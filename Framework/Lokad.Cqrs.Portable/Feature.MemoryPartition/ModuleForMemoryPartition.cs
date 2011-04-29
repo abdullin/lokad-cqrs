@@ -33,12 +33,18 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
             Dispatch<DispatchEventToMultipleConsumers>(x => { });
         }
 
-        public ModuleForMemoryPartition Dispatch<TDispatcher>(Action<TDispatcher> configure)
+        public void Dispatch<TDispatcher>(Action<TDispatcher> configure)
             where TDispatcher : class, ISingleThreadMessageDispatcher
         {
             _dispatcher = Tuple.Create(typeof (TDispatcher),
                 new Action<ISingleThreadMessageDispatcher>(d => configure((TDispatcher) d)));
-            return this;
+        
+        }
+
+        public void Dispatch<TDispatcher>() where TDispatcher : class, ISingleThreadMessageDispatcher
+        {
+            _dispatcher = Tuple.Create(typeof (TDispatcher),
+                new Action<ISingleThreadMessageDispatcher>(dispatcher => { }));
         }
 
         IEngineProcess BuildConsumingProcess(IComponentContext context)

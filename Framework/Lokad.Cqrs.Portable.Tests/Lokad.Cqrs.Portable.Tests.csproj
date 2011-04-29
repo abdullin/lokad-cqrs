@@ -73,6 +73,7 @@
     <Compile Include="Feature.StreamingStorage\Scenarios\When_deleting_item_in.cs" />
     <Compile Include="Feature.StreamingStorage\Scenarios\When_reading_item_in.cs" />
     <Compile Include="Feature.StreamingStorage\Scenarios\When_writing_item_in.cs" />
+    <Compile Include="Given_MessageContext_configuration.cs" />
     <Compile Include="MemoryConfigurationTests.cs" />
     <Compile Include="Given_MemoryConfig_When_sending_failure_messages.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

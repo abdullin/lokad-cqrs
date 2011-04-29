@@ -9,7 +9,7 @@ namespace Lokad.Cqrs.Core.Envelope
 
     public abstract class When_envelope_is_serialized
     {
-        protected abstract ImmutableMessageEnvelope RoundtripViaSerializer(MessageEnvelopeBuilder builder);
+        protected abstract ImmutableEnvelope RoundtripViaSerializer(MessageEnvelopeBuilder builder);
 
         protected static IEnvelopeStreamer BuildStreamer(IEnvelopeSerializer serializer)
         {
@@ -29,7 +29,7 @@ namespace Lokad.Cqrs.Core.Envelope
         {
             var time = DateTimeOffset.UtcNow;
             var builder = new MessageEnvelopeBuilder("my-id");
-            builder.Attributes["Custom"] = 1;
+            builder.AddNumber("Custom", 1);
             
 
             var envelope = RoundtripViaSerializer(builder);

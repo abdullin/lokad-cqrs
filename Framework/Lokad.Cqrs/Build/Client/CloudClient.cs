@@ -27,7 +27,7 @@ namespace Lokad.Cqrs.Build.Client
 
         public void SendMessage(object message)
         {
-            _client.Value.Send(message);
+            _client.Value.SendOne(message);
         }
 
         public TService Resolve<TService>()

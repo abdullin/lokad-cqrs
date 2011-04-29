@@ -12,10 +12,11 @@ using System.Diagnostics;
 namespace Lokad.Cqrs
 {
     //[DebuggerDisplay("{MappedType.Name} with {")]
-    public sealed class ImmutableMessageItem
+    public sealed class ImmutableMessage
     {
         public readonly Type MappedType;
         public readonly object Content;
+        public readonly int Index;
         readonly IDictionary<string, object> _attributes;
 
         public ICollection<KeyValuePair<string, object>> GetAllAttributes()
@@ -39,9 +40,10 @@ namespace Lokad.Cqrs
         }
 
 
-        public ImmutableMessageItem(Type mappedType, object content, IDictionary<string, object> attributes)
+        public ImmutableMessage(Type mappedType, object content, IDictionary<string, object> attributes, int index)
         {
             MappedType = mappedType;
+            Index = index;
             Content = content;
             _attributes = attributes;
         }

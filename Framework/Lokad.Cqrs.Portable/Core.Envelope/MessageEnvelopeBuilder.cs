@@ -13,10 +13,19 @@ namespace Lokad.Cqrs.Core.Envelope
     public sealed class MessageEnvelopeBuilder
     {
         public readonly string EnvelopeId;
-        public readonly IDictionary<string, object> Attributes = new Dictionary<string, object>();
+        internal readonly IDictionary<string, object> Attributes = new Dictionary<string, object>();
         DateTimeOffset _deliverOn;
 
         public readonly IList<MessageItemBuilder> Items = new List<MessageItemBuilder>();
+
+        public void AddNumber(string key, long number)
+        {
+            Attributes.Add(key, number);
+        }
+        public void AddString(string key, string value)
+        {
+            Attributes.Add(key, value);
+        }
 
         public MessageEnvelopeBuilder(string envelopeId)
         {
@@ -54,19 +63,19 @@ namespace Lokad.Cqrs.Core.Envelope
             return builder;
         }
 
-        public ImmutableMessageEnvelope Build()
+        public ImmutableEnvelope Build()
         {
             var attributes = new Dictionary<string, object>(Attributes);
-            var items = new ImmutableMessageItem[Items.Count];
+            var items = new ImmutableMessage[Items.Count];
 
             for (int i = 0; i < items.Length; i++)
             {
                 var save = Items[i];
                 var attribs = new Dictionary<string, object>(save.Attributes);
-                items[i] = new ImmutableMessageItem(save.MappedType, save.Content, attribs);
+                items[i] = new ImmutableMessage(save.MappedType, save.Content, attribs, i);
             }
             DateTimeOffset created = DateTimeOffset.UtcNow;
-            return new ImmutableMessageEnvelope(EnvelopeId, attributes, items, _deliverOn, created);
+            return new ImmutableEnvelope(EnvelopeId, attributes, items, _deliverOn, created);
         }
     }
 }

@@ -48,10 +48,18 @@ namespace Lokad.Cqrs.Core.Directory
         {
             if (string.IsNullOrEmpty(a.FullName))
                 return false;
-            if (a.FullName.StartsWith("System."))
-                return false;
-            if (a.FullName.StartsWith("Microsoft."))
-                return false;
+
+            var prefixes = new[]
+                {
+                    "System", "Microsoft", "nunit", "JetBrains", "Autofac", "mscorlib"
+                };
+
+            foreach (var prefix in prefixes)
+            {
+                if (a.FullName.StartsWith(prefix, StringComparison.InvariantCultureIgnoreCase))
+                    return false;
+            }
+
             return true;
         }
 

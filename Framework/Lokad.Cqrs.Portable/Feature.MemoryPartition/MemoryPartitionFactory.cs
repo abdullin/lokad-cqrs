@@ -16,8 +16,8 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
 {
     public sealed class MemoryPartitionFactory : IQueueWriterFactory, IEngineProcess
     {
-        readonly ConcurrentDictionary<string, BlockingCollection<ImmutableMessageEnvelope>> _delivery =
-            new ConcurrentDictionary<string, BlockingCollection<ImmutableMessageEnvelope>>();
+        readonly ConcurrentDictionary<string, BlockingCollection<ImmutableEnvelope>> _delivery =
+            new ConcurrentDictionary<string, BlockingCollection<ImmutableEnvelope>>();
 
         readonly ConcurrentDictionary<string, MemoryFutureList> _pending =
             new ConcurrentDictionary<string, MemoryFutureList>();
@@ -31,7 +31,7 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
                 return false;
             }
             
-            var queue = _delivery.GetOrAdd(queueName, s => new BlockingCollection<ImmutableMessageEnvelope>());
+            var queue = _delivery.GetOrAdd(queueName, s => new BlockingCollection<ImmutableEnvelope>());
             writer = new MemoryQueueWriter(queue);
             return true;
         }
@@ -39,7 +39,7 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
         public MemoryPartitionInbox GetMemoryInbox(string[] queueNames)
         {
             var queues = queueNames
-                .Select(n => _delivery.GetOrAdd(n, s => new BlockingCollection<ImmutableMessageEnvelope>()))
+                .Select(n => _delivery.GetOrAdd(n, s => new BlockingCollection<ImmutableEnvelope>()))
                 .ToArray();
 
             var pending = queueNames
@@ -65,11 +65,11 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
                     {
                         foreach (var list in _pending)
                         {
-                            ImmutableMessageEnvelope envelope;
+                            ImmutableEnvelope envelope;
                             while (list.Value.TakePendingMessage(out envelope))
                             {
                                 _delivery
-                                    .GetOrAdd(list.Key, n => new BlockingCollection<ImmutableMessageEnvelope>())
+                                    .GetOrAdd(list.Key, n => new BlockingCollection<ImmutableEnvelope>())
                                     .Add(envelope);
                             }
                         }

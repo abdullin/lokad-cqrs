@@ -60,7 +60,7 @@ namespace Lokad.Cqrs
 
         protected void SendString(string data)
         {
-            Sender.Send(new StringCommand {Data = data});
+            Sender.SendOne(new StringCommand {Data = data});
         }
 
         [SetUp]
@@ -115,7 +115,7 @@ namespace Lokad.Cqrs
 
             var builder = new CloudEngineBuilder()
                 .EnlistObserver(_events)
-                .DomainIs(d => d
+                .Domain(d => d
                     .WhereMessages(t => identifyNested.Contains(t))
                     .InCurrentAssembly());
 

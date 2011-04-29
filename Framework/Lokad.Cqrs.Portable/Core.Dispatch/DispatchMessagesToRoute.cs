@@ -19,7 +19,7 @@ namespace Lokad.Cqrs.Core.Dispatch
     public sealed class DispatchMessagesToRoute : ISingleThreadMessageDispatcher
     {
         readonly IEnumerable<IQueueWriterFactory> _queueFactory;
-        Func<ImmutableMessageEnvelope, string> _routerRule;
+        Func<ImmutableEnvelope, string> _routerRule;
 
         public DispatchMessagesToRoute(IEnumerable<IQueueWriterFactory> queueFactory)
         {
@@ -28,7 +28,7 @@ namespace Lokad.Cqrs.Core.Dispatch
         }
 
 
-        public void DispatchMessage(ImmutableMessageEnvelope message)
+        public void DispatchMessage(ImmutableEnvelope message)
         {
             var route = _routerRule(message);
 
@@ -68,7 +68,7 @@ namespace Lokad.Cqrs.Core.Dispatch
                 throw new InvalidOperationException(string.Format("Route '{0}' was not handled by any single dispatcher. Did you want to send to 'memory:null' instead?", route));
         }
 
-        public void SpecifyRouter(Func<ImmutableMessageEnvelope, string> router)
+        public void SpecifyRouter(Func<ImmutableEnvelope, string> router)
         {
             _routerRule = router;
         }
