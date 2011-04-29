@@ -12,7 +12,6 @@ using Autofac;
 using Autofac.Core;
 using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Dispatch;
-using Lokad.Cqrs.Core.Outbox;
 using Lokad.Cqrs.Core.Serialization;
 using Lokad.Cqrs.Feature.Logging;
 
@@ -25,7 +24,7 @@ namespace Lokad.Cqrs.Build.Engine
     /// </summary>
     public class CloudEngineBuilder : BuildSyntaxHelper
     {
-        HashSet<IModule> _moduleEnlistments = new HashSet<IModule>();
+        readonly HashSet<IModule> _moduleEnlistments = new HashSet<IModule>();
 
         bool IsEnlisted<TModule>() where TModule : IModule
         {
@@ -45,24 +44,6 @@ namespace Lokad.Cqrs.Build.Engine
         }
 
 
-      
-
-        public CloudEngineBuilder RegisterSystemObserver(ISystemObserver observer)
-        {
-            Builder.RegisterInstance(observer);
-            return this;
-        }
-
-        public CloudEngineBuilder RegisterSystemObserver<TObserver>() where TObserver : ISystemObserver
-        {
-            Builder.RegisterType<TObserver>().SingleInstance().As<ISystemObserver>();
-            return this;
-        }
-
-
-     
-
-
         /// <summary>
         /// Configures the message domain for the instance of <see cref="CloudEngineHost"/>.
         /// </summary>
@@ -74,7 +55,13 @@ namespace Lokad.Cqrs.Build.Engine
             return this;
         }
 
-        public readonly ContainerBuilder Builder = new ContainerBuilder();
+        protected readonly ContainerBuilder Builder = new ContainerBuilder();
+
+        public CloudEngineBuilder Advanced(Action<ContainerBuilder> build)
+        {
+            build(Builder);
+            return this;
+        }
 
         public CloudEngineBuilder Serialization(Action<ModuleForSerialization> config)
         {
@@ -83,9 +70,17 @@ namespace Lokad.Cqrs.Build.Engine
             Enlist(m);
             return this;
         }
-        public CloudEngineBuilder RegisterInstance<T>(T instance) where T : class
+
+        public CloudEngineBuilder EnlistObserver(IObserver<ISystemEvent> observer)
         {
-            Builder.RegisterInstance(instance);
+
+            Builder.RegisterInstance(observer);
+            return this;
+        }
+
+        public CloudEngineBuilder EnlistObserver<TObserver>() where TObserver : IObserver<ISystemEvent>
+        {
+            Builder.RegisterType<TObserver>().As<IObserver<ISystemEvent>>().SingleInstance();
             return this;
         }
 
@@ -105,7 +100,7 @@ namespace Lokad.Cqrs.Build.Engine
         {
             // nonconditional registrations
             // System presets
-            RegisterSystemObserver<DefaultSystemObserver>();
+            InnerSystemRegisterObservations();
 
             Builder.RegisterType<DispatcherProcess>();
             Builder.RegisterType<MessageDuplicationManager>().SingleInstance();
@@ -124,16 +119,33 @@ namespace Lokad.Cqrs.Build.Engine
             }
 
 
-
             foreach (var module in _moduleEnlistments)
             {
                 Builder.RegisterModule(module);
             }
 
+
             var container = Builder.Build();
             var host = container.Resolve<CloudEngineHost>(TypedParameter.From(container));
             host.Initialize();
             return host;
+        }
+
+        void InnerSystemRegisterObservations()
+        {
+            Builder.RegisterType<ReactiveSystemObserverAdapter>().SingleInstance().As<ISystemObserver>();
+            Builder.RegisterCallback(ci =>
+                {
+                    var service = new TypedService(typeof(IObserver<ISystemEvent>));
+                    if (!ci.IsRegistered(service))
+                    {
+                        var builder = new ContainerBuilder();
+                        builder.RegisterType<ImmediateTracingObserver>()
+                            .As<IObserver<ISystemEvent>>()
+                            .SingleInstance();
+                        builder.Update(ci);
+                    }
+                });
         }
     }
 }

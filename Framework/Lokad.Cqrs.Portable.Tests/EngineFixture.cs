@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading;
+using Autofac;
 using Lokad.Cqrs.Build.Engine;
 using Lokad.Cqrs.Core.Directory.Default;
 using NUnit.Framework;
@@ -49,7 +50,7 @@ namespace Lokad.Cqrs
 
         protected void EnlistHandler(Action<string> data)
         {
-            _configureForTest += builder => builder.RegisterInstance(data);
+            _configureForTest += builder => builder.Advanced(cb => cb.RegisterInstance(data));
         }
 
         protected void EnlistFixtureConfig(Action<CloudEngineBuilder> config)
@@ -113,7 +114,7 @@ namespace Lokad.Cqrs
                     .ToArray();
 
             var builder = new CloudEngineBuilder()
-                .RegisterInstance<IObserver<ISystemEvent>>(_events)
+                .EnlistObserver(_events)
                 .DomainIs(d => d
                     .WhereMessages(t => identifyNested.Contains(t))
                     .InCurrentAssembly());

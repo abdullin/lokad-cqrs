@@ -6,11 +6,17 @@
 #endregion
 
 using System;
+using System.Diagnostics;
+using System.Linq;
+using System.Collections.Generic;
+using System.Concurrency;
 using System.Runtime.Serialization;
 using System.Threading;
 using Lokad.Cqrs.Build.Engine;
 using Lokad.Cqrs.Core.Directory.Default;
+using Lokad.Cqrs.Core.Dispatch.Events;
 using NUnit.Framework;
+using Autofac;
 
 namespace Lokad.Cqrs
 {
@@ -62,9 +68,27 @@ namespace Lokad.Cqrs
         {
             var h = new ManualResetEventSlim();
 
+            var events = new Subject<ISystemEvent>(Scheduler.TaskPool);
+
+
             var engine = new CloudEngineBuilder()
-                .RegisterInstance(h)
-                .DomainIs(d => d.WhereMessagesAre<Message1>());
+                .Advanced(cb => cb.RegisterInstance(h))
+                .DomainIs(d => d.WhereMessagesAre<Message1>())
+                .EnlistObserver(events);
+
+            events
+                .OfType<MessageAcked>()
+                .Subscribe(ma => Trace.WriteLine("Acked from" + ma.QueueName));
+
+            events
+                .OfType<MessageAcked>()
+                .BufferWithTimeOrCount(TimeSpan.FromSeconds(1), 10)
+                .Subscribe(li => Trace.WriteLine("Acked last second " + li.Count));
+
+
+
+
+            
 
             config(engine);
 
@@ -83,7 +107,7 @@ namespace Lokad.Cqrs
         {
             TestConfiguration(x => x.Memory(m =>
                 {
-                    m.AddMemorySender("in");
+                    m.AddMemorySender("in",module => module.IdGeneratorForTests());
                     m.AddMemoryRouter("in", me => "memory:do");
                     m.AddMemoryProcess("do");
                 }));
