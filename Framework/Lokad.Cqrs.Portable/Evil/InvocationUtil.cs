@@ -29,7 +29,7 @@ namespace Lokad.Cqrs.Core.Evil
         /// </summary>
         /// <param name="e">The target invocation exception to unwrap.</param>
         /// <returns>inner exception</returns>
-        public static Exception Inner(Exception e)
+        public static Exception Inner(TargetInvocationException e)
         {
             if (e == null) throw new ArgumentNullException("e");
             InternalPreserveStackTraceMethod.Invoke(e.InnerException, new object[0]);

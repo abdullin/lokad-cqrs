@@ -80,7 +80,7 @@
     <Compile Include="Core.Dispatch\MessageDuplicationMemory.cs" />
     <Compile Include="Core.Envelope\MessageEnvelopeBuilder.cs" />
     <Compile Include="Core.Envelope\MessageItemBuilder.cs" />
-    <Compile Include="Core.Evil\InvocationUtil.cs" />
+    <Compile Include="Evil\InvocationUtil.cs" />
     <Compile Include="Core.Inbox\IPartitionInbox.cs" />
     <Compile Include="Core.Inbox\EnvelopeTransportContext.cs" />
     <Compile Include="Core.Envelope\EnvelopeSerializerWithDataContracts.cs" />
