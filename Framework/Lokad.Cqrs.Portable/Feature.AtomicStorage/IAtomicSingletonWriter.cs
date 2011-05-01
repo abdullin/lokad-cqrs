@@ -20,7 +20,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         /// </summary>
         /// <param name="addFactory">The add factory.</param>
         /// <param name="updateFactory">The update factory (we are altering entity, hence the modifier and not Func).</param>
-        void AddOrUpdate(Func<TView> addFactory, Action<TView> updateFactory);
+        TView AddOrUpdate(Func<TView> addFactory, Action<TView> updateFactory);
 
         /// <summary>
         /// Deletes this view singleton.

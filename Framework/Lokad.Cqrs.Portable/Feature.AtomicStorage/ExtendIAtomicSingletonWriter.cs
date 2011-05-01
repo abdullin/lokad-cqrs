@@ -11,10 +11,10 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 {
     public static class ExtendIAtomicSingletonWriter
     {
-        public static void EnforceAndUpdate<TView>(this IAtomicSingletonWriter<TView> self, Action<TView> update)
+        public static TView EnforceAndUpdate<TView>(this IAtomicSingletonWriter<TView> self, Action<TView> update)
             where TView : new()
         {
-            self.AddOrUpdate(() =>
+            return self.AddOrUpdate(() =>
                 {
                     var view = new TView();
                     update(view);
@@ -22,11 +22,11 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                 }, update);
         }
 
-        public static void EnforceAndUpdate<TKey, TView>(this IAtomicEntityWriter<TKey, TView> self, TKey key,
+        public static TView EnforceAndUpdate<TKey, TView>(this IAtomicEntityWriter<TKey, TView> self, TKey key,
             Action<TView> update)
             where TView : new()
         {
-            self.AddOrUpdate(key, () =>
+            return self.AddOrUpdate(key, () =>
                 {
                     var view = new TView();
                     update(view);

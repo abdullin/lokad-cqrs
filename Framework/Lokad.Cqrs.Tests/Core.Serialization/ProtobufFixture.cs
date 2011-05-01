@@ -36,6 +36,7 @@ namespace Lokad.Cqrs.Core.Serialization
 
         protected T RoundTrip<T>(T item, Type legacy)
         {
+            //Dict.A
             var formatter = GetFormatter(typeof (T));
             var via = GetFormatter(legacy);
 

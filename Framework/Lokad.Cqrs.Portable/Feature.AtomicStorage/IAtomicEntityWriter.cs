@@ -22,7 +22,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         /// <param name="key">The key.</param>
         /// <param name="addFactory">The add factory.</param>
         /// <param name="update">The update function.</param>
-        void AddOrUpdate(TKey key, Func<TEntity> addFactory, Action<TEntity> update);
+        TEntity AddOrUpdate(TKey key, Func<TEntity> addFactory, Action<TEntity> update);
 
         /// <summary>
         /// Adds the new view instance or updates it, if the instance already exists.
@@ -30,7 +30,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         /// <param name="key">The key.</param>
         /// <param name="newView">The new view.</param>
         /// <param name="update">The update function.</param>
-        void AddOrUpdate(TKey key, TEntity newView, Action<TEntity> update);
+        TEntity AddOrUpdate(TKey key, TEntity newView, Action<TEntity> update);
 
         /// <summary>
         /// Updates the view or throws exception, if it does not exist.

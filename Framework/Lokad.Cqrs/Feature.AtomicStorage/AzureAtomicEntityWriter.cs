@@ -49,7 +49,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             return Get(key).ExposeException("Failed to load '{0}' with key '{1}'.", typeof (TView).Name, key);
         }
 
-        public void AddOrUpdate(TKey key, Func<TView> addViewFactory, Action<TView> updateViewFactory)
+        public TView AddOrUpdate(TKey key, Func<TView> addViewFactory, Action<TView> updateViewFactory)
         {
             var blob = _container.GetBlobReference(ComposeName(key));
 
@@ -66,11 +66,12 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             }
 
             blob.UploadText(_convention.Serialize(view));
+            return view;
         }
 
-        public void AddOrUpdate(TKey key, TView newView, Action<TView> updateViewFactory)
+        public TView AddOrUpdate(TKey key, TView newView, Action<TView> updateViewFactory)
         {
-            AddOrUpdate(key, () => newView, updateViewFactory);
+            return AddOrUpdate(key, () => newView, updateViewFactory);
         }
 
         public void UpdateOrThrow(TKey key, Action<TView> change)

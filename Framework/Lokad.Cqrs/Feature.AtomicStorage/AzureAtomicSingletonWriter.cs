@@ -31,7 +31,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         }
 
 
-        public void AddOrUpdate(Func<TView> addFactory, Action<TView> updateFactory)
+        public TView AddOrUpdate(Func<TView> addFactory, Action<TView> updateFactory)
         {
             var blob = GetBlob();
 
@@ -48,6 +48,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             }
 
             blob.UploadText(_strategy.Serialize(view));
+            return view;
         }
 
         public void Delete()
