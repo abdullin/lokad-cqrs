@@ -40,8 +40,11 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                 .ToSet();
 
             folders.Add(_strategy.GetFolderForSingleton());
+
+            
             folders
                 .AsParallel()
+                .WithDegreeOfParallelism(folders.Count)
                 .ForAll(t => _client.GetContainerReference(t).CreateIfNotExist());
         }
 
