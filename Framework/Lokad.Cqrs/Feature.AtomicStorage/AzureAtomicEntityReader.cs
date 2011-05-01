@@ -17,7 +17,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
     /// <typeparam name="TView">The type of the view.</typeparam>
     public sealed class AzureAtomicEntityReader<TKey, TView> :
         IAtomicEntityReader<TKey, TView>
-        where TView : IAtomicEntity<TKey>
+        //where TView : IAtomicEntity<TKey>
     {
         readonly CloudBlobContainer _container;
         readonly IAzureAtomicStorageStrategy _strategy;

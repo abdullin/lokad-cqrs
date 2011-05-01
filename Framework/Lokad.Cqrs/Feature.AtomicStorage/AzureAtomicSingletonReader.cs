@@ -11,7 +11,6 @@ using Microsoft.WindowsAzure.StorageClient;
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
     public sealed class AzureAtomicSingletonReader<TView> : IAtomicSingletonReader<TView>
-        where TView : IAtomicSingleton
     {
         readonly CloudBlobClient _client;
         readonly IAzureAtomicStorageStrategy _strategy;

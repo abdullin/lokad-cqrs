@@ -12,7 +12,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
     /// Strongly-typed reader for the view singletons.
     /// </summary>
     /// <typeparam name="TSingleton">The type of the view.</typeparam>
-    public interface IAtomicSingletonReader<TSingleton> where TSingleton : IAtomicSingleton
+    public interface IAtomicSingletonReader<TSingleton> 
     {
         /// <summary>
         /// Gets view singleton (if it's available).

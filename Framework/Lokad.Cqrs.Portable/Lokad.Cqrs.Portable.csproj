@@ -103,10 +103,8 @@
     <Compile Include="Define.cs" />
     <Compile Include="Feature.AtomicStorage\ExtendIAtomicSingletonReader.cs" />
     <Compile Include="Feature.AtomicStorage\ExtendIAtomicSingletonWriter.cs" />
-    <Compile Include="Feature.AtomicStorage\IAtomicEntity.cs" />
     <Compile Include="Feature.AtomicStorage\IAtomicEntityReader.cs" />
     <Compile Include="Feature.AtomicStorage\IAtomicEntityWriter.cs" />
-    <Compile Include="Feature.AtomicStorage\IAtomicSingleton.cs" />
     <Compile Include="Feature.AtomicStorage\IAtomicSingletonReader.cs" />
     <Compile Include="Feature.AtomicStorage\IAtomicSingletonWriter.cs" />
     <Compile Include="Core.Reactive\ReactiveSystemObserverAdapter.cs" />

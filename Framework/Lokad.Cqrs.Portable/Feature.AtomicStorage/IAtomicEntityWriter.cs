@@ -14,7 +14,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
     /// </summary>
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TEntity">The type of the view.</typeparam>
-    public interface IAtomicEntityWriter<TKey, TEntity> where TEntity : IAtomicEntity<TKey>
+    public interface IAtomicEntityWriter<TKey, TEntity> //where TEntity : IAtomicEntity<TKey>
     {
         /// <summary>
         /// Adds the new view instance or updates it, if the instance already exists.

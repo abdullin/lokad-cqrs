@@ -33,10 +33,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         {
             // initialize views
 
-            var types = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(a => a.GetExportedTypes())
-                .Where(t => typeof (IAtomicEntity).IsAssignableFrom(t))
-                .Where(t => !t.IsAbstract);
+            var types = _strategy.GetSerializableTypes();
 
             var folders = types
                 .Select(t => _strategy.GetFolderForEntity(t))

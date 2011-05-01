@@ -9,7 +9,7 @@ using System;
 
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
-    public interface IAzureAtomicStorageStrategy
+    public interface IAzureAtomicStorageStrategy 
     {
         string GetFolderForEntity(Type entityType);
         string GetFolderForSingleton();
@@ -17,5 +17,6 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         string GetNameForSingleton(Type singletonType);
         string Serialize<TEntity>(TEntity entity);
         TEntity Deserialize<TEntity>(string source);
+        Type[] GetSerializableTypes();
     }
 }

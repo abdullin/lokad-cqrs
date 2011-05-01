@@ -13,7 +13,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
     /// Strongly-typed view singleton writer
     /// </summary>
     /// <typeparam name="TView">The type of the view.</typeparam>
-    public interface IAtomicSingletonWriter<TView> where TView : IAtomicSingleton
+    public interface IAtomicSingletonWriter<TView> 
     {
         /// <summary>
         /// Adds new view singleton or updates an existing one.

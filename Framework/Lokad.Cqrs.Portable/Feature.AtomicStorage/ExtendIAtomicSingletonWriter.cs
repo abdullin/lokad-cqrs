@@ -12,7 +12,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
     public static class ExtendIAtomicSingletonWriter
     {
         public static void EnforceAndUpdate<TView>(this IAtomicSingletonWriter<TView> self, Action<TView> update)
-            where TView : IAtomicSingleton, new()
+            where TView : new()
         {
             self.AddOrUpdate(() =>
                 {
@@ -24,7 +24,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 
         public static void EnforceAndUpdate<TKey, TView>(this IAtomicEntityWriter<TKey, TView> self, TKey key,
             Action<TView> update)
-            where TView : IAtomicEntity<TKey>, new()
+            where TView : new()
         {
             self.AddOrUpdate(key, () =>
                 {
