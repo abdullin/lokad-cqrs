@@ -29,9 +29,9 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 
         public AzureAtomicEntityReader(CloudBlobClient client, IAzureAtomicStorageStrategy strategy)
         {
-            var containerName = _strategy.GetFolderForEntity(typeof (TView));
-            _container = client.GetContainerReference(containerName);
             _strategy = strategy;
+            var containerName = strategy.GetFolderForEntity(typeof(TView));
+            _container = client.GetContainerReference(containerName);
         }
 
         public Maybe<TView> Get(TKey key)
