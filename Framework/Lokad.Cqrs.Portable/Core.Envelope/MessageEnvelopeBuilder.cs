@@ -51,6 +51,11 @@ namespace Lokad.Cqrs.Core.Envelope
             _deliverOnUtc = DateTime.UtcNow + span;
         }
 
+        public void DeliverOnUtc(DateTime deliveryDateUtc)
+        {
+            _deliverOnUtc = deliveryDateUtc;
+        }
+
         public static MessageEnvelopeBuilder FromItems(string envelopeId, params object[] items)
         {
             var builder = new MessageEnvelopeBuilder(envelopeId);
