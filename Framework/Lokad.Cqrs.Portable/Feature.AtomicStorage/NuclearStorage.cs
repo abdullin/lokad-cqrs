@@ -6,6 +6,7 @@
 #endregion
 
 using System;
+using System.ComponentModel;
 using System.Globalization;
 
 namespace Lokad.Cqrs.Feature.AtomicStorage
@@ -18,7 +19,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
     /// <remarks>
     /// If you use as a stand-alone, make sure to call <see cref="Initialize"/> before proceeding.
     /// </remarks>
-    public sealed class NuclearStorage
+    public sealed class NuclearStorage 
     {
         public readonly IAtomicStorageFactory Factory;
 
@@ -89,6 +90,19 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             return Factory.GetSingletonWriter<TSingleton>().UpdateOrAdd(update);
         }
 
+        public TSingleton AddOrUpdateSingleton<TSingleton>(Func<TSingleton> addFactory, Action<TSingleton> update) 
+        {
+            return Factory.GetSingletonWriter<TSingleton>().AddOrUpdate(addFactory, update);
+        }
+
+        
+
+        public TEntity UpdateOrAddEntity<TEntity>(object key, Action<TEntity> update, Func<TEntity> ifNone)
+        {
+            var id = KeyToString(key);
+            return Factory.GetEntityWriter<TEntity>().UpdateOrAdd(id, update, ifNone);
+        }
+
         public TSingleton GetOrNewSingleton<TSingleton>() where TSingleton : new()
         {
             return Factory.GetSingletonReader<TSingleton>().GetOrNew();
@@ -98,5 +112,30 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         {
             return Factory.GetSingletonReader<TSingleton>().Get();
         }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override string ToString()
+        {
+            return base.ToString();
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public new Type GetType()
+        {
+            return base.GetType();
+        }
+
+
     }
 }

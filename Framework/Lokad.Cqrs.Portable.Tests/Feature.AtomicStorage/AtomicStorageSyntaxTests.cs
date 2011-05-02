@@ -19,7 +19,15 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             storage.AddOrUpdateEntity(1, new Entity());
 
             storage.GetEntity<Entity>(1);
-            storage.GetEntity<Entity>(1, new Entity());
+            storage.UpdateOrAddEntity<Entity>(1, e => e.Do(), () => new Entity());
+            storage.UpdateOrThrowEntity<Entity>(1, e => e.Do());
+            storage.TryDeleteEntity<Entity>(1);
+
+            storage.AddOrUpdateSingleton(() => new Entity(), e => e.Do());
+
+            storage.UpdateOrAddSingleton()
+
+            storage.UpdateOrAddSingleton()
 
             //storage.UpdateOrAddEntity<Entity>(1, e => e.Do());
             //storage.TryDelete<Entity>(1);
