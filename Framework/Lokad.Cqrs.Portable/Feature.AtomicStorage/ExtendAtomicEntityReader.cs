@@ -2,7 +2,7 @@
 
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
-    public static class ExtendIAtomicEntityReader
+    public static class ExtendAtomicEntityReader
     {
         public static Maybe<TEntity> Get<TEntity>(this IAtomicEntityReader<TEntity> self, string key)
         {

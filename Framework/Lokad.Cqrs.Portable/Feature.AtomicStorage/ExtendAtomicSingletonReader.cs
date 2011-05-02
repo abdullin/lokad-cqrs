@@ -7,7 +7,7 @@
 
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
-    public static class ExtendIAtomicSingletons
+    public static class ExtendAtomicSingletonReader
     {
         public static TView GetOrNew<TView>(this IAtomicSingletonReader<TView> reader)
             where TView : new()

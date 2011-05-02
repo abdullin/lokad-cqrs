@@ -28,21 +28,6 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             _convention = convention;
         }
 
-        public Maybe<TEntity> Get(string key)
-        {
-            var blob = GetBlobReference(key);
-            string text;
-            try
-            {
-                text = blob.DownloadText();
-            }
-            catch (StorageClientException ex)
-            {
-                return Maybe<TEntity>.Empty;
-            }
-            return _convention.Deserialize<TEntity>(text);
-        }
-
         public TEntity AddOrUpdate(string key, Func<TEntity> addViewFactory, Func<TEntity,TEntity> updateViewFactory)
         {
             // TODO: implement proper locking and order
@@ -63,23 +48,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             return view;
         }
 
-        public TEntity AddOrUpdate(string key, Func<TEntity> addFactory, Action<TEntity> update)
-        {
-            return AddOrUpdate(key, addFactory, entity =>
-                {
-                    update(entity);
-                    return entity;
-                });
-        }
-
-        public TEntity AddOrUpdate(string key, TEntity newView, Action<TEntity> updateViewFactory)
-        {
-            return AddOrUpdate(key, () => newView, view =>
-                {
-                    updateViewFactory(view);
-                    return view;
-                });
-        }
+        
 
         public TEntity UpdateOrAdd(string key, Func<TEntity, TEntity> update, Func<TEntity> ifNone)
         {
@@ -102,61 +71,14 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             return entity;
         }
 
-        public TEntity UpdateOrAdd(string key, Action<TEntity> update, Func<TEntity> ifNone)
-        {
-            return UpdateOrAdd(key, entity =>
-                {
-                    update(entity);
-                    return entity;
-                }, ifNone);
-        }
 
-        public TEntity UpdateOrThrow(string key, Action<TEntity> change)
+        
+
+
+        public bool TryDelete(string key)
         {
             var blob = GetBlobReference(key);
-            string text;
-            try
-            {
-                text = blob.DownloadText();
-            }
-            catch (StorageClientException ex)
-            {
-                var error = string.Format("Failed to load view {0}-{1}", typeof (TEntity), key);
-                throw new InvalidOperationException(error, ex);
-            }
-            var view = _convention.Deserialize<TEntity>(text);
-            change(view);
-            blob.UploadText(_convention.Serialize(view));
-            return view;
-        }
-
-        public TEntity UpdateOrThrow(string key, Func<TEntity, TEntity> change)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool TryUpdate(string key, Action<TEntity> change)
-        {
-            var blob = GetBlobReference(key);
-            string downloadText;
-            try
-            {
-                downloadText = blob.DownloadText();
-            }
-            catch (StorageClientException e)
-            {
-                return false;
-            }
-            var view = _convention.Deserialize<TEntity>(downloadText);
-            change(view);
-            blob.UploadText(_convention.Serialize(view));
-            return true;
-        }
-
-        public void Delete(string key)
-        {
-            var blob = GetBlobReference(key);
-            blob.DeleteIfExists();
+            return blob.DeleteIfExists();
         }
 
         CloudBlob GetBlobReference(string key)

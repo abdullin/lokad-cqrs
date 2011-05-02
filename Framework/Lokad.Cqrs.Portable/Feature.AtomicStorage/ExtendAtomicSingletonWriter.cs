@@ -9,7 +9,7 @@ using System;
 
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
-    public static class ExtendIAtomicSingletonWriter
+    public static class ExtendAtomicSingletonWriter
     {
         public static TView EnforceAndUpdate<TView>(this IAtomicSingletonWriter<TView> self, Action<TView> update)
             where TView : new()

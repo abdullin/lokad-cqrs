@@ -6,7 +6,6 @@
 #endregion
 
 using System;
-using System.Collections.Concurrent;
 
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
@@ -17,16 +16,10 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
     public interface IAtomicEntityWriter<TEntity> //where TEntity : IAtomicEntity<TKey>
     {
         TEntity AddOrUpdate(string key, Func<TEntity> addFactory, Func<TEntity, TEntity> update);
-        TEntity AddOrUpdate(string key, Func<TEntity> addFactory, Action<TEntity> update);
-        TEntity AddOrUpdate(string key, TEntity newView, Action<TEntity> update);
+        
 
         TEntity UpdateOrAdd(string key, Func<TEntity, TEntity> update, Func<TEntity> ifNone);
-        TEntity UpdateOrAdd(string key, Action<TEntity> update, Func<TEntity> ifNone);
 
-
-        TEntity UpdateOrThrow(string key, Action<TEntity> change);
-        TEntity UpdateOrThrow(string key, Func<TEntity,TEntity> change);
-
-        void Delete(string key);
+        bool TryDelete(string key);
     }
 }

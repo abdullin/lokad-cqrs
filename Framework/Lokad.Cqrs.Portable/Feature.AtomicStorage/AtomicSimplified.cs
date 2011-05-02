@@ -27,9 +27,9 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             Factory = factory;
         }
 
-        public void Delete<TEntity>(object key)
+        public bool TryDelete<TEntity>(object key)
         {
-            Factory.GetEntityWriter<TEntity>().Delete(KeyToString(key));
+            return Factory.GetEntityWriter<TEntity>().TryDelete(KeyToString(key));
         }
 
         static string KeyToString(object key)
@@ -37,9 +37,9 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             return Convert.ToString(key, CultureInfo.InvariantCulture);
         }
 
-        public void DeleteSingleton<TEntity>()
+        public bool TryDeleteSingleton<TEntity>()
         {
-            Factory.GetSingletonWriter<TEntity>().TryDelete();
+            return Factory.GetSingletonWriter<TEntity>().TryDelete();
         }
 
         public TEntity Update<TEntity>(object key, Action<TEntity> update)

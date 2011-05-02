@@ -12,49 +12,24 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             return _entities.TryGetValue(key, out entity);
         }
 
-        public TEntity Load(string key)
-        {
-            throw new NotImplementedException();
-        }
 
         public TEntity AddOrUpdate(string key, Func<TEntity> addFactory, Func<TEntity, TEntity> update)
         {
-            throw new NotImplementedException();
+            return _entities.AddOrUpdate(key, s => addFactory(), (s1, entity) => update(entity));
         }
-
-        public TEntity AddOrUpdate(string key, Func<TEntity> addFactory, Action<TEntity> update)
-        {
-            throw new NotImplementedException();
-        }
-
-        public TEntity AddOrUpdate(string key, TEntity newView, Action<TEntity> update)
-        {
-            throw new NotImplementedException();
-        }
+       
 
         public TEntity UpdateOrAdd(string key, Func<TEntity, TEntity> update, Func<TEntity> ifNone)
         {
-            throw new NotImplementedException();
+            return _entities.AddOrUpdate(key, s => ifNone(), (s1, entity) => update(entity));
         }
 
-        public TEntity UpdateOrAdd(string key, Action<TEntity> update, Func<TEntity> ifNone)
-        {
-            throw new NotImplementedException();
-        }
+     
 
-        public TEntity UpdateOrThrow(string key, Action<TEntity> change)
+        public bool TryDelete(string key)
         {
-            throw new NotImplementedException();
-        }
-
-        public TEntity UpdateOrThrow(string key, Func<TEntity, TEntity> change)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Delete(string key)
-        {
-            throw new NotImplementedException();
+            TEntity value;
+            return _entities.TryRemove(key, out value);
         }
     }
 }
