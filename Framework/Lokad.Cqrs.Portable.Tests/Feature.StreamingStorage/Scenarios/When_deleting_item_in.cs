@@ -32,7 +32,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage.Scenarios
         public void Missing_item_and_failed_IfMatch_work()
         {
             TestContainer.Create();
-            TestItem.Delete(StorageCondition.IfMatch("some"));
+            TestItem.Delete(StreamingCondition.IfMatch("some"));
         }
 
         [Test]
@@ -40,7 +40,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage.Scenarios
         {
             TestContainer.Create();
             Write(TestItem, Guid.Empty);
-            TestItem.Delete(StorageCondition.IfMatch("random"));
+            TestItem.Delete(StreamingCondition.IfMatch("random"));
             TestItem.GetInfo().ShouldPass();
         }
 
@@ -49,7 +49,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage.Scenarios
         {
             TestContainer.Create();
             Write(TestItem, Guid.Empty);
-            TestItem.Delete(StorageCondition.IfMatch("*"));
+            TestItem.Delete(StreamingCondition.IfMatch("*"));
             TestItem.GetInfo().ShouldFail();
         }
 
@@ -58,7 +58,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage.Scenarios
         {
             TestContainer.Create();
             Write(TestItem, Guid.Empty);
-            TestItem.Delete(StorageCondition.IfNoneMatch("random"));
+            TestItem.Delete(StreamingCondition.IfNoneMatch("random"));
             TestItem.GetInfo().ShouldFail();
         }
     }

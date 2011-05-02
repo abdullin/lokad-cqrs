@@ -65,7 +65,7 @@
     <Compile Include="Feature.AtomicStorage\AzureAtomicSingletonReader.cs" />
     <Compile Include="Feature.AtomicStorage\AzureAtomicEntityReader.cs" />
     <Compile Include="Feature.AtomicStorage\AzureAtomicSingletonWriter.cs" />
-    <Compile Include="Feature.AtomicStorage\AzureAtomicStorageInitialization.cs" />
+    <Compile Include="Feature.AtomicStorage\AzureAtomicStorageFactory.cs" />
     <Compile Include="Feature.AtomicStorage\AzureAtomicStorageReaderModule.cs" />
     <Compile Include="Feature.AtomicStorage\AzureAtomicStorageWriterModule.cs" />
     <Compile Include="Core.Transport\MessagePrinter.cs" />

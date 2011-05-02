@@ -33,7 +33,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage.Scenarios
         {
             TestContainer.Create();
             Write(TestItem, Guid.Empty);
-            TestItem.GetInfo(StorageCondition.IfMatch("mismatch")).ShouldFail();
+            TestItem.GetInfo(StreamingCondition.IfMatch("mismatch")).ShouldFail();
         }
 
         [Test]
@@ -41,7 +41,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage.Scenarios
         {
             TestContainer.Create();
             Write(TestItem, Guid.Empty);
-            TestItem.GetInfo(StorageCondition.IfMatch("*")).ShouldPass();
+            TestItem.GetInfo(StreamingCondition.IfMatch("*")).ShouldPass();
         }
 
         [Test]
@@ -57,7 +57,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage.Scenarios
         {
             TestContainer.Create();
             Write(TestItem, Guid.Empty);
-            TestItem.GetInfo(StorageCondition.IfNoneMatch("never")).ShouldPass();
+            TestItem.GetInfo(StreamingCondition.IfNoneMatch("never")).ShouldPass();
         }
     }
 }

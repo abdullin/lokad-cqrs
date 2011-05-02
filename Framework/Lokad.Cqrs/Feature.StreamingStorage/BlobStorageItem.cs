@@ -36,7 +36,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         /// <param name="writer">The writer.</param>
         /// <param name="condition">The condition.</param>
         /// <param name="writeOptions">The write options.</param>
-        public long Write(Action<Stream> writer, StorageCondition condition, StorageWriteOptions writeOptions)
+        public long Write(Action<Stream> writer, StreamingCondition condition, StorageWriteOptions writeOptions)
         {
             try
             {
@@ -49,7 +49,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
                 switch (ex.ErrorCode)
                 {
                     case StorageErrorCode.ServiceIntegrityCheckFailed:
-                        throw StorageErrors.IntegrityFailure(this, ex);
+                        throw StreamingErrors.IntegrityFailure(this, ex);
                     default:
                         throw;
                 }
@@ -59,9 +59,9 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
                 switch (ex.ErrorCode)
                 {
                     case StorageErrorCode.ConditionFailed:
-                        throw StorageErrors.ConditionFailed(this, condition, ex);
+                        throw StreamingErrors.ConditionFailed(this, condition, ex);
                     case StorageErrorCode.ContainerNotFound:
-                        throw StorageErrors.ContainerNotFound(this, ex);
+                        throw StreamingErrors.ContainerNotFound(this, ex);
                     default:
                         throw;
                 }
@@ -76,7 +76,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         /// <exception cref="StorageItemNotFoundException">if the item does not exist.</exception>
         /// <exception cref="StorageContainerNotFoundException">if the container for the item does not exist</exception>
         /// <exception cref="StorageItemIntegrityException">when integrity check fails</exception>
-        public void ReadInto(ReaderDelegate reader, StorageCondition condition)
+        public void ReadInto(ReaderDelegate reader, StreamingCondition condition)
         {
             try
             {
@@ -85,28 +85,28 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
             }
             catch (StorageItemIntegrityException e)
             {
-                throw StorageErrors.IntegrityFailure(this, e);
+                throw StreamingErrors.IntegrityFailure(this, e);
             }
             catch (StorageClientException e)
             {
                 switch (e.ErrorCode)
                 {
                     case StorageErrorCode.ContainerNotFound:
-                        throw StorageErrors.ContainerNotFound(this, e);
+                        throw StreamingErrors.ContainerNotFound(this, e);
                     case StorageErrorCode.ResourceNotFound:
                     case StorageErrorCode.BlobNotFound:
-                        throw StorageErrors.ItemNotFound(this, e);
+                        throw StreamingErrors.ItemNotFound(this, e);
                     case StorageErrorCode.ConditionFailed:
-                        throw StorageErrors.ConditionFailed(this, condition, e);
+                        throw StreamingErrors.ConditionFailed(this, condition, e);
                     case StorageErrorCode.ServiceIntegrityCheckFailed:
-                        throw StorageErrors.IntegrityFailure(this, e);
+                        throw StreamingErrors.IntegrityFailure(this, e);
                     case StorageErrorCode.BadRequest:
                         switch (e.StatusCode)
                         {
                                 // for some reason Azure Storage happens to get here as well
                             case HttpStatusCode.PreconditionFailed:
                             case HttpStatusCode.NotModified:
-                                throw StorageErrors.ConditionFailed(this, condition, e);
+                                throw StreamingErrors.ConditionFailed(this, condition, e);
                             default:
                                 throw;
                         }
@@ -120,7 +120,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         /// Removes the item, ensuring that the specified condition is met.
         /// </summary>
         /// <param name="condition">The condition.</param>
-        public void Delete(StorageCondition condition)
+        public void Delete(StreamingCondition condition)
         {
             try
             {
@@ -132,7 +132,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
                 switch (ex.ErrorCode)
                 {
                     case StorageErrorCode.ContainerNotFound:
-                        throw StorageErrors.ContainerNotFound(this, ex);
+                        throw StreamingErrors.ContainerNotFound(this, ex);
                     case StorageErrorCode.BlobNotFound:
                     case StorageErrorCode.ConditionFailed:
                         return;
@@ -142,7 +142,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
             }
         }
 
-        public Maybe<StorageItemInfo> GetInfo(StorageCondition condition)
+        public Maybe<StorageItemInfo> GetInfo(StreamingCondition condition)
         {
             try
             {
@@ -172,8 +172,8 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         }
 
         public void CopyFrom(IStorageItem sourceItem,
-            StorageCondition condition,
-            StorageCondition copySourceCondition,
+            StreamingCondition condition,
+            StreamingCondition copySourceCondition,
             StorageWriteOptions writeOptions)
         {
             var item = sourceItem as BlobStorageItem;
@@ -189,7 +189,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
                     switch (e.ErrorCode)
                     {
                         case StorageErrorCode.BlobNotFound:
-                            throw StorageErrors.ItemNotFound(this, e);
+                            throw StreamingErrors.ItemNotFound(this, e);
                         default:
                             throw;
                     }
@@ -225,8 +225,8 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
             get { return _blob; }
         }
 
-        static BlobRequestOptions Map(StorageCondition condition,
-            StorageCondition copySourceAccessCondition = default(StorageCondition))
+        static BlobRequestOptions Map(StreamingCondition condition,
+            StreamingCondition copySourceAccessCondition = default(StreamingCondition))
         {
             if ((condition.Type == StorageConditionType.None) &&
                 (copySourceAccessCondition.Type == StorageConditionType.None))
@@ -239,7 +239,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
                 };
         }
 
-        static AccessCondition MapCondition(StorageCondition condition)
+        static AccessCondition MapCondition(StreamingCondition condition)
         {
             switch (condition.Type)
             {

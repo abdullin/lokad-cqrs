@@ -11,13 +11,13 @@ using System.Linq;
 
 namespace Lokad.Cqrs.Feature.StreamingStorage
 {
-    public struct StorageCondition
+    public struct StreamingCondition
     {
-        public static StorageCondition None = default(StorageCondition);
+        public static StreamingCondition None = default(StreamingCondition);
         readonly string _etag;
         readonly DateTime? _lastModifiedUtc;
 
-        public StorageCondition(StorageConditionType type, string eTag) : this()
+        public StreamingCondition(StorageConditionType type, string eTag) : this()
         {
             if (eTag == null) throw new ArgumentNullException("eTag");
             if (type == StorageConditionType.None) throw new ArgumentException("type");
@@ -27,7 +27,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
             _etag = eTag;
         }
 
-        public StorageCondition(StorageConditionType type, DateTime lastModifiedUtc)
+        public StreamingCondition(StorageConditionType type, DateTime lastModifiedUtc)
             : this()
         {
             if (type == StorageConditionType.None) throw new ArgumentException("type");
@@ -54,24 +54,24 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         /// </summary>
         /// <param name="tag">The tag to use in constructing this condition.</param>
         /// <returns>new storage condition</returns>
-        public static StorageCondition IfMatch(string tag)
+        public static StreamingCondition IfMatch(string tag)
         {
-            return new StorageCondition(StorageConditionType.IfMatch, tag);
+            return new StreamingCondition(StorageConditionType.IfMatch, tag);
         }
 
-        public static StorageCondition IfModifiedSince(DateTime lastModifiedUtc)
+        public static StreamingCondition IfModifiedSince(DateTime lastModifiedUtc)
         {
-            return new StorageCondition(StorageConditionType.IfModifiedSince, lastModifiedUtc);
+            return new StreamingCondition(StorageConditionType.IfModifiedSince, lastModifiedUtc);
         }
 
-        public static StorageCondition IfUnmodifiedSince(DateTime lastModifiedUtc)
+        public static StreamingCondition IfUnmodifiedSince(DateTime lastModifiedUtc)
         {
-            return new StorageCondition(StorageConditionType.IfUnmodifiedSince, lastModifiedUtc);
+            return new StreamingCondition(StorageConditionType.IfUnmodifiedSince, lastModifiedUtc);
         }
 
-        public static StorageCondition IfNoneMatch(string tag)
+        public static StreamingCondition IfNoneMatch(string tag)
         {
-            return new StorageCondition(StorageConditionType.IfNoneMatch, tag);
+            return new StreamingCondition(StorageConditionType.IfNoneMatch, tag);
         }
 
         public override string ToString()

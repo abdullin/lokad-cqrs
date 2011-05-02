@@ -22,7 +22,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                 }, update);
         }
 
-        public static TView EnforceAndUpdate<TKey, TView>(this IAtomicEntityWriter<TKey, TView> self, TKey key,
+        public static TView EnforceAndUpdate<TView>(this IAtomicEntityWriter<TView> self, string key,
             Action<TView> update)
             where TView : new()
         {
@@ -31,7 +31,11 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                     var view = new TView();
                     update(view);
                     return view;
-                }, update);
+                }, view1 =>
+                    {
+                        update(view1);
+                        return view1;
+                    });
         }
     }
 }

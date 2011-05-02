@@ -13,9 +13,9 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
     /// <summary>
     /// Helper class for throwing storage exceptions in a consistent way.
     /// </summary>
-    public static class StorageErrors
+    public static class StreamingErrors
     {
-        public static Exception ConditionFailed(IStorageItem item, StorageCondition condition, Exception inner = null)
+        public static Exception ConditionFailed(IStorageItem item, StreamingCondition condition, Exception inner = null)
         {
             var message = string.Format(CultureInfo.InvariantCulture, "Storage condition '{0}' failed for '{1}'",
                 condition,

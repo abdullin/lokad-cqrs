@@ -29,7 +29,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         /// <param name="options">The options.</param>
         /// <returns>number of bytes written</returns>
         /// <exception cref="StorageItemIntegrityException">when integrity check fails during the upload</exception>
-        long Write(Action<Stream> writer, StorageCondition condition = default(StorageCondition),
+        long Write(Action<Stream> writer, StreamingCondition condition = default(StreamingCondition),
             StorageWriteOptions options = default(StorageWriteOptions));
 
         /// <summary>
@@ -40,20 +40,20 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         /// <exception cref="StorageItemNotFoundException">if the item does not exist.</exception>
         /// <exception cref="StorageContainerNotFoundException">if the container for the item does not exist</exception>
         /// <exception cref="StorageItemIntegrityException">when integrity check fails</exception>
-        void ReadInto(ReaderDelegate reader, StorageCondition condition = default(StorageCondition));
+        void ReadInto(ReaderDelegate reader, StreamingCondition condition = default(StreamingCondition));
 
         /// <summary>
         /// Removes the item, ensuring that the specified condition is met.
         /// </summary>
         /// <param name="condition">The condition.</param>
-        void Delete(StorageCondition condition = default(StorageCondition));
+        void Delete(StreamingCondition condition = default(StreamingCondition));
 
         /// <summary>
         /// Gets the info about this item. It returns empty result if the item does not exist or does not match the condition
         /// </summary>
         /// <param name="condition">The condition.</param>
         /// <returns></returns>
-        Maybe<StorageItemInfo> GetInfo(StorageCondition condition = default(StorageCondition));
+        Maybe<StorageItemInfo> GetInfo(StreamingCondition condition = default(StreamingCondition));
 
         /// <summary>
         /// Creates this storage item from another.
@@ -65,8 +65,8 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         /// <exception cref="StorageItemNotFoundException">when source storage is not found</exception>
         /// <exception cref="StorageItemIntegrityException">when integrity check fails</exception>
         void CopyFrom(IStorageItem sourceItem,
-            StorageCondition condition = default(StorageCondition),
-            StorageCondition copySourceCondition = default(StorageCondition),
+            StreamingCondition condition = default(StreamingCondition),
+            StreamingCondition copySourceCondition = default(StreamingCondition),
             StorageWriteOptions options = default(StorageWriteOptions));
     }
 }

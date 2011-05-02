@@ -18,19 +18,19 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             _strategy = strategy;
         }
 
-
         protected override void Load(ContainerBuilder builder)
         {
+            // register ad
             builder
-                .RegisterGeneric(typeof (AzureAtomicEntityReader<,>))
-                .As(typeof (IAtomicEntityReader<,>))
+                .RegisterGeneric(typeof (AzureAtomicEntityReader<>))
+                .WithParameter(TypedParameter.From(_strategy))
+                .As(typeof (IAtomicEntityReader<>))
                 .SingleInstance();
             builder
                 .RegisterGeneric(typeof (AzureAtomicSingletonReader<>))
+                .WithParameter(TypedParameter.From(_strategy))
                 .As(typeof (IAtomicSingletonReader<>))
                 .SingleInstance();
-
-            builder.RegisterInstance(_strategy);
         }
     }
 }

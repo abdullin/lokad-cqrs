@@ -74,19 +74,19 @@ namespace Lokad.Cqrs.Feature.StreamingStorage.Scenarios
             Expect<StorageConditionFailedException>(action);
         }
 
-        protected void Write(IStorageItem storageItem, Guid g, StorageCondition condition = default(StorageCondition))
+        protected void Write(IStorageItem storageItem, Guid g, StreamingCondition condition = default(StreamingCondition))
         {
             storageItem.Write(stream => stream.Write(g.ToByteArray(), 0, 16), condition, WriteOptions);
         }
 
 
-        protected void TryToRead(IStorageItem item, StorageCondition condition = default(StorageCondition))
+        protected void TryToRead(IStorageItem item, StreamingCondition condition = default(StreamingCondition))
         {
             item.ReadInto((props, stream) => stream.Read(new byte[1], 0, 1), condition);
         }
 
         protected void ShouldHaveGuid(IStorageItem storageItem, Guid g,
-            StorageCondition condition = default(StorageCondition))
+            StreamingCondition condition = default(StreamingCondition))
         {
             var set = false;
             Guid actual = Guid.Empty;

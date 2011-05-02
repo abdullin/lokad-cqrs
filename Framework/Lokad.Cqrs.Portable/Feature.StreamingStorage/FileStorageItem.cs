@@ -37,7 +37,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
             _file = new FileInfo(filePath);
         }
 
-        bool Satisfy(StorageCondition condition)
+        bool Satisfy(StreamingCondition condition)
         {
             return GetUnconditionalInfo()
                 .Convert(s => new LocalStorageInfo(s.LastModifiedUtc, s.ETag))
@@ -53,7 +53,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         /// <param name="options">The options.</param>
         /// <returns>number of bytes written</returns>
         /// <exception cref="StorageItemIntegrityException">when integrity check fails during the upload</exception>
-        public long Write(Action<Stream> writer, StorageCondition condition, StorageWriteOptions options)
+        public long Write(Action<Stream> writer, StreamingCondition condition, StorageWriteOptions options)
         {
             Refresh();
 
@@ -77,7 +77,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         /// <exception cref="StorageItemNotFoundException">if the item does not exist.</exception>
         /// <exception cref="StorageContainerNotFoundException">if the container for the item does not exist</exception>
         /// <exception cref="StorageItemIntegrityException">when integrity check fails</exception>
-        public void ReadInto(ReaderDelegate reader, StorageCondition condition)
+        public void ReadInto(ReaderDelegate reader, StreamingCondition condition)
         {
             Refresh();
 
@@ -92,23 +92,23 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
             }
         }
 
-        void ThrowIfConditionFailed(StorageCondition condition)
+        void ThrowIfConditionFailed(StreamingCondition condition)
         {
             if (!Satisfy(condition))
-                throw StorageErrors.ConditionFailed(this, condition);
+                throw StreamingErrors.ConditionFailed(this, condition);
         }
 
         void ThrowIfItemNotFound()
         {
             if (!_file.Exists)
-                throw StorageErrors.ItemNotFound(this);
+                throw StreamingErrors.ItemNotFound(this);
         }
 
         /// <summary>
         /// Removes the item, ensuring that the specified condition is met.
         /// </summary>
         /// <param name="condition">The condition.</param>
-        public void Delete(StorageCondition condition)
+        public void Delete(StreamingCondition condition)
         {
             Refresh();
 
@@ -123,7 +123,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         /// </summary>
         /// <param name="condition">The condition.</param>
         /// <returns></returns>
-        public Maybe<StorageItemInfo> GetInfo(StorageCondition condition)
+        public Maybe<StorageItemInfo> GetInfo(StreamingCondition condition)
         {
             Refresh();
             //ThrowIfContainerNotFound();
@@ -155,7 +155,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         /// <param name="options">The options.</param>
         /// <exception cref="StorageItemNotFoundException">when source storage is not found</exception>
         /// <exception cref="StorageItemIntegrityException">when integrity check fails</exception>
-        public void CopyFrom(IStorageItem sourceItem, StorageCondition condition, StorageCondition copySourceCondition,
+        public void CopyFrom(IStorageItem sourceItem, StreamingCondition condition, StreamingCondition copySourceCondition,
             StorageWriteOptions options)
         {
             var item = sourceItem as FileStorageItem;
@@ -191,7 +191,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         void ThrowIfContainerNotFound()
         {
             if (!_file.Directory.Exists)
-                throw StorageErrors.ContainerNotFound(this);
+                throw StreamingErrors.ContainerNotFound(this);
         }
 
         /// <summary>

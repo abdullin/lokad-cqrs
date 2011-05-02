@@ -24,21 +24,21 @@ namespace Lokad.Cqrs.Feature.StreamingStorage.Scenarios
         [Test]
         public void Missing_container_and_failed_IfMatch_throw_item_not_found()
         {
-            ExpectContainerNotFound(() => Write(TestItem, Guid.Empty, StorageCondition.IfMatch("none")));
+            ExpectContainerNotFound(() => Write(TestItem, Guid.Empty, StreamingCondition.IfMatch("none")));
         }
 
         [Test]
         public void Missing_item_and_failed_IfMatch_throw_condition_failed()
         {
             TestContainer.Create();
-            ExpectConditionFailed(() => Write(TestItem, Guid.Empty, StorageCondition.IfMatch("none")));
+            ExpectConditionFailed(() => Write(TestItem, Guid.Empty, StreamingCondition.IfMatch("none")));
         }
 
         [Test]
         public void Missing_item_and_valid_IfNoneMatch_succeed()
         {
             TestContainer.Create();
-            Write(TestItem, Guid.Empty, StorageCondition.IfNoneMatch("none"));
+            Write(TestItem, Guid.Empty, StreamingCondition.IfNoneMatch("none"));
             ShouldHaveGuid(TestItem, Guid.Empty);
         }
 
@@ -48,7 +48,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage.Scenarios
         {
             TestContainer.Create();
 
-            ExpectConditionFailed(() => Write(TestItem, Guid.Empty, StorageCondition.IfMatch("tag")));
+            ExpectConditionFailed(() => Write(TestItem, Guid.Empty, StreamingCondition.IfMatch("tag")));
         }
 
 
@@ -63,7 +63,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage.Scenarios
         public void Conditional_append_works()
         {
             TestContainer.Create();
-            Write(TestItem, Guid.Empty, StorageCondition.IfNoneMatch("tag"));
+            Write(TestItem, Guid.Empty, StreamingCondition.IfNoneMatch("tag"));
         }
 
         [Test]

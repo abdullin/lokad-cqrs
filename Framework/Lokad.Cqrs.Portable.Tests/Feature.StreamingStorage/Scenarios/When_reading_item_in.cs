@@ -36,7 +36,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage.Scenarios
             TestContainer.Create();
             Write(TestItem, Guid.Empty);
 
-            ExpectConditionFailed(() => TryToRead(TestItem, StorageCondition.IfMatch("asd")));
+            ExpectConditionFailed(() => TryToRead(TestItem, StreamingCondition.IfMatch("asd")));
         }
 
         [Test]
@@ -44,7 +44,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage.Scenarios
         {
             TestContainer.Create();
             Write(TestItem, Guid.Empty);
-            ExpectConditionFailed(() => TryToRead(TestItem, StorageCondition.IfUnmodifiedSince(DateTime.MinValue)));
+            ExpectConditionFailed(() => TryToRead(TestItem, StreamingCondition.IfUnmodifiedSince(DateTime.MinValue)));
         }
 
         [Test]
@@ -55,32 +55,32 @@ namespace Lokad.Cqrs.Feature.StreamingStorage.Scenarios
             var info = TestItem.GetInfo().Value.LastModifiedUtc;
 
             Thread.Sleep(TimeSpan.FromMilliseconds(500));
-            ExpectConditionFailed(() => TryToRead(TestItem, StorageCondition.IfModifiedSince(info)));
+            ExpectConditionFailed(() => TryToRead(TestItem, StreamingCondition.IfModifiedSince(info)));
         }
 
 
         [Test]
         public void Missing_container_and_IfMatch_throw_container_not_found()
         {
-            ExpectContainerNotFound(() => TryToRead(TestItem, StorageCondition.IfMatch("mismatch")));
+            ExpectContainerNotFound(() => TryToRead(TestItem, StreamingCondition.IfMatch("mismatch")));
         }
 
         [Test]
         public void Missing_container_and_IfNoneMatch_throw_condition_failed()
         {
-            ExpectContainerNotFound(() => TryToRead(TestItem, StorageCondition.IfNoneMatch("mismatch")));
+            ExpectContainerNotFound(() => TryToRead(TestItem, StreamingCondition.IfNoneMatch("mismatch")));
         }
 
         [Test]
         public void Missing_container_and_IfUnmodifiedSince_throw_container_not_found()
         {
-            ExpectContainerNotFound(() => TryToRead(TestItem, StorageCondition.IfUnmodifiedSince(DateTime.MinValue)));
+            ExpectContainerNotFound(() => TryToRead(TestItem, StreamingCondition.IfUnmodifiedSince(DateTime.MinValue)));
         }
 
         [Test]
         public void Missing_container_and_IfModifiedSince_throw_container_not_found()
         {
-            ExpectContainerNotFound(() => TryToRead(TestItem, StorageCondition.IfModifiedSince(DateTime.MinValue)));
+            ExpectContainerNotFound(() => TryToRead(TestItem, StreamingCondition.IfModifiedSince(DateTime.MinValue)));
         }
 
 
@@ -88,21 +88,21 @@ namespace Lokad.Cqrs.Feature.StreamingStorage.Scenarios
         public void Missing_item_and_IfUnmodifiedSince_throw_item_not_found()
         {
             TestContainer.Create();
-            ExpectItemNotFound(() => TryToRead(TestItem, StorageCondition.IfUnmodifiedSince(DateTime.MinValue)));
+            ExpectItemNotFound(() => TryToRead(TestItem, StreamingCondition.IfUnmodifiedSince(DateTime.MinValue)));
         }
 
         [Test]
         public void Missing_item_and_IfNoneMatch_throw_item_not_found()
         {
             TestContainer.Create();
-            ExpectItemNotFound(() => TryToRead(TestItem, StorageCondition.IfNoneMatch("mismatch")));
+            ExpectItemNotFound(() => TryToRead(TestItem, StreamingCondition.IfNoneMatch("mismatch")));
         }
 
         [Test]
         public void Missing_item_and_IfMatch_throw_item_not_found()
         {
             TestContainer.Create();
-            ExpectItemNotFound(() => TryToRead(TestItem, StorageCondition.IfMatch("mismatch")));
+            ExpectItemNotFound(() => TryToRead(TestItem, StreamingCondition.IfMatch("mismatch")));
         }
 
         [Test]
@@ -112,7 +112,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage.Scenarios
             var g = Guid.NewGuid();
 
             Write(TestItem, g);
-            ShouldHaveGuid(TestItem, g, StorageCondition.IfNoneMatch("none"));
+            ShouldHaveGuid(TestItem, g, StreamingCondition.IfNoneMatch("none"));
         }
 
         [Test]
@@ -124,7 +124,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage.Scenarios
             Write(TestItem, g);
 
             var tag = TestItem.GetInfo().Value.ETag;
-            ShouldHaveGuid(TestItem, g, StorageCondition.IfMatch(tag));
+            ShouldHaveGuid(TestItem, g, StreamingCondition.IfMatch(tag));
         }
 
         [Test]
@@ -134,7 +134,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage.Scenarios
             var g = Guid.NewGuid();
 
             Write(TestItem, g);
-            ShouldHaveGuid(TestItem, g, StorageCondition.IfMatch("*"));
+            ShouldHaveGuid(TestItem, g, StreamingCondition.IfMatch("*"));
         }
 
         [Test]
@@ -144,7 +144,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage.Scenarios
             var g = Guid.NewGuid();
             Write(TestItem, g);
             var tag = TestItem.GetInfo().Value.LastModifiedUtc;
-            ShouldHaveGuid(TestItem, g, StorageCondition.IfUnmodifiedSince(tag));
+            ShouldHaveGuid(TestItem, g, StreamingCondition.IfUnmodifiedSince(tag));
         }
 
 
@@ -155,7 +155,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage.Scenarios
             var g = Guid.NewGuid();
             Write(TestItem, g);
             var tag = TestItem.GetInfo().Value.LastModifiedUtc;
-            ShouldHaveGuid(TestItem, g, StorageCondition.IfModifiedSince(tag.AddDays(-1)));
+            ShouldHaveGuid(TestItem, g, StreamingCondition.IfModifiedSince(tag.AddDays(-1)));
         }
 
         [Test]

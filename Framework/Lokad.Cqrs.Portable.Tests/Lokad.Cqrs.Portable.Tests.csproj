@@ -50,6 +50,7 @@
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Feature.AtomicStorage\AtomicStorageSyntaxTests.cs" />
     <Compile Include="Core.Directory\MessageDirectoryFixture.cs" />
     <Compile Include="Core.Directory\When_activations_constrained_to_handler_type_with_type.cs" />
     <Compile Include="Core.Directory\When_activations_constrained_to_message_interface.cs" />

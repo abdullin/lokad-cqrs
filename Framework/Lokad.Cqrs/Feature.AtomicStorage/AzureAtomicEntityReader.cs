@@ -13,18 +13,17 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
     /// <summary>
     /// Azure implementation of the view reader/writer
     /// </summary>
-    /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TView">The type of the view.</typeparam>
-    public sealed class AzureAtomicEntityReader<TKey, TView> :
-        IAtomicEntityReader<TKey, TView>
+    public sealed class AzureAtomicEntityReader<TView> :
+        IAtomicEntityReader<TView>
         //where TView : IAtomicEntity<TKey>
     {
         readonly CloudBlobContainer _container;
         readonly IAzureAtomicStorageStrategy _strategy;
 
-        string ComposeName(TKey key)
+        string ComposeName(string key)
         {
-            return _strategy.GetNameForEntity(key);
+            return _strategy.GetNameForEntity(typeof(TView),key);
         }
 
         public AzureAtomicEntityReader(CloudBlobClient client, IAzureAtomicStorageStrategy strategy)
@@ -34,7 +33,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             _container = client.GetContainerReference(containerName);
         }
 
-        public Maybe<TView> Get(TKey key)
+        public Maybe<TView> Get(string key)
         {
             var blob = _container.GetBlobReference(ComposeName(key));
             string text;
@@ -53,7 +52,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             return _strategy.Deserialize<TView>(text);
         }
 
-        public TView Load(TKey key)
+        public TView Load(string key)
         {
             return Get(key).ExposeException("Failed to load '{0}' with key '{1}'.", typeof (TView).Name, key);
         }

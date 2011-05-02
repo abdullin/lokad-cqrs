@@ -13,25 +13,24 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
     /// <summary>
     /// Azure implementation of the view reader/writer
     /// </summary>
-    /// <typeparam name="TKey">The type of the key.</typeparam>
-    /// <typeparam name="TView">The type of the view.</typeparam>
-    public sealed class AzureAtomicEntityWriter<TKey, TView> :
-        IAtomicEntityWriter<TKey, TView>
-        //where TView : IAtomicEntity<TKey>
+    /// <typeparam name="TEntity">The type of the view.</typeparam>
+    public sealed class AzureAtomicEntityWriter<TEntity> :
+        IAtomicEntityWriter<TEntity>
+        //where TEntity : IAtomicEntity<TKey>
     {
         readonly CloudBlobContainer _container;
         readonly IAzureAtomicStorageStrategy _convention;
 
         public AzureAtomicEntityWriter(CloudBlobClient client, IAzureAtomicStorageStrategy convention)
         {
-            var containerName = _convention.GetFolderForEntity(typeof (TView));
+            var containerName = _convention.GetFolderForEntity(typeof (TEntity));
             _container = client.GetContainerReference(containerName);
             _convention = convention;
         }
 
-        public Maybe<TView> Get(TKey key)
+        public Maybe<TEntity> Get(string key)
         {
-            var blob = _container.GetBlobReference(ComposeName(key));
+            var blob = GetBlobReference(key);
             string text;
             try
             {
@@ -39,26 +38,21 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             }
             catch (StorageClientException ex)
             {
-                return Maybe<TView>.Empty;
+                return Maybe<TEntity>.Empty;
             }
-            return _convention.Deserialize<TView>(text);
+            return _convention.Deserialize<TEntity>(text);
         }
 
-        public TView Load(TKey key)
+        public TEntity AddOrUpdate(string key, Func<TEntity> addViewFactory, Func<TEntity,TEntity> updateViewFactory)
         {
-            return Get(key).ExposeException("Failed to load '{0}' with key '{1}'.", typeof (TView).Name, key);
-        }
-
-        public TView AddOrUpdate(TKey key, Func<TView> addViewFactory, Action<TView> updateViewFactory)
-        {
-            var blob = _container.GetBlobReference(ComposeName(key));
-
-            TView view;
+            // TODO: implement proper locking and order
+            var blob = GetBlobReference(key);
+            TEntity view;
             try
             {
                 var downloadText = blob.DownloadText();
-                view = _convention.Deserialize<TView>(downloadText);
-                updateViewFactory(view);
+                view = _convention.Deserialize<TEntity>(downloadText);
+                view = updateViewFactory(view);
             }
             catch (StorageClientException ex)
             {
@@ -69,14 +63,57 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             return view;
         }
 
-        public TView AddOrUpdate(TKey key, TView newView, Action<TView> updateViewFactory)
+        public TEntity AddOrUpdate(string key, Func<TEntity> addFactory, Action<TEntity> update)
         {
-            return AddOrUpdate(key, () => newView, updateViewFactory);
+            return AddOrUpdate(key, addFactory, entity =>
+                {
+                    update(entity);
+                    return entity;
+                });
         }
 
-        public void UpdateOrThrow(TKey key, Action<TView> change)
+        public TEntity AddOrUpdate(string key, TEntity newView, Action<TEntity> updateViewFactory)
         {
-            var blob = _container.GetBlobReference(ComposeName(key));
+            return AddOrUpdate(key, () => newView, view =>
+                {
+                    updateViewFactory(view);
+                    return view;
+                });
+        }
+
+        public TEntity UpdateOrAdd(string key, Func<TEntity, TEntity> update, Func<TEntity> ifNone)
+        {
+            // TODO: implement proper locking and order
+            var blob = GetBlobReference(key);
+            TEntity entity;
+            try
+            {
+                var text = blob.DownloadText();
+                var source = _convention.Deserialize<TEntity>(text);
+                entity = update(source);
+            }
+            catch (StorageClientException ex)
+            {
+                entity = ifNone();
+            }
+            
+
+            blob.UploadText(_convention.Serialize(entity));
+            return entity;
+        }
+
+        public TEntity UpdateOrAdd(string key, Action<TEntity> update, Func<TEntity> ifNone)
+        {
+            return UpdateOrAdd(key, entity =>
+                {
+                    update(entity);
+                    return entity;
+                }, ifNone);
+        }
+
+        public TEntity UpdateOrThrow(string key, Action<TEntity> change)
+        {
+            var blob = GetBlobReference(key);
             string text;
             try
             {
@@ -84,17 +121,23 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             }
             catch (StorageClientException ex)
             {
-                var error = string.Format("Failed to load view {0}-{1}", typeof (TView), key);
+                var error = string.Format("Failed to load view {0}-{1}", typeof (TEntity), key);
                 throw new InvalidOperationException(error, ex);
             }
-            var view = _convention.Deserialize<TView>(text);
+            var view = _convention.Deserialize<TEntity>(text);
             change(view);
             blob.UploadText(_convention.Serialize(view));
+            return view;
         }
 
-        public bool TryUpdate(TKey key, Action<TView> change)
+        public TEntity UpdateOrThrow(string key, Func<TEntity, TEntity> change)
         {
-            var blob = _container.GetBlobReference(ComposeName(key));
+            throw new NotImplementedException();
+        }
+
+        public bool TryUpdate(string key, Action<TEntity> change)
+        {
+            var blob = GetBlobReference(key);
             string downloadText;
             try
             {
@@ -104,21 +147,22 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             {
                 return false;
             }
-            var view = _convention.Deserialize<TView>(downloadText);
+            var view = _convention.Deserialize<TEntity>(downloadText);
             change(view);
             blob.UploadText(_convention.Serialize(view));
             return true;
         }
 
-        public void Delete(TKey key)
+        public void Delete(string key)
         {
-            var blob = _container.GetBlobReference(ComposeName(key));
+            var blob = GetBlobReference(key);
             blob.DeleteIfExists();
         }
 
-        string ComposeName(TKey key)
+        CloudBlob GetBlobReference(string key)
         {
-            return _convention.GetNameForEntity(key);
+            var name =  _convention.GetNameForEntity(typeof(TEntity), key);
+            return _container.GetBlobReference(name);
         }
     }
 }
