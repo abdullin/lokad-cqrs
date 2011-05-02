@@ -28,7 +28,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             _convention = convention;
         }
 
-        public TEntity AddOrUpdate(string key, Func<TEntity> addViewFactory, Func<TEntity,TEntity> updateViewFactory)
+        public TEntity AddOrUpdate(string key, Func<TEntity> addViewFactory, Func<TEntity,TEntity> updateViewFactory, AddOrUpdateHint hint)
         {
             // TODO: implement proper locking and order
             var blob = GetBlobReference(key);
@@ -47,32 +47,6 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             blob.UploadText(_convention.Serialize(view));
             return view;
         }
-
-        
-
-        public TEntity UpdateOrAdd(string key, Func<TEntity, TEntity> update, Func<TEntity> ifNone)
-        {
-            // TODO: implement proper locking and order
-            var blob = GetBlobReference(key);
-            TEntity entity;
-            try
-            {
-                var text = blob.DownloadText();
-                var source = _convention.Deserialize<TEntity>(text);
-                entity = update(source);
-            }
-            catch (StorageClientException ex)
-            {
-                entity = ifNone();
-            }
-            
-
-            blob.UploadText(_convention.Serialize(entity));
-            return entity;
-        }
-
-
-        
 
 
         public bool TryDelete(string key)

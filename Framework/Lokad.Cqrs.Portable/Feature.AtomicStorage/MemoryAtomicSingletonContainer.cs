@@ -33,40 +33,28 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             return false;
         }
 
-        public TEntity AddOrUpdate(Func<TEntity> addFactory, Func<TEntity, TEntity> update)
+        public TEntity AddOrUpdate(Func<TEntity> addFactory, Func<TEntity, TEntity> update, AddOrUpdateHint hint)
         {
             return (TEntity) _singletons.AddOrUpdate(_type, t => addFactory(), (type, o) => update((TEntity) o));
         }
 
-        public TEntity AddOrUpdate(Func<TEntity> addFactory, Action<TEntity> update)
+        public TEntity AddOrUpdate(Func<TEntity> addFactory, Action<TEntity> update, AddOrUpdateHint hint)
         {
             return AddOrUpdate(addFactory, entity =>
                 {
                     update(entity);
                     return entity;
-                });
-        }
-
-        public TEntity UpdateOrAdd(Func<TEntity, TEntity> update, Func<TEntity> ifNone)
-        {
-            // no difference
-            return AddOrUpdate(ifNone, update);
-        }
-
-        public TEntity UpdateOrAdd(Action<TEntity> update, Func<TEntity> ifNone)
-        {
-            // no difference
-            return AddOrUpdate(ifNone, update);
+                }, hint);
         }
 
         public TEntity UpdateOrThrow(Action<TEntity> update)
         {
-            return UpdateOrAdd(update, () => { throw new InvalidOperationException("Item expected to exist"); });
+            return AddOrUpdate(() => { throw new InvalidOperationException("Item expected to exist"); }, update, AddOrUpdateHint.ProbablyExists);
         }
 
         public TEntity UpdateOrThrow(Func<TEntity, TEntity> update)
         {
-            return UpdateOrAdd(update, () => { throw new InvalidOperationException("Item expected to exist"); });
+            return AddOrUpdate(() => { throw new InvalidOperationException("Item expected to exist"); }, update, AddOrUpdateHint.ProbablyExists);
         }
 
         public bool TryDelete()

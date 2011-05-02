@@ -69,38 +69,26 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             return Factory.GetEntityReader<TEntity>().TryGet(id, out entity);
         }
 
-        public TEntity AddOrUpdateEntity<TEntity>(object key, TEntity entity)
+        public TEntity AddOrUpdateEntity<TEntity>(object key, TEntity entity, AddOrUpdateHint hint = AddOrUpdateHint.ProbablyExists)
         {
             var id = KeyToString(key);
-            return Factory.GetEntityWriter<TEntity>().AddOrUpdate(id, () => entity, source => entity);
+            return Factory.GetEntityWriter<TEntity>().AddOrUpdate(id, () => entity, source => entity, hint);
         }
 
-        public TEntity AddOrUpdateEntity<TEntity>(object key, Func<TEntity> addFactory, Action<TEntity> update)
+        public TEntity AddOrUpdateEntity<TEntity>(object key, Func<TEntity> addFactory, Action<TEntity> update, AddOrUpdateHint hint = AddOrUpdateHint.ProbablyExists)
         {
             var id = KeyToString(key);
-            return Factory.GetEntityWriter<TEntity>().AddOrUpdate(id, addFactory, update);
-        }
-        public TSingleton UpdateOrAddSingleton<TSingleton>(TSingleton singleton)
-        {
-            return Factory.GetSingletonWriter<TSingleton>()
-                .UpdateOrAdd(s => singleton, () => singleton);
-        }
-        public TSingleton UpdateOrAddSingleton<TSingleton>(Action<TSingleton> update) where TSingleton:new()
-        {
-            return Factory.GetSingletonWriter<TSingleton>().UpdateOrAdd(update);
+            return Factory.GetEntityWriter<TEntity>().AddOrUpdate(id, addFactory, update, hint);
         }
 
-        public TSingleton AddOrUpdateSingleton<TSingleton>(Func<TSingleton> addFactory, Action<TSingleton> update) 
+        public TSingleton AddOrUpdateSingleton<TSingleton>(Func<TSingleton> addFactory, Action<TSingleton> update, AddOrUpdateHint hint = AddOrUpdateHint.ProbablyExists) 
         {
-            return Factory.GetSingletonWriter<TSingleton>().AddOrUpdate(addFactory, update);
+            return Factory.GetSingletonWriter<TSingleton>().AddOrUpdate(addFactory, update, hint);
         }
 
-        
-
-        public TEntity UpdateOrAddEntity<TEntity>(object key, Action<TEntity> update, Func<TEntity> ifNone)
+        public TSingleton AddOrUpdateSingleton<TSingleton>(Action<TSingleton> update, AddOrUpdateHint hint = AddOrUpdateHint.ProbablyExists) where TSingleton : new()
         {
-            var id = KeyToString(key);
-            return Factory.GetEntityWriter<TEntity>().UpdateOrAdd(id, update, ifNone);
+            return Factory.GetSingletonWriter<TSingleton>().AddOrUpdate(() => new TSingleton(), update, hint);
         }
 
         public TSingleton GetOrNewSingleton<TSingleton>() where TSingleton : new()

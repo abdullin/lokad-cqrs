@@ -17,17 +17,10 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         }
 
 
-        public TEntity AddOrUpdate(string key, Func<TEntity> addFactory, Func<TEntity, TEntity> update)
+        public TEntity AddOrUpdate(string key, Func<TEntity> addFactory, Func<TEntity, TEntity> update, AddOrUpdateHint hint)
         {
             return _entities.AddOrUpdate(key, s => addFactory(), (s1, entity) => update(entity));
         }
-       
-
-        public TEntity UpdateOrAdd(string key, Func<TEntity, TEntity> update, Func<TEntity> ifNone)
-        {
-            return _entities.AddOrUpdate(key, s => ifNone(), (s1, entity) => update(entity));
-        }
-
      
 
         public bool TryDelete(string key)

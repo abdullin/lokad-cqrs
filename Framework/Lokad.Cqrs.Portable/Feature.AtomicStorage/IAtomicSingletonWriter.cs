@@ -15,10 +15,8 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
     /// <typeparam name="TSingleton">The type of the view.</typeparam>
     public interface IAtomicSingletonWriter<TSingleton> 
     {
-        TSingleton AddOrUpdate(Func<TSingleton> addFactory, Func<TSingleton,TSingleton> update);
-        TSingleton AddOrUpdate(Func<TSingleton> addFactory, Action<TSingleton> update);
-        TSingleton UpdateOrAdd(Func<TSingleton, TSingleton> update, Func<TSingleton> ifNone);
-        TSingleton UpdateOrAdd(Action<TSingleton> update, Func<TSingleton> ifNone);
+        TSingleton AddOrUpdate(Func<TSingleton> addFactory, Func<TSingleton,TSingleton> update, AddOrUpdateHint hint = AddOrUpdateHint.ProbablyExists);
+        TSingleton AddOrUpdate(Func<TSingleton> addFactory, Action<TSingleton> update, AddOrUpdateHint hint = AddOrUpdateHint.ProbablyExists);
         TSingleton UpdateOrThrow(Action<TSingleton> update);
         TSingleton UpdateOrThrow(Func<TSingleton, TSingleton> update);
 
@@ -28,4 +26,9 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         bool TryDelete();
     }
 
+    public enum AddOrUpdateHint
+    {
+        ProbablyExists,
+        ProbablyDoesNotExist
+    }
 }

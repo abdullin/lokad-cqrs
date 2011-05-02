@@ -31,9 +31,9 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         }
 
 
-        public TView AddOrUpdate(Func<TView> addFactory, Func<TView,TView> updateFactory)
+        public TView AddOrUpdate(Func<TView> addFactory, Func<TView,TView> updateFactory, AddOrUpdateHint hint)
         {
-            // TODO: switch to etags and add first
+            // TODO: switch to etags and use hint
             var blob = GetBlob();
 
             TView view;
@@ -52,52 +52,25 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             return view;
         }
 
-        public TView AddOrUpdate(Func<TView> addFactory, Action<TView> update)
+        public TView AddOrUpdate(Func<TView> addFactory, Action<TView> update, AddOrUpdateHint hint)
         {
             return AddOrUpdate(addFactory, view =>
                 {
                     update(view);
                     return view;
-                });
+                }, hint);
         }
 
-        public TView UpdateOrAdd(Func<TView, TView> update, Func<TView> ifNone)
-        {
-            var blob = GetBlob();
-
-            TView view;
-            try
-            {
-                var downloadText = blob.DownloadText();
-                view = _strategy.Deserialize<TView>(downloadText);
-                view = update(view);
-            }
-            catch (StorageClientException ex)
-            {
-                view = ifNone();
-            }
-
-            blob.UploadText(_strategy.Serialize(view));
-            return view;
-        }
-
-        public TView UpdateOrAdd(Action<TView> update, Func<TView> ifNone)
-        {
-            return UpdateOrAdd(view =>
-                {
-                    update(view);
-                    return view;
-                }, ifNone);
-        }
+      
 
         public TView UpdateOrThrow(Action<TView> update)
         {
-            return UpdateOrAdd(update, () => { throw new InvalidOperationException("View not found"); });
+            return AddOrUpdate(() => { throw new InvalidOperationException("View not found"); }, update, AddOrUpdateHint.ProbablyExists);
         }
 
         public TView UpdateOrThrow(Func<TView, TView> update)
         {
-            return UpdateOrAdd(update, () => { throw new InvalidOperationException("View not found"); });
+            return AddOrUpdate(() => { throw new InvalidOperationException("View not found"); }, update, AddOrUpdateHint.ProbablyExists);
         }
 
         public bool TryDelete()
