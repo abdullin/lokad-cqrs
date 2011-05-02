@@ -25,7 +25,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         /// <summary>
         /// Deletes this view singleton.
         /// </summary>
-        void Delete();
+        bool TryDelete();
     }
 
 }

@@ -15,14 +15,10 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         /// Gets the view with the specified key.
         /// </summary>
         /// <param name="key">The key.</param>
-        /// <returns>view, if it exists</returns>
-        Maybe<TView> Get(string key);
-
-        /// <summary>
-        /// Gets the view, assuming it exists and throwing an exception overwise
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <returns>view</returns>
-        TView Load(string key);
+        /// <param name="view">The view.</param>
+        /// <returns>
+        /// true, if it exists
+        /// </returns>
+        bool TryGet(string key, out TView view);
     }
 }

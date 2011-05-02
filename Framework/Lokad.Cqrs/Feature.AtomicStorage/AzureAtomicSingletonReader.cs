@@ -31,7 +31,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         }
 
 
-        public Maybe<TView> Get()
+        public bool TryGet(out TView view)
         {
             var blob = GetBlob();
             string text;
@@ -46,9 +46,11 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             }
             catch (StorageClientException ex)
             {
-                return Maybe<TView>.Empty;
+                view = default(TView);
+                return false;
             }
-            return _strategy.Deserialize<TView>(text);
+            view = _strategy.Deserialize<TView>(text);
+            return true;
         }
     }
 }

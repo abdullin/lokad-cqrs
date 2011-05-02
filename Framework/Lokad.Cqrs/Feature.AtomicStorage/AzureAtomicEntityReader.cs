@@ -13,27 +13,27 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
     /// <summary>
     /// Azure implementation of the view reader/writer
     /// </summary>
-    /// <typeparam name="TView">The type of the view.</typeparam>
-    public sealed class AzureAtomicEntityReader<TView> :
-        IAtomicEntityReader<TView>
-        //where TView : IAtomicEntity<TKey>
+    /// <typeparam name="TEntity">The type of the view.</typeparam>
+    public sealed class AzureAtomicEntityReader<TEntity> :
+        IAtomicEntityReader<TEntity>
+        //where TEntity : IAtomicEntity<TKey>
     {
         readonly CloudBlobContainer _container;
         readonly IAzureAtomicStorageStrategy _strategy;
 
         string ComposeName(string key)
         {
-            return _strategy.GetNameForEntity(typeof(TView),key);
+            return _strategy.GetNameForEntity(typeof(TEntity),key);
         }
 
         public AzureAtomicEntityReader(CloudBlobClient client, IAzureAtomicStorageStrategy strategy)
         {
             _strategy = strategy;
-            var containerName = strategy.GetFolderForEntity(typeof(TView));
+            var containerName = strategy.GetFolderForEntity(typeof(TEntity));
             _container = client.GetContainerReference(containerName);
         }
 
-        public Maybe<TView> Get(string key)
+        public bool TryGet(string key, out TEntity entity)
         {
             var blob = _container.GetBlobReference(ComposeName(key));
             string text;
@@ -47,14 +47,15 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             }
             catch (StorageClientException ex)
             {
-                return Maybe<TView>.Empty;
+                entity = default(TEntity);
+                return false;
+                
             }
-            return _strategy.Deserialize<TView>(text);
+            
+            entity = _strategy.Deserialize<TEntity>(text);
+            return true;
         }
 
-        public TView Load(string key)
-        {
-            return Get(key).ExposeException("Failed to load '{0}' with key '{1}'.", typeof (TView).Name, key);
-        }
+        
     }
 }

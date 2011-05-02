@@ -39,7 +39,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 
         public void DeleteSingleton<TEntity>()
         {
-            Factory.GetSingletonWriter<TEntity>().Delete();
+            Factory.GetSingletonWriter<TEntity>().TryDelete();
         }
 
         public TEntity Update<TEntity>(object key, Action<TEntity> update)

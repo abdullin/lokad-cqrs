@@ -18,6 +18,6 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         /// Gets view singleton (if it's available).
         /// </summary>
         /// <returns>View singleton (if it's available)</returns>
-        Maybe<TSingleton> Get();
+        bool TryGet(out TSingleton singleton);
     }
 }

@@ -100,9 +100,9 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             return UpdateOrAdd(update, () => { throw new InvalidOperationException("View not found"); });
         }
 
-        public void Delete()
+        public bool TryDelete()
         {
-            GetBlob().DeleteIfExists();
+            return GetBlob().DeleteIfExists();
         }
 
     }
