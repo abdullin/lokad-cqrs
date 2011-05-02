@@ -35,7 +35,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 
         public TEntity AddOrUpdate(Func<TEntity> addFactory, Func<TEntity, TEntity> update)
         {
-            return (TEntity) _singletons.AddOrUpdate(_type, addFactory, (type, o) => update((TEntity) o));
+            return (TEntity) _singletons.AddOrUpdate(_type, t => addFactory(), (type, o) => update((TEntity) o));
         }
 
         public TEntity AddOrUpdate(Func<TEntity> addFactory, Action<TEntity> update)

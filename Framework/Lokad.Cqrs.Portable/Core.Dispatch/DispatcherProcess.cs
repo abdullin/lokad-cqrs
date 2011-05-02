@@ -93,8 +93,7 @@ namespace Lokad.Cqrs.Core.Dispatch
                         {
                             _inbox.AckMessage(context);
                             _quarantine.Clear(context);
-                            var types = context.Unpacked.Items.Select(i => i.MappedType).ToArray();
-                            _observer.Notify(new EnvelopeAcked(context.QueueName, context.Unpacked.EnvelopeId, types));
+                            _observer.Notify(new EnvelopeAcked(context.QueueName, context.Unpacked.EnvelopeId, context.Unpacked.GetAllAttributes()));
                         }
                     }
                     catch (Exception ex)

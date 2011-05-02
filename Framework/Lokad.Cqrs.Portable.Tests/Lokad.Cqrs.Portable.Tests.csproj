@@ -66,6 +66,7 @@
     <Compile Include="Core.Envelope\Play_all_for_BinaryFormatter.cs" />
     <Compile Include="EngineFixture.cs" />
     <Compile Include="ExtendMaybe.cs" />
+    <Compile Include="Feature.AtomicStorage\Given_atomic_storage_config.cs" />
     <Compile Include="Feature.StreamingStorage\Play_all_for_FileStreaming.cs" />
     <Compile Include="Feature.StreamingStorage\Scenarios\ITestStorage.cs" />
     <Compile Include="Feature.StreamingStorage\Scenarios\StorageItemFixture.cs" />

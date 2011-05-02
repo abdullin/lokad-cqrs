@@ -19,7 +19,7 @@ namespace Lokad.Cqrs
         public readonly string EnvelopeId;
         public readonly DateTime DeliverOnUtc;
         public readonly DateTime CreatedOnUtc;
-        readonly IDictionary<string, object> _attributes = new Dictionary<string, object>();
+        internal readonly IDictionary<string, object> _attributes = new Dictionary<string, object>();
         
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
         public readonly ImmutableMessage[] Items;

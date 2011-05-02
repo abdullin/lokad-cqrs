@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Lokad.Cqrs.Core.Dispatch.Events
 {
@@ -6,13 +7,13 @@ namespace Lokad.Cqrs.Core.Dispatch.Events
     {
         public string QueueName { get; private set; }
         public string EnvelopeId { get; private set; }
-        public Type[] MessageItemTypes { get; private set; }
-
-        public EnvelopeAcked(string queueName, string envelopeId, Type[] messageItemTypes)
+        public ICollection<KeyValuePair<string, object>> Attributes { get; private set; }
+        
+        public EnvelopeAcked(string queueName, string envelopeId, ICollection<KeyValuePair<string,object>> attributes)
         {
             QueueName = queueName;
             EnvelopeId = envelopeId;
-            MessageItemTypes = messageItemTypes;
+            Attributes = attributes;
         }
 
         public override string ToString()

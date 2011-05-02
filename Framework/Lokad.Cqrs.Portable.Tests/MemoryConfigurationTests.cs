@@ -24,10 +24,9 @@ namespace Lokad.Cqrs
 
         #region Domain
 
-        [DataContract]
         public sealed class Message1 : Define.Command
         {
-            [DataMember] public readonly int Block;
+            public readonly int Block;
 
             public Message1(int block)
             {
