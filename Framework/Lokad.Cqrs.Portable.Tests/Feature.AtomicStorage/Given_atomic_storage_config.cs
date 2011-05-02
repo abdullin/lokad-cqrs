@@ -14,7 +14,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
     {
         // ReSharper disable InconsistentNaming
 
-        public sealed class Message : Define.Command
+        public sealed class AtomicMessage : Define.Command
         {
             
         }
@@ -24,7 +24,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             public int Count;
         }
 
-        public sealed class Consumer : Define.Handler<Message>
+        public sealed class Consumer : Define.Handler<AtomicMessage>
         {
             readonly IMessageSender _sender;
             readonly IAtomicSingletonWriter<Entity> _singleton;
@@ -35,21 +35,50 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                 _singleton = singleton;
             }
 
-            public void Consume(Message message, MessageContext context)
+            public void Consume(AtomicMessage atomicMessage, MessageContext context)
             {
                 var entity = _singleton.UpdateOrAdd(r => r.Count +=1);
                 if (entity.Count == 5)
                 {
-                    _sender.SendOne(new Message(), cb => cb.AddString("finish",""));
+                    _sender.SendOne(new AtomicMessage(), cb => cb.AddString("finish",""));
                 }
                 else
                 {
-                    _sender.SendOne(new Message());
+                    _sender.SendOne(new AtomicMessage());
                 }
             }
         }
 
-        static void TestConfiguration(Action<CloudEngineBuilder> config)
+        public sealed class NuclearMessage :Define.Command
+        {}
+        public sealed class NuclearHandler : Define.Handler<NuclearMessage>
+        {
+            readonly IMessageSender _sender;
+            readonly NuclearStorage _storage;
+
+            public NuclearHandler(IMessageSender sender, NuclearStorage storage)
+            {
+                _sender = sender;
+                _storage = storage;
+            }
+
+            public void Consume(NuclearMessage atomicMessage, MessageContext context)
+            {
+                var result = _storage
+                    .UpdateOrAddSingleton<Entity>(s => s.Count +=1);
+
+                if (result.Count == 5)
+                {
+                    _sender.SendOne(new AtomicMessage(), cb => cb.AddString("finish", ""));
+                }
+                else
+                {
+                    _sender.SendOne(new AtomicMessage());
+                }
+            }
+        }
+
+        static void TestConfiguration(Action<CloudEngineBuilder> config, params Define.Command[] commands)
         {
             var events = new Subject<ISystemEvent>(Scheduler.TaskPool);
             var builder = new CloudEngineBuilder()
@@ -65,7 +94,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                 .Where(ea => ea.Attributes.Any(p => p.Key == "finish")).Subscribe(c => t.Cancel()))
             {
                 engine.Start(t.Token);
-                engine.Resolve<IMessageSender>().SendOne(new Message());
+                engine.Resolve<IMessageSender>().SendBatch(commands);
                 t.Token.WaitHandle.WaitOne(5000);
 
                 Assert.IsTrue(t.IsCancellationRequested);
@@ -74,14 +103,25 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 
 
         [Test]
-        public void Test()
+        public void When_atomic_config_is_requested()
         {
             TestConfiguration(ceb => ceb.Memory(m =>
                 {
                     m.AddMemoryProcess("do");
                     m.AddMemoryAtomicStorage();
                     m.AddMemorySender("do");
-                }));
+                }), new AtomicMessage());
+        }
+
+        [Test]
+        public void When_nuclear_config_is_requested()
+        {
+            TestConfiguration(ceb => ceb.Memory(m =>
+                {
+                    m.AddMemoryProcess("do");
+                    m.AddMemoryAtomicStorage();
+                    m.AddMemorySender("do");
+                }), new NuclearMessage());
         }
         
     }

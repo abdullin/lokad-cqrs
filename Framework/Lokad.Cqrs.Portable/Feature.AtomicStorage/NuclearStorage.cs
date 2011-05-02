@@ -27,7 +27,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             Factory = factory;
         }
 
-        public bool TryDelete<TEntity>(object key)
+        public bool TryDeleteEntity<TEntity>(object key)
         {
             return Factory.GetEntityWriter<TEntity>().TryDelete(KeyToString(key));
         }
@@ -42,44 +42,47 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             return Factory.GetSingletonWriter<TEntity>().TryDelete();
         }
 
-        public TEntity Update<TEntity>(object key, Action<TEntity> update)
+        public TEntity UpdateOrThrowEntity<TEntity>(object key, Action<TEntity> update)
         {
             var id = KeyToString(key);
             return Factory.GetEntityWriter<TEntity>().UpdateOrThrow(id, update);
         }
 
-        public TSingleton UpdateSingleton<TSingleton>(Action<TSingleton> update) 
+        public TSingleton UpdateOrThrowSingleton<TSingleton>(Action<TSingleton> update) 
         {
             return Factory.GetSingletonWriter<TSingleton>().UpdateOrThrow(update);
         }
 
-        public Maybe<TEntity> Get<TEntity>(object key)
+        public Maybe<TEntity> GetEntity<TEntity>(object key)
         {
             var id = KeyToString(key);
             return Factory.GetEntityReader<TEntity>().Get(id);
         }
 
-        public TEntity Get<TEntity>(object key, TEntity defaultValue)
+        public TEntity GetEntity<TEntity>(object key, TEntity defaultValue)
         {
-            return Get<TEntity>(key).GetValue(defaultValue);
+            return GetEntity<TEntity>(key).GetValue(defaultValue);
         }
 
-        public void Save<TEntity>(object key, TEntity entity)
+        public TEntity AddOrUpdateEntity<TEntity>(object key, TEntity entity)
         {
             var id = KeyToString(key);
-            Factory.GetEntityWriter<TEntity>().AddOrUpdate(id, () => entity, source => entity);
+            return Factory.GetEntityWriter<TEntity>().AddOrUpdate(id, () => entity, source => entity);
         }
 
-        public void SaveSingleton<TSingleton>(TSingleton singleton)
+        public TSingleton UpdateOrAddSingleton<TSingleton>(TSingleton singleton)
         {
-            Factory.GetSingletonWriter<TSingleton>()
+            return Factory.GetSingletonWriter<TSingleton>()
                 .UpdateOrAdd(s => singleton, () => singleton);
-
+        }
+        public TSingleton UpdateOrAddSingleton<TSingleton>(Action<TSingleton> update) where TSingleton:new()
+        {
+            return Factory.GetSingletonWriter<TSingleton>().UpdateOrAdd(update);
         }
 
-        public TSingleton GetSingletonOrNew<TSingleton>() where TSingleton : new()
+        public TSingleton GetOrNewSingleton<TSingleton>() where TSingleton : new()
         {
-            return Factory.GetSingletonReader<TSingleton>().Get().GetValue(() => new TSingleton());
+            return Factory.GetSingletonReader<TSingleton>().GetOrNew();
         }
 
         public Maybe<TSingleton> GetSingleton<TSingleton>()

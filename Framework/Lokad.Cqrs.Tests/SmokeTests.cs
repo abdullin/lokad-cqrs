@@ -77,14 +77,14 @@ namespace Lokad.Cqrs
                 }
             }
 
-            public void Consume(UsualMessage message, MessageContext context)
+            public void Consume(UsualMessage atomicMessage, MessageContext context)
             {
-                Print(message.Word, context);
+                Print(atomicMessage.Word, context);
             }
 
-            public void Consume(VipMessage message, MessageContext context)
+            public void Consume(VipMessage atomicMessage, MessageContext context)
             {
-                Print(message.Word, context);
+                Print(atomicMessage.Word, context);
             }
         }
 

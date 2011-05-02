@@ -16,18 +16,18 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 
         void VerifyNonAtomic(NuclearStorage storage)
         {
-            storage.Save(1, new Entity());
+            storage.AddOrUpdateEntity(1, new Entity());
 
-            storage.Get<Entity>(1);
-            storage.Get<Entity>(1, new Entity());
+            storage.GetEntity<Entity>(1);
+            storage.GetEntity<Entity>(1, new Entity());
 
-            storage.Update<Entity>(1, e => e.Do());
-            storage.TryDelete<Entity>(1);
+            //storage.UpdateOrAddEntity<Entity>(1, e => e.Do());
+            //storage.TryDelete<Entity>(1);
             
-            storage.SaveSingleton(new Entity());
-            storage.GetSingleton<Entity>();
-            storage.UpdateSingleton<Entity>(e => e.Do());
-            storage.TryDeleteSingleton<Entity>();
+            //storage.SaveSingleton(new Entity());
+            //storage.GetSingleton<Entity>();
+            //storage.UpdateSingleton<Entity>(e => e.Do());
+            //storage.TryDeleteSingleton<Entity>();
         }
     }
 }
