@@ -13,7 +13,6 @@ using System.Runtime.Serialization;
 using System.Threading;
 using Lokad.Cqrs.Build.Engine;
 using Lokad.Cqrs.Core.Dispatch.Events;
-using Lokad.Cqrs.Feature.AtomicStorage;
 using NUnit.Framework;
 
 namespace Lokad.Cqrs
@@ -26,7 +25,7 @@ namespace Lokad.Cqrs
         #region Domain
 
         [DataContract]
-        public sealed class Message1 : Define.Event
+        public sealed class Message1 : Define.Command
         {
             [DataMember] public readonly int Block;
 
@@ -36,17 +35,9 @@ namespace Lokad.Cqrs
             }
         }
 
-        public sealed class Complete : Define.Command
-        {
-            
-        }
-
-
-
-        public sealed class Consumer : Define.Consumer<Message1>
+        public sealed class Consumer : Define.Handler<Message1>
         {
             readonly IMessageSender _sender;
-            
 
             public Consumer(IMessageSender sender)
             {
@@ -59,16 +50,7 @@ namespace Lokad.Cqrs
                 {
                     _sender.SendOne(new Message1(message.Block + 1));
                 }
-                else
-                {
-                    _sender.SendOne(new Complete());
-                }
             }
-        }
-
-        public sealed class Singleton
-        {
-            public int Count;
         }
 
         #endregion
@@ -77,8 +59,7 @@ namespace Lokad.Cqrs
         {
             var events = new Subject<ISystemEvent>(Scheduler.TaskPool);
             var builder = new CloudEngineBuilder()
-                .EnlistObserver(events)
-                .Memory(m => m.AddMemoryAtomicStorage());
+                .EnlistObserver(events);
 
             config(builder);
 
@@ -86,7 +67,8 @@ namespace Lokad.Cqrs
             using (var t = new CancellationTokenSource())
             using (events
                 .OfType<EnvelopeAcked>()
-                .Where(ea => ea.MessageItemTypes.Contains(typeof(Complete)) && ea.QueueName=="do")
+                .Where(ea => ea.QueueName == "do")
+                .Skip(5)
                 .Subscribe(c => t.Cancel()))
             {
                 engine.Start(t.Token);
@@ -121,17 +103,11 @@ namespace Lokad.Cqrs
         [Test]
         public void RouterChain()
         {
-            var routing = new Func<ImmutableEnvelope, string>(
-                        me =>
-                            {
-                                if (me.Items.Any(im => im.MappedType == typeof(Complete)))
-                                    return "memory:do";
-                                return (((Message1) me.Items[0].Content).Block%2) == 0 ? "memory:do1" : "memory:do2";
-                            });
             TestConfiguration(x => x.Memory(m =>
                 {
                     m.AddMemorySender("in");
-                    m.AddMemoryRouter("in", routing);
+                    m.AddMemoryRouter("in",
+                        me => (((Message1) me.Items[0].Content).Block%2) == 0 ? "memory:do1" : "memory:do2");
                     m.AddMemoryRouter(new[]{"do1", "do2"}, me => "memory:do");
                     m.AddMemoryProcess("do");
                 }));
