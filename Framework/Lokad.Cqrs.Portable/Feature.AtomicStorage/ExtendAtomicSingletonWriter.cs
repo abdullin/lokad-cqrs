@@ -14,12 +14,43 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         public static TView AddOrUpdate<TView>(this IAtomicSingletonWriter<TView> self, Action<TView> update, AddOrUpdateHint hint = AddOrUpdateHint.ProbablyExists)
             where TView : new()
         {
-            return self.AddOrUpdate(() =>
+            return self.AddOrUpdate(() => new TView(), view =>
                 {
-                    var view = new TView();
                     update(view);
                     return view;
-                }, update, hint);
+                }, hint);
         }
+
+        public static TView AddOrUpdate<TView>(this IAtomicSingletonWriter<TView> self, Func<TView> factory, Action<TView> update, AddOrUpdateHint hint = AddOrUpdateHint.ProbablyExists)
+        {
+            return self.AddOrUpdate(factory, view =>
+            {
+                update(view);
+                return view;
+            }, hint);
+        }
+
+        public static TEntity UpdateOrThrow<TEntity>(this IAtomicSingletonWriter<TEntity> self, Func<TEntity, TEntity> change)
+        {
+            return self.AddOrUpdate(() =>
+            {
+                var txt = String.Format("Failed to load '{0}'.", typeof(TEntity).Name);
+                throw new InvalidOperationException(txt);
+            }, change, AddOrUpdateHint.ProbablyExists);
+        }
+        public static TEntity UpdateOrThrow<TEntity>(this IAtomicSingletonWriter<TEntity> self, Action<TEntity> change)
+        {
+            return self.AddOrUpdate(() =>
+            {
+                var txt = String.Format("Failed to load '{0}'.", typeof(TEntity).Name);
+                throw new InvalidOperationException(txt);
+            }, view =>
+                {
+                    change(view);
+                    return view;
+                }, AddOrUpdateHint.ProbablyExists);
+        }
+
+
     }
 }

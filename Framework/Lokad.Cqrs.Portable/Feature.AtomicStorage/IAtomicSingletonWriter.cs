@@ -16,10 +16,6 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
     public interface IAtomicSingletonWriter<TSingleton> 
     {
         TSingleton AddOrUpdate(Func<TSingleton> addFactory, Func<TSingleton,TSingleton> update, AddOrUpdateHint hint = AddOrUpdateHint.ProbablyExists);
-        TSingleton AddOrUpdate(Func<TSingleton> addFactory, Action<TSingleton> update, AddOrUpdateHint hint = AddOrUpdateHint.ProbablyExists);
-        TSingleton UpdateOrThrow(Action<TSingleton> update);
-        TSingleton UpdateOrThrow(Func<TSingleton, TSingleton> update);
-
         /// <summary>
         /// Deletes this view singleton.
         /// </summary>
