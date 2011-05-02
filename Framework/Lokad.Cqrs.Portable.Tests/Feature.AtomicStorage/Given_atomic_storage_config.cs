@@ -1,4 +1,11 @@
-﻿using System;
+﻿#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
+
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.Concurrency;
 using System.Linq;
@@ -14,10 +21,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
     {
         // ReSharper disable InconsistentNaming
 
-        public sealed class AtomicMessage : Define.Command
-        {
-            
-        }
+        public sealed class AtomicMessage : Define.Command {}
 
         public sealed class Entity
         {
@@ -37,10 +41,10 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 
             public void Consume(AtomicMessage atomicMessage, MessageContext context)
             {
-                var entity = _singleton.UpdateOrAdd(r => r.Count +=1);
+                var entity = _singleton.UpdateOrAdd(r => r.Count += 1);
                 if (entity.Count == 5)
                 {
-                    _sender.SendOne(new AtomicMessage(), cb => cb.AddString("finish",""));
+                    _sender.SendOne(new AtomicMessage(), cb => cb.AddString("finish", ""));
                 }
                 else
                 {
@@ -49,8 +53,8 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             }
         }
 
-        public sealed class NuclearMessage :Define.Command
-        {}
+        public sealed class NuclearMessage : Define.Command {}
+
         public sealed class NuclearHandler : Define.Handler<NuclearMessage>
         {
             readonly IMessageSender _sender;
@@ -65,7 +69,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             public void Consume(NuclearMessage atomicMessage, MessageContext context)
             {
                 var result = _storage
-                    .UpdateOrAddSingleton<Entity>(s => s.Count +=1);
+                    .UpdateOrAddSingleton<Entity>(s => s.Count += 1);
 
                 if (result.Count == 5)
                 {
@@ -82,7 +86,6 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         {
             var events = new Subject<ISystemEvent>(Scheduler.TaskPool);
             var builder = new CloudEngineBuilder()
-            
                 .EnlistObserver(events);
 
             config(builder);
@@ -123,6 +126,5 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                     m.AddMemorySender("do");
                 }), new NuclearMessage());
         }
-        
     }
 }
