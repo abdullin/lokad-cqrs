@@ -76,9 +76,9 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             _client = client;
         }
 
-        public AtomicSimplified CreateSimplifiedStorage(bool dontInitialize = false)
+        public NuclearStorage CreateSimplifiedStorage(bool dontInitialize = false)
         {
-            var storage = new AtomicSimplified(this);
+            var storage = new NuclearStorage(this);
             if (!dontInitialize)
             {
                 Initialize();

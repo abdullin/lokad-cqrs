@@ -11,18 +11,18 @@ using System.Globalization;
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
     /// <summary>
-    /// Basic usability wrapper for the atomic storage operations. If you want to work with advanced functionality,
-    /// either request specific interfaces from the container or go through the advanced members on this instance. 
+    /// Basic usability wrapper for the atomic storage operations, that does not enforce concurrency handling. 
+    /// If you want to work with advanced functionality, either request specific interfaces from the container 
+    /// or go through the advanced members on this instance. 
     /// </summary>
     /// <remarks>
     /// If you use as a stand-alone, make sure to call <see cref="Initialize"/> before proceeding.
     /// </remarks>
-    public sealed class AtomicSimplified
+    public sealed class NuclearStorage
     {
-
         public readonly IAtomicStorageFactory Factory;
 
-        public AtomicSimplified(IAtomicStorageFactory factory)
+        public NuclearStorage(IAtomicStorageFactory factory)
         {
             Factory = factory;
         }

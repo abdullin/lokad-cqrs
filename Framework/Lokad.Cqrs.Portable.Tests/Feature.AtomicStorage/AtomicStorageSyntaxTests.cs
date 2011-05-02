@@ -14,7 +14,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             {}
         }
 
-        void VerifyNonAtomic(AtomicSimplified storage)
+        void VerifyNonAtomic(NuclearStorage storage)
         {
             storage.Save(1, new Entity());
 

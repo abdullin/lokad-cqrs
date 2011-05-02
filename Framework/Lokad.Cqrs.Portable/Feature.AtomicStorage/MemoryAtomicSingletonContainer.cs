@@ -13,8 +13,13 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
     public sealed class MemoryAtomicSingletonContainer<TEntity> :
         IAtomicSingletonReader<TEntity>, IAtomicSingletonWriter<TEntity>
     {
-        readonly ConcurrentDictionary<Type, object> _singletons = new ConcurrentDictionary<Type, object>();
+        readonly ConcurrentDictionary<Type, object> _singletons;
         readonly Type _type = typeof (TEntity);
+
+        public MemoryAtomicSingletonContainer(MemoryAtomicStorageStrategy strategy)
+        {
+            _singletons = strategy.GetSingletonContainer();
+        }
 
         public bool TryGet(out TEntity singleton)
         {
@@ -70,6 +75,4 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             return _singletons.TryRemove(_type, out value);
         }
     }
-
-    
 }

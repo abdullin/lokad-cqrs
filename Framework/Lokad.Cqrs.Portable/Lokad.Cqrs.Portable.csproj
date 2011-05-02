@@ -49,9 +49,12 @@
     <Compile Include="Feature.AtomicStorage\ExtendAtomicEntityWriter.cs" />
     <Compile Include="Feature.AtomicStorage\ExtendAtomicEntityReader.cs" />
     <Compile Include="Feature.AtomicStorage\IAtomicStorageFactory.cs" />
-    <Compile Include="Feature.AtomicStorage\AtomicSimplified.cs" />
+    <Compile Include="Feature.AtomicStorage\MemoryAtomicStorageModule.cs" />
+    <Compile Include="Feature.AtomicStorage\NuclearStorage.cs" />
     <Compile Include="Feature.AtomicStorage\MemoryAtomicEntityContainer.cs" />
     <Compile Include="Feature.AtomicStorage\MemoryAtomicSingletonContainer.cs" />
+    <Compile Include="Feature.AtomicStorage\MemoryAtomicStorageFactory.cs" />
+    <Compile Include="Feature.AtomicStorage\MemoryAtomicStorageStrategy.cs" />
     <Compile Include="MessageContext.cs" />
     <Compile Include="Core.Directory\IMethodInvoker.cs" />
     <Compile Include="Core.Directory\MessageActivationMap.cs" />

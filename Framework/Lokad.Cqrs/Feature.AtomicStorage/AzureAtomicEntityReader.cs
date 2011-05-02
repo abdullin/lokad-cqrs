@@ -23,13 +23,13 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 
         string ComposeName(string key)
         {
-            return _strategy.GetNameForEntity(typeof(TEntity),key);
+            return _strategy.GetNameForEntity(typeof (TEntity), key);
         }
 
         public AzureAtomicEntityReader(CloudBlobClient client, IAzureAtomicStorageStrategy strategy)
         {
             _strategy = strategy;
-            var containerName = strategy.GetFolderForEntity(typeof(TEntity));
+            var containerName = strategy.GetFolderForEntity(typeof (TEntity));
             _container = client.GetContainerReference(containerName);
         }
 
@@ -49,13 +49,10 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             {
                 entity = default(TEntity);
                 return false;
-                
             }
-            
+
             entity = _strategy.Deserialize<TEntity>(text);
             return true;
         }
-
-        
     }
 }

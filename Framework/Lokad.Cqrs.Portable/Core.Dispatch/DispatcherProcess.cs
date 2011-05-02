@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Lokad.Cqrs.Core.Dispatch.Events;
 using Lokad.Cqrs.Core.Inbox;
+using System.Linq;
 
 namespace Lokad.Cqrs.Core.Dispatch
 {
@@ -92,7 +93,8 @@ namespace Lokad.Cqrs.Core.Dispatch
                         {
                             _inbox.AckMessage(context);
                             _quarantine.Clear(context);
-                            _observer.Notify(new EnvelopeAcked(context.QueueName, context.Unpacked.EnvelopeId));
+                            var types = context.Unpacked.Items.Select(i => i.MappedType).ToArray();
+                            _observer.Notify(new EnvelopeAcked(context.QueueName, context.Unpacked.EnvelopeId, types));
                         }
                     }
                     catch (Exception ex)

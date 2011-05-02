@@ -46,7 +46,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                 .SingleInstance();
 
             builder
-                .RegisterType<AtomicSimplified>()
+                .RegisterType<NuclearStorage>()
                 .SingleInstance();
         }
     }

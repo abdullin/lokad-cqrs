@@ -5,8 +5,12 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 {
     public sealed class MemoryAtomicEntityContainer<TEntity> : IAtomicEntityReader<TEntity>, IAtomicEntityWriter<TEntity>
     {
-        readonly ConcurrentDictionary<string,TEntity> _entities = new ConcurrentDictionary<string, TEntity>();
+        readonly ConcurrentDictionary<string,TEntity> _entities;
 
+        public MemoryAtomicEntityContainer(MemoryAtomicStorageStrategy strategy)
+        {
+            _entities = strategy.GetEntityContainer<TEntity>();
+        }
         public bool TryGet(string key, out TEntity entity)
         {
             return _entities.TryGetValue(key, out entity);

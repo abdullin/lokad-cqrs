@@ -50,11 +50,11 @@ namespace Lokad.Cqrs.Build.Engine
             return this;
         }
 
-        protected readonly ContainerBuilder Builder = new ContainerBuilder();
+        readonly ContainerBuilder _builder = new ContainerBuilder();
 
         public CloudEngineBuilder Advanced(Action<ContainerBuilder> build)
         {
-            build(Builder);
+            build(_builder);
             return this;
         }
 
@@ -69,13 +69,13 @@ namespace Lokad.Cqrs.Build.Engine
 
         public CloudEngineBuilder EnlistObserver(IObserver<ISystemEvent> observer)
         {
-            Builder.RegisterInstance(observer);
+            _builder.RegisterInstance(observer);
             return this;
         }
 
         public CloudEngineBuilder EnlistObserver<TObserver>() where TObserver : IObserver<ISystemEvent>
         {
-            Builder.RegisterType<TObserver>().As<IObserver<ISystemEvent>>().SingleInstance();
+            _builder.RegisterType<TObserver>().As<IObserver<ISystemEvent>>().SingleInstance();
             return this;
         }
 
@@ -83,7 +83,7 @@ namespace Lokad.Cqrs.Build.Engine
         {
             var m = new MemoryModule();
             configure(m);
-            Builder.RegisterModule(m);
+            _builder.RegisterModule(m);
             return this;
         }
 
@@ -99,11 +99,11 @@ namespace Lokad.Cqrs.Build.Engine
             // System presets
             InnerSystemRegisterObservations();
 
-            Builder.RegisterType<DispatcherProcess>();
-            Builder.RegisterType<MessageDuplicationManager>().SingleInstance();
+            _builder.RegisterType<DispatcherProcess>();
+            _builder.RegisterType<MessageDuplicationManager>().SingleInstance();
 
             // some defaults
-            Builder.RegisterType<CloudEngineHost>().SingleInstance();
+            _builder.RegisterType<CloudEngineHost>().SingleInstance();
 
             // conditional registrations and defaults
             if (!IsEnlisted<ModuleForMessageDirectory>())
@@ -115,14 +115,21 @@ namespace Lokad.Cqrs.Build.Engine
                 Serialization(x => x.UseDataContractSerializer());
             }
 
+            if (_moduleEnlistments.Count(m => m is MemoryModule)> 1)
+            {
+                throw new InvalidOperationException("There can be only one memory module enlistment");
+            }
+
+            //if (_moduleEnlistments.Count(m => m is ))
+
 
             foreach (var module in _moduleEnlistments)
             {
-                Builder.RegisterModule(module);
+                _builder.RegisterModule(module);
             }
 
 
-            var container = Builder.Build();
+            var container = _builder.Build();
             var host = container.Resolve<CloudEngineHost>(TypedParameter.From(container));
             host.Initialize();
             return host;
@@ -130,10 +137,10 @@ namespace Lokad.Cqrs.Build.Engine
 
         void InnerSystemRegisterObservations()
         {
-            Builder.RegisterType<ReactiveSystemObserverAdapter>().SingleInstance().As<ISystemObserver>();
+            _builder.RegisterType<ReactiveSystemObserverAdapter>().SingleInstance().As<ISystemObserver>();
             if (!DisableDefaultObserver)
             {
-                Builder.RegisterType<ImmediateTracingObserver>().As<IObserver<ISystemEvent>>().SingleInstance();
+                _builder.RegisterType<ImmediateTracingObserver>().As<IObserver<ISystemEvent>>().SingleInstance();
             }
 
             //Builder.RegisterCallback(ci =>
