@@ -41,16 +41,19 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                 m.AddAzureSender("azure-dev", "incoming", x => x.IdGeneratorForTests());
                 m.WipeAccountsAtStartUp = true;
             });
-            b.Storage(m => m.AtomicStorageIsAzure("azure-dev", c => c.WithStrategy(x => x.WhereEntity(EntityFilter))));
+            b.Storage(m => m.AtomicStorageIsAzure("azure-dev", c => c.WithStrategy(DefaultWithCustomConfig)));
         }
 
-        static bool EntityFilter(Type type)
+        static void DefaultWithCustomConfig(DefaultAzureAtomicStorageStrategyBuilder builder)
         {
-            if (typeof(Define.AtomicEntity).IsAssignableFrom(type))
-                return true;
-            if (type.Name.Contains("CustomDomainView"))
-                return true;
-            return false;
+            builder.WhereEntity(type =>
+                {
+                    if (typeof(Define.AtomicEntity).IsAssignableFrom(type))
+                        return true;
+                    if (type.Name.Contains("CustomDomainView"))
+                        return true;
+                    return false;
+                });
         }
     }
 }
