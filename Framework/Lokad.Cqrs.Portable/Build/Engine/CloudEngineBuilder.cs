@@ -14,6 +14,7 @@ using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Core.Reactive;
 using Lokad.Cqrs.Core.Serialization;
+using Lokad.Cqrs.Feature.AtomicStorage;
 
 // ReSharper disable UnusedMethodReturnValue.Global
 
@@ -30,6 +31,11 @@ namespace Lokad.Cqrs.Build.Engine
         bool IsEnlisted<TModule>() where TModule : IModule
         {
             return _moduleEnlistments.Count(x => x is TModule) > 0;
+        }
+
+        int Count<TModule>() where TModule : IModule
+        {
+            return _moduleEnlistments.Count(x => x is TModule);
         }
 
         public void EnlistModule(IModule module)
@@ -87,6 +93,14 @@ namespace Lokad.Cqrs.Build.Engine
             return this;
         }
 
+        public CloudEngineBuilder Storage(Action<StorageModule> configure)
+        {
+            var m = new StorageModule();
+            configure(m);
+            EnlistModule(m);
+            return this;
+        }
+
         public bool DisableDefaultObserver { get; set; }
 
         /// <summary>
@@ -115,9 +129,13 @@ namespace Lokad.Cqrs.Build.Engine
                 Serialization(x => x.UseDataContractSerializer());
             }
 
-            if (_moduleEnlistments.Count(m => m is MemoryModule)> 1)
+            if (Count<StorageModule>() == 0)
             {
-                throw new InvalidOperationException("There can be only one memory module enlistment");
+                EnlistModule(new StorageModule());
+            }
+            if (Count<StorageModule>()> 1)
+            {
+                throw new InvalidOperationException("Only one storage module can be configured!");
             }
 
             //if (_moduleEnlistments.Count(m => m is ))
@@ -153,6 +171,33 @@ namespace Lokad.Cqrs.Build.Engine
             //            .SingleInstance();
             //        builder.Update(ci);
             //    });
+        }
+    }
+
+    public sealed class StorageModule : BuildSyntaxHelper, IModule
+    {
+        List<IModule> _modules = new List<IModule>();
+
+        public void AtomicIsInMemory()
+        {
+            _modules.Add(new MemoryAtomicStorageModule());
+        }
+
+
+        void IModule.Configure(IComponentRegistry componentRegistry)
+        {
+            if (_modules.Count == 0)
+            {
+                _modules.Add(new MemoryAtomicStorageModule());
+            }
+
+            var builder = new ContainerBuilder();
+            foreach (var module in _modules)
+            {
+                builder.RegisterModule(module);
+            }
+            builder.Update(componentRegistry);
+            
         }
     }
 }

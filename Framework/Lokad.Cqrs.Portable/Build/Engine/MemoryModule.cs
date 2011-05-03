@@ -5,7 +5,6 @@ using Autofac;
 using Autofac.Core;
 using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Core.Outbox;
-using Lokad.Cqrs.Feature.AtomicStorage;
 using Lokad.Cqrs.Feature.MemoryPartition;
 
 namespace Lokad.Cqrs.Build.Engine
@@ -79,11 +78,6 @@ namespace Lokad.Cqrs.Build.Engine
         public void AddMemoryRouter(string[] queueNames, Func<ImmutableEnvelope, string> config)
         {
             AddMemoryProcess(queueNames, m => m.Dispatch<DispatchMessagesToRoute>(x => x.SpecifyRouter(config)));
-        }
-
-        public void AddMemoryAtomicStorage()
-        {
-            _modules.Add(new MemoryAtomicStorageModule());
         }
     }
 }

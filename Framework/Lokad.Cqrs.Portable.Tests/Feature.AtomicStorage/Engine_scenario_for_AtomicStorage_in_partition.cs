@@ -48,7 +48,6 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             config.Memory(m =>
             {
                 m.AddMemoryProcess("do");
-                m.AddMemoryAtomicStorage();
                 m.AddMemorySender("do", cb => cb.IdGeneratorForTests());
             });
         }
