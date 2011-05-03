@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Autofac;
 using Autofac.Core;
@@ -15,7 +16,6 @@ using Lokad.Cqrs.Core.Outbox;
 using Lokad.Cqrs.Feature.AzurePartition.Inbox;
 using Lokad.Cqrs.Feature.AzurePartition.Sender;
 using Microsoft.WindowsAzure;
-using System.Linq;
 
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedMethodReturnValue.Global
@@ -28,14 +28,16 @@ namespace Lokad.Cqrs.Build
     /// </summary>
     public sealed class AzureModule : BuildSyntaxHelper, IModule
     {
-
         static readonly Regex QueueName = new Regex("^[A-Za-z][A-Za-z0-9]{2,62}", RegexOptions.Compiled);
 
-        readonly IDictionary<string,AzureClientConfiguration> _configs = new Dictionary<string, AzureClientConfiguration>();
+        readonly IDictionary<string, AzureClientConfiguration> _configs =
+            new Dictionary<string, AzureClientConfiguration>();
+
         readonly IList<IModule> _modules = new List<IModule>();
 
 
         public bool WipeAccountsAtStartUp { get; set; }
+
         /// <summary>
         /// Registers the specified storage account as default into the container
         /// </summary>
@@ -44,7 +46,8 @@ namespace Lokad.Cqrs.Build
         /// <returns>
         /// same builder for inling multiple configuration statements
         /// </returns>
-        public void AddAzureAccount(string accountId, CloudStorageAccount account, Action<AzureClientConfigurationBuilder> tuning)
+        public void AddAzureAccount(string accountId, CloudStorageAccount account,
+            Action<AzureClientConfigurationBuilder> tuning)
         {
             var builder = new AzureClientConfigurationBuilder(account, accountId);
             tuning(builder);
@@ -91,18 +94,18 @@ namespace Lokad.Cqrs.Build
             _modules.Add(module);
         }
 
-        
 
         public void AddAzureProcess(string accountId, string firstQueue, params string[] otherQueues)
         {
             var queues = Enumerable.Repeat(firstQueue, 1).Concat(otherQueues).ToArray();
-            
+
             AddAzureProcess(accountId, queues, m => { });
         }
 
         public void AddAzureRouter(string accountId, string queueName, Func<ImmutableEnvelope, string> config)
         {
-            AddAzureProcess(accountId, new[] {queueName}, m => m.Dispatch<DispatchMessagesToRoute>(x => x.SpecifyRouter(config)));
+            AddAzureProcess(accountId, new[] {queueName},
+                m => m.Dispatch<DispatchMessagesToRoute>(x => x.SpecifyRouter(config)));
         }
 
 
@@ -128,10 +131,23 @@ namespace Lokad.Cqrs.Build
             }
 
             builder.RegisterType<AzureWriteQueueFactory>().As<IQueueWriterFactory>().SingleInstance();
-            
+
             builder.Update(componentRegistry);
 
+            if (WipeAccountsAtStartUp)
+            {
+                _configs.Values
+                    .AsParallel()
+                    .Select(c => c.CreateBlobClient())
+                    .SelectMany(c => c.ListContainers())
+                    .ForAll(c => c.Delete());
 
+                _configs.Values
+                    .AsParallel()
+                    .Select(c => c.CreateQueueClient())
+                    .SelectMany(c => c.ListQueues())
+                    .ForAll(c => c.Delete());
+            }
         }
     }
 }

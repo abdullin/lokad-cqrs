@@ -5,13 +5,8 @@
 
 #endregion
 
-using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.WindowsAzure.ServiceRuntime;
-using System.Linq;
 
 namespace Lokad.Cqrs.Build
 {
@@ -54,42 +49,6 @@ namespace Lokad.Cqrs.Build
                 result = ConfigurationManager.AppSettings[key];
             }
             return string.IsNullOrEmpty(result) ? Maybe<string>.Empty : result;
-        }
-    }
-
-    public sealed class AzureStorageCleaner : IEngineProcess
-    {
-        IEnumerable<IAzureClientConfiguration> _configs;
-
-        public AzureStorageCleaner(IEnumerable<IAzureClientConfiguration> configs)
-        {
-            _configs = configs;
-        }
-
-        public void Dispose()
-        {
-            
-        }
-
-        public void Initialize()
-        {
-            _configs
-                .AsParallel()
-                .Select(c => c.CreateBlobClient())
-                .SelectMany(c => c.ListContainers())
-                .ForAll(c => c.Delete());
-
-            _configs
-                .AsParallel()
-                .Select(c => c.CreateQueueClient())
-                .SelectMany(c => c.ListQueues())
-                .ForAll(c => c.Delete());
-
-        }
-
-        public Task Start(CancellationToken token)
-        {
-            return Task.Factory.StartNew(() => { });
         }
     }
 }
