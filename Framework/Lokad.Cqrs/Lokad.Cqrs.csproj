@@ -52,6 +52,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Build\AzureClientConfiguration.cs" />
     <Compile Include="Build\AzureModule.cs" />
     <Compile Include="Build\Engine\ExtendCloudEngineBuilder.cs" />
     <Compile Include="Build\ModuleExtensionForSerialization.cs" />

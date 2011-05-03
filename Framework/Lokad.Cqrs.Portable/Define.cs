@@ -25,5 +25,14 @@ namespace Lokad.Cqrs
         {
             
         }
+
+        public interface AtomicEntity
+        {
+            
+        }
+        public interface AtomicSingleton
+        {
+            
+        }
     }
 }

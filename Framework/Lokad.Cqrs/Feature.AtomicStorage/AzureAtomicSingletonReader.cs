@@ -12,10 +12,10 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 {
     public sealed class AzureAtomicSingletonReader<TView> : IAtomicSingletonReader<TView>
     {
-        readonly CloudBlobClient _client;
+        readonly IAzureClientConfiguration _client;
         readonly IAzureAtomicStorageStrategy _strategy;
 
-        public AzureAtomicSingletonReader(CloudBlobClient client, IAzureAtomicStorageStrategy strategy)
+        public AzureAtomicSingletonReader(IAzureClientConfiguration client, IAzureAtomicStorageStrategy strategy)
         {
             _client = client;
             _strategy = strategy;
@@ -34,11 +34,11 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         public bool TryGet(out TView view)
         {
             var blob = GetBlob();
-            string text;
+            byte[] data;
             try
             {
                 // no retries and small timeout
-                text = blob.DownloadText(new BlobRequestOptions
+                data = blob.DownloadByteArray(new BlobRequestOptions
                     {
                         RetryPolicy = RetryPolicies.NoRetry(),
                         Timeout = TimeSpan.FromSeconds(3)
@@ -49,7 +49,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                 view = default(TView);
                 return false;
             }
-            view = _strategy.Deserialize<TView>(text);
+            view = _strategy.Deserialize<TView>(data);
             return true;
         }
     }

@@ -38,7 +38,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Sender
                 writer = _writeQueues.GetOrAdd(queueName, name =>
                     {
                         var queue = configuration.BuildQueue(name);
-                        var container = configuration.BuildContainer(name);
+                        var container = configuration.GetContainerReference(name);
                         var v = new StatelessAzureQueueWriter(_streamer, container, queue);
                         v.Init();
                         return v;

@@ -67,10 +67,10 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         }
 
         readonly IAzureAtomicStorageStrategy _strategy;
-        readonly CloudBlobClient _client;
+        readonly IAzureClientConfiguration _client;
 
 
-        public AzureAtomicStorageFactory(IAzureAtomicStorageStrategy strategy, CloudBlobClient client)
+        public AzureAtomicStorageFactory(IAzureAtomicStorageStrategy strategy, IAzureClientConfiguration client)
         {
             _strategy = strategy;
             _client = client;

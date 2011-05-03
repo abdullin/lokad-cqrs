@@ -12,10 +12,10 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 {
     public sealed class AzureAtomicSingletonWriter<TView> : IAtomicSingletonWriter<TView>
     {
-        readonly CloudBlobClient _client;
+        readonly IAzureClientConfiguration _client;
         readonly IAzureAtomicStorageStrategy _strategy;
 
-        public AzureAtomicSingletonWriter(CloudBlobClient client, IAzureAtomicStorageStrategy strategy)
+        public AzureAtomicSingletonWriter(IAzureClientConfiguration client, IAzureAtomicStorageStrategy strategy)
         {
             _client = client;
             _strategy = strategy;
@@ -39,8 +39,8 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             TView view;
             try
             {
-                var downloadText = blob.DownloadText();
-                view = _strategy.Deserialize<TView>(downloadText);
+                var data = blob.DownloadByteArray();
+                view = _strategy.Deserialize<TView>(data);
                 view = updateFactory(view);
             }
             catch (StorageClientException ex)
@@ -48,7 +48,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                 view = addFactory();
             }
 
-            blob.UploadText(_strategy.Serialize(view));
+            blob.UploadByteArray(_strategy.Serialize(view));
             return view;
         }
 

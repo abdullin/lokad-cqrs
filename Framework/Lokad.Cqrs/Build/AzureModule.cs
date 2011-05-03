@@ -112,13 +112,14 @@ namespace Lokad.Cqrs.Build
 
             if (!_configs.ContainsKey("azure-dev"))
             {
-
                 AddAzureAccount("azure-dev", CloudStorageAccount.DevelopmentStorageAccount);
             }
 
             foreach (var config in _configs)
             {
+                // register as list
                 builder.RegisterInstance(config.Value).As<IAzureClientConfiguration>();
+                builder.RegisterInstance(config.Value).Named(config.Key, typeof (IAzureClientConfiguration));
             }
 
             foreach (var partition in _modules)

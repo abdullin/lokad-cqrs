@@ -6,6 +6,7 @@
 #endregion
 
 using Autofac;
+using Autofac.Core;
 
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
@@ -15,11 +16,12 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
     /// </summary>
     public sealed class AzureAtomicStorageWriterModule : Module
     {
-        readonly IAzureAtomicStorageStrategy _strategy;
+        readonly string _accountName;
+        readonly IAzureAtomicStorageStrategy _strategy = new DefaultAzureAtomicStorageStrategy();
 
-        public AzureAtomicStorageWriterModule(IAzureAtomicStorageStrategy strategy)
+        public AzureAtomicStorageWriterModule(string accountName)
         {
-            _strategy = strategy;
+            _accountName = accountName;
         }
 
         protected override void Load(ContainerBuilder builder)
@@ -27,12 +29,14 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             builder
                 .RegisterGeneric(typeof (AzureAtomicEntityWriter<,>))
                 .WithParameter(TypedParameter.From(_strategy))
+                .WithParameter(ResolvedParameter.ForNamed<IAzureClientConfiguration>(_accountName))
                 .As(typeof (IAtomicEntityWriter<,>))
                 .SingleInstance();
             builder
                 .RegisterGeneric(typeof (AzureAtomicSingletonWriter<>))
                 .As(typeof (IAtomicSingletonWriter<>))
                 .WithParameter(TypedParameter.From(_strategy))
+                .WithParameter(ResolvedParameter.ForNamed<IAzureClientConfiguration>(_accountName))
                 .SingleInstance();
             builder
                 .RegisterType(typeof (AtomicStorageInitialization))

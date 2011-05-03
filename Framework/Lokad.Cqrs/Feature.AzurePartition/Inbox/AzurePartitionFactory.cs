@@ -87,7 +87,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
         AzurePartitionInboxIntake BuildIntake(string name)
         {
             var queue = _configuration.BuildQueue(name);
-            var container = _configuration.BuildContainer(name);
+            var container = _configuration.GetContainerReference(name);
             
             var poisonQueue = new Lazy<CloudQueue>(() =>
                 {

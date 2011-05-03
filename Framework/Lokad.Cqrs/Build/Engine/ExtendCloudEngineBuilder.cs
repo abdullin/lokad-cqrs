@@ -1,4 +1,5 @@
 ﻿using System;
+using Lokad.Cqrs.Feature.AtomicStorage;
 
 namespace Lokad.Cqrs.Build.Engine
 {
@@ -10,5 +11,14 @@ namespace Lokad.Cqrs.Build.Engine
             config(module);
             @this.EnlistModule(module);
         }
+
+        public static void AtomicStorageIsAzure(this StorageModule self, string accountId)
+        {
+            var module = new AzureAtomicStorageWriterModule(accountId);
+            self.EnlistModule(module);
+
+        }
     }
+
+    
 }

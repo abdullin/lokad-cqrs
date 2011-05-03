@@ -1,4 +1,11 @@
-﻿using System;
+﻿#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
+
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.Concurrency;
 using System.Diagnostics;
@@ -12,14 +19,18 @@ namespace Lokad.Cqrs
 {
     public abstract class FiniteEngineScenario
     {
-        protected bool HandlerFailuresAreExpected { get; set; }
+        protected bool HandlerFailuresAreExpected { private get; set; }
         protected readonly IList<object> StartupMessages = new List<object>();
 
         protected virtual void Configure(CloudEngineBuilder builder) {}
         readonly List<string> _failures = new List<string>();
-        readonly List<Func<IObservable<ISystemEvent>, IMessageSender, CancellationTokenSource, IDisposable>> _subscriptions = new List<Func<IObservable<ISystemEvent>, IMessageSender, CancellationTokenSource, IDisposable>>();
 
-        protected void Enlist(Func<IObservable<ISystemEvent>, IMessageSender, CancellationTokenSource, IDisposable> subscribe)
+        readonly List<Func<IObservable<ISystemEvent>, IMessageSender, CancellationTokenSource, IDisposable>>
+            _subscriptions =
+                new List<Func<IObservable<ISystemEvent>, IMessageSender, CancellationTokenSource, IDisposable>>();
+
+        protected void Enlist(
+            Func<IObservable<ISystemEvent>, IMessageSender, CancellationTokenSource, IDisposable> subscribe)
         {
             _subscriptions.Add(subscribe);
         }
@@ -28,31 +39,31 @@ namespace Lokad.Cqrs
         {
             Enlist((events, sender, t) => events
                 .OfType<EnvelopeAcked>()
-                .Where(ea => ea.Attributes.Any(p => p.Key == "finish")).Subscribe(c => t.Cancel()));
+                .Where(ea => ea.Attributes.Any(p => p.Key == "finish"))
+                .Subscribe(c => t.Cancel()));
 
             Enlist((events, sender, t) => events
                 .OfType<EnvelopeAcked>()
                 .Where(ea => ea.Attributes.Any(p => p.Key == "fail"))
                 .Subscribe(c =>
                     {
-                        _failures.Add((string) c.Attributes.First(p => p.Key == "fail").Value);
+                        _failures.Add(c.Attributes.First(p => p.Key == "fail").Value);
                         t.Cancel();
                     }));
 
             Enlist((events, sender, t) => events
                 .OfType<EnvelopeDispatchFailed>()
                 .Subscribe(d =>
-                {
-                    if (HandlerFailuresAreExpected) return;
-                    _failures.Add(d.Exception.ToString());
-                    t.Cancel();
-                }));
+                    {
+                        if (HandlerFailuresAreExpected) return;
+                        _failures.Add(d.Exception.ToString());
+                        t.Cancel();
+                    }));
         }
 
 
         public void TestConfiguration(Action<CloudEngineBuilder> config)
         {
-            var scenario = this;
             var events = new Subject<ISystemEvent>(Scheduler.TaskPool);
             var builder = new CloudEngineBuilder()
                 .EnlistObserver(events);
@@ -61,7 +72,7 @@ namespace Lokad.Cqrs
             config(builder);
 
             var disposables = new List<IDisposable>();
-            
+
             try
             {
                 using (var engine = builder.Build())
@@ -70,14 +81,13 @@ namespace Lokad.Cqrs
                     var sender = engine.Resolve<IMessageSender>();
                     foreach (var subscription in _subscriptions)
                     {
-                        disposables.Add(subscription(events,sender, t));
+                        disposables.Add(subscription(events, sender, t));
                     }
-                    
 
 
                     engine.Start(t.Token);
 
-                    foreach (var message in scenario.StartupMessages)
+                    foreach (var message in StartupMessages)
                     {
                         sender.SendOne(message);
                     }
@@ -91,7 +101,6 @@ namespace Lokad.Cqrs
                         t.Token.WaitHandle.WaitOne(5000);
                     }
 
-                    
 
                     if (_failures.Any())
                     {
@@ -102,7 +111,6 @@ namespace Lokad.Cqrs
                     {
                         Assert.Fail("Engine should be stopped manually!");
                     }
-
                 }
             }
             finally

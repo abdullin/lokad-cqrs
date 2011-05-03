@@ -10,14 +10,13 @@ using Lokad.Cqrs.Synthetic;
 using Microsoft.WindowsAzure;
 using NUnit.Framework;
 
+// ReSharper disable InconsistentNaming
+
 namespace Lokad.Cqrs
 {
-
-
     [TestFixture]
     public sealed class Run_all_Synthetic_tests_on_azure
     {
-        // ReSharper disable InconsistentNaming
 
         static void CurrentConfig(CloudEngineBuilder b)
         {

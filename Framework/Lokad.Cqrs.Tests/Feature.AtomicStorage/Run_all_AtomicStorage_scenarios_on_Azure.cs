@@ -1,18 +1,13 @@
-﻿#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
-
-// Copyright (c) Lokad 2010-2011, http://www.lokad.com
-// This code is released as Open Source under the terms of the New BSD Licence
-
-#endregion
-
-using Lokad.Cqrs.Build.Engine;
+﻿using Lokad.Cqrs.Build.Engine;
+using Microsoft.WindowsAzure;
 using NUnit.Framework;
+
 
 // ReSharper disable InconsistentNaming
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
     [TestFixture]
-    public sealed class Run_all_AtomicStorage_scenarios_in_memory
+    public sealed class Run_all_AtomicStorage_scenarios_on_Azure
     {
         [Test]
         public void When_atomic_config_is_requested()
@@ -36,13 +31,19 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                 .TestConfiguration(CurrentConfig);
         }
 
-        static void CurrentConfig(CloudEngineBuilder config)
+        static void CurrentConfig(CloudEngineBuilder b)
         {
-            config.Memory(m =>
+            b.Azure(m =>
+            {
+                m.AddAzureAccount("azure-dev", CloudStorageAccount.DevelopmentStorageAccount);
+                m.AddAzureProcess("azure-dev", new[] { "incoming" }, c =>
                 {
-                    m.AddMemoryProcess("do");
-                    m.AddMemorySender("do", cb => cb.IdGeneratorForTests());
+                    c.QueueVisibilityTimeout(1);
+                    c.WhenFactoryCreated(f => f.SetupForTesting());
                 });
+                m.AddAzureSender("azure-dev", "incoming", x => x.IdGeneratorForTests());
+            });
+            b.Storage(m => m.AtomicStorageIsAzure("azure-dev"));
         }
     }
 }

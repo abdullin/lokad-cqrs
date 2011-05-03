@@ -14,6 +14,11 @@ namespace Lokad.Cqrs.Build.Engine
             _modules.Add(new MemoryAtomicStorageModule());
         }
 
+        public void EnlistModule(IModule module)
+        {
+            _modules.Add(module);
+        }
+
 
         void IModule.Configure(IComponentRegistry componentRegistry)
         {

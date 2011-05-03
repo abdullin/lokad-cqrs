@@ -21,7 +21,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         readonly CloudBlobContainer _container;
         readonly IAzureAtomicStorageStrategy _convention;
 
-        public AzureAtomicEntityWriter(CloudBlobClient client, IAzureAtomicStorageStrategy convention)
+        public AzureAtomicEntityWriter(IAzureClientConfiguration client, IAzureAtomicStorageStrategy convention)
         {
             var containerName = _convention.GetFolderForEntity(typeof (TEntity));
             _container = client.GetContainerReference(containerName);
@@ -35,8 +35,8 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             TEntity view;
             try
             {
-                var downloadText = blob.DownloadText();
-                view = _convention.Deserialize<TEntity>(downloadText);
+                var data = blob.DownloadByteArray();
+                view = _convention.Deserialize<TEntity>(data);
                 view = updateViewFactory(view);
             }
             catch (StorageClientException ex)
@@ -44,7 +44,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                 view = addViewFactory();
             }
 
-            blob.UploadText(_convention.Serialize(view));
+            blob.UploadByteArray(_convention.Serialize(view));
             return view;
         }
 
