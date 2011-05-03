@@ -13,5 +13,6 @@ namespace Lokad.Cqrs.Core.Envelope
         Sender = 2,
         CustomNumber = 3,
         CustomString = 4,
+        CustomTag = 5
     }
 }
