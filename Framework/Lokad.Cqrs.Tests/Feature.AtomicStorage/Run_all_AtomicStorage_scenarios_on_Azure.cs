@@ -1,10 +1,16 @@
-﻿using System;
+﻿#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
+
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
 using Lokad.Cqrs.Build.Engine;
 using Microsoft.WindowsAzure;
 using NUnit.Framework;
 
-
 // ReSharper disable InconsistentNaming
+
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
     [TestFixture]
@@ -35,12 +41,12 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         static void CurrentConfig(CloudEngineBuilder b)
         {
             b.Azure(m =>
-            {
-                m.AddAzureAccount("azure-dev", CloudStorageAccount.DevelopmentStorageAccount);
-                m.AddAzureProcess("azure-dev", new[] { "incoming" }, c => c.QueueVisibility(1));
-                m.AddAzureSender("azure-dev", "incoming", x => x.IdGeneratorForTests());
-                m.WipeAccountsAtStartUp = true;
-            });
+                {
+                    m.AddAzureAccount("azure-dev", CloudStorageAccount.DevelopmentStorageAccount);
+                    m.AddAzureProcess("azure-dev", new[] {"incoming"}, c => c.QueueVisibility(1));
+                    m.AddAzureSender("azure-dev", "incoming", x => x.IdGeneratorForTests());
+                    m.WipeAccountsAtStartUp = true;
+                });
             b.Storage(m => m.AtomicStorageIsAzure("azure-dev", c => c.WithStrategy(DefaultWithCustomConfig)));
         }
 
@@ -48,7 +54,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         {
             builder.WhereEntity(type =>
                 {
-                    if (typeof(Define.AtomicEntity).IsAssignableFrom(type))
+                    if (typeof (Define.AtomicEntity).IsAssignableFrom(type))
                         return true;
                     if (type.Name.Contains("CustomDomainView"))
                         return true;
