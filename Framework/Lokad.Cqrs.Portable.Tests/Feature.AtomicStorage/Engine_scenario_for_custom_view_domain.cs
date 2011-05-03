@@ -1,18 +1,22 @@
-﻿using System;
+﻿#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
+
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
+using System;
 using System.Runtime.Serialization;
-using Lokad.Cqrs.Build.Engine;
 using Autofac;
+using Lokad.Cqrs.Build.Engine;
 
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
     public sealed class Engine_scenario_for_custom_view_domain : FiniteEngineScenario
     {
+        public interface ICqrsView<TKey> {}
 
-        public interface ICqrsView<TKey>
-        {
-            
-        }
-        public sealed class ViewUpdater <TKey,TView> : IAtomicEntityWriter<TKey,TView>
+        public sealed class ViewUpdater<TKey, TView> : IAtomicEntityWriter<TKey, TView>
             where TView : ICqrsView<TKey>
         {
             readonly IAtomicEntityWriter<TKey, TView> _inner;
@@ -22,7 +26,8 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                 _inner = inner;
             }
 
-            public TView AddOrUpdate(TKey key, Func<TView> addFactory, Func<TView, TView> update, AddOrUpdateHint hint=AddOrUpdateHint.ProbablyExists)
+            public TView AddOrUpdate(TKey key, Func<TView> addFactory, Func<TView, TView> update,
+                AddOrUpdateHint hint = AddOrUpdateHint.ProbablyExists)
             {
                 return _inner.AddOrUpdate(key, addFactory, update, hint);
             }
@@ -33,12 +38,15 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             }
         }
 
+        [DataContract]
         public sealed class CqrsViewWithTypedKey : ICqrsView<int>
         {
-            public int Value;
+            [DataMember] public int Value;
         }
-         [DataContract]
-        public sealed class Message : Define.Command{}
+
+        [DataContract]
+        public sealed class Message : Define.Command {}
+
         public sealed class Handler : Define.Handle<Message>
         {
             readonly NuclearStorage _storage;
@@ -63,7 +71,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                     {
                         if (actual != 2)
                         {
-                            meb.AddString("fail", "Unexpected value"); 
+                            meb.AddString("fail", "Unexpected value");
                         }
                         else
                         {
@@ -76,7 +84,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 
         protected override void Configure(CloudEngineBuilder config)
         {
-            config.Advanced(cb => cb.RegisterGeneric(typeof(ViewUpdater<,>)));
+            config.Advanced(cb => cb.RegisterGeneric(typeof (ViewUpdater<,>)));
             StartupMessages.Add(new Message());
         }
     }

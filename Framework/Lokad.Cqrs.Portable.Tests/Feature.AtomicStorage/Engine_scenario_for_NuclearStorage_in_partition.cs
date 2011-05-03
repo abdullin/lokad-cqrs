@@ -1,16 +1,25 @@
-﻿using System.Runtime.Serialization;
+﻿#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
+
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
+using System.Runtime.Serialization;
 using Lokad.Cqrs.Build.Engine;
 
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
     public sealed class Engine_scenario_for_NuclearStorage_in_partition : FiniteEngineScenario
     {
+        [DataContract]
         public sealed class Entity
         {
-            public int Count;
+            [DataMember] public int Count;
         }
-         [DataContract]
-        public sealed class NuclearMessage : Define.Command { }
+
+        [DataContract]
+        public sealed class NuclearMessage : Define.Command {}
 
         public sealed class NuclearHandler : Define.Handle<NuclearMessage>
         {

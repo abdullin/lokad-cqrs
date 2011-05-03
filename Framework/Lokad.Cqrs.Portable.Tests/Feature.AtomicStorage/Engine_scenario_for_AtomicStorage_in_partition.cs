@@ -8,7 +8,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
     {
          [DataContract]
         public sealed class AtomicMessage : Define.Command { }
-
+        [DataContract]
         public sealed class Entity
         {
             public int Count;
