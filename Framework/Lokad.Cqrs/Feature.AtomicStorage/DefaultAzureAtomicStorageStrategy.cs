@@ -27,22 +27,22 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 
         public string GetFolderForEntity(Type entityType)
         {
-            return entityType.Name.ToLowerInvariant();
+            return "atomic-" +entityType.Name.ToLowerInvariant();
         }
 
         public string GetFolderForSingleton()
         {
-            return "singletons";
+            return "atomic-singleton";
         }
 
         public string GetNameForEntity(Type entity, object key)
         {
-            return Convert.ToString(key, CultureInfo.InvariantCulture).ToLowerInvariant();
+            return Convert.ToString(key, CultureInfo.InvariantCulture).ToLowerInvariant() + ".pb";
         }
 
         public string GetNameForSingleton(Type singletonType)
         {
-            return singletonType.Name.ToLowerInvariant();
+            return singletonType.Name.ToLowerInvariant() + ".pb";
         }
 
         public byte[] Serialize<TEntity>(TEntity entity)
