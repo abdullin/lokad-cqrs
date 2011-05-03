@@ -63,15 +63,7 @@ namespace Lokad.Cqrs.Core.Dispatch
                         var consumerType = _messageConsumers[item.MappedType];
                         {
                             var consumer = scope.Resolve(consumerType);
-                            try
-                            {
-                                _invoker.InvokeConsume(consumer, item, message);
-                            }
-                            catch(Exception ex)
-                            {
-                                var txt = string.Format("Dispatch to {0} failed", consumerType);
-                                throw new InvalidOperationException(txt, ex);
-                            }
+                            _invoker.InvokeConsume(consumer, item, message);
                         }
                     }
                 }

@@ -69,15 +69,8 @@ namespace Lokad.Cqrs.Core.Dispatch
                         using (var scope = unit.BeginLifetimeScope(DispatcherUtil.ScopeTag))
                         {
                             var consumer = scope.Resolve(consumerType);
-                            try
-                            {
-                                _invoker.InvokeConsume(consumer, item, envelope);
-                            }
-                            catch (Exception ex)
-                            {
-                                var txt = string.Format("Dispatch to {0} failed", consumerType);
-                                throw new InvalidOperationException(txt, ex);
-                            }
+                            _invoker.InvokeConsume(consumer, item, envelope);
+                            
                         }
                     }
                 }

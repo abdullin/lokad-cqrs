@@ -48,6 +48,8 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 
         [DataContract]
         public sealed class Message : Define.Command {}
+        [DataContract]
+        public sealed class FinishMessage : Define.Command { }
 
         public sealed class Handler : Define.Handle<Message>
         {
@@ -69,7 +71,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 
                 var actual = _storage.GetEntity<CustomDomainViewWithTypedKey>(1).Convert(c => c.Value).GetValue(0);
 
-                _sender.SendOne(new Message(), meb =>
+                _sender.SendOne(new FinishMessage(), meb =>
                     {
                         if (actual != 2)
                         {
