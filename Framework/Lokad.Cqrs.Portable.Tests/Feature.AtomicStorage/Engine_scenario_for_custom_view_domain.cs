@@ -10,6 +10,8 @@ using System.Runtime.Serialization;
 using Autofac;
 using Lokad.Cqrs.Build.Engine;
 
+// ReSharper disable InconsistentNaming
+
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
     public sealed class Engine_scenario_for_custom_view_domain : FiniteEngineScenario

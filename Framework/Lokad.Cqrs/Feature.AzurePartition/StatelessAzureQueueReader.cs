@@ -47,20 +47,6 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             _visibilityTimeout = visibilityTimeout;
         }
 
-        public void SetupForTesting()
-        {
-            if (_queue.Exists())
-            {
-                _queue.Clear();
-            }
-            _cloudBlob.CreateIfNotExist();
-            foreach (var blob in _cloudBlob.ListBlobs())
-            {
-                ((CloudBlockBlob)blob).DeleteIfExists();
-            }
-        }
-
-
         public void Initialize()
         {
             _queue.CreateIfNotExist();

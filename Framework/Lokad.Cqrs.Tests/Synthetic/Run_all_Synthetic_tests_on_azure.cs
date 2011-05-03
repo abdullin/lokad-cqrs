@@ -23,12 +23,9 @@ namespace Lokad.Cqrs
             b.Azure(m =>
                 {
                     m.AddAzureAccount("azure-dev", CloudStorageAccount.DevelopmentStorageAccount);
-                    m.AddAzureProcess("azure-dev", new[] {"incoming"}, c =>
-                        {
-                            c.QueueVisibilityTimeout(1);
-                            c.WhenFactoryCreated(f => f.SetupForTesting());
-                        });
+                    m.AddAzureProcess("azure-dev", new[] {"incoming"}, c => c.QueueVisibility(1));
                     m.AddAzureSender("azure-dev", "incoming", x => x.IdGeneratorForTests());
+                    m.WipeAccountsAtStartUp = true;
                 });
         }
 

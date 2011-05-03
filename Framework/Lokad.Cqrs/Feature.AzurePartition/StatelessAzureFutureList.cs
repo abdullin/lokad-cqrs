@@ -34,14 +34,6 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             _container.CreateIfNotExist();
         }
 
-        public void SetupForTesting()
-        {
-            foreach (var item in _container.ListBlobs())
-            {
-                ((CloudBlockBlob) item).Delete();
-            }
-        }
-
         public void PutMessage(ImmutableEnvelope envelope)
         {
             if (envelope.DeliverOnUtc == default(DateTime))

@@ -23,8 +23,6 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
         TimeSpan _queueVisibilityTimeout = 30.Seconds();
         Tuple<Type, Action<ISingleThreadMessageDispatcher>> _dispatcher;
 
-        Action<AzurePartitionFactory> _onActivateFactory = factory => { };
-
         string _accountName;
 
         public AzurePartitionModule(string accountId, string[] queueNames)
@@ -96,25 +94,18 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
             var factory = new AzurePartitionFactory(streamer, log, configuration, _queueVisibilityTimeout, scheduling);
             
             var notifier = factory.GetNotifier(_queueNames.ToArray());
-            _onActivateFactory(factory);
             var quarantine = new MemoryQuarantine();
             var transport = new DispatcherProcess(log, dispatcher, notifier, quarantine);
             return transport;
         }
 
-        public AzurePartitionModule QueueVisibilityTimeout(int timeoutMilliseconds)
+        public AzurePartitionModule QueueVisibility(int timeoutMilliseconds)
         {
             _queueVisibilityTimeout = TimeSpan.FromMilliseconds(timeoutMilliseconds);
             return this;
         }
 
-        public AzurePartitionModule WhenFactoryCreated(Action<AzurePartitionFactory> config)
-        {
-            _onActivateFactory += config;
-            return this;
-        }
-
-        public AzurePartitionModule QueueVisibilityTimeout(TimeSpan timespan)
+        public AzurePartitionModule QueueVisibility(TimeSpan timespan)
         {
             _queueVisibilityTimeout = timespan;
             return this;

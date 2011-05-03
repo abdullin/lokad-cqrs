@@ -35,18 +35,21 @@ namespace Lokad.Cqrs.Build
             get { return _accountName; }
         }
 
-        public CloudBlobContainer GetContainerReference(string containerName)
-        {
-            var client = Account.CreateCloudBlobClient();
-            _blobClientConfiguration(client);
-            return client.GetContainerReference(containerName);
-        }
 
-        public CloudQueue BuildQueue(string queueName)
+        
+
+        public CloudQueueClient CreateQueueClient()
         {
             var client = Account.CreateCloudQueueClient();
             _queueClientConfiguration(client);
-            return client.GetQueueReference(queueName);
+            return client;
+        }
+
+        public CloudBlobClient CreateBlobClient()
+        {
+            var client = Account.CreateCloudBlobClient();
+            _blobClientConfiguration(client);
+            return client;
         }
     }
 }

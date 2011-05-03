@@ -18,6 +18,7 @@ namespace Lokad.Cqrs.Build
         Action<CloudQueueClient> _queueClientConfiguration;
         Action<CloudBlobClient> _blobClientConfiguration;
         readonly string _accountId;
+        bool _cleanAccount;
 
 
         public AzureClientConfigurationBuilder ConfigureQueueClient(Action<CloudQueueClient> configure,
@@ -56,6 +57,11 @@ namespace Lokad.Cqrs.Build
             _blobClientConfiguration = client => client.RetryPolicy = RetryPolicies.NoRetry();
             _account = account;
             _accountId = accountId;
+        }
+
+        public void CleanAtStartup()
+        {
+            _cleanAccount = true;
         }
 
         internal AzureClientConfiguration Build()

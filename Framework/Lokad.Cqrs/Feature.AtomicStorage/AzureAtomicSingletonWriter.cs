@@ -26,6 +26,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             var name = _strategy.GetNameForSingleton(typeof (TView));
 
             return _client
+                .CreateBlobClient()
                 .GetContainerReference(_strategy.GetFolderForSingleton())
                 .GetBlobReference(name);
         }

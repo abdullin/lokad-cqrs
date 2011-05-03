@@ -7,6 +7,7 @@
         IAtomicSingletonReader<TSingleton> GetSingletonReader<TSingleton>();
         IAtomicSingletonWriter<TSingleton> GetSingletonWriter<TSingleton>();
 
+
         /// <summary>
         /// Call this once on start-up to initialize folders
         /// </summary>

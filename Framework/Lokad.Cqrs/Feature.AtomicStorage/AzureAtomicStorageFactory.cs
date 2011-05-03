@@ -5,9 +5,8 @@
 
 #endregion
 
+using System.Collections.Generic;
 using System.Linq;
-using Lokad.Cqrs.Evil;
-using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
@@ -34,7 +33,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         }
 
         readonly object _initializationLock = new object();
-        bool _initialized = false;
+        bool _initialized;
 
         /// <summary>
         /// Call this once on start-up to initialize folders
@@ -53,17 +52,23 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 
         void DoInitialize()
         {
-            var types = _strategy.GetEntityTypes();
+            var folders = new HashSet<string>();
 
-            var folders = types
-                .Select(t => _strategy.GetFolderForEntity(t)).ToSet();
+            foreach (var type in _strategy.GetEntityTypes())
+            {
+                var folder = _strategy.GetFolderForEntity(type);
+                folders.Add(folder);
+            }
 
             folders.Add(_strategy.GetFolderForSingleton());
 
+            var client = _client.CreateBlobClient();
             folders
                 .AsParallel()
                 .WithDegreeOfParallelism(folders.Count)
-                .ForAll(t => _client.GetContainerReference(t).CreateIfNotExist());
+                .ForAll(t => client
+                    .GetContainerReference(t)
+                    .CreateIfNotExist());
         }
 
         readonly IAzureAtomicStorageStrategy _strategy;

@@ -24,7 +24,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         public AzureAtomicEntityWriter(IAzureClientConfiguration client, IAzureAtomicStorageStrategy convention)
         {
             var containerName = _convention.GetFolderForEntity(typeof (TEntity));
-            _container = client.GetContainerReference(containerName);
+            _container = client.CreateBlobClient().GetContainerReference(containerName);
             _convention = convention;
         }
 

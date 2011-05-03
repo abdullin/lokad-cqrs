@@ -76,22 +76,14 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
             _observer = observer;
         }
 
-        public void SetupForTesting()
-        {
-            foreach (var intake in _intakes.Values)
-            {
-                intake.SetupForTesting();
-            }
-        }
-
         AzurePartitionInboxIntake BuildIntake(string name)
         {
-            var queue = _configuration.BuildQueue(name);
-            var container = _configuration.GetContainerReference(name);
+            var queue = _configuration.CreateQueueClient().GetQueueReference(name);
+            var container = _configuration.CreateBlobClient().GetContainerReference(name);
             
             var poisonQueue = new Lazy<CloudQueue>(() =>
                 {
-                    var queueReference = _configuration.BuildQueue(name + "-poison");
+                    var queueReference = _configuration.CreateQueueClient().GetQueueReference(name + "-poison");
                     queueReference.CreateIfNotExist();
                     return queueReference;
                 }, LazyThreadSafetyMode.ExecutionAndPublication);
@@ -161,12 +153,6 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
             Future = future;
             Writer = writer;
             Reader = reader;
-        }
-
-        public void SetupForTesting()
-        {
-            Reader.SetupForTesting();
-            Future.SetupForTesting();
         }
     }
 }

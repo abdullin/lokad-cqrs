@@ -12,7 +12,8 @@ namespace Lokad.Cqrs
     public interface IAzureClientConfiguration
     {
         string AccountName { get; }
-        CloudBlobContainer GetContainerReference(string containerName);
-        CloudQueue BuildQueue(string queueName);
+        
+        CloudBlobClient CreateBlobClient();
+        CloudQueueClient CreateQueueClient();
     }
 }

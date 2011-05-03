@@ -30,7 +30,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         {
             _strategy = strategy;
             var containerName = strategy.GetFolderForEntity(typeof (TEntity));
-            _container = client.GetContainerReference(containerName);
+            _container = client.CreateBlobClient().GetContainerReference(containerName);
         }
 
         public bool TryGet(TKey key, out TEntity entity)

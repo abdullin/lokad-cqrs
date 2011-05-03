@@ -35,7 +35,7 @@ namespace Lokad.Cqrs.Build
         readonly IList<IModule> _modules = new List<IModule>();
 
 
-
+        public bool WipeAccountsAtStartUp { get; set; }
         /// <summary>
         /// Registers the specified storage account as default into the container
         /// </summary>
@@ -128,8 +128,10 @@ namespace Lokad.Cqrs.Build
             }
 
             builder.RegisterType<AzureWriteQueueFactory>().As<IQueueWriterFactory>().SingleInstance();
-            //builder.RegisterType<AzurePartitionFactory>().As<AzurePartitionFactory, IEngineProcess>().SingleInstance();
+            
             builder.Update(componentRegistry);
+
+
         }
     }
 }

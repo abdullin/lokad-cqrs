@@ -8,6 +8,8 @@
 using System.Runtime.Serialization;
 using Lokad.Cqrs.Build.Engine;
 
+// ReSharper disable InconsistentNaming
+
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
     public sealed class Engine_scenario_for_NuclearStorage_in_partition : FiniteEngineScenario
