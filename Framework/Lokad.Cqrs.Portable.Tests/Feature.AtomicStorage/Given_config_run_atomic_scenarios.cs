@@ -28,13 +28,19 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                 .EnlistObserver(events);
 
             scenario.Configure(builder);
-            
+
+
+            var failures = new List<string>();
 
             using (var engine = builder.Build())
             using (var t = new CancellationTokenSource())
-            using (events
-                .OfType<EnvelopeAcked>()
-                .Where(ea => ea.Attributes.Any(p => p.Key == "finish")).Subscribe(c => t.Cancel()))
+            using (events.OfType<EnvelopeAcked>().Where(ea => ea.Attributes.Any(p => p.Key == "finish")).Subscribe(c => t.Cancel()))
+            using (events.OfType<EnvelopeAcked>().Where(ea => ea.Attributes.Any(p => p.Key == "fail"))
+                .Subscribe(c =>
+                    {
+                        failures.Add((string)c.Attributes.First(p => p.Key == "fail").Value);
+                        t.Cancel();
+                    }))
             {
 
                 engine.Start(t.Token);
@@ -43,7 +49,16 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                 engine.Resolve<IMessageSender>().SendOne(message);
                 t.Token.WaitHandle.WaitOne(5000);
 
-                Assert.IsTrue(t.IsCancellationRequested);
+                if (failures.Any())
+                {
+                    Assert.Fail(failures.First());
+                }
+
+                if (!t.IsCancellationRequested)
+                {
+                    Assert.Fail("Engine should be stopped manually!");
+                }
+                
             }
         }
 
@@ -57,6 +72,12 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         public void When_nuclear_config_is_requested()
         {
             TestConfiguration(new Engine_scenario_for_NuclearStorage_in_partition());
+        }
+
+        [Test]
+        public void When_custom_view_domain()
+        {
+            TestConfiguration(new Engine_scenario_for_custom_view_domain());
         }
     }
 }

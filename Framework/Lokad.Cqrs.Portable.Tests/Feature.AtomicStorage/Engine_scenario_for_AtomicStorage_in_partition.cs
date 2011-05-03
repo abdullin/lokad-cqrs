@@ -1,5 +1,4 @@
-﻿using System;
-using Lokad.Cqrs.Build.Engine;
+﻿using Lokad.Cqrs.Build.Engine;
 
 // ReSharper disable InconsistentNaming
 namespace Lokad.Cqrs.Feature.AtomicStorage
@@ -14,7 +13,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             public int Count;
         }
 
-        public sealed class Consumer : Define.Handler<AtomicMessage>
+        public sealed class Consumer : Define.Handle<AtomicMessage>
         {
             readonly IMessageSender _sender;
             readonly IAtomicSingletonWriter<Entity> _singleton;
@@ -52,21 +51,6 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                 m.AddMemoryAtomicStorage();
                 m.AddMemorySender("do", cb => cb.IdGeneratorForTests());
             });
-        }
-    }
-
-    public sealed class Engine_scenario_for_custom_view_domain : IFiniteEngineScenario
-    {
-        
-
-        public Define.Command Start()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Configure(CloudEngineBuilder config)
-        {
-            throw new NotImplementedException();
         }
     }
 }

@@ -123,7 +123,5 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         {
             return base.GetType();
         }
-
-
     }
 }

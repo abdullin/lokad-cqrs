@@ -16,12 +16,12 @@ namespace Lokad.Cqrs
 
         }
 
-        public interface Consumer<TEvent> : IConsume<TEvent> where TEvent : Event
+        public interface Subscribe<TEvent> : IConsume<TEvent> where TEvent : Event
         {
             
         }
 
-        public interface Handler<TCommand> : IConsume<TCommand> where TCommand : Command
+        public interface Handle<TCommand> : IConsume<TCommand> where TCommand : Command
         {
             
         }

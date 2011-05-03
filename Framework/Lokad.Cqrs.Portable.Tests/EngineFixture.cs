@@ -88,7 +88,7 @@ namespace Lokad.Cqrs
             public string Data { get; set; }
         }
 
-        public sealed class StringHandler : Define.Handler<StringCommand>
+        public sealed class StringHandler : Define.Handle<StringCommand>
         {
             readonly Action<string> _action;
 

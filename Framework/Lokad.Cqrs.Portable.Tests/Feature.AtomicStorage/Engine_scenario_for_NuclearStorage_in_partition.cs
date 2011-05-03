@@ -17,7 +17,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 
         public sealed class NuclearMessage : Define.Command { }
 
-        public sealed class NuclearHandler : Define.Handler<NuclearMessage>
+        public sealed class NuclearHandler : Define.Handle<NuclearMessage>
         {
             readonly IMessageSender _sender;
             readonly NuclearStorage _storage;

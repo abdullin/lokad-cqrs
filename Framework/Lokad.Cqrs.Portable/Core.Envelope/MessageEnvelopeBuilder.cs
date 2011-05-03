@@ -27,6 +27,11 @@ namespace Lokad.Cqrs.Core.Envelope
             Attributes.Add(key, value);
         }
 
+        public void AddString(string tag)
+        {
+            Attributes.Add(tag,null);
+        }
+
         public MessageEnvelopeBuilder(string envelopeId)
         {
             EnvelopeId = envelopeId;

@@ -34,7 +34,7 @@ namespace Lokad.Cqrs
             }
         }
 
-        public sealed class Consumer : Define.Handler<Message1>
+        public sealed class Consumer : Define.Handle<Message1>
         {
             readonly IMessageSender _sender;
 
