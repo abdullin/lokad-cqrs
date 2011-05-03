@@ -17,7 +17,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         [DataContract]
         public sealed class Entity : Define.AtomicEntity
         {
-            [DataMember] public int Count;
+            [DataMember(Order = 1)] public int Count;
         }
 
         [DataContract]

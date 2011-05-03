@@ -49,12 +49,19 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                             "Container '{0}' does not exist. You need to initialize this atomic storage and ensure that '{1}' is known to '{2}'.",
                             blob.Container.Name, typeof (TEntity).Name, _strategy.GetType().Name);
                         throw new InvalidOperationException(s, ex);
+                    case StorageErrorCode.BlobNotFound:
+                        view = addViewFactory();
+                        break;
+                    default:
+                        throw;
+
                 }
 
-                view = addViewFactory();
+                
             }
 
-            blob.UploadByteArray(_strategy.Serialize(view));
+            var content = _strategy.Serialize(view);
+            blob.UploadByteArray(content);
             return view;
         }
 

@@ -16,7 +16,12 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 {
     public sealed class Engine_scenario_for_custom_view_domain : FiniteEngineScenario
     {
-        
+        [DataContract]
+        public sealed class CustomDomainViewWithTypedKey : ICqrsView<int>
+        {
+            [DataMember(Order = 1)]
+            public int Value { get; set; }
+        }
         public interface ICqrsView<TKey>  {}
 
         public sealed class ViewUpdater<TKey, TView> : IAtomicEntityWriter<TKey, TView>
@@ -39,12 +44,6 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             {
                 return _inner.TryDelete(key);
             }
-        }
-
-        [DataContract]
-        public sealed class CustomDomainViewWithTypedKey : ICqrsView<int>
-        {
-            [DataMember] public int Value;
         }
 
         [DataContract]
@@ -74,7 +73,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                     {
                         if (actual != 2)
                         {
-                            meb.AddString("fail", "Unexpected value");
+                            meb.AddString("fail", "Expected 2 but got " + actual);
                         }
                         else
                         {
@@ -91,4 +90,6 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             StartupMessages.Add(new Message());
         }
     }
+
+    
 }
