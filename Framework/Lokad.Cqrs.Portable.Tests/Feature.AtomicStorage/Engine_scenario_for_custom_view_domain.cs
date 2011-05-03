@@ -16,7 +16,8 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 {
     public sealed class Engine_scenario_for_custom_view_domain : FiniteEngineScenario
     {
-        public interface ICqrsView<TKey> {}
+        
+        public interface ICqrsView<TKey>  {}
 
         public sealed class ViewUpdater<TKey, TView> : IAtomicEntityWriter<TKey, TView>
             where TView : ICqrsView<TKey>
@@ -41,7 +42,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         }
 
         [DataContract]
-        public sealed class CqrsViewWithTypedKey : ICqrsView<int>
+        public sealed class CustomDomainViewWithTypedKey : ICqrsView<int>
         {
             [DataMember] public int Value;
         }
@@ -52,10 +53,10 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         public sealed class Handler : Define.Handle<Message>
         {
             readonly NuclearStorage _storage;
-            readonly ViewUpdater<int, CqrsViewWithTypedKey> _view;
+            readonly ViewUpdater<int, CustomDomainViewWithTypedKey> _view;
             readonly IMessageSender _sender;
 
-            public Handler(NuclearStorage storage, ViewUpdater<int, CqrsViewWithTypedKey> view, IMessageSender sender)
+            public Handler(NuclearStorage storage, ViewUpdater<int, CustomDomainViewWithTypedKey> view, IMessageSender sender)
             {
                 _storage = storage;
                 _sender = sender;
@@ -65,9 +66,9 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             public void Consume(Message atomicMessage, MessageContext context)
             {
                 _view.AddOrUpdate(1, v => v.Value += 1);
-                _storage.UpdateOrThrowEntity<CqrsViewWithTypedKey>(1, t => t.Value += 1);
+                _storage.UpdateOrThrowEntity<CustomDomainViewWithTypedKey>(1, t => t.Value += 1);
 
-                var actual = _storage.GetEntity<CqrsViewWithTypedKey>(1).Convert(c => c.Value).GetValue(0);
+                var actual = _storage.GetEntity<CustomDomainViewWithTypedKey>(1).Convert(c => c.Value).GetValue(0);
 
                 _sender.SendOne(new Message(), meb =>
                     {

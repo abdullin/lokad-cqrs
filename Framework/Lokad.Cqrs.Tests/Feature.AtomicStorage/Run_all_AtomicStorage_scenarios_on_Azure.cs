@@ -1,4 +1,5 @@
-﻿using Lokad.Cqrs.Build.Engine;
+﻿using System;
+using Lokad.Cqrs.Build.Engine;
 using Microsoft.WindowsAzure;
 using NUnit.Framework;
 
@@ -40,7 +41,16 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                 m.AddAzureSender("azure-dev", "incoming", x => x.IdGeneratorForTests());
                 m.WipeAccountsAtStartUp = true;
             });
-            b.Storage(m => m.AtomicStorageIsAzure("azure-dev"));
+            b.Storage(m => m.AtomicStorageIsAzure("azure-dev", c => c.WithStrategy(x => x.WhereEntity(EntityFilter))));
+        }
+
+        static bool EntityFilter(Type type)
+        {
+            if (typeof(Define.AtomicEntity).IsAssignableFrom(type))
+                return true;
+            if (type.Name.Contains("CustomDomainView"))
+                return true;
+            return false;
         }
     }
 }

@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Lokad.Cqrs.Evil;
 
 namespace Lokad.Cqrs.Core.Directory
 {
@@ -43,25 +44,6 @@ namespace Lokad.Cqrs.Core.Directory
         }
 
 
-        public static bool IsUserAssembly(Assembly a)
-        {
-            if (string.IsNullOrEmpty(a.FullName))
-                return false;
-
-            var prefixes = new[]
-                {
-                    "System", "Microsoft", "nunit", "JetBrains", "Autofac", "mscorlib"
-                };
-
-            foreach (var prefix in prefixes)
-            {
-                if (a.FullName.StartsWith(prefix, StringComparison.InvariantCultureIgnoreCase))
-                    return false;
-            }
-
-            return true;
-        }
-
         public void Constrain(MethodInvokerHint hint)
         {
             WhereMessages(t => hint.MessageInterface.IsAssignableFrom(t));
@@ -74,7 +56,7 @@ namespace Lokad.Cqrs.Core.Directory
         {
             if (!_assemblies.Any())
             {
-                var userAssemblies = AppDomain.CurrentDomain.GetAssemblies().Where(IsUserAssembly);
+                var userAssemblies = AppDomain.CurrentDomain.GetAssemblies().Where(AssemblyScanEvil.IsUserAssembly);
                 foreach (var userAssembly in userAssemblies)
                 {
                     _assemblies.Add(userAssembly);

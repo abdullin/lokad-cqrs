@@ -5,6 +5,7 @@
 
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -54,14 +55,22 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         {
             var folders = new HashSet<string>();
 
-            foreach (var type in _strategy.GetEntityTypes())
+            var entityTypes = _strategy.GetEntityTypes().ToArray();
+            var singletonTypes = _strategy.GetSingletonTypes().ToArray();
+
+            if (entityTypes.Length == 0 && singletonTypes.Length == 0)
+            {
+                throw new InvalidOperationException(
+                    string.Format("AzureAtomicStorage was configured, but without any entity or singleton definitions. Check info on your strategy: {0}", _strategy.GetType()));
+            }
+
+            foreach (var type in entityTypes)
             {
                 var folder = _strategy.GetFolderForEntity(type);
                 folders.Add(folder);
             }
 
             folders.Add(_strategy.GetFolderForSingleton());
-
             var client = _client.CreateBlobClient();
             folders
                 .AsParallel()

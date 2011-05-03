@@ -62,7 +62,6 @@
     <Compile Include="Build\Engine\CloudEngineRole.cs" />
     <Compile Include="Core.Serialization\DataSerializerWithAutoDetection.cs" />
     <Compile Include="Core.Envelope\EnvelopeSerializerWithProtoBuf.cs" />
-    <Compile Include="Feature.AtomicStorage\AtomicStorageInitialization.cs" />
     <Compile Include="Feature.AtomicStorage\AzureAtomicEntityWriter.cs" />
     <Compile Include="Feature.AtomicStorage\AzureAtomicSingletonReader.cs" />
     <Compile Include="Feature.AtomicStorage\AzureAtomicEntityReader.cs" />
@@ -74,7 +73,8 @@
     <Compile Include="Evil\ExtendIDictionary.cs" />
     <Compile Include="Evil\ExtendIEnumerable.cs" />
     <Compile Include="Evil\ExtendInt32.cs" />
-    <Compile Include="Evil\Filter.cs" />
+    <Compile Include="Feature.AtomicStorage\DefaultAzureAtomicStorageStrategy.cs" />
+    <Compile Include="Feature.AtomicStorage\DefaultAzureAtomicStorageStrategyBuilder.cs" />
     <Compile Include="Feature.AtomicStorage\IAzureAtomicStorageStrategy.cs" />
     <Compile Include="Build\AzureClientConfigurationBuilder.cs" />
     <Compile Include="Feature.AzurePartition\Inbox\StatelessAzureScheduler.cs" />

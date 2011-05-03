@@ -15,7 +15,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
     public sealed class Engine_scenario_for_NuclearStorage_in_partition : FiniteEngineScenario
     {
         [DataContract]
-        public sealed class Entity
+        public sealed class Entity : Define.AtomicEntity
         {
             [DataMember] public int Count;
         }

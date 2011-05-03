@@ -19,12 +19,12 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         //where TEntity : IAtomicEntity<TKey>
     {
         readonly CloudBlobContainer _container;
-        readonly IAzureAtomicStorageStrategy _convention;
+        readonly IAzureAtomicStorageStrategy _strategy;
 
-        public AzureAtomicEntityWriter(IAzureClientConfiguration client, IAzureAtomicStorageStrategy convention)
+        public AzureAtomicEntityWriter(IAzureClientConfiguration client, IAzureAtomicStorageStrategy strategy)
         {
-            _convention = convention;
-            var containerName = convention.GetFolderForEntity(typeof (TEntity));
+            _strategy = strategy;
+            var containerName = strategy.GetFolderForEntity(typeof (TEntity));
             _container = client.CreateBlobClient().GetContainerReference(containerName);
             
         }
@@ -37,15 +37,24 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             try
             {
                 var data = blob.DownloadByteArray();
-                view = _convention.Deserialize<TEntity>(data);
+                view = _strategy.Deserialize<TEntity>(data);
                 view = updateViewFactory(view);
             }
             catch (StorageClientException ex)
             {
+                switch(ex.ErrorCode)
+                {
+                    case StorageErrorCode.ContainerNotFound:
+                        var s = string.Format(
+                            "Container '{0}' does not exist. You need to initialize this atomic storage and ensure that '{1}' is known to '{2}'.",
+                            blob.Container.Name, typeof (TEntity).Name, _strategy.GetType().Name);
+                        throw new InvalidOperationException(s, ex);
+                }
+
                 view = addViewFactory();
             }
 
-            blob.UploadByteArray(_convention.Serialize(view));
+            blob.UploadByteArray(_strategy.Serialize(view));
             return view;
         }
 
@@ -58,7 +67,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 
         CloudBlob GetBlobReference(TKey key)
         {
-            var name =  _convention.GetNameForEntity(typeof(TEntity), key);
+            var name =  _strategy.GetNameForEntity(typeof(TEntity), key);
             return _container.GetBlobReference(name);
         }
     }

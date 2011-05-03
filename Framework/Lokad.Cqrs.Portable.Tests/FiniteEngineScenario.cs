@@ -62,14 +62,17 @@ namespace Lokad.Cqrs
         }
 
 
-        public void TestConfiguration(Action<CloudEngineBuilder> config)
+        public void TestConfiguration(params Action<CloudEngineBuilder>[] config)
         {
             var events = new Subject<ISystemEvent>(Scheduler.TaskPool);
             var builder = new CloudEngineBuilder()
                 .EnlistObserver(events);
 
             Configure(builder);
-            config(builder);
+            foreach (var action in config)
+            {
+                action(builder);
+            }
 
             var disposables = new List<IDisposable>();
 

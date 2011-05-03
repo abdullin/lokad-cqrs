@@ -6,10 +6,10 @@
 #endregion
 
 using System;
-using System.Globalization;
-using System.IO;
-using ProtoBuf;
-using System.Linq;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
+using Lokad.Cqrs.Build;
 
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
@@ -23,65 +23,5 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         TEntity Deserialize<TEntity>(byte[] source);
         Type[] GetEntityTypes();
         Type[] GetSingletonTypes();
-    }
-
-    public sealed class DefaultAzureAtomicStorageStrategy : IAzureAtomicStorageStrategy
-    {
-        public string GetFolderForEntity(Type entityType)
-        {
-            return entityType.Name.ToLowerInvariant();
-        }
-
-        public string GetFolderForSingleton()
-        {
-            return "singletons";
-        }
-
-        public string GetNameForEntity(Type entity, object key)
-        {
-            return Convert.ToString(key, CultureInfo.InvariantCulture).ToLowerInvariant();
-        }
-
-        public string GetNameForSingleton(Type singletonType)
-        {
-            return singletonType.Name.ToLowerInvariant();
-        }
-
-        public byte[] Serialize<TEntity>(TEntity entity)
-        {
-            using (var memory = new MemoryStream())
-            {
-                Serializer.Serialize(memory, entity);
-                return memory.ToArray();
-            }
-        }
-
-        public TEntity Deserialize<TEntity>(byte[] source)
-        {
-            using (var memory = new MemoryStream(source))
-            {
-                return Serializer.Deserialize<TEntity>(memory);
-            }
-        }
-
-        public Type[] GetEntityTypes()
-        {
-            return AppDomain.CurrentDomain
-                .GetAssemblies()
-                .SelectMany(t => t.GetExportedTypes())
-                .Where(t => !t.IsAbstract)
-                .Where(t => typeof (Define.AtomicEntity).IsAssignableFrom(t))
-                .ToArray();
-        }
-
-        public Type[] GetSingletonTypes()
-        {
-            return AppDomain.CurrentDomain
-                .GetAssemblies()
-                .SelectMany(t => t.GetExportedTypes())
-                .Where(t => !t.IsAbstract)
-                .Where(t => typeof(Define.AtomicSingleton).IsAssignableFrom(t))
-                .ToArray();
-        }
     }
 }

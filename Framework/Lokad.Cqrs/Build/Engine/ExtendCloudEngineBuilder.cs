@@ -18,6 +18,13 @@ namespace Lokad.Cqrs.Build.Engine
             self.EnlistModule(module);
 
         }
+
+        public static void AtomicStorageIsAzure(this StorageModule self, string accountId, Action<AzureAtomicStorageWriterModule> config)
+        {
+            var module = new AzureAtomicStorageWriterModule(accountId);
+            config(module);
+            self.EnlistModule(module);
+        }
     }
 
     
