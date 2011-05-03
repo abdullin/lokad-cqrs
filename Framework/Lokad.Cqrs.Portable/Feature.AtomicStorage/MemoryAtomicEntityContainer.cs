@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
-    public sealed class MemoryAtomicEntityContainer<TEntity> : IAtomicEntityReader<TEntity>, IAtomicEntityWriter<TEntity>
+    public sealed class MemoryAtomicEntityContainer<TKey,TEntity> : IAtomicEntityReader<TKey,TEntity>, IAtomicEntityWriter<TKey,TEntity>
     {
         readonly ConcurrentDictionary<object,TEntity> _entities;
 
@@ -11,19 +11,19 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         {
             _entities = strategy.GetEntityContainer<TEntity>();
         }
-        public bool TryGet(object key, out TEntity entity)
+        public bool TryGet(TKey key, out TEntity entity)
         {
             return _entities.TryGetValue(key, out entity);
         }
 
 
-        public TEntity AddOrUpdate(object key, Func<TEntity> addFactory, Func<TEntity, TEntity> update, AddOrUpdateHint hint)
+        public TEntity AddOrUpdate(TKey key, Func<TEntity> addFactory, Func<TEntity, TEntity> update, AddOrUpdateHint hint)
         {
             return _entities.AddOrUpdate(key, s => addFactory(), (s1, entity) => update(entity));
         }
      
 
-        public bool TryDelete(object key)
+        public bool TryDelete(TKey key)
         {
             TEntity value;
             return _entities.TryRemove(key, out value);

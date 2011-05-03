@@ -18,9 +18,9 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 
 
             builder
-                .RegisterGeneric(typeof (MemoryAtomicEntityContainer<>))
-                .As(typeof (IAtomicEntityReader<>))
-                .As(typeof (IAtomicEntityWriter<>))
+                .RegisterGeneric(typeof (MemoryAtomicEntityContainer<,>))
+                .As(typeof (IAtomicEntityReader<,>))
+                .As(typeof (IAtomicEntityWriter<,>))
                 .SingleInstance();
 
             builder

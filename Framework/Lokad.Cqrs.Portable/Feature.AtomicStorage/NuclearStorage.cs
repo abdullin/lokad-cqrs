@@ -35,7 +35,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 
         public bool TryDeleteEntity<TEntity>(object key)
         {
-            return Factory.GetEntityWriter<TEntity>().TryDelete(KeyToString(key));
+            return Factory.GetEntityWriter<object,TEntity>().TryDelete(KeyToString(key));
         }
 
         public bool TryDeleteSingleton<TEntity>()
@@ -46,7 +46,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         public TEntity UpdateOrThrowEntity<TEntity>(object key, Action<TEntity> update)
         {
             var id = KeyToString(key);
-            return Factory.GetEntityWriter<TEntity>().UpdateOrThrow(id, update);
+            return Factory.GetEntityWriter<object,TEntity>().UpdateOrThrow(id, update);
         }
 
   
@@ -60,25 +60,25 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         public Maybe<TEntity> GetEntity<TEntity>(object key)
         {
             var id = KeyToString(key);
-            return Factory.GetEntityReader<TEntity>().Get(id);
+            return Factory.GetEntityReader<object,TEntity>().Get(id);
         }
 
         public bool TryGetEntity<TEntity>(object key, out TEntity entity)
         {
             var id = KeyToString(key);
-            return Factory.GetEntityReader<TEntity>().TryGet(id, out entity);
+            return Factory.GetEntityReader<object,TEntity>().TryGet(id, out entity);
         }
 
         public TEntity AddOrUpdateEntity<TEntity>(object key, TEntity entity)
         {
             var id = KeyToString(key);
-            return Factory.GetEntityWriter<TEntity>().AddOrUpdate(id, () => entity, source => entity);
+            return Factory.GetEntityWriter<object,TEntity>().AddOrUpdate(id, () => entity, source => entity);
         }
 
         public TEntity AddOrUpdateEntity<TEntity>(object key, Func<TEntity> addFactory, Action<TEntity> update)
         {
             var id = KeyToString(key);
-            return Factory.GetEntityWriter<TEntity>().AddOrUpdate(id, addFactory, update);
+            return Factory.GetEntityWriter<object,TEntity>().AddOrUpdate(id, addFactory, update);
         }
 
         public TSingleton AddOrUpdateSingleton<TSingleton>(Func<TSingleton> addFactory, Action<TSingleton> update) 

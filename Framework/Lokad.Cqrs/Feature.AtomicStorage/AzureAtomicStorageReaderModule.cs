@@ -22,9 +22,9 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         {
             // register ad
             builder
-                .RegisterGeneric(typeof (AzureAtomicEntityReader<>))
+                .RegisterGeneric(typeof (AzureAtomicEntityReader<,>))
                 .WithParameter(TypedParameter.From(_strategy))
-                .As(typeof (IAtomicEntityReader<>))
+                .As(typeof (IAtomicEntityReader<,>))
                 .SingleInstance();
             builder
                 .RegisterGeneric(typeof (AzureAtomicSingletonReader<>))

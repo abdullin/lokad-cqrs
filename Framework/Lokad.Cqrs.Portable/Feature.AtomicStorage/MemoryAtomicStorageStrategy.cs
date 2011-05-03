@@ -12,14 +12,15 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 {
     public sealed class MemoryAtomicStorageStrategy 
     {
-         readonly ConcurrentDictionary<Type, object> _singletons = new ConcurrentDictionary<Type, object>();
-         readonly ConcurrentDictionary<Type, object> _entities = new ConcurrentDictionary<Type, object>();
+        readonly ConcurrentDictionary<Type, object> _singletons = new ConcurrentDictionary<Type, object>();
+        readonly ConcurrentDictionary<Type, object> _entities = new ConcurrentDictionary<Type, object>();
+        
         public ConcurrentDictionary<Type, object> GetSingletonContainer()
         {
             return _singletons;
         }
 
-        public ConcurrentDictionary<object, TEntity> GetEntityContainer<TEntity>()
+        public ConcurrentDictionary<object,TEntity> GetEntityContainer<TEntity>()
         {
             return
                 (ConcurrentDictionary<object, TEntity>)

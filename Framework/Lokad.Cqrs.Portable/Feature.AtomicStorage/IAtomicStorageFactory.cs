@@ -2,8 +2,8 @@
 {
     public interface IAtomicStorageFactory 
     {
-        IAtomicEntityWriter<TEntity> GetEntityWriter<TEntity>();
-        IAtomicEntityReader<TEntity> GetEntityReader<TEntity>();
+        IAtomicEntityWriter<TKey,TEntity> GetEntityWriter<TKey,TEntity>();
+        IAtomicEntityReader<TKey,TEntity> GetEntityReader<TKey,TEntity>();
         IAtomicSingletonReader<TSingleton> GetSingletonReader<TSingleton>();
         IAtomicSingletonWriter<TSingleton> GetSingletonWriter<TSingleton>();
 

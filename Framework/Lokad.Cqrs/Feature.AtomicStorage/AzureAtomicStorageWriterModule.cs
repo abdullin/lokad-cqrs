@@ -25,9 +25,9 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         protected override void Load(ContainerBuilder builder)
         {
             builder
-                .RegisterGeneric(typeof (AzureAtomicEntityWriter<>))
+                .RegisterGeneric(typeof (AzureAtomicEntityWriter<,>))
                 .WithParameter(TypedParameter.From(_strategy))
-                .As(typeof (IAtomicEntityWriter<>))
+                .As(typeof (IAtomicEntityWriter<,>))
                 .SingleInstance();
             builder
                 .RegisterGeneric(typeof (AzureAtomicSingletonWriter<>))

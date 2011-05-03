@@ -13,14 +13,14 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 {
     public sealed class AzureAtomicStorageFactory : IAtomicStorageFactory
     {
-        public IAtomicEntityWriter<TEntity> GetEntityWriter<TEntity>()
+        public IAtomicEntityWriter<TKey, TEntity> GetEntityWriter<TKey, TEntity>()
         {
-            return new AzureAtomicEntityWriter<TEntity>(_client, _strategy);
+            return new AzureAtomicEntityWriter<TKey, TEntity>(_client, _strategy);
         }
 
-        public IAtomicEntityReader<TEntity> GetEntityReader<TEntity>()
+        public IAtomicEntityReader<TKey, TEntity> GetEntityReader<TKey, TEntity>()
         {
-            return new AzureAtomicEntityReader<TEntity>(_client, _strategy);
+            return new AzureAtomicEntityReader<TKey, TEntity>(_client, _strategy);
         }
 
         public IAtomicSingletonReader<TSingleton> GetSingletonReader<TSingleton>()

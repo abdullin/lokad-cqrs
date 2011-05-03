@@ -14,8 +14,8 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
     /// Azure implementation of the view reader/writer
     /// </summary>
     /// <typeparam name="TEntity">The type of the view.</typeparam>
-    public sealed class AzureAtomicEntityWriter<TEntity> :
-        IAtomicEntityWriter<TEntity>
+    public sealed class AzureAtomicEntityWriter<TKey, TEntity> :
+        IAtomicEntityWriter<TKey, TEntity>
         //where TEntity : IAtomicEntity<TKey>
     {
         readonly CloudBlobContainer _container;
@@ -28,7 +28,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             _convention = convention;
         }
 
-        public TEntity AddOrUpdate(object key, Func<TEntity> addViewFactory, Func<TEntity,TEntity> updateViewFactory, AddOrUpdateHint hint)
+        public TEntity AddOrUpdate(TKey key, Func<TEntity> addViewFactory, Func<TEntity,TEntity> updateViewFactory, AddOrUpdateHint hint)
         {
             // TODO: implement proper locking and order
             var blob = GetBlobReference(key);
@@ -49,13 +49,13 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         }
 
 
-        public bool TryDelete(object key)
+        public bool TryDelete(TKey key)
         {
             var blob = GetBlobReference(key);
             return blob.DeleteIfExists();
         }
 
-        CloudBlob GetBlobReference(object key)
+        CloudBlob GetBlobReference(TKey key)
         {
             var name =  _convention.GetNameForEntity(typeof(TEntity), key);
             return _container.GetBlobReference(name);

@@ -13,9 +13,10 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
     /// View writer interface, used by the event handlers
     /// </summary>
     /// <typeparam name="TEntity">The type of the view.</typeparam>
-    public interface IAtomicEntityWriter<TEntity> //where TEntity : IAtomicEntity<TKey>
+    /// <typeparam name="TKey">type of the key</typeparam>
+    public interface IAtomicEntityWriter<in TKey, TEntity> //where TEntity : IAtomicEntity<TKey>
     {
-        TEntity AddOrUpdate(object key, Func<TEntity> addFactory, Func<TEntity, TEntity> update, AddOrUpdateHint hint = AddOrUpdateHint.ProbablyExists);
-        bool TryDelete(object key);
+        TEntity AddOrUpdate(TKey key, Func<TEntity> addFactory, Func<TEntity, TEntity> update, AddOrUpdateHint hint = AddOrUpdateHint.ProbablyExists);
+        bool TryDelete(TKey key);
     }
 }

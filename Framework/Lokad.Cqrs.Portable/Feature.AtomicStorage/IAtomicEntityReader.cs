@@ -8,7 +8,7 @@
 
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
-    public interface IAtomicEntityReader<TView>
+    public interface IAtomicEntityReader<in TKey,TView>
         //where TView : IAtomicEntity<TKey>
     {
         /// <summary>
@@ -19,6 +19,6 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         /// <returns>
         /// true, if it exists
         /// </returns>
-        bool TryGet(object key, out TView view);
+        bool TryGet(TKey key, out TView view);
     }
 }

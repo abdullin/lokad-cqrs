@@ -14,14 +14,14 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
     /// Azure implementation of the view reader/writer
     /// </summary>
     /// <typeparam name="TEntity">The type of the view.</typeparam>
-    public sealed class AzureAtomicEntityReader<TEntity> :
-        IAtomicEntityReader<TEntity>
+    public sealed class AzureAtomicEntityReader<TKey, TEntity> :
+        IAtomicEntityReader<TKey, TEntity>
         //where TEntity : IAtomicEntity<TKey>
     {
         readonly CloudBlobContainer _container;
         readonly IAzureAtomicStorageStrategy _strategy;
 
-        string ComposeName(object key)
+        string ComposeName(TKey key)
         {
             return _strategy.GetNameForEntity(typeof (TEntity), key);
         }
@@ -33,7 +33,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             _container = client.GetContainerReference(containerName);
         }
 
-        public bool TryGet(object key, out TEntity entity)
+        public bool TryGet(TKey key, out TEntity entity)
         {
             var blob = _container.GetBlobReference(ComposeName(key));
             string text;
