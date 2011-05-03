@@ -1,4 +1,6 @@
-﻿namespace Lokad.Cqrs.Feature.AtomicStorage
+﻿using Lokad.Cqrs.Build.Engine;
+
+namespace Lokad.Cqrs.Feature.AtomicStorage
 {
     public sealed class Engine_scenario_for_NuclearStorage_in_partition : FiniteEngineScenario
     {
@@ -37,7 +39,7 @@
         }
 
 
-        protected override void Configure()
+        protected override void Configure(CloudEngineBuilder builder)
         {
             StartupMessages.Add(new NuclearMessage());
         }

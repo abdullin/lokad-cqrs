@@ -37,7 +37,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                 }
             }
         }
-        public override void Configure(CloudEngineBuilder config)
+        protected override void Configure(CloudEngineBuilder config)
         {
             config.Memory(m =>
             {

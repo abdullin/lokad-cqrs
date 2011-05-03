@@ -15,6 +15,7 @@ namespace Lokad.Cqrs
         protected bool HandlerFailuresAreExpected { get; set; }
         public readonly IList<object> StartupMessages = new List<object>();
 
+        protected virtual void Configure(CloudEngineBuilder builder) {}
 
         public void TestConfiguration(Action<CloudEngineBuilder> config)
         {
