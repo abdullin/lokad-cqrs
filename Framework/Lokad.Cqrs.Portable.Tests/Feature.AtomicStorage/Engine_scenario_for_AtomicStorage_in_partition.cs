@@ -1,11 +1,12 @@
-﻿using Lokad.Cqrs.Build.Engine;
+﻿using System.Runtime.Serialization;
+using Lokad.Cqrs.Build.Engine;
 
 // ReSharper disable InconsistentNaming
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
     public sealed class Engine_scenario_for_AtomicStorage_in_partition : FiniteEngineScenario
     {
-
+         [DataContract]
         public sealed class AtomicMessage : Define.Command { }
 
         public sealed class Entity
@@ -39,12 +40,6 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         }
         protected override void Configure(CloudEngineBuilder config)
         {
-            config.Memory(m =>
-            {
-                m.AddMemoryProcess("do");
-                m.AddMemorySender("do", cb => cb.IdGeneratorForTests());
-            });
-
             StartupMessages.Add(new AtomicMessage());
         }
     }

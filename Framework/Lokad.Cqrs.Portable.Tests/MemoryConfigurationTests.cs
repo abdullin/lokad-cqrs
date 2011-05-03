@@ -23,7 +23,7 @@ namespace Lokad.Cqrs
         // ReSharper disable InconsistentNaming
 
         #region Domain
-
+        [DataContract]
         public sealed class Message1 : Define.Command
         {
             public readonly int Block;

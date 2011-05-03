@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Serialization;
 using Lokad.Cqrs.Build.Engine;
 using Autofac;
 
@@ -36,7 +37,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         {
             public int Value;
         }
-
+         [DataContract]
         public sealed class Message : Define.Command{}
         public sealed class Handler : Define.Handle<Message>
         {
@@ -72,9 +73,8 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             }
         }
 
-        
 
-        public void Configure(CloudEngineBuilder config)
+        protected override void Configure(CloudEngineBuilder config)
         {
             config.Advanced(cb => cb.RegisterGeneric(typeof(ViewUpdater<,>)));
             StartupMessages.Add(new Message());

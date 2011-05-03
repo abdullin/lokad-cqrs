@@ -74,6 +74,11 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             return Factory.GetSingletonWriter<TSingleton>().AddOrUpdate(addFactory, update);
         }
 
+        public TSingleton AddOrUpdateSingleton<TSingleton>(Func<TSingleton> addFactory, Func<TSingleton,TSingleton> update)
+        {
+            return Factory.GetSingletonWriter<TSingleton>().AddOrUpdate(addFactory, update);
+        }
+
         public TSingleton AddOrUpdateSingleton<TSingleton>(Action<TSingleton> update) where TSingleton : new()
         {
             return Factory.GetSingletonWriter<TSingleton>().AddOrUpdate(() => new TSingleton(), update);

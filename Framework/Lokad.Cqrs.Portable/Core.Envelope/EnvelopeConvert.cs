@@ -100,7 +100,7 @@ namespace Lokad.Cqrs.Core.Envelope
                         NumberValue = Convert.ToInt64(value)
                     };
             }
-            throw new NotSupportedException("serialization of generic attributes is not supported yet");
+            throw new NotSupportedException(string.Format("serialization of attribute '{0}' is not supported yet", value.GetType()));
         }
 
         public static EnvelopeAttributeContract[] EnvelopeAttributesToContract(
@@ -141,7 +141,7 @@ namespace Lokad.Cqrs.Core.Envelope
                         }
                         else
                         {
-                            throw new NotSupportedException("serialization of generic attributes is not supported yet");
+                            throw new NotSupportedException(string.Format("serialization of generic attribute '{0}' is not supported yet", attrib.Value.GetType()));
                         }
                         break;
                 }

@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
     [TestFixture]
-    public sealed class Run_all_atomic_scenarios_in_memory
+    public sealed class Run_all_AtomicStorage_scenarios_in_memory
     {
         // ReSharper disable InconsistentNaming
 

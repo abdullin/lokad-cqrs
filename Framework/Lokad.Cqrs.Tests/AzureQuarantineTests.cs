@@ -6,32 +6,46 @@
 #endregion
 
 using Lokad.Cqrs.Build.Engine;
-using Lokad.Cqrs.Scenarios;
+using Lokad.Cqrs.Synthetic;
 using Microsoft.WindowsAzure;
 using NUnit.Framework;
 
 namespace Lokad.Cqrs
 {
-    public static class AzureScenarios
+
+
+    [TestFixture]
+    public sealed class Run_all_Synthetic_tests_on_azure
     {
         // ReSharper disable InconsistentNaming
 
-        [TestFixture]
-        public sealed class AzureQuarantine : When_sending_failing_messages
+        static void CurrentConfig(CloudEngineBuilder b)
         {
-            public AzureQuarantine()
-            {
-                EnlistFixtureConfig(b => b.Azure(m =>
-                    {
-                        m.AddAzureAccount("azure-dev", CloudStorageAccount.DevelopmentStorageAccount);
-                        m.AddAzureProcess("azure-dev", new[] {"incoming"}, c =>
-                            {
-                                c.QueueVisibilityTimeout(1);
-                                c.WhenFactoryCreated(f => f.SetupForTesting());
-                            });
-                        m.AddAzureSender("azure-dev", "incoming", x => x.IdGeneratorForTests());
-                    }));
-            }
+            b.Azure(m =>
+                {
+                    m.AddAzureAccount("azure-dev", CloudStorageAccount.DevelopmentStorageAccount);
+                    m.AddAzureProcess("azure-dev", new[] {"incoming"}, c =>
+                        {
+                            c.QueueVisibilityTimeout(1);
+                            c.WhenFactoryCreated(f => f.SetupForTesting());
+                        });
+                    m.AddAzureSender("azure-dev", "incoming", x => x.IdGeneratorForTests());
+                });
         }
+
+        [Test]
+        public void Transient_failures_are_retried()
+        {
+            new Engine_scenario_for_transient_failure()
+            .TestConfiguration(CurrentConfig);
+        }
+
+        [Test]
+        public void Permanent_failure_is_quarantined()
+        {
+            new Engine_scenario_for_permanent_failure()
+                .TestConfiguration(CurrentConfig);
+        }
+        
     }
 }

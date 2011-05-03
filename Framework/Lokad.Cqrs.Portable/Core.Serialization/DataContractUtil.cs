@@ -44,8 +44,14 @@ namespace Lokad.Cqrs.Core.Serialization
         {
             var contract =
                 (DataContractAttribute) type.GetCustomAttributes(typeof (DataContractAttribute), false).First();
-
+            
             var name = string.IsNullOrEmpty(contract.Name) ? type.Name : contract.Name;
+
+            if (type.IsNested)
+            {
+                name = type.DeclaringType.Name + "+" + name;
+            }
+
             if (string.IsNullOrEmpty(contract.Namespace))
                 return name;
 

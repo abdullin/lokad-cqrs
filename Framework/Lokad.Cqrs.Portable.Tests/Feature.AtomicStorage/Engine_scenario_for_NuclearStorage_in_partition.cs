@@ -1,4 +1,5 @@
-﻿using Lokad.Cqrs.Build.Engine;
+﻿using System.Runtime.Serialization;
+using Lokad.Cqrs.Build.Engine;
 
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
@@ -8,7 +9,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         {
             public int Count;
         }
-
+         [DataContract]
         public sealed class NuclearMessage : Define.Command { }
 
         public sealed class NuclearHandler : Define.Handle<NuclearMessage>

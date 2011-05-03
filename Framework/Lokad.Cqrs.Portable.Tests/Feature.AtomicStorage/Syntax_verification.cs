@@ -3,7 +3,7 @@
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
     [TestFixture]
-    public sealed class AtomicStorageSyntaxTests
+    public sealed class Syntax_verification
     {
         // ReSharper disable InconsistentNaming
         // ReSharper disable RedundantTypeArgumentsOfMethod

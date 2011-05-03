@@ -13,9 +13,42 @@ namespace Lokad.Cqrs
     public abstract class FiniteEngineScenario
     {
         protected bool HandlerFailuresAreExpected { get; set; }
-        public readonly IList<object> StartupMessages = new List<object>();
+        protected readonly IList<object> StartupMessages = new List<object>();
 
         protected virtual void Configure(CloudEngineBuilder builder) {}
+        readonly List<string> _failures = new List<string>();
+        readonly List<Func<IObservable<ISystemEvent>, IMessageSender, CancellationTokenSource, IDisposable>> _subscriptions = new List<Func<IObservable<ISystemEvent>, IMessageSender, CancellationTokenSource, IDisposable>>();
+
+        protected void Enlist(Func<IObservable<ISystemEvent>, IMessageSender, CancellationTokenSource, IDisposable> subscribe)
+        {
+            _subscriptions.Add(subscribe);
+        }
+
+        protected FiniteEngineScenario()
+        {
+            Enlist((events, sender, t) => events
+                .OfType<EnvelopeAcked>()
+                .Where(ea => ea.Attributes.Any(p => p.Key == "finish")).Subscribe(c => t.Cancel()));
+
+            Enlist((events, sender, t) => events
+                .OfType<EnvelopeAcked>()
+                .Where(ea => ea.Attributes.Any(p => p.Key == "fail"))
+                .Subscribe(c =>
+                    {
+                        _failures.Add((string) c.Attributes.First(p => p.Key == "fail").Value);
+                        t.Cancel();
+                    }));
+
+            Enlist((events, sender, t) => events
+                .OfType<EnvelopeDispatchFailed>()
+                .Subscribe(d =>
+                {
+                    if (HandlerFailuresAreExpected) return;
+                    _failures.Add(d.Exception.ToString());
+                    t.Cancel();
+                }));
+        }
+
 
         public void TestConfiguration(Action<CloudEngineBuilder> config)
         {
@@ -24,43 +57,29 @@ namespace Lokad.Cqrs
             var builder = new CloudEngineBuilder()
                 .EnlistObserver(events);
 
+            Configure(builder);
             config(builder);
 
-
-            var failures = new List<string>();
-            var subscriptions = new List<IDisposable>();
+            var disposables = new List<IDisposable>();
+            
             try
             {
                 using (var engine = builder.Build())
                 using (var t = new CancellationTokenSource())
                 {
-                    subscriptions.Add(ObservableExtensions.Subscribe<EnvelopeAcked>(events
-                            .OfType<EnvelopeAcked>()
-                            .Where(ea => ea.Attributes.Any(p => p.Key == "finish")), c => t.Cancel()));
-
-                    subscriptions.Add(events.OfType<EnvelopeAcked>().Where(ea => ea.Attributes.Any(p => p.Key == "fail"))
-                        .Subscribe(c =>
-                            {
-                                failures.Add((string) c.Attributes.First(p => p.Key == "fail").Value);
-                                t.Cancel();
-                            }));
-
-                    if (!scenario.HandlerFailuresAreExpected)
+                    var sender = engine.Resolve<IMessageSender>();
+                    foreach (var subscription in _subscriptions)
                     {
-                        subscriptions.Add(
-                            events.OfType<EnvelopeDispatchFailed>().Subscribe(d =>
-                                {
-                                    failures.Add(d.Exception.ToString());
-                                    t.Cancel();
-                                }));
+                        disposables.Add(subscription(events,sender, t));
                     }
+                    
 
 
                     engine.Start(t.Token);
 
                     foreach (var message in scenario.StartupMessages)
                     {
-                        engine.Resolve<IMessageSender>().SendOne(message);
+                        sender.SendOne(message);
                     }
 
                     if (Debugger.IsAttached)
@@ -74,9 +93,9 @@ namespace Lokad.Cqrs
 
                     
 
-                    if (failures.Any())
+                    if (_failures.Any())
                     {
-                        Assert.Fail(failures.First());
+                        Assert.Fail(_failures.First());
                     }
 
                     if (!t.IsCancellationRequested)
@@ -88,9 +107,9 @@ namespace Lokad.Cqrs
             }
             finally
             {
-                foreach (var subscription in subscriptions)
+                foreach (var disposable in disposables)
                 {
-                    subscription.Dispose();
+                    disposable.Dispose();
                 }
             }
         }
