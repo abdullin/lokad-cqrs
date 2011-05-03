@@ -16,30 +16,30 @@ namespace Lokad.Cqrs
         public readonly Type MappedType;
         public readonly object Content;
         public readonly int Index;
-        readonly IDictionary<string, object> _attributes;
+        readonly IDictionary<string, string> _attributes;
 
-        public ICollection<KeyValuePair<string, object>> GetAllAttributes()
+        public ICollection<KeyValuePair<string, string>> GetAllAttributes()
         {
             return _attributes;
         }
 
-        public bool TryGetAttribute(string name, out object result)
+        public bool TryGetAttribute(string name, out string result)
         {
             return _attributes.TryGetValue(name, out result);
         }
 
-        public long GetAttributeNumber(string name, long defaultValue)
+        public string GetAttribute(string name, string defaultValue)
         {
-            object value;
+            string value;
             if (_attributes.TryGetValue(name, out value))
             {
-                return (long) value;
+                return value;
             }
             return defaultValue;
         }
 
 
-        public ImmutableMessage(Type mappedType, object content, IDictionary<string, object> attributes, int index)
+        public ImmutableMessage(Type mappedType, object content, IDictionary<string, string> attributes, int index)
         {
             MappedType = mappedType;
             Index = index;

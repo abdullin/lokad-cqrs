@@ -7,31 +7,27 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 
 namespace Lokad.Cqrs.Core.Envelope
 {
     static class EnvelopeConvert
     {
-        public static IDictionary<string, object> EnvelopeAttributesFromContract(
+        public static IDictionary<string, string> EnvelopeAttributesFromContract(
             IEnumerable<EnvelopeAttributeContract> attributes)
         {
-            var dict = new Dictionary<string, object>();
+            var dict = new Dictionary<string, string>();
 
             foreach (var attribute in attributes)
             {
                 switch (attribute.Type)
                 {
                     case EnvelopeAttributeTypeContract.Sender:
-                        dict[MessageAttributes.EnvelopeSender] = attribute.CustomName;
+                        dict[MessageAttributes.EnvelopeSender] = attribute.Name;
                         break;
                     case EnvelopeAttributeTypeContract.CustomString:
-                        dict[attribute.CustomName] = attribute.StringValue;
-                        break;
-                    case EnvelopeAttributeTypeContract.CustomNumber:
-                        dict[attribute.CustomName] = attribute.NumberValue;
-                        break;
-                        case EnvelopeAttributeTypeContract.CustomTag:
-                        dict[attribute.CustomName] = null;
+                        dict[attribute.Name] = attribute.Value;
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -40,32 +36,13 @@ namespace Lokad.Cqrs.Core.Envelope
             return dict;
         }
 
-        public static IDictionary<string, object> ItemAttributesFromContract(IEnumerable<ItemAttributeContract> attributes)
+        public static IDictionary<string, string> ItemAttributesFromContract(IEnumerable<ItemAttributeContract> attributes)
         {
-            var dict = new Dictionary<string, object>();
-
-            foreach (var attribute in attributes)
-            {
-                switch (attribute.Type)
-                {
-                    case ItemAttributeTypeContract.CustomString:
-                        dict[attribute.CustomName] = attribute.StringValue;
-                        break;
-                    case ItemAttributeTypeContract.CustomNumber:
-                        dict[attribute.CustomName] = attribute.NumberValue;
-                        break;
-                        case ItemAttributeTypeContract.CustomTag:
-                        dict[attribute.CustomName] = null;
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
-            return dict;
+            return attributes.ToDictionary(attribute => attribute.Name, attribute => attribute.Value);
         }
 
         public static ItemAttributeContract[] ItemAttributesToContract(
-            ICollection<KeyValuePair<string, object>> attributes)
+            ICollection<KeyValuePair<string, string>> attributes)
         {
             var contracts = new ItemAttributeContract[attributes.Count];
             var pos = 0;
@@ -86,39 +63,17 @@ namespace Lokad.Cqrs.Core.Envelope
             return contracts;
         }
 
-        static ItemAttributeContract ItemAttributeValueToContract(string name, object value)
+        static ItemAttributeContract ItemAttributeValueToContract(string name, string value)
         {
-            if (value is string)
-            {
-                return new ItemAttributeContract
+            return new ItemAttributeContract()
                 {
-                    Type = ItemAttributeTypeContract.CustomString,
-                    CustomName = name,
-                    StringValue = (string)value
+                    Name = name,
+                    Value = value
                 };
-            }
-            if ((value is long) || (value is int) || (value is short))
-            {
-                return new ItemAttributeContract
-                    {
-                        Type = ItemAttributeTypeContract.CustomNumber,
-                        CustomName = name,
-                        NumberValue = Convert.ToInt64(value)
-                    };
-            }
-            if (value == null)
-            {
-                return new ItemAttributeContract()
-                    {
-                        Type = ItemAttributeTypeContract.CustomTag,
-                        CustomName = name
-                    };
-            }
-            throw new NotSupportedException(string.Format("serialization of attribute '{0}' is not supported yet", value.GetType()));
         }
 
         public static EnvelopeAttributeContract[] EnvelopeAttributesToContract(
-            ICollection<KeyValuePair<string, object>> attributes)
+            ICollection<KeyValuePair<string, string>> attributes)
         {
             var contracts = new EnvelopeAttributeContract[attributes.Count];
             int pos = 0;
@@ -131,41 +86,16 @@ namespace Lokad.Cqrs.Core.Envelope
                         contracts[pos] = new EnvelopeAttributeContract
                             {
                                 Type = EnvelopeAttributeTypeContract.Sender,
-                                StringValue = (string) attrib.Value
+                                Value = attrib.Value
                             };
                         break;
                     default:
-                        if (attrib.Value is string)
-                        {
-                            contracts[pos] = new EnvelopeAttributeContract
+                        contracts[pos] = new EnvelopeAttributeContract
                                 {
                                     Type = EnvelopeAttributeTypeContract.CustomString,
-                                    CustomName = attrib.Key,
-                                    StringValue = (string) attrib.Value
+                                    Name = attrib.Key,
+                                    Value = attrib.Value
                                 };
-                        }
-                        else if ((attrib.Value is long) || (attrib.Value is int) || (attrib.Value is short))
-                        {
-                            contracts[pos] = new EnvelopeAttributeContract
-                                {
-                                    Type = EnvelopeAttributeTypeContract.CustomNumber,
-                                    CustomName = attrib.Key,
-                                    NumberValue = Convert.ToInt64(attrib.Value)
-                                };
-                        }
-                        else if (attrib.Value == null)
-                        {
-                            contracts[pos] = new EnvelopeAttributeContract
-                                {
-                                    Type = EnvelopeAttributeTypeContract.CustomTag,
-                                    CustomName = attrib.Key
-                                };
-                        }
-
-                        else
-                        {
-                            throw new NotSupportedException(string.Format("serialization of generic attribute '{0}' is not supported yet", attrib.Value.GetType()));
-                        }
                         break;
                 }
                 pos += 1;

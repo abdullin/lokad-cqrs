@@ -29,12 +29,12 @@ namespace Lokad.Cqrs.Core.Envelope.Scenarios
         {
             var time = DateTime.UtcNow;
             var builder = new MessageEnvelopeBuilder("my-id");
-            builder.AddNumber("Custom", 1);
+            builder.AddString("Custom", "1");
             
 
             var envelope = RoundtripViaSerializer(builder);
 
-            Assert.AreEqual(1, envelope.GetAttribute("Custom"));
+            Assert.AreEqual("1", envelope.GetAttribute("Custom"));
             Assert.GreaterOrEqual(envelope.CreatedOnUtc, time, "start time");
             var now = DateTime.UtcNow;
             Assert.LessOrEqual(envelope.CreatedOnUtc, now, "now");
@@ -63,7 +63,7 @@ namespace Lokad.Cqrs.Core.Envelope.Scenarios
                 var content = new string('*',i);
                 var added = builder.AddItem(new MyMessage(content));
 
-                added.AddNumber("hum", i);
+                added.AddAttribute("hum", i.ToString());
             }
 
             var envelope = RoundtripViaSerializer(builder);
@@ -74,7 +74,7 @@ namespace Lokad.Cqrs.Core.Envelope.Scenarios
             {
                 var messageItem = envelope.Items[i];
                 Assert.AreEqual(new string('*', i), ((MyMessage)messageItem.Content).Value);
-                Assert.AreEqual(i, messageItem.GetAttributeNumber("hum", -1)); 
+                Assert.AreEqual(i.ToString(), messageItem.GetAttribute("hum", "")); 
             }
         }
 

@@ -17,12 +17,9 @@ namespace Lokad.Cqrs.Core.Envelope
         public EnvelopeAttributeTypeContract Type { get; set; }
 
         [DataMember(Order = 2)]
-        public string CustomName { get; set; }
+        public string Name { get; set; }
 
         [DataMember(Order = 3)]
-        public string StringValue { get; set; }
-
-        [DataMember(Order = 4)]
-        public long NumberValue { get; set; }
+        public string Value { get; set; }
     }
 }

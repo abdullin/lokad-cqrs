@@ -19,12 +19,12 @@ namespace Lokad.Cqrs
         public readonly string EnvelopeId;
         public readonly DateTime DeliverOnUtc;
         public readonly DateTime CreatedOnUtc;
-        internal readonly IDictionary<string, object> _attributes = new Dictionary<string, object>();
+        internal readonly IDictionary<string, string> _attributes = new Dictionary<string, string>();
         
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
         public readonly ImmutableMessage[] Items;
 
-        public ImmutableEnvelope(string envelopeId, IDictionary<string, object> attributes, ImmutableMessage[] items,
+        public ImmutableEnvelope(string envelopeId, IDictionary<string, string> attributes, ImmutableMessage[] items,
             DateTime deliverOnUtc, DateTime createdOnUtc)
         {
             EnvelopeId = envelopeId;
@@ -34,35 +34,28 @@ namespace Lokad.Cqrs
             CreatedOnUtc = createdOnUtc;
         }
 
-        public long GetAttributeNumber(string name, long defaultValue)
-        {
-            object value;
-            if (_attributes.TryGetValue(name, out value))
-            {
-                return (long) value;
-            }
-            return defaultValue;
-        }
-        public string GetAttributeString(string name, string defaultValue)
-        {
-            object value;
-            if (_attributes.TryGetValue(name, out value))
-            {
-                return (string)value;
-            }
-            return defaultValue;
-            
-        }
+        
 
 
-        public object GetAttribute(string name)
+        public string GetAttribute(string name)
         {
             return _attributes[name];
         }
 
+        public string GetAttribute(string name, string defaultValue)
+        {
+            string result;
+            if (_attributes.TryGetValue(name, out result))
+            {
+                return result;
+            }
+            return defaultValue;
+        }
+
+
         
 
-        public ICollection<KeyValuePair<string, object>> GetAllAttributes()
+        public ICollection<KeyValuePair<string, string>> GetAllAttributes()
         {
             return _attributes;
         }

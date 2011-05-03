@@ -101,7 +101,6 @@
     <Compile Include="Core.Envelope\EnvelopeContract.cs" />
     <Compile Include="Core.Envelope\EnvelopeStreamer.cs" />
     <Compile Include="Core.Envelope\ItemAttributeContract.cs" />
-    <Compile Include="Core.Envelope\ItemAttributeTypeContract.cs" />
     <Compile Include="Core.Envelope\ItemContract.cs" />
     <Compile Include="Core.Envelope\MessageAttributes.cs" />
     <Compile Include="Core.Envelope\MessageHeader.cs" />

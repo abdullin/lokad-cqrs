@@ -12,7 +12,7 @@ namespace Lokad.Cqrs.Core.Envelope
 {
     public sealed class MessageItemBuilder
     {
-        internal readonly IDictionary<string, object> Attributes = new Dictionary<string, object>();
+        internal readonly IDictionary<string, string> Attributes = new Dictionary<string, string>();
         public readonly Type MappedType;
         public readonly object Content;
 
@@ -22,11 +22,7 @@ namespace Lokad.Cqrs.Core.Envelope
             Content = content;
         }
 
-        public void AddNumber(string key, long number)
-        {
-            Attributes.Add(key, number);
-        }
-        public void AddString(string key, string value)
+        public void AddAttribute(string key, string value)
         {
             Attributes.Add(key, value);
         }

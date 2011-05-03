@@ -13,16 +13,10 @@ namespace Lokad.Cqrs.Core.Envelope
     [DataContract, Serializable]
     public sealed class ItemAttributeContract
     {
-        [DataMember(Order = 1)]
-        public ItemAttributeTypeContract Type { get; set; }
-
         [DataMember(Order = 2)]
-        public string CustomName { get; set; }
+        public string Name { get; set; }
 
         [DataMember(Order = 3)]
-        public string StringValue { get; set; }
-
-        [DataMember(Order = 4)]
-        public long NumberValue { get; set; }
+        public string Value { get; set; }
     }
 }

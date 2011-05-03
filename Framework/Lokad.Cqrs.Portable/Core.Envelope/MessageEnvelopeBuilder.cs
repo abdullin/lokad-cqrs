@@ -13,15 +13,12 @@ namespace Lokad.Cqrs.Core.Envelope
     public sealed class MessageEnvelopeBuilder
     {
         public readonly string EnvelopeId;
-        internal readonly IDictionary<string, object> Attributes = new Dictionary<string, object>();
+        internal readonly IDictionary<string, string> Attributes = new Dictionary<string, string>();
         DateTime _deliverOnUtc;
 
         public readonly IList<MessageItemBuilder> Items = new List<MessageItemBuilder>();
 
-        public void AddNumber(string key, long number)
-        {
-            Attributes.Add(key, number);
-        }
+        
         public void AddString(string key, string value)
         {
             Attributes.Add(key, value);
@@ -75,13 +72,13 @@ namespace Lokad.Cqrs.Core.Envelope
 
         public ImmutableEnvelope Build()
         {
-            var attributes = new Dictionary<string, object>(Attributes);
+            var attributes = new Dictionary<string, string>(Attributes);
             var items = new ImmutableMessage[Items.Count];
 
             for (int i = 0; i < items.Length; i++)
             {
                 var save = Items[i];
-                var attribs = new Dictionary<string, object>(save.Attributes);
+                var attribs = new Dictionary<string, string>(save.Attributes);
                 items[i] = new ImmutableMessage(save.MappedType, save.Content, attribs, i);
             }
             var created = DateTime.UtcNow;
