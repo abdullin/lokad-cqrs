@@ -1,20 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using Lokad.Cqrs.Build.Engine;
-
-namespace Lokad.Cqrs.Feature.AtomicStorage
+﻿namespace Lokad.Cqrs.Feature.AtomicStorage
 {
-    public abstract class IFiniteEngineScenario
-    {
-        public bool HandlerFailuresAreExpected;
-        public readonly IList<object> StartupMessages = new List<object>();
-
-        
-        public abstract void Configure(CloudEngineBuilder config);
-
-
-    }
-    public sealed class Engine_scenario_for_NuclearStorage_in_partition : IFiniteEngineScenario
+    public sealed class Engine_scenario_for_NuclearStorage_in_partition : FiniteEngineScenario
     {
         public sealed class Entity
         {
@@ -51,14 +37,8 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         }
 
 
-        public override void Configure(CloudEngineBuilder config)
+        protected override void Configure()
         {
-            config.Memory(m =>
-                {
-                    m.AddMemoryProcess("do");
-                    m.AddMemorySender("do");
-                });
-
             StartupMessages.Add(new NuclearMessage());
         }
     }

@@ -3,7 +3,7 @@
 // ReSharper disable InconsistentNaming
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
-    public sealed class Engine_scenario_for_AtomicStorage_in_partition : IFiniteEngineScenario
+    public sealed class Engine_scenario_for_AtomicStorage_in_partition : FiniteEngineScenario
     {
 
         public sealed class AtomicMessage : Define.Command { }

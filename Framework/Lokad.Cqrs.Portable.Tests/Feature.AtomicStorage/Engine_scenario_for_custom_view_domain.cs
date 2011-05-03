@@ -4,7 +4,7 @@ using Autofac;
 
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
-    public sealed class Engine_scenario_for_custom_view_domain : IFiniteEngineScenario
+    public sealed class Engine_scenario_for_custom_view_domain : FiniteEngineScenario
     {
 
         public interface ICqrsView<TKey>
@@ -74,16 +74,9 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 
         
 
-        public override void Configure(CloudEngineBuilder config)
+        public void Configure(CloudEngineBuilder config)
         {
-            config.Memory(m =>
-            {
-                m.AddMemoryProcess("do");
-                m.AddMemorySender("do", cb => cb.IdGeneratorForTests());
-            });
-
-            config.Advanced(cb => cb.RegisterGeneric(typeof (ViewUpdater<,>)));
-
+            config.Advanced(cb => cb.RegisterGeneric(typeof(ViewUpdater<,>)));
             StartupMessages.Add(new Message());
         }
     }

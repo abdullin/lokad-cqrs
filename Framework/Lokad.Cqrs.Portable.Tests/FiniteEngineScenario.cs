@@ -1,11 +1,4 @@
-﻿#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
-
-// Copyright (c) Lokad 2010-2011, http://www.lokad.com
-// This code is released as Open Source under the terms of the New BSD Licence
-
-#endregion
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Concurrency;
 using System.Diagnostics;
@@ -15,20 +8,22 @@ using Lokad.Cqrs.Build.Engine;
 using Lokad.Cqrs.Core.Dispatch.Events;
 using NUnit.Framework;
 
-namespace Lokad.Cqrs.Feature.AtomicStorage
+namespace Lokad.Cqrs
 {
-    [TestFixture]
-    public sealed class Given_finite_engine_scenario
+    public abstract class FiniteEngineScenario
     {
-        // ReSharper disable InconsistentNaming
+        protected bool HandlerFailuresAreExpected { get; set; }
+        public readonly IList<object> StartupMessages = new List<object>();
 
-        static void TestConfiguration(IFiniteEngineScenario scenario)
+
+        public void TestConfiguration(Action<CloudEngineBuilder> config)
         {
+            var scenario = this;
             var events = new Subject<ISystemEvent>(Scheduler.TaskPool);
             var builder = new CloudEngineBuilder()
                 .EnlistObserver(events);
 
-            scenario.Configure(builder);
+            config(builder);
 
 
             var failures = new List<string>();
@@ -38,10 +33,9 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                 using (var engine = builder.Build())
                 using (var t = new CancellationTokenSource())
                 {
-                    subscriptions.Add(events
-                        .OfType<EnvelopeAcked>()
-                        .Where(ea => ea.Attributes.Any(p => p.Key == "finish"))
-                        .Subscribe(c => t.Cancel()));
+                    subscriptions.Add(ObservableExtensions.Subscribe<EnvelopeAcked>(events
+                            .OfType<EnvelopeAcked>()
+                            .Where(ea => ea.Attributes.Any(p => p.Key == "finish")), c => t.Cancel()));
 
                     subscriptions.Add(events.OfType<EnvelopeAcked>().Where(ea => ea.Attributes.Any(p => p.Key == "fail"))
                         .Subscribe(c =>
@@ -98,24 +92,6 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                     subscription.Dispose();
                 }
             }
-        }
-
-        [Test]
-        public void When_atomic_config_is_requested()
-        {
-            TestConfiguration(new Engine_scenario_for_AtomicStorage_in_partition());
-        }
-
-        [Test]
-        public void When_nuclear_config_is_requested()
-        {
-            TestConfiguration(new Engine_scenario_for_NuclearStorage_in_partition());
-        }
-
-        [Test]
-        public void When_custom_view_domain()
-        {
-            TestConfiguration(new Engine_scenario_for_custom_view_domain());
         }
     }
 }
