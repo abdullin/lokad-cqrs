@@ -7,7 +7,6 @@
 
 using System;
 using System.ComponentModel;
-using System.Globalization;
 
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
@@ -19,7 +18,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
     /// <remarks>
     /// If you use as a stand-alone, make sure to call <see cref="Initialize"/> before proceeding.
     /// </remarks>
-    public sealed class NuclearStorage 
+    public sealed class NuclearStorage
     {
         public readonly IAtomicStorageFactory Factory;
 
@@ -28,14 +27,9 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             Factory = factory;
         }
 
-        static string KeyToString(object key)
-        {
-            return Convert.ToString(key, CultureInfo.InvariantCulture);
-        }
-
         public bool TryDeleteEntity<TEntity>(object key)
         {
-            return Factory.GetEntityWriter<object,TEntity>().TryDelete(KeyToString(key));
+            return Factory.GetEntityWriter<object, TEntity>().TryDelete(key);
         }
 
         public bool TryDeleteSingleton<TEntity>()
@@ -45,43 +39,37 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 
         public TEntity UpdateOrThrowEntity<TEntity>(object key, Action<TEntity> update)
         {
-            var id = KeyToString(key);
-            return Factory.GetEntityWriter<object,TEntity>().UpdateOrThrow(id, update);
+            return Factory.GetEntityWriter<object, TEntity>().UpdateOrThrow(key, update);
         }
 
-  
-        public TSingleton UpdateOrThrowSingleton<TSingleton>(Action<TSingleton> update) 
+
+        public TSingleton UpdateOrThrowSingleton<TSingleton>(Action<TSingleton> update)
         {
             return Factory.GetSingletonWriter<TSingleton>().UpdateOrThrow(update);
         }
 
- 
 
         public Maybe<TEntity> GetEntity<TEntity>(object key)
         {
-            var id = KeyToString(key);
-            return Factory.GetEntityReader<object,TEntity>().Get(id);
+            return Factory.GetEntityReader<object, TEntity>().Get(key);
         }
 
         public bool TryGetEntity<TEntity>(object key, out TEntity entity)
         {
-            var id = KeyToString(key);
-            return Factory.GetEntityReader<object,TEntity>().TryGet(id, out entity);
+            return Factory.GetEntityReader<object, TEntity>().TryGet(key, out entity);
         }
 
         public TEntity AddOrUpdateEntity<TEntity>(object key, TEntity entity)
         {
-            var id = KeyToString(key);
-            return Factory.GetEntityWriter<object,TEntity>().AddOrUpdate(id, () => entity, source => entity);
+            return Factory.GetEntityWriter<object, TEntity>().AddOrUpdate(key, () => entity, source => entity);
         }
 
         public TEntity AddOrUpdateEntity<TEntity>(object key, Func<TEntity> addFactory, Action<TEntity> update)
         {
-            var id = KeyToString(key);
-            return Factory.GetEntityWriter<object,TEntity>().AddOrUpdate(id, addFactory, update);
+            return Factory.GetEntityWriter<object, TEntity>().AddOrUpdate(key, addFactory, update);
         }
 
-        public TSingleton AddOrUpdateSingleton<TSingleton>(Func<TSingleton> addFactory, Action<TSingleton> update) 
+        public TSingleton AddOrUpdateSingleton<TSingleton>(Func<TSingleton> addFactory, Action<TSingleton> update)
         {
             return Factory.GetSingletonWriter<TSingleton>().AddOrUpdate(addFactory, update);
         }
@@ -112,6 +100,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         {
             return base.GetHashCode();
         }
+
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override string ToString()
         {

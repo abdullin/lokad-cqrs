@@ -37,19 +37,15 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                 }
             }
         }
-
-        public Define.Command Start()
-        {
-            return new AtomicMessage();
-        }
-
-        public void Configure(CloudEngineBuilder config)
+        public override void Configure(CloudEngineBuilder config)
         {
             config.Memory(m =>
             {
                 m.AddMemoryProcess("do");
                 m.AddMemorySender("do", cb => cb.IdGeneratorForTests());
             });
+
+            StartupMessages.Add(new AtomicMessage());
         }
     }
 }

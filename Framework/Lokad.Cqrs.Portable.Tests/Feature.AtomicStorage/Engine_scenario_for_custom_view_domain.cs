@@ -1,5 +1,6 @@
 ﻿using System;
 using Lokad.Cqrs.Build.Engine;
+using Autofac;
 
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
@@ -10,10 +11,25 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         {
             
         }
-        public interface IViewUpdater <in TKey,TView> : IAtomicEntityWriter<TKey,TView>
+        public sealed class ViewUpdater <TKey,TView> : IAtomicEntityWriter<TKey,TView>
             where TView : ICqrsView<TKey>
         {
-            
+            readonly IAtomicEntityWriter<TKey, TView> _inner;
+
+            public ViewUpdater(IAtomicEntityWriter<TKey, TView> inner)
+            {
+                _inner = inner;
+            }
+
+            public TView AddOrUpdate(TKey key, Func<TView> addFactory, Func<TView, TView> update, AddOrUpdateHint hint=AddOrUpdateHint.ProbablyExists)
+            {
+                return _inner.AddOrUpdate(key, addFactory, update, hint);
+            }
+
+            public bool TryDelete(TKey key)
+            {
+                return _inner.TryDelete(key);
+            }
         }
 
         public sealed class CqrsViewWithTypedKey : ICqrsView<int>
@@ -25,10 +41,10 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         public sealed class Handler : Define.Handle<Message>
         {
             readonly NuclearStorage _storage;
-            readonly IViewUpdater<int, CqrsViewWithTypedKey> _view;
+            readonly ViewUpdater<int, CqrsViewWithTypedKey> _view;
             readonly IMessageSender _sender;
 
-            public Handler(NuclearStorage storage, IViewUpdater<int, CqrsViewWithTypedKey> view, IMessageSender sender)
+            public Handler(NuclearStorage storage, ViewUpdater<int, CqrsViewWithTypedKey> view, IMessageSender sender)
             {
                 _storage = storage;
                 _sender = sender;
@@ -56,12 +72,9 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             }
         }
 
-        public Define.Command Start()
-        {
-            return new Message();
-        }
+        
 
-        public void Configure(CloudEngineBuilder config)
+        public override void Configure(CloudEngineBuilder config)
         {
             config.Memory(m =>
             {
@@ -69,7 +82,9 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                 m.AddMemorySender("do", cb => cb.IdGeneratorForTests());
             });
 
-            //config.Advanced(cb => cb.)
+            config.Advanced(cb => cb.RegisterGeneric(typeof (ViewUpdater<,>)));
+
+            StartupMessages.Add(new Message());
         }
     }
 }

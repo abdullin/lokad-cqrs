@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Build\BuildSyntaxHelper.cs" />
     <Compile Include="Build\Engine\MemoryModule.cs" />
+    <Compile Include="Build\Engine\StorageModule.cs" />
     <Compile Include="Core.Dispatch\Events\EventHadNoConsumers.cs" />
     <Compile Include="Core.Reactive\ImmediateTracingObserver.cs" />
     <Compile Include="Feature.AtomicStorage\AtomicStorageInitialization.cs" />

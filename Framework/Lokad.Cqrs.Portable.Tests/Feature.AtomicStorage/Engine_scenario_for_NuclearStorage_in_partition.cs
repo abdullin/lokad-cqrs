@@ -1,12 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using Lokad.Cqrs.Build.Engine;
 
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
-    public interface IFiniteEngineScenario
+    public abstract class IFiniteEngineScenario
     {
-        Define.Command Start();
-        void Configure(CloudEngineBuilder config);
+        public bool HandlerFailuresAreExpected;
+        public readonly IList<object> StartupMessages = new List<object>();
+
+        
+        public abstract void Configure(CloudEngineBuilder config);
+
+
     }
     public sealed class Engine_scenario_for_NuclearStorage_in_partition : IFiniteEngineScenario
     {
@@ -44,18 +50,16 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             }
         }
 
-        public Define.Command Start()
-        {
-            return new NuclearMessage();
-        }
 
-        public void Configure(CloudEngineBuilder config)
+        public override void Configure(CloudEngineBuilder config)
         {
             config.Memory(m =>
                 {
                     m.AddMemoryProcess("do");
                     m.AddMemorySender("do");
                 });
+
+            StartupMessages.Add(new NuclearMessage());
         }
     }
 }

@@ -14,7 +14,6 @@ using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Core.Reactive;
 using Lokad.Cqrs.Core.Serialization;
-using Lokad.Cqrs.Feature.AtomicStorage;
 
 // ReSharper disable UnusedMethodReturnValue.Global
 
@@ -171,33 +170,6 @@ namespace Lokad.Cqrs.Build.Engine
             //            .SingleInstance();
             //        builder.Update(ci);
             //    });
-        }
-    }
-
-    public sealed class StorageModule : BuildSyntaxHelper, IModule
-    {
-        List<IModule> _modules = new List<IModule>();
-
-        public void AtomicIsInMemory()
-        {
-            _modules.Add(new MemoryAtomicStorageModule());
-        }
-
-
-        void IModule.Configure(IComponentRegistry componentRegistry)
-        {
-            if (_modules.Count == 0)
-            {
-                _modules.Add(new MemoryAtomicStorageModule());
-            }
-
-            var builder = new ContainerBuilder();
-            foreach (var module in _modules)
-            {
-                builder.RegisterModule(module);
-            }
-            builder.Update(componentRegistry);
-            
         }
     }
 }
