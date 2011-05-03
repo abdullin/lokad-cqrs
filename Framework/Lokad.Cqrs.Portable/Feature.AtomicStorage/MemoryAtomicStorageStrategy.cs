@@ -19,11 +19,11 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             return _singletons;
         }
 
-        public ConcurrentDictionary<string, TEntity> GetEntityContainer<TEntity>()
+        public ConcurrentDictionary<object, TEntity> GetEntityContainer<TEntity>()
         {
             return
-                (ConcurrentDictionary<string, TEntity>)
-                    _entities.GetOrAdd(typeof(TEntity), t => new ConcurrentDictionary<string, TEntity>());
+                (ConcurrentDictionary<object, TEntity>)
+                    _entities.GetOrAdd(typeof(TEntity), t => new ConcurrentDictionary<object, TEntity>());
         }
     }
 }

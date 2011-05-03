@@ -13,7 +13,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
     {
         string GetFolderForEntity(Type entityType);
         string GetFolderForSingleton();
-        string GetNameForEntity(Type entity, string key);
+        string GetNameForEntity(Type entity, object key);
         string GetNameForSingleton(Type singletonType);
         string Serialize<TEntity>(TEntity entity);
         TEntity Deserialize<TEntity>(string source);

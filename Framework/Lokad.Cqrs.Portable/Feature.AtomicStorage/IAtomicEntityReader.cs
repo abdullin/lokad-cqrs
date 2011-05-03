@@ -19,6 +19,6 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         /// <returns>
         /// true, if it exists
         /// </returns>
-        bool TryGet(string key, out TView view);
+        bool TryGet(object key, out TView view);
     }
 }

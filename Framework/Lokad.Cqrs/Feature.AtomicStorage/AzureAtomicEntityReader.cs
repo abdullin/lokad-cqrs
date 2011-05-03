@@ -21,7 +21,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         readonly CloudBlobContainer _container;
         readonly IAzureAtomicStorageStrategy _strategy;
 
-        string ComposeName(string key)
+        string ComposeName(object key)
         {
             return _strategy.GetNameForEntity(typeof (TEntity), key);
         }
@@ -33,7 +33,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             _container = client.GetContainerReference(containerName);
         }
 
-        public bool TryGet(string key, out TEntity entity)
+        public bool TryGet(object key, out TEntity entity)
         {
             var blob = _container.GetBlobReference(ComposeName(key));
             string text;

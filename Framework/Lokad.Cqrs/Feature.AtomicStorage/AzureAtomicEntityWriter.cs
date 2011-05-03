@@ -28,7 +28,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             _convention = convention;
         }
 
-        public TEntity AddOrUpdate(string key, Func<TEntity> addViewFactory, Func<TEntity,TEntity> updateViewFactory, AddOrUpdateHint hint)
+        public TEntity AddOrUpdate(object key, Func<TEntity> addViewFactory, Func<TEntity,TEntity> updateViewFactory, AddOrUpdateHint hint)
         {
             // TODO: implement proper locking and order
             var blob = GetBlobReference(key);
@@ -49,13 +49,13 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         }
 
 
-        public bool TryDelete(string key)
+        public bool TryDelete(object key)
         {
             var blob = GetBlobReference(key);
             return blob.DeleteIfExists();
         }
 
-        CloudBlob GetBlobReference(string key)
+        CloudBlob GetBlobReference(object key)
         {
             var name =  _convention.GetNameForEntity(typeof(TEntity), key);
             return _container.GetBlobReference(name);
