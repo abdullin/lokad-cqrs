@@ -47,6 +47,7 @@ namespace Lokad.Cqrs
                 .Where(ea => ea.Attributes.Any(p => p.Key == "fail"))
                 .Subscribe(c =>
                     {
+                        if (t.IsCancellationRequested) return;
                         _failures.Add(c.Attributes.First(p => p.Key == "fail").Value);
                         t.Cancel();
                     }));
@@ -55,6 +56,7 @@ namespace Lokad.Cqrs
                 .OfType<EnvelopeDispatchFailed>()
                 .Subscribe(d =>
                     {
+                        if (t.IsCancellationRequested) return;
                         if (HandlerFailuresAreExpected) return;
                         _failures.Add(d.Exception.ToString());
                         t.Cancel();
