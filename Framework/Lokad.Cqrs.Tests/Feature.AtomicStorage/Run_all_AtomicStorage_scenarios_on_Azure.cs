@@ -47,7 +47,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                     m.AddAzureSender("azure-dev", "incoming", x => x.IdGeneratorForTests());
                     m.WipeAccountsAtStartUp = true;
                 });
-            b.Storage(m => m.AtomicStorageIsAzure("azure-dev", c => c.WithStrategy(DefaultWithCustomConfig)));
+            b.Storage(m => m.AtomicIsInAzure("azure-dev", c => c.WithStrategy(DefaultWithCustomConfig)));
         }
 
         static void DefaultWithCustomConfig(DefaultAzureAtomicStorageStrategyBuilder builder)

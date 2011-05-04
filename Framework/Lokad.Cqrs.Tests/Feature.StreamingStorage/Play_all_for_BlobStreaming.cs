@@ -111,7 +111,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
                             m.WipeAccountsAtStartUp = true;
                         });
 
-                    cb.Storage(m => m.StreamingStorageIsAzure("azure-dev"));
+                    cb.Storage(m => m.StreamingIsInAzure("azure-dev"));
                 });
             }
         }
