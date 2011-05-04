@@ -12,7 +12,7 @@ using NUnit.Framework;
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
     [TestFixture]
-    public sealed class Run_all_AtomicStorage_scenarios_in_memory
+    public sealed class Run_all_engine_scenarios_in_memory
     {
         [Test]
         public void When_atomic_config_is_requested()

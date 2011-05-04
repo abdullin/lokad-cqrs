@@ -10,6 +10,7 @@ using Lokad.Cqrs.Feature.StreamingStorage.Scenarios;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
 using NUnit.Framework;
+using Lokad.Cqrs.Build.Engine;
 
 // ReSharper disable InconsistentNaming
 
@@ -95,5 +96,25 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
                 WriteOptions |= StorageWriteOptions.CompressIfPossible;
             }
         }
+
+        [TestFixture]
+        public sealed class When_configured_in_engine
+        {
+            [Test]
+            public void Test()
+            {
+                new Engine_scenario_for_streaming_storage().TestConfiguration(cb =>
+                {
+                    cb.Azure(m =>
+                        {
+                            m.AddAzureAccount("azure-dev", CloudStorageAccount.DevelopmentStorageAccount);
+                            m.WipeAccountsAtStartUp = true;
+                        });
+
+                    cb.Storage(m => m.StreamingStorageIsAzure("azure-dev"));
+                });
+            }
+        }
+
     }
 }

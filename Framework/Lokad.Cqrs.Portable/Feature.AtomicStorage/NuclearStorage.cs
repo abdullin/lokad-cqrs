@@ -18,7 +18,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
     /// <remarks>
     /// If you use as a stand-alone, make sure to call <see cref="Initialize"/> before proceeding.
     /// </remarks>
-    public sealed class NuclearStorage
+    public sealed class NuclearStorage 
     {
         public readonly IAtomicStorageFactory Factory;
 

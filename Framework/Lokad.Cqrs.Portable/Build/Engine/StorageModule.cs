@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Autofac;
 using Autofac.Core;
 using Lokad.Cqrs.Feature.AtomicStorage;
+using Lokad.Cqrs.Feature.StreamingStorage;
 
 namespace Lokad.Cqrs.Build.Engine
 {
@@ -12,6 +14,18 @@ namespace Lokad.Cqrs.Build.Engine
         public void AtomicIsInMemory()
         {
             _modules.Add(new MemoryAtomicStorageModule());
+        }
+
+        public void StreamingIsInFiles(string filePath)
+        {
+            _modules.Add(new FileStreamingStorageModule(filePath));
+        }
+
+        public void StreamingIsInFiles(string filePath, Action<FileStreamingStorageModule> config)
+        {
+            var module = new FileStreamingStorageModule(filePath);
+            config(module);
+            _modules.Add(module);
         }
 
         public void EnlistModule(IModule module)
@@ -33,7 +47,6 @@ namespace Lokad.Cqrs.Build.Engine
                 builder.RegisterModule(module);
             }
             builder.Update(componentRegistry);
-            
         }
     }
 }

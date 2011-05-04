@@ -35,7 +35,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                 _singleton = singleton;
             }
 
-            public void Consume(AtomicMessage atomicMessage, MessageContext context)
+            public void Consume(AtomicMessage message, MessageContext context)
             {
                 var entity = _singleton.AddOrUpdate(r => r.Count += 1);
                 if (entity.Count == 5)

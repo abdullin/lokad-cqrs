@@ -43,11 +43,11 @@ namespace Lokad.Cqrs
                 _sender = sender;
             }
 
-            public void Consume(Message1 atomicMessage, MessageContext context)
+            public void Consume(Message1 message, MessageContext context)
             {
-                if (atomicMessage.Block < 5)
+                if (message.Block < 5)
                 {
-                    _sender.SendOne(new Message1(atomicMessage.Block + 1));
+                    _sender.SendOne(new Message1(message.Block + 1));
                 }
             }
         }

@@ -21,7 +21,7 @@ namespace Lokad.Cqrs.Core.Directory.Default
         /// <summary>
         /// Consumes the specified message.
         /// </summary>
-        /// <param name="atomicMessage">The message.</param>
-        void Consume(TMessage atomicMessage, MessageContext context);
+        /// <param name="message">The message.</param>
+        void Consume(TMessage message, MessageContext context);
     }
 }

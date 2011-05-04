@@ -1,5 +1,6 @@
 ﻿using System;
 using Lokad.Cqrs.Feature.AtomicStorage;
+using Lokad.Cqrs.Feature.StreamingStorage;
 
 namespace Lokad.Cqrs.Build.Engine
 {
@@ -23,6 +24,12 @@ namespace Lokad.Cqrs.Build.Engine
         {
             var module = new AzureAtomicStorageWriterModule(accountId);
             config(module);
+            self.EnlistModule(module);
+        }
+
+        public static void StreamingStorageIsAzure(this StorageModule self, string accountId)
+        {
+            var module = new AzureStreamingStorage(accountId);
             self.EnlistModule(module);
         }
     }

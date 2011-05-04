@@ -25,7 +25,7 @@ namespace Lokad.Cqrs.Synthetic
                 _sender = sender;
             }
 
-            public void Consume(Message atomicMessage, MessageContext context)
+            public void Consume(Message message, MessageContext context)
             {
                 var count = _storage.AddOrUpdateSingleton(() => 1, i => i + 1);
                 if (count < 4)
