@@ -75,7 +75,7 @@ namespace Lokad.Cqrs
             builder.Memory(m =>
                 {
                     m.AddMemorySender("in", cm => cm.IdGeneratorForTests());
-                    m.AddMemoryProcess("in", d => d.Dispatch<DispatchCommandBatch>());
+                    m.AddMemoryProcess("in", d => d.DispatchAsCommandBatch());
                 });
 
             var observer = new Subject<ISystemEvent>();

@@ -8,7 +8,6 @@
 using System;
 using Autofac;
 using Autofac.Core;
-using Lokad.Cqrs.Build;
 using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Dispatch;
 
@@ -30,21 +29,31 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
         public ModuleForMemoryPartition(string[] memoryQueues)
         {
             _memoryQueues = memoryQueues;
-            Dispatch<DispatchOneEvent>(x => { });
+            DispatchAsEvents();
         }
 
-        public void Dispatch<TDispatcher>(Action<TDispatcher> configure)
+        public void DispatcherIs<TDispatcher>(Action<TDispatcher> optionalConfig = null)
             where TDispatcher : class, ISingleThreadMessageDispatcher
         {
+            var config = optionalConfig ?? (dispatcher => { });
+            var action = new Action<ISingleThreadMessageDispatcher>(d => config((TDispatcher) d));
             _dispatcher = Tuple.Create(typeof (TDispatcher),
-                new Action<ISingleThreadMessageDispatcher>(d => configure((TDispatcher) d)));
-        
+                action);
         }
 
-        public void Dispatch<TDispatcher>() where TDispatcher : class, ISingleThreadMessageDispatcher
+        public void DispatchAsEvents()
         {
-            _dispatcher = Tuple.Create(typeof (TDispatcher),
-                new Action<ISingleThreadMessageDispatcher>(dispatcher => { }));
+            DispatcherIs<DispatchOneEvent>();
+        }
+
+        public void DispatchAsCommandBatch(Action<DispatchCommandBatch> optionalConfig = null)
+        {
+            DispatcherIs(optionalConfig);
+        }
+
+        public void DispatchToRoute(Func<ImmutableEnvelope, string> route)
+        {
+            DispatcherIs<DispatchMessagesToRoute>(c => c.SpecifyRouter(route));
         }
 
         IEngineProcess BuildConsumingProcess(IComponentContext context)

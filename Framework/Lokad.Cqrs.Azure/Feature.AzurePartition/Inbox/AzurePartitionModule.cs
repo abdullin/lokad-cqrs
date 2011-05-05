@@ -29,24 +29,32 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
         {
             _accountName = accountId;
             _queueNames = queueNames.ToSet();
-            Dispatch<DispatchOneEvent>(x => { });
+            DispatchAsEvents();
         }
 
 
-        public void Dispatch<TDispatcher>(Action<TDispatcher> configure)
+        public void DispatcherIs<TDispatcher>(Action<TDispatcher> optionalConfig = null)
             where TDispatcher : class, ISingleThreadMessageDispatcher
         {
-            var action = new Action<ISingleThreadMessageDispatcher>(d => configure((TDispatcher) d));
+            var config = optionalConfig ?? (dispatcher => { });
+            var action = new Action<ISingleThreadMessageDispatcher>(d => config((TDispatcher) d));
             _dispatcher = Tuple.Create(typeof (TDispatcher),
                 action);
         }
 
-        public void Dispatch<TDispatcher>()
-            where TDispatcher : class, ISingleThreadMessageDispatcher
+        public void DispatchAsEvents()
         {
-            var action = new Action<ISingleThreadMessageDispatcher>(d => { });
-            _dispatcher = Tuple.Create(typeof(TDispatcher), action);
+            DispatcherIs<DispatchOneEvent>();
         }
+        public void DispatchAsCommandBatch(Action<DispatchCommandBatch> optionalConfig = null)
+        {
+            DispatcherIs(optionalConfig);
+        }
+        public void DispatchToRoute(Func<ImmutableEnvelope,string> route)
+        {
+            DispatcherIs<DispatchMessagesToRoute>(c => c.SpecifyRouter(route));
+        }
+        
 
 
         protected override void Load(ContainerBuilder builder)

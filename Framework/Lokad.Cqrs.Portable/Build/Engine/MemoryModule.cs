@@ -73,11 +73,11 @@ namespace Lokad.Cqrs.Build.Engine
 
         public void AddMemoryRouter(string queueName, Func<ImmutableEnvelope, string> config)
         {
-            AddMemoryProcess(queueName, m => m.Dispatch<DispatchMessagesToRoute>(x => x.SpecifyRouter(config)));
+            AddMemoryProcess(queueName, m => m.DispatchToRoute(config));
         }
         public void AddMemoryRouter(string[] queueNames, Func<ImmutableEnvelope, string> config)
         {
-            AddMemoryProcess(queueNames, m => m.Dispatch<DispatchMessagesToRoute>(x => x.SpecifyRouter(config)));
+            AddMemoryProcess(queueNames, m => m.DispatchToRoute(config));
         }
     }
 }

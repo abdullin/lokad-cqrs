@@ -108,8 +108,7 @@ namespace Lokad.Cqrs.Build.Engine
 
         public void AddAzureRouter(string accountId, string queueName, Func<ImmutableEnvelope, string> config)
         {
-            AddAzureProcess(accountId, new[] {queueName},
-                m => m.Dispatch<DispatchMessagesToRoute>(x => x.SpecifyRouter(config)));
+            AddAzureProcess(accountId, new[] {queueName}, m => m.DispatchToRoute(config));
         }
 
 
