@@ -101,6 +101,11 @@ namespace Lokad.Cqrs.Build.Engine
             AddAzureProcess(accountId, queues, m => { });
         }
 
+        public void AddAzureProcess(string accountId, string firstQueue, Action<AzurePartitionModule> config)
+        {
+            AddAzureProcess(accountId, new[] { firstQueue}, config);
+        }
+
         public void AddAzureRouter(string accountId, string queueName, Func<ImmutableEnvelope, string> config)
         {
             AddAzureProcess(accountId, new[] {queueName},
