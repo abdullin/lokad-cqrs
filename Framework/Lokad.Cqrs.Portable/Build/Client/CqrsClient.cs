@@ -26,5 +26,10 @@ namespace Lokad.Cqrs.Build.Client
                 throw new InvalidOperationException(message);
             }
         }
+
+        public TService Resolve<TService>()
+        {
+            return _scope.Resolve<TService>();
+        }
     }
 }

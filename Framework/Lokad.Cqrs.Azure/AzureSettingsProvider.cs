@@ -5,6 +5,7 @@
 
 #endregion
 
+using System;
 using System.Configuration;
 using Microsoft.WindowsAzure.ServiceRuntime;
 
@@ -15,25 +16,29 @@ namespace Lokad.Cqrs
     /// </summary>
     public sealed class AzureSettingsProvider
     {
-        static readonly bool HasCloudEnvironment;
+        //static readonly bool HasCloudEnvironment;
 
-        static AzureSettingsProvider()
+
+        static bool DetectCloudEnvironment()
         {
             try
             {
                 if (RoleEnvironment.IsAvailable)
-                    HasCloudEnvironment = true;
+                    return true;
             }
             catch (RoleEnvironmentException)
             {
                 // no environment
             }
+            return false;
         }
 
-        public Maybe<string> GetString(string key)
+        static Lazy<bool> _hasCloudEnvironment = new Lazy<bool>(DetectCloudEnvironment, true);
+
+        public static bool TryGetString(string key, out string result)
         {
-            string result = null;
-            if (HasCloudEnvironment)
+            result = null;
+            if (_hasCloudEnvironment.Value)
             {
                 try
                 {
@@ -48,7 +53,20 @@ namespace Lokad.Cqrs
             {
                 result = ConfigurationManager.AppSettings[key];
             }
-            return string.IsNullOrEmpty(result) ? Maybe<string>.Empty : result;
+            if (string.IsNullOrEmpty(result))
+                return false;
+            return true;
+        }
+
+        public static string GetString(string key)
+        {
+            string result;
+            if (!TryGetString(key, out result))
+            {
+                var s = string.Format("Failed to find configuration setting for '{0}'", key);
+                throw new InvalidOperationException(s);
+            }
+            return result;
         }
     }
 }
