@@ -23,13 +23,13 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
         TimeSpan _queueVisibilityTimeout = TimeSpan.FromSeconds(30);
         Tuple<Type, Action<ISingleThreadMessageDispatcher>> _dispatcher;
 
-        string _accountName;
+        readonly string _accountName;
 
         public AzurePartitionModule(string accountId, string[] queueNames)
         {
             _accountName = accountId;
             _queueNames = queueNames.ToSet();
-            Dispatch<DispatchEventToMultipleConsumers>(x => { });
+            Dispatch<DispatchOneEvent>(x => { });
         }
 
 

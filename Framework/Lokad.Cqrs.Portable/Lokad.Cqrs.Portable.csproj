@@ -46,6 +46,7 @@
     <Compile Include="Build\Client\CqrsClientBuilder.cs" />
     <Compile Include="Build\Engine\MemoryModule.cs" />
     <Compile Include="Build\Engine\StorageModule.cs" />
+    <Compile Include="Core.Dispatch\DispatchCommandBatchInTransaction.cs" />
     <Compile Include="Core.Dispatch\DispatchLifetimeScopeTags.cs" />
     <Compile Include="Core.Dispatch\Events\EventHadNoConsumers.cs" />
     <Compile Include="Core.Reactive\ImmediateTracingObserver.cs" />
@@ -84,10 +85,10 @@
     <Compile Include="Core.Directory\MessageActivationInfo.cs" />
     <Compile Include="Core.Directory\MessageMapping.cs" />
     <Compile Include="Core.Directory\MessageReflectionUtil.cs" />
-    <Compile Include="Core.Dispatch\DispatchCommandBatchToSingleConsumer.cs" />
+    <Compile Include="Core.Dispatch\DispatchCommandBatch.cs" />
     <Compile Include="Core.Dispatch\DispatcherProcess.cs" />
     <Compile Include="Core.Dispatch\DispatcherUtil.cs" />
-    <Compile Include="Core.Dispatch\DispatchEventToMultipleConsumers.cs" />
+    <Compile Include="Core.Dispatch\DispatchOneEvent.cs" />
     <Compile Include="Core.Dispatch\DispatchMessagesToRoute.cs" />
     <Compile Include="Core.Dispatch\Events\FailedToAckEnvelope.cs" />
     <Compile Include="Core.Dispatch\Events\EnvelopeDispatchFailed.cs" />

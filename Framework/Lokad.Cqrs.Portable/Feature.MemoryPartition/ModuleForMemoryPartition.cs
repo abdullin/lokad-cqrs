@@ -30,7 +30,7 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
         public ModuleForMemoryPartition(string[] memoryQueues)
         {
             _memoryQueues = memoryQueues;
-            Dispatch<DispatchEventToMultipleConsumers>(x => { });
+            Dispatch<DispatchOneEvent>(x => { });
         }
 
         public void Dispatch<TDispatcher>(Action<TDispatcher> configure)

@@ -17,7 +17,7 @@ namespace Lokad.Cqrs.Core.Dispatch
     /// Dispatcher that sends a single event to multiple consumers within this worker.
     /// No transactions are used here, we keep track of duplication.
     ///</summary>
-    public sealed class DispatchEventToMultipleConsumers : ISingleThreadMessageDispatcher
+    public sealed class DispatchOneEvent : ISingleThreadMessageDispatcher
     {
         readonly ILifetimeScope _container;
         readonly MessageActivationMap _directory;
@@ -25,7 +25,7 @@ namespace Lokad.Cqrs.Core.Dispatch
         readonly ISystemObserver _observer;
         readonly IMethodInvoker _invoker;
 
-        public DispatchEventToMultipleConsumers(
+        public DispatchOneEvent(
             ILifetimeScope container, 
             MessageActivationMap directory, 
             ISystemObserver observer, 
@@ -75,9 +75,9 @@ namespace Lokad.Cqrs.Core.Dispatch
             }
             else
             {
+                // else -> we don't have consumers. It's OK for the event
                 _observer.Notify(new EventHadNoConsumers(envelope.EnvelopeId, item.MappedType));
             }
-            // else -> we don't have consumers. It's OK for the event
         }
     }
 }

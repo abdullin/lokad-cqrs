@@ -16,20 +16,21 @@ namespace Lokad.Cqrs.Core.Dispatch
     /// Dispatch command batches to a single consumer. Uses sliding cache to 
     /// reduce message duplication
     /// </summary>
-    public sealed class DispatchCommandBatchToSingleConsumer : ISingleThreadMessageDispatcher
+    public class DispatchCommandBatch : ISingleThreadMessageDispatcher
     {
         readonly ILifetimeScope _container;
         readonly IDictionary<Type, Type> _messageConsumers = new Dictionary<Type, Type>();
         readonly MessageActivationMap _messageDirectory;
         readonly IMethodInvoker _invoker;
 
-        public DispatchCommandBatchToSingleConsumer(ILifetimeScope container, MessageActivationMap messageDirectory,
+        public DispatchCommandBatch(
+            ILifetimeScope container, 
+            MessageActivationMap messageDirectory,
             IMethodInvoker invoker)
         {
             _container = container;
             _invoker = invoker;
             _messageDirectory = messageDirectory;
-            
         }
 
         public void DispatchMessage(ImmutableEnvelope message)
@@ -49,7 +50,7 @@ namespace Lokad.Cqrs.Core.Dispatch
             DispatchEnvelope(message);
         }
 
-        void DispatchEnvelope(ImmutableEnvelope message)
+        protected virtual void DispatchEnvelope(ImmutableEnvelope message)
         {
             using (var unit = _container.BeginLifetimeScope(DispatchLifetimeScopeTags.MessageEnvelopeScopeTag))
             {
