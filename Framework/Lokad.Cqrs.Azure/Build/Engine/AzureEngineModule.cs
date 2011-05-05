@@ -11,7 +11,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Autofac;
 using Autofac.Core;
-using Lokad.Cqrs.Build.Engine;
 using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Core.Outbox;
 using Lokad.Cqrs.Feature.AzurePartition.Inbox;
@@ -22,7 +21,7 @@ using Microsoft.WindowsAzure;
 // ReSharper disable UnusedMethodReturnValue.Global
 // ReSharper disable MemberCanBePrivate.Global
 
-namespace Lokad.Cqrs.Build
+namespace Lokad.Cqrs.Build.Engine
 {
     /// <summary>
     /// Autofac syntax for configuring Azure storage
