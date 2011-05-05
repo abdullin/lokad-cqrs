@@ -12,11 +12,8 @@ using Lokad.Cqrs.Core.Directory;
 
 namespace Lokad.Cqrs.Core.Dispatch
 {
-    static class DispatcherUtil
+    public static class DispatcherUtil
     {
-        public const string UnitOfWorkTag = "UnitOfWork";
-        public const string ScopeTag = "Scope";
-
         public static void ThrowIfCommandHasMultipleConsumers(IEnumerable<MessageActivationInfo> commands)
         {
             var multipleConsumers = commands

@@ -51,14 +51,20 @@ namespace Lokad.Cqrs.Core.Dispatch
                     throw new InvalidOperationException("Couldn't find consumer for " + item.MappedType);
                 }
             }
+            DispatchEnvelope(message);
 
-            using (var unit = _container.BeginLifetimeScope(DispatcherUtil.UnitOfWorkTag))
+            _memory.Memorize(message.EnvelopeId);
+        }
+
+        void DispatchEnvelope(ImmutableEnvelope message)
+        {
+            using (var unit = _container.BeginLifetimeScope(DispatchLifetimeScopeTags.MessageEnvelopeScopeTag))
             {
                 foreach (var item in message.Items)
                 {
                     // we're dispatching them inside single lifetime scope
                     // meaning same transaction,
-                    using (var scope = unit.BeginLifetimeScope(DispatcherUtil.ScopeTag))
+                    using (var scope = unit.BeginLifetimeScope(DispatchLifetimeScopeTags.MessageItemScopeTag))
                     {
                         var consumerType = _messageConsumers[item.MappedType];
                         {
@@ -68,7 +74,6 @@ namespace Lokad.Cqrs.Core.Dispatch
                     }
                 }
             }
-            _memory.Memorize(message.EnvelopeId);
         }
 
 

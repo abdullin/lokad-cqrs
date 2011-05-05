@@ -62,11 +62,11 @@ namespace Lokad.Cqrs.Core.Dispatch
             var item = envelope.Items[0];
             if (_dispatcher.TryGetValue(item.MappedType, out consumerTypes))
             {
-                using (var unit = _container.BeginLifetimeScope(DispatcherUtil.UnitOfWorkTag))
+                using (var unit = _container.BeginLifetimeScope(DispatchLifetimeScopeTags.MessageEnvelopeScopeTag))
                 {
                     foreach (var consumerType in consumerTypes)
                     {
-                        using (var scope = unit.BeginLifetimeScope(DispatcherUtil.ScopeTag))
+                        using (var scope = unit.BeginLifetimeScope(DispatchLifetimeScopeTags.MessageItemScopeTag))
                         {
                             var consumer = scope.Resolve(consumerType);
                             _invoker.InvokeConsume(consumer, item, envelope);

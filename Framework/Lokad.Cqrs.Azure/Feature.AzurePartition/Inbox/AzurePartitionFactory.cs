@@ -55,8 +55,6 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
         readonly IEnvelopeStreamer _streamer;
         readonly ISystemObserver _observer;
         readonly IAzureStorageConfiguration _configuration;
-
-        
         readonly TimeSpan _queueVisibilityTimeout;
         readonly AzureSchedulingProcess _process;
 
