@@ -42,7 +42,7 @@ namespace Lokad.Cqrs.Synthetic
                         arg3.Cancel();
                     }));
 
-            StartupMessages.Add(new Message());
+            EnlistMessage(new Message());
         }
     }
 }

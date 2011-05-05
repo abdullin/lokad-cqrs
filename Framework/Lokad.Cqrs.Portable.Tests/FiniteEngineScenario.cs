@@ -20,7 +20,16 @@ namespace Lokad.Cqrs
     public abstract class FiniteEngineScenario
     {
         protected bool HandlerFailuresAreExpected { private get; set; }
-        protected readonly IList<object> StartupMessages = new List<object>();
+        readonly IList<object[]> _messages = new List<object[]>();
+
+        readonly IList<Action<CqrsEngineHost>> _asserts = new List<Action<CqrsEngineHost>>();
+
+        protected void EnlistMessage(params object[] messages)
+        {
+            _messages.Add(messages);
+        }
+
+
 
         protected virtual void Configure(CqrsEngineBuilder builder) {}
         readonly List<string> _failures = new List<string>();
@@ -34,6 +43,12 @@ namespace Lokad.Cqrs
         {
             _subscriptions.Add(subscribe);
         }
+
+        protected void EnlistAssert(Action<CqrsEngineHost> assert)
+        {
+            _asserts.Add(assert);
+        }
+
 
         protected FiniteEngineScenario()
         {
@@ -91,10 +106,9 @@ namespace Lokad.Cqrs
 
 
                     engine.Start(t.Token);
-
-                    foreach (var message in StartupMessages)
+                    foreach (var message in _messages)
                     {
-                        sender.SendOne(message);
+                        sender.SendBatch(message);
                     }
 
                     if (Debugger.IsAttached)
@@ -115,6 +129,11 @@ namespace Lokad.Cqrs
                     if (!t.IsCancellationRequested)
                     {
                         Assert.Fail("Engine should be stopped manually!");
+                    }
+
+                    foreach (var assert in _asserts)
+                    {
+                        assert(engine);
                     }
                 }
             }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Transactions;
 using Lokad.Cqrs.Build.Engine;
 using Lokad.Cqrs.Core.Dispatch.Events;
 using Lokad.Cqrs.Feature.AtomicStorage;
@@ -39,8 +40,7 @@ namespace Lokad.Cqrs.Synthetic
         {
             HandlerFailuresAreExpected = true;
 
-            
-            StartupMessages.Add(new Message());
+            EnlistMessage(new Message());
         }
     }
 }

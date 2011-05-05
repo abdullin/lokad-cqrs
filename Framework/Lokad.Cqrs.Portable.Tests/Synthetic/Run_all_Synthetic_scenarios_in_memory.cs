@@ -12,7 +12,7 @@ namespace Lokad.Cqrs.Synthetic
         {
             config.Memory(m =>
             {
-                m.AddMemoryProcess("do");
+                m.AddMemoryProcess("do", x => x.DispatchAsCommandBatch());
                 m.AddMemorySender("do", cb => cb.IdGeneratorForTests());
             });
         }
@@ -29,6 +29,13 @@ namespace Lokad.Cqrs.Synthetic
         {
             new Engine_scenario_for_permanent_failure()
                 .TestConfiguration(CurrentConfig);
+        }
+
+        [Test]
+        public void Command_batches_work_with_transaction()
+        {
+            new Engine_scenario_for_transactional_commands()
+            .TestConfiguration(CurrentConfig);
         }
     }
 }

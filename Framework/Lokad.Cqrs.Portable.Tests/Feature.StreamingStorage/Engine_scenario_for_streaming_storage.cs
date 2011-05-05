@@ -63,7 +63,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
                     m.AddMemoryProcess("in");
                     m.AddMemorySender("in");
                 });
-            StartupMessages.Add(new Do());
+            EnlistMessage(new Do());
         }
     }
 }

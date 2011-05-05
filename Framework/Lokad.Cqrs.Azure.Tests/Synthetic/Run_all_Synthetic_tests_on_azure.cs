@@ -23,7 +23,11 @@ namespace Lokad.Cqrs
             b.Azure(m =>
                 {
                     m.AddAzureAccount("azure-dev", CloudStorageAccount.DevelopmentStorageAccount);
-                    m.AddAzureProcess("azure-dev", new[] {"incoming"}, c => c.QueueVisibility(1));
+                    m.AddAzureProcess("azure-dev", new[] {"incoming"}, c =>
+                        {
+                            c.QueueVisibility(1);
+                            c.DispatchAsCommandBatch();
+                        });
                     m.AddAzureSender("azure-dev", "incoming", x => x.IdGeneratorForTests());
                     m.WipeAccountsAtStartUp = true;
                 });
@@ -41,6 +45,13 @@ namespace Lokad.Cqrs
         {
             new Engine_scenario_for_permanent_failure()
                 .TestConfiguration(CurrentConfig);
+        }
+
+        [Test]
+        public void Command_batches_work_with_transaction()
+        {
+            new Engine_scenario_for_transactional_commands()
+            .TestConfiguration(CurrentConfig);
         }
         
     }

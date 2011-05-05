@@ -51,7 +51,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 
         protected override void Configure(CqrsEngineBuilder config)
         {
-            StartupMessages.Add(new AtomicMessage());
+            EnlistMessage(new AtomicMessage());
         }
     }
 }

@@ -38,8 +38,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 
             public void Consume(GoMessage message, MessageContext context)
             {
-                var result = _storage
-                    .AddOrUpdateSingleton<Entity>(s => s.Count += 1);
+                var result = _storage.UpdateSingletonNew<Entity>(s => s.Count += 1);
 
                 if (result.Count == 5)
                 {
@@ -55,7 +54,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 
         protected override void Configure(CqrsEngineBuilder builder)
         {
-            StartupMessages.Add(new GoMessage());
+            EnlistMessage(new GoMessage());
         }
     }
 }
