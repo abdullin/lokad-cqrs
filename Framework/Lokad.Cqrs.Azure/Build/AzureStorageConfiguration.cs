@@ -5,7 +5,7 @@ using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs.Build
 {
-    sealed class AzureClientConfiguration : IAzureClientConfiguration
+    sealed class AzureStorageConfiguration : IAzureStorageConfiguration
     {
         readonly Action<CloudQueueClient> _queueClientConfiguration;
         readonly Action<CloudBlobClient> _blobClientConfiguration;
@@ -20,7 +20,7 @@ namespace Lokad.Cqrs.Build
             ServicePointManager.FindServicePoint(account.QueueEndpoint).UseNagleAlgorithm = false;
         }
 
-        public AzureClientConfiguration(CloudStorageAccount account, Action<CloudQueueClient> queueClientConfiguration,
+        public AzureStorageConfiguration(CloudStorageAccount account, Action<CloudQueueClient> queueClientConfiguration,
             Action<CloudBlobClient> blobClientConfiguration, string customName)
         {
             _queueClientConfiguration = queueClientConfiguration;

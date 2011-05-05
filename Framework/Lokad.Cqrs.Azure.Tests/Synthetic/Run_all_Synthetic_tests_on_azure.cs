@@ -18,7 +18,7 @@ namespace Lokad.Cqrs
     public sealed class Run_all_Synthetic_tests_on_azure
     {
 
-        static void CurrentConfig(CloudEngineBuilder b)
+        static void CurrentConfig(CqrsEngineBuilder b)
         {
             b.Azure(m =>
                 {

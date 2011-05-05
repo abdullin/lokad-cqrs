@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Autofac;
 using Autofac.Core;
+using Lokad.Cqrs.Build.Engine;
 using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Core.Outbox;
 using Lokad.Cqrs.Feature.AzurePartition.Inbox;
@@ -26,15 +27,14 @@ namespace Lokad.Cqrs.Build
     /// <summary>
     /// Autofac syntax for configuring Azure storage
     /// </summary>
-    public sealed class AzureModule : BuildSyntaxHelper, IModule
+    public sealed class AzureEngineModule : BuildSyntaxHelper, IModule
     {
         static readonly Regex QueueName = new Regex("^[A-Za-z][A-Za-z0-9]{2,62}", RegexOptions.Compiled);
 
-        readonly IDictionary<string, AzureClientConfiguration> _configs =
-            new Dictionary<string, AzureClientConfiguration>();
+        readonly IDictionary<string, AzureStorageConfiguration> _configs =
+            new Dictionary<string, AzureStorageConfiguration>();
 
         readonly IList<IModule> _modules = new List<IModule>();
-
 
         public bool WipeAccountsAtStartUp { get; set; }
 
@@ -47,9 +47,9 @@ namespace Lokad.Cqrs.Build
         /// same builder for inling multiple configuration statements
         /// </returns>
         public void AddAzureAccount(string accountId, CloudStorageAccount account,
-            Action<AzureClientConfigurationBuilder> tuning)
+            Action<AzureStorageConfigurationBuilder> tuning)
         {
-            var builder = new AzureClientConfigurationBuilder(account, accountId);
+            var builder = new AzureStorageConfigurationBuilder(account, accountId);
             tuning(builder);
             var configuration = builder.Build();
             _configs.Add(configuration.AccountName, configuration);
@@ -121,8 +121,8 @@ namespace Lokad.Cqrs.Build
             foreach (var config in _configs)
             {
                 // register as list
-                builder.RegisterInstance(config.Value).As<IAzureClientConfiguration>();
-                builder.RegisterInstance(config.Value).Named(config.Key, typeof (IAzureClientConfiguration));
+                builder.RegisterInstance(config.Value).As<IAzureStorageConfiguration>();
+                builder.RegisterInstance(config.Value).Named(config.Key, typeof (IAzureStorageConfiguration));
             }
 
             foreach (var partition in _modules)
@@ -134,19 +134,12 @@ namespace Lokad.Cqrs.Build
 
             builder.Update(componentRegistry);
 
+            var configurations = _configs.Values;
+
             if (WipeAccountsAtStartUp)
             {
-                _configs.Values
-                    .AsParallel()
-                    .Select(c => c.CreateBlobClient())
-                    .SelectMany(c => c.ListContainers())
-                    .ForAll(c => c.Delete());
 
-                _configs.Values
-                    .AsParallel()
-                    .Select(c => c.CreateQueueClient())
-                    .SelectMany(c => c.ListQueues())
-                    .ForAll(c => c.Delete());
+                WipeAzureAccount.Fast(configurations);
             }
         }
     }

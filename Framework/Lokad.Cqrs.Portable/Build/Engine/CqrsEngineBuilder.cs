@@ -20,9 +20,9 @@ using Lokad.Cqrs.Core.Serialization;
 namespace Lokad.Cqrs.Build.Engine
 {
     /// <summary>
-    /// Fluent API for creating and configuring <see cref="CloudEngineHost"/>
+    /// Fluent API for creating and configuring <see cref="CqrsEngineHost"/>
     /// </summary>
-    public class CloudEngineBuilder : BuildSyntaxHelper
+    public class CqrsEngineBuilder : BuildSyntaxHelper
     {
         readonly HashSet<IModule> _moduleEnlistments = new HashSet<IModule>();
 
@@ -43,11 +43,11 @@ namespace Lokad.Cqrs.Build.Engine
         }
 
         /// <summary>
-        /// Configures the message domain for the instance of <see cref="CloudEngineHost"/>.
+        /// Configures the message domain for the instance of <see cref="CqrsEngineHost"/>.
         /// </summary>
         /// <param name="config">configuration syntax.</param>
         /// <returns>same builder for inline multiple configuration statements</returns>
-        public CloudEngineBuilder Domain(Action<ModuleForMessageDirectory> config)
+        public CqrsEngineBuilder Domain(Action<ModuleForMessageDirectory> config)
         {
             var directory = new ModuleForMessageDirectory();
             config(directory);
@@ -57,34 +57,34 @@ namespace Lokad.Cqrs.Build.Engine
 
         readonly ContainerBuilder _builder = new ContainerBuilder();
 
-        public CloudEngineBuilder Advanced(Action<ContainerBuilder> build)
+        public CqrsEngineBuilder Advanced(Action<ContainerBuilder> build)
         {
             build(_builder);
             return this;
         }
 
-        public CloudEngineBuilder Serialization(Action<ModuleForSerialization> config)
+        public CqrsEngineBuilder Serialization(Action<SerializationModule> config)
         {
-            var m = new ModuleForSerialization();
+            var m = new SerializationModule();
             config(m);
             EnlistModule(m);
             return this;
         }
 
 
-        public CloudEngineBuilder EnlistObserver(IObserver<ISystemEvent> observer)
+        public CqrsEngineBuilder EnlistObserver(IObserver<ISystemEvent> observer)
         {
             _builder.RegisterInstance(observer);
             return this;
         }
 
-        public CloudEngineBuilder EnlistObserver<TObserver>() where TObserver : IObserver<ISystemEvent>
+        public CqrsEngineBuilder EnlistObserver<TObserver>() where TObserver : IObserver<ISystemEvent>
         {
             _builder.RegisterType<TObserver>().As<IObserver<ISystemEvent>>().SingleInstance();
             return this;
         }
 
-        public CloudEngineBuilder Memory(Action<MemoryModule> configure)
+        public CqrsEngineBuilder Memory(Action<MemoryModule> configure)
         {
             var m = new MemoryModule();
             configure(m);
@@ -92,7 +92,7 @@ namespace Lokad.Cqrs.Build.Engine
             return this;
         }
 
-        public CloudEngineBuilder Storage(Action<StorageModule> configure)
+        public CqrsEngineBuilder Storage(Action<StorageModule> configure)
         {
             var m = new StorageModule();
             configure(m);
@@ -103,10 +103,10 @@ namespace Lokad.Cqrs.Build.Engine
         public bool DisableDefaultObserver { get; set; }
 
         /// <summary>
-        /// Builds this <see cref="CloudEngineHost"/>.
+        /// Builds this <see cref="CqrsEngineHost"/>.
         /// </summary>
         /// <returns>new instance of cloud engine host</returns>
-        public CloudEngineHost Build()
+        public CqrsEngineHost Build()
         {
             // nonconditional registrations
             // System presets
@@ -116,14 +116,14 @@ namespace Lokad.Cqrs.Build.Engine
             _builder.RegisterType<MessageDuplicationManager>().SingleInstance();
 
             // some defaults
-            _builder.RegisterType<CloudEngineHost>().SingleInstance();
+            _builder.RegisterType<CqrsEngineHost>().SingleInstance();
 
             // conditional registrations and defaults
             if (!IsEnlisted<ModuleForMessageDirectory>())
             {
                 Domain(m => m.InUserAssemblies());
             }
-            if (!IsEnlisted<ModuleForSerialization>())
+            if (!IsEnlisted<SerializationModule>())
             {
                 Serialization(x => x.UseDataContractSerializer());
             }
@@ -147,7 +147,7 @@ namespace Lokad.Cqrs.Build.Engine
 
 
             var container = _builder.Build();
-            var host = container.Resolve<CloudEngineHost>(TypedParameter.From(container));
+            var host = container.Resolve<CqrsEngineHost>(TypedParameter.From(container));
             host.Initialize();
             return host;
         }

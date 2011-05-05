@@ -80,7 +80,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
 
             var streamer = context.Resolve<IEnvelopeStreamer>();
 
-            var configurations = context.Resolve<IEnumerable<IAzureClientConfiguration>>();
+            var configurations = context.Resolve<IEnumerable<IAzureStorageConfiguration>>();
 
             var configuration = configurations.FirstOrDefault(c => c.AccountName == _accountName);
             if (configuration == null)

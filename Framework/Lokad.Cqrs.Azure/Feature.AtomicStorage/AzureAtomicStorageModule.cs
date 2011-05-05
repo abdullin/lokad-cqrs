@@ -15,12 +15,12 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
     /// Autofac module for Lokad.CQRS engine. It initializes view containers 
     /// on start-up and wires writers
     /// </summary>
-    public sealed class AzureAtomicStorageWriterModule : Module
+    public sealed class AzureAtomicStorageModule : Module
     {
         readonly string _accountName;
         IAzureAtomicStorageStrategy _strategy;
 
-        public AzureAtomicStorageWriterModule(string accountName)
+        public AzureAtomicStorageModule(string accountName)
         {
             _accountName = accountName;
             _strategy = new DefaultAzureAtomicStorageStrategyBuilder().Build();
@@ -43,15 +43,29 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             builder
                 .RegisterGeneric(typeof (AzureAtomicEntityWriter<,>))
                 .WithParameter(TypedParameter.From(_strategy))
-                .WithParameter(ResolvedParameter.ForNamed<IAzureClientConfiguration>(_accountName))
+                .WithParameter(ResolvedParameter.ForNamed<IAzureStorageConfiguration>(_accountName))
                 .As(typeof (IAtomicEntityWriter<,>))
                 .SingleInstance();
             builder
                 .RegisterGeneric(typeof (AzureAtomicSingletonWriter<>))
                 .As(typeof (IAtomicSingletonWriter<>))
                 .WithParameter(TypedParameter.From(_strategy))
-                .WithParameter(ResolvedParameter.ForNamed<IAzureClientConfiguration>(_accountName))
+                .WithParameter(ResolvedParameter.ForNamed<IAzureStorageConfiguration>(_accountName))
                 .SingleInstance();
+
+            builder
+                .RegisterGeneric(typeof (AzureAtomicEntityReader<,>))
+                .WithParameter(TypedParameter.From(_strategy))
+                .WithParameter(ResolvedParameter.ForNamed<IAzureStorageConfiguration>(_accountName))
+                .As(typeof (IAtomicEntityReader<,>))
+                .SingleInstance();
+            builder
+                .RegisterGeneric(typeof (AzureAtomicSingletonReader<>))
+                .WithParameter(TypedParameter.From(_strategy))
+                .WithParameter(ResolvedParameter.ForNamed<IAzureStorageConfiguration>(_accountName))
+                .As(typeof (IAtomicSingletonReader<>))
+                .SingleInstance();
+
             builder
                 .RegisterType(typeof (AtomicStorageInitialization))
                 .As<IEngineProcess>()

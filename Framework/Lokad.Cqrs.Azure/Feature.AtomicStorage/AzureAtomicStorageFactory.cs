@@ -15,22 +15,22 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
     {
         public IAtomicEntityWriter<TKey, TEntity> GetEntityWriter<TKey, TEntity>()
         {
-            return new AzureAtomicEntityWriter<TKey, TEntity>(_client, _strategy);
+            return new AzureAtomicEntityWriter<TKey, TEntity>(_storage, _strategy);
         }
 
         public IAtomicEntityReader<TKey, TEntity> GetEntityReader<TKey, TEntity>()
         {
-            return new AzureAtomicEntityReader<TKey, TEntity>(_client, _strategy);
+            return new AzureAtomicEntityReader<TKey, TEntity>(_storage, _strategy);
         }
 
         public IAtomicSingletonReader<TSingleton> GetSingletonReader<TSingleton>()
         {
-            return new AzureAtomicSingletonReader<TSingleton>(_client, _strategy);
+            return new AzureAtomicSingletonReader<TSingleton>(_storage, _strategy);
         }
 
         public IAtomicSingletonWriter<TSingleton> GetSingletonWriter<TSingleton>()
         {
-            return new AzureAtomicSingletonWriter<TSingleton>(_client, _strategy);
+            return new AzureAtomicSingletonWriter<TSingleton>(_storage, _strategy);
         }
 
         readonly object _initializationLock = new object();
@@ -71,7 +71,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             }
 
             folders.Add(_strategy.GetFolderForSingleton());
-            var client = _client.CreateBlobClient();
+            var client = _storage.CreateBlobClient();
             folders
                 .AsParallel()
                 .WithDegreeOfParallelism(folders.Count)
@@ -81,13 +81,13 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         }
 
         readonly IAzureAtomicStorageStrategy _strategy;
-        readonly IAzureClientConfiguration _client;
+        readonly IAzureStorageConfiguration _storage;
 
 
-        public AzureAtomicStorageFactory(IAzureAtomicStorageStrategy strategy, IAzureClientConfiguration client)
+        public AzureAtomicStorageFactory(IAzureAtomicStorageStrategy strategy, IAzureStorageConfiguration storage)
         {
             _strategy = strategy;
-            _client = client;
+            _storage = storage;
         }
 
         public NuclearStorage CreateSimplifiedStorage(bool dontInitialize = false)

@@ -24,9 +24,9 @@ namespace Lokad.Cqrs
 
         #region Setup/Teardown
 
-        static CloudEngineHost BuildHost()
+        static CqrsEngineHost BuildHost()
         {
-            var engine = new CloudEngineBuilder();
+            var engine = new CqrsEngineBuilder();
             engine.Azure(x =>
                 {
                     x.AddAzureAccount("dev-store", CloudStorageAccount.DevelopmentStorageAccount);

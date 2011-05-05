@@ -11,6 +11,7 @@ using System.Concurrency;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading;
+using Lokad.Cqrs.Build.Client;
 using Lokad.Cqrs.Build.Engine;
 using Lokad.Cqrs.Core.Dispatch.Events;
 using NUnit.Framework;
@@ -18,7 +19,7 @@ using NUnit.Framework;
 namespace Lokad.Cqrs
 {
     [TestFixture]
-    public sealed class MemoryConfigurationTests
+    public sealed class BasicEngineConfigurationTests
     {
         // ReSharper disable InconsistentNaming
 
@@ -54,10 +55,10 @@ namespace Lokad.Cqrs
 
         #endregion
 
-        static void TestConfiguration(Action<CloudEngineBuilder> config)
+        static void TestConfiguration(Action<CqrsEngineBuilder> config)
         {
             var events = new Subject<ISystemEvent>(Scheduler.TaskPool);
-            var builder = new CloudEngineBuilder()
+            var builder = new CqrsEngineBuilder()
                 .EnlistObserver(events);
 
             config(builder);
@@ -112,4 +113,6 @@ namespace Lokad.Cqrs
                 }));
         }
     }
+
+    
 }

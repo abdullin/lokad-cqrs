@@ -12,12 +12,12 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 {
     public sealed class AzureAtomicSingletonWriter<TView> : IAtomicSingletonWriter<TView>
     {
-        readonly IAzureClientConfiguration _client;
+        readonly IAzureStorageConfiguration _storage;
         readonly IAzureAtomicStorageStrategy _strategy;
 
-        public AzureAtomicSingletonWriter(IAzureClientConfiguration client, IAzureAtomicStorageStrategy strategy)
+        public AzureAtomicSingletonWriter(IAzureStorageConfiguration storage, IAzureAtomicStorageStrategy strategy)
         {
-            _client = client;
+            _storage = storage;
             _strategy = strategy;
         }
 
@@ -25,7 +25,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         {
             var name = _strategy.GetNameForSingleton(typeof (TView));
 
-            return _client
+            return _storage
                 .CreateBlobClient()
                 .GetContainerReference(_strategy.GetFolderForSingleton())
                 .GetBlobReference(name);

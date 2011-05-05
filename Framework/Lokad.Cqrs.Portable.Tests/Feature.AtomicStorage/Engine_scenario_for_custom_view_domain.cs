@@ -86,7 +86,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         }
 
 
-        protected override void Configure(CloudEngineBuilder config)
+        protected override void Configure(CqrsEngineBuilder config)
         {
             config.Advanced(cb => cb.RegisterGeneric(typeof (ViewUpdater<,>)));
             StartupMessages.Add(new Message());

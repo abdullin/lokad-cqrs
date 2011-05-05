@@ -66,7 +66,7 @@ namespace Lokad.Cqrs
         [TestFixtureSetUp]
         public void FixtureSetUp()
         {
-            var builder = new CloudEngineBuilder();
+            var builder = new CqrsEngineBuilder();
             builder.Domain(m =>
                 {
                     m.HandlerSample<IMyHandler<IMyMessage>>(c => c.Consume(null, null));
@@ -91,7 +91,7 @@ namespace Lokad.Cqrs
             return new MyContext(messageId, token, envelope.CreatedOnUtc);
         }
 
-        CloudEngineHost _engine;
+        CqrsEngineHost _engine;
         IObservable<ISystemEvent> _events;
 
 

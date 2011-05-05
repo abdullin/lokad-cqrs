@@ -12,15 +12,15 @@ using Microsoft.WindowsAzure.ServiceRuntime;
 
 namespace Lokad.Cqrs.Build.Engine
 {
-    public abstract class CloudEngineRole : RoleEntryPoint
+    public abstract class CqrsEngineRole : RoleEntryPoint
     {
         /// <summary>
         /// Implement in the inheriting class to configure the bus host.
         /// </summary>
         /// <returns></returns>
-        protected abstract CloudEngineHost BuildHost();
+        protected abstract CqrsEngineHost BuildHost();
 
-        CloudEngineHost _host;
+        CqrsEngineHost _host;
         readonly CancellationTokenSource _source = new CancellationTokenSource();
 
         Task _task;

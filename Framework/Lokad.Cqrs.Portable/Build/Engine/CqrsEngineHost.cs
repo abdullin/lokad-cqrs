@@ -18,13 +18,13 @@ using Lokad.Cqrs.Evil;
 
 namespace Lokad.Cqrs.Build.Engine
 {
-    public sealed class CloudEngineHost : IDisposable
+    public sealed class CqrsEngineHost : IDisposable
     {
         public ILifetimeScope Container { get; private set; }
         readonly ISystemObserver _observer;
         readonly IEnumerable<IEngineProcess> _serverProcesses;
 
-        public CloudEngineHost(
+        public CqrsEngineHost(
             ILifetimeScope container,
             ISystemObserver observer,
             IEnumerable<IEngineProcess> serverProcesses)

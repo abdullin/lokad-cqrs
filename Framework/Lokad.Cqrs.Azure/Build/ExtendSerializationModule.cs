@@ -10,15 +10,15 @@ using Lokad.Cqrs.Core.Serialization;
 
 namespace Lokad.Cqrs.Build
 {
-    public static class ModuleExtensionForSerialization
+    public static class ExtendSerializationModule
     {
-        public static void AutoDetectSerializer(this ModuleForSerialization @this)
+        public static void AutoDetectSerializer(this SerializationModule @this)
         {
             @this.RegisterDataSerializer<DataSerializerWithAutoDetection>();
             @this.RegisterEnvelopeSerializer<EnvelopeSerializerWithProtoBuf>();
         }
 
-        public static void UseProtoBufSerialization(this ModuleForSerialization self)
+        public static void UseProtoBufSerialization(this SerializationModule self)
         {
             self.RegisterDataSerializer<DataSerializerWithProtoBuf>();
             self.RegisterEnvelopeSerializer<EnvelopeSerializerWithProtoBuf>();

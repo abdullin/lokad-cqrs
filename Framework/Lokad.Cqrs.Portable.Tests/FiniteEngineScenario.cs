@@ -22,7 +22,7 @@ namespace Lokad.Cqrs
         protected bool HandlerFailuresAreExpected { private get; set; }
         protected readonly IList<object> StartupMessages = new List<object>();
 
-        protected virtual void Configure(CloudEngineBuilder builder) {}
+        protected virtual void Configure(CqrsEngineBuilder builder) {}
         readonly List<string> _failures = new List<string>();
 
         readonly List<Func<IObservable<ISystemEvent>, IMessageSender, CancellationTokenSource, IDisposable>>
@@ -64,10 +64,10 @@ namespace Lokad.Cqrs
         }
 
 
-        public void TestConfiguration(params Action<CloudEngineBuilder>[] config)
+        public void TestConfiguration(params Action<CqrsEngineBuilder>[] config)
         {
             var events = new Subject<ISystemEvent>(Scheduler.TaskPool);
-            var builder = new CloudEngineBuilder()
+            var builder = new CqrsEngineBuilder()
                 .EnlistObserver(events);
 
             Configure(builder);

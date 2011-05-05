@@ -5,6 +5,7 @@
 
 #endregion
 
+using Lokad.Cqrs.Build;
 using Lokad.Cqrs.Build.Engine;
 using Microsoft.WindowsAzure;
 using NUnit.Framework;
@@ -38,7 +39,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                 .TestConfiguration(CurrentConfig);
         }
 
-        static void CurrentConfig(CloudEngineBuilder b)
+        static void CurrentConfig(CqrsEngineBuilder b)
         {
             b.Azure(m =>
                 {

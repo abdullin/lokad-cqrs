@@ -6,6 +6,7 @@
 #endregion
 
 using System.IO;
+using Lokad.Cqrs.Build;
 using Lokad.Cqrs.Feature.StreamingStorage.Scenarios;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;

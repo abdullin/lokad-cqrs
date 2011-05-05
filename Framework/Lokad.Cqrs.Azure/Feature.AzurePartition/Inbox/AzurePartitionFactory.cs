@@ -54,7 +54,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
     {
         readonly IEnvelopeStreamer _streamer;
         readonly ISystemObserver _observer;
-        readonly IAzureClientConfiguration _configuration;
+        readonly IAzureStorageConfiguration _configuration;
 
         
         readonly TimeSpan _queueVisibilityTimeout;
@@ -65,7 +65,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
         public AzurePartitionFactory(
             IEnvelopeStreamer streamer, 
             ISystemObserver observer,
-            IAzureClientConfiguration configuration, 
+            IAzureStorageConfiguration configuration, 
             TimeSpan queueVisibilityTimeout,
             AzureSchedulingProcess process)
         {

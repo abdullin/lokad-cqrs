@@ -11,7 +11,7 @@ using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs.Build
 {
-    public sealed class AzureClientConfigurationBuilder
+    public sealed class AzureStorageConfigurationBuilder
     {
         readonly CloudStorageAccount _account;
 
@@ -21,7 +21,7 @@ namespace Lokad.Cqrs.Build
         bool _cleanAccount;
 
 
-        public AzureClientConfigurationBuilder ConfigureQueueClient(Action<CloudQueueClient> configure,
+        public AzureStorageConfigurationBuilder ConfigureQueueClient(Action<CloudQueueClient> configure,
             bool replaceOld = false)
         {
             if (replaceOld)
@@ -35,7 +35,7 @@ namespace Lokad.Cqrs.Build
             return this;
         }
 
-        public AzureClientConfigurationBuilder ConfigureBlobClient(Action<CloudBlobClient> configure,
+        public AzureStorageConfigurationBuilder ConfigureBlobClient(Action<CloudBlobClient> configure,
             bool replaceOld = false)
         {
             if (replaceOld)
@@ -50,7 +50,7 @@ namespace Lokad.Cqrs.Build
         }
 
 
-        public AzureClientConfigurationBuilder(CloudStorageAccount account, string accountId)
+        public AzureStorageConfigurationBuilder(CloudStorageAccount account, string accountId)
         {
             // defaults
             _queueClientConfiguration = client => client.RetryPolicy = RetryPolicies.NoRetry();
@@ -64,9 +64,9 @@ namespace Lokad.Cqrs.Build
             _cleanAccount = true;
         }
 
-        internal AzureClientConfiguration Build()
+        internal AzureStorageConfiguration Build()
         {
-            return new AzureClientConfiguration(_account, _queueClientConfiguration, _blobClientConfiguration,
+            return new AzureStorageConfiguration(_account, _queueClientConfiguration, _blobClientConfiguration,
                 _accountId);
         }
     }

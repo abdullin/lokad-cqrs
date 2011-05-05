@@ -53,7 +53,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         }
 
 
-        protected override void Configure(CloudEngineBuilder builder)
+        protected override void Configure(CqrsEngineBuilder builder)
         {
             StartupMessages.Add(new GoMessage());
         }

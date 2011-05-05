@@ -8,7 +8,7 @@ namespace Lokad.Cqrs.Synthetic
     {
         // ReSharper disable InconsistentNaming
 
-        static void CurrentConfig(CloudEngineBuilder config)
+        static void CurrentConfig(CqrsEngineBuilder config)
         {
             config.Memory(m =>
             {

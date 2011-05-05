@@ -42,6 +42,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BuildSyntaxHelper.cs" />
+    <Compile Include="Build\Client\CqrsClient.cs" />
+    <Compile Include="Build\Client\CqrsClientBuilder.cs" />
     <Compile Include="Build\Engine\MemoryModule.cs" />
     <Compile Include="Build\Engine\StorageModule.cs" />
     <Compile Include="Core.Dispatch\Events\EventHadNoConsumers.cs" />
@@ -68,9 +70,9 @@
     <Compile Include="Core.Dispatch\MemoryQuarantine.cs" />
     <Compile Include="Core.Dispatch\Events\EnvelopeAcked.cs" />
     <Compile Include="Core.Outbox\EnvelopeSent.cs" />
-    <Compile Include="Core.Serialization\ModuleForSerialization.cs" />
-    <Compile Include="Build\Engine\CloudEngineBuilder.cs" />
-    <Compile Include="Build\Engine\CloudEngineHost.cs" />
+    <Compile Include="Core.Serialization\SerializationModule.cs" />
+    <Compile Include="Build\Engine\CqrsEngineBuilder.cs" />
+    <Compile Include="Build\Engine\CqrsEngineHost.cs" />
     <Compile Include="Build\Engine\Events\EngineInitializationStarted.cs" />
     <Compile Include="Build\Engine\Events\EngineInitialized.cs" />
     <Compile Include="Build\Engine\Events\EngineStarted.cs" />
