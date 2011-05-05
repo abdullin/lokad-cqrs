@@ -66,7 +66,8 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
             var notifier = factory.GetMemoryInbox(_memoryQueues);
 
             var quarantine = new MemoryQuarantine();
-            var transport = new DispatcherProcess(log, dispatcher, notifier, quarantine);
+            var manager = context.Resolve<MessageDuplicationManager>();
+            var transport = new DispatcherProcess(log, dispatcher, notifier, quarantine, manager);
             return transport;
         }
 

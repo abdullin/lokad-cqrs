@@ -22,18 +22,19 @@ namespace Lokad.Cqrs.Core.Dispatch
         readonly ILifetimeScope _container;
         readonly MessageActivationMap _directory;
         readonly IDictionary<Type, Type[]> _dispatcher = new Dictionary<Type, Type[]>();
-        readonly MessageDuplicationMemory _dispatchMemory;
         readonly ISystemObserver _observer;
         readonly IMethodInvoker _invoker;
 
-        public DispatchEventToMultipleConsumers(ILifetimeScope container, MessageActivationMap directory,
-            MessageDuplicationManager memory, ISystemObserver observer, IMethodInvoker invoker)
+        public DispatchEventToMultipleConsumers(
+            ILifetimeScope container, 
+            MessageActivationMap directory, 
+            ISystemObserver observer, 
+            IMethodInvoker invoker)
         {
             _container = container;
             _invoker = invoker;
             _observer = observer;
             _directory = directory;
-            _dispatchMemory = memory.GetOrAdd(this);
         }
 
         public void Init()
@@ -49,9 +50,6 @@ namespace Lokad.Cqrs.Core.Dispatch
 
         public void DispatchMessage(ImmutableEnvelope envelope)
         {
-            if (_dispatchMemory.DoWeRemember(envelope.EnvelopeId))
-                return;
-
             if (envelope.Items.Length != 1)
                 throw new InvalidOperationException(
                     "Batch message arrived to the shared scope. Are you batching events or dispatching commands to shared scope?");
@@ -80,8 +78,6 @@ namespace Lokad.Cqrs.Core.Dispatch
                 _observer.Notify(new EventHadNoConsumers(envelope.EnvelopeId, item.MappedType));
             }
             // else -> we don't have consumers. It's OK for the event
-
-            _dispatchMemory.Memorize(envelope.EnvelopeId);
         }
     }
 }

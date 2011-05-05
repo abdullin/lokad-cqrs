@@ -21,24 +21,19 @@ namespace Lokad.Cqrs.Core.Dispatch
         readonly ILifetimeScope _container;
         readonly IDictionary<Type, Type> _messageConsumers = new Dictionary<Type, Type>();
         readonly MessageActivationMap _messageDirectory;
-        readonly MessageDuplicationMemory _memory;
         readonly IMethodInvoker _invoker;
 
         public DispatchCommandBatchToSingleConsumer(ILifetimeScope container, MessageActivationMap messageDirectory,
-            MessageDuplicationManager manager, IMethodInvoker invoker)
+            IMethodInvoker invoker)
         {
             _container = container;
             _invoker = invoker;
             _messageDirectory = messageDirectory;
-            _memory = manager.GetOrAdd(this);
+            
         }
 
         public void DispatchMessage(ImmutableEnvelope message)
         {
-            // already dispatched
-            if (_memory.DoWeRemember(message.EnvelopeId))
-                return;
-
             // empty message, hm...
             if (message.Items.Length == 0)
                 return;
@@ -52,8 +47,6 @@ namespace Lokad.Cqrs.Core.Dispatch
                 }
             }
             DispatchEnvelope(message);
-
-            _memory.Memorize(message.EnvelopeId);
         }
 
         void DispatchEnvelope(ImmutableEnvelope message)

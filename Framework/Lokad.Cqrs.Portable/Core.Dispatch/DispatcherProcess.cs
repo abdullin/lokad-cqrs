@@ -22,12 +22,16 @@ namespace Lokad.Cqrs.Core.Dispatch
         readonly MemoryQuarantine _quarantine;
 
         public DispatcherProcess(ISystemObserver observer,
-            ISingleThreadMessageDispatcher dispatcher, IPartitionInbox inbox, MemoryQuarantine quarantine)
+            ISingleThreadMessageDispatcher dispatcher, 
+            IPartitionInbox inbox, 
+            MemoryQuarantine quarantine,
+            MessageDuplicationManager manager)
         {
             _dispatcher = dispatcher;
             _quarantine = quarantine;
             _observer = observer;
             _inbox = inbox;
+            _memory = manager.GetOrAdd(this);
         }
 
         public void Dispose()
@@ -41,6 +45,7 @@ namespace Lokad.Cqrs.Core.Dispatch
         }
 
         readonly CancellationTokenSource _disposal = new CancellationTokenSource();
+        MessageDuplicationMemory _memory;
 
         public Task Start(CancellationToken token)
         {
@@ -66,41 +71,63 @@ namespace Lokad.Cqrs.Core.Dispatch
                 EnvelopeTransportContext context;
                 while (_inbox.TakeMessage(source.Token, out context))
                 {
-                    var processed = false;
                     try
                     {
-                        _dispatcher.DispatchMessage(context.Unpacked);
-                        processed = true;
+                        ProcessMessage(context);
                     }
-                    catch (Exception ex)
+                    catch(Exception ex)
                     {
-                        _observer.Notify(new EnvelopeDispatchFailed(context.Unpacked, context.QueueName, ex));
-                        // if the code below fails, it will just cause everything to be reprocessed later
-                        if (_quarantine.Accept(context, ex))
-                        {
-                            _observer.Notify(new EnvelopeQuarantined(ex, context.Unpacked.EnvelopeId, context.QueueName));
-                            _inbox.AckMessage(context);
-                        }
-                        else
-                        {
-                            _inbox.TryNotifyNack(context);
-                        }
-                    }
-                    try
-                    {
-                        if (processed)
-                        {
-                            _inbox.AckMessage(context);
-                            _quarantine.Clear(context);
-                            _observer.Notify(new EnvelopeAcked(context.QueueName, context.Unpacked.EnvelopeId, context.Unpacked.GetAllAttributes()));
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        // not a big deal. Message will be processed again.
-                        _observer.Notify(new FailedToAckEnvelope(ex, context.Unpacked.EnvelopeId, context.QueueName));
+                        var e = new DispatchRecoveryFailed(ex, context.Unpacked, context.QueueName);
+                        _observer.Notify(e);
                     }
                 }
+            }
+        }
+
+        void ProcessMessage(EnvelopeTransportContext context) 
+        {
+            var processed = false;
+            try
+            {
+                if (!_memory.DoWeRemember(context.Unpacked.EnvelopeId))
+                {
+                    _dispatcher.DispatchMessage(context.Unpacked);
+                    _memory.Memorize(context.Unpacked.EnvelopeId);
+                }
+                
+                processed = true;
+            }
+            catch (Exception dispatchEx)
+            {
+                // if the code below fails, it will just cause everything to be reprocessed later,
+                // which is OK (duplication manager will handle this)
+
+                _observer.Notify(new EnvelopeDispatchFailed(context.Unpacked, context.QueueName, dispatchEx));
+                // quarantine is atomic with the processing
+                if (_quarantine.Accept(context, dispatchEx))
+                {
+                    _observer.Notify(new EnvelopeQuarantined(dispatchEx, context.Unpacked.EnvelopeId, context.QueueName));
+                    // acking message is the last step!
+                    _inbox.AckMessage(context);
+                }
+                else
+                {
+                    _inbox.TryNotifyNack(context);
+                }
+            }
+            try
+            {
+                if (processed)
+                {
+                    _inbox.AckMessage(context);
+                    _quarantine.Clear(context);
+                    _observer.Notify(new EnvelopeAcked(context.QueueName, context.Unpacked.EnvelopeId, context.Unpacked.GetAllAttributes()));
+                }
+            }
+            catch (Exception ex)
+            {
+                // not a big deal. Message will be processed again.
+                _observer.Notify(new FailedToAckEnvelope(ex, context.Unpacked.EnvelopeId, context.QueueName));
             }
         }
     }

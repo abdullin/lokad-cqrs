@@ -95,7 +95,8 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
             
             var notifier = factory.GetNotifier(_queueNames.ToArray());
             var quarantine = new MemoryQuarantine();
-            var transport = new DispatcherProcess(log, dispatcher, notifier, quarantine);
+            var manager = context.Resolve<MessageDuplicationManager>();
+            var transport = new DispatcherProcess(log, dispatcher, notifier, quarantine, manager);
             return transport;
         }
 

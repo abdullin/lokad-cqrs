@@ -18,8 +18,8 @@ namespace Lokad.Cqrs.Core.Dispatch
     ///</summary>
     public sealed class MessageDuplicationManager : IEngineProcess
     {
-        readonly ConcurrentDictionary<ISingleThreadMessageDispatcher, MessageDuplicationMemory> _memories =
-            new ConcurrentDictionary<ISingleThreadMessageDispatcher, MessageDuplicationMemory>();
+        readonly ConcurrentDictionary<DispatcherProcess, MessageDuplicationMemory> _memories =
+            new ConcurrentDictionary<DispatcherProcess, MessageDuplicationMemory>();
 
         public void Dispose()
         {
@@ -29,7 +29,7 @@ namespace Lokad.Cqrs.Core.Dispatch
         {
         }
 
-        public MessageDuplicationMemory GetOrAdd(ISingleThreadMessageDispatcher dispatcher)
+        public MessageDuplicationMemory GetOrAdd(DispatcherProcess dispatcher)
         {
             return _memories.GetOrAdd(dispatcher, s => new MessageDuplicationMemory());
         }
