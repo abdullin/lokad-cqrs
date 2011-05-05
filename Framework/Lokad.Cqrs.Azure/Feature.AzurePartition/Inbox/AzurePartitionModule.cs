@@ -33,12 +33,19 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
         }
 
 
-        public AzurePartitionModule Dispatch<TDispatcher>(Action<TDispatcher> configure)
+        public void Dispatch<TDispatcher>(Action<TDispatcher> configure)
             where TDispatcher : class, ISingleThreadMessageDispatcher
         {
+            var action = new Action<ISingleThreadMessageDispatcher>(d => configure((TDispatcher) d));
             _dispatcher = Tuple.Create(typeof (TDispatcher),
-                new Action<ISingleThreadMessageDispatcher>(d => configure((TDispatcher) d)));
-            return this;
+                action);
+        }
+
+        public void Dispatch<TDispatcher>()
+            where TDispatcher : class, ISingleThreadMessageDispatcher
+        {
+            var action = new Action<ISingleThreadMessageDispatcher>(d => { });
+            _dispatcher = Tuple.Create(typeof(TDispatcher), action);
         }
 
 
@@ -56,13 +63,6 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
             filter(_filter);
             return this;
         }
-
-        public AzurePartitionModule NonDefaultAccount(string accountName)
-        {
-            _accountName = accountName;
-            return this;
-        }
-
 
         IEngineProcess BuildConsumingProcess(IComponentContext context)
         {
