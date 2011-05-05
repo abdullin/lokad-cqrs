@@ -1,8 +1,7 @@
 ﻿using System;
 using Autofac;
-using Lokad.Cqrs.Core.Envelope;
 
-namespace Lokad.Cqrs.Build.Engine
+namespace Lokad.Cqrs.Build.Client
 {
     public sealed class CqrsClient 
     {

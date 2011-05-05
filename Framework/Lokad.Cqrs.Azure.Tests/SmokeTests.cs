@@ -5,6 +5,7 @@
 
 #endregion
 
+using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -97,27 +98,27 @@ namespace Lokad.Cqrs
 
                 client.SendOne(new VipMessage {Word = "VIP1 Message"});
                 client.SendOne(new UsualMessage {Word = "Usual Large:" + new string(')', 9000)});
-                client.SendOne(new VipMessage {Word = "VIP Delayed Large :" + new string(')', 9000)}, cb => cb.DelayBy(3.Seconds()));
-                client.SendOne(new UsualMessage {Word = "Usual Delayed"}, cb => cb.DelayBy(2.Seconds()));
+                client.SendOne(new VipMessage {Word = "VIP Delayed Large :" + new string(')', 9000)}, cb => cb.DelayBy(TimeSpan.FromSeconds(3)));
+                client.SendOne(new UsualMessage {Word = "Usual Delayed"}, cb => cb.DelayBy(TimeSpan.FromSeconds(2)));
 
                 //client.SendBatch(new VipMessage { Word = " VIP with usual "}, new UsualMessage() { Word = "Vip with usual"});
 
                 using (var cts = new CancellationTokenSource())
                 {
                     var task = host.Start(cts.Token);
-                    Thread.Sleep(10.Seconds());
+                    Thread.Sleep(TimeSpan.FromSeconds(10));
 
 
                     cts.Cancel(true);
-                    task.Wait(5.Seconds());
+                    task.Wait(TimeSpan.FromSeconds(5));
                 }
                 // second run
                 using (var cts = new CancellationTokenSource())
                 {
                     var task = host.Start(cts.Token);
-                    Thread.Sleep(2.Seconds());
+                    Thread.Sleep(TimeSpan.FromSeconds(2));
                     cts.Cancel(true);
-                    task.Wait(5.Seconds());
+                    task.Wait(TimeSpan.FromSeconds(5));
                 }
             }
         }

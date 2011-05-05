@@ -20,7 +20,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
     public sealed class AzurePartitionModule : Module
     {
         readonly HashSet<string> _queueNames = new HashSet<string>();
-        TimeSpan _queueVisibilityTimeout = 30.Seconds();
+        TimeSpan _queueVisibilityTimeout = TimeSpan.FromSeconds(30);
         Tuple<Type, Action<ISingleThreadMessageDispatcher>> _dispatcher;
 
         string _accountName;
