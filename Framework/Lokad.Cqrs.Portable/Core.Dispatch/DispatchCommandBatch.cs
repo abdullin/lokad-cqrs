@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Transactions;
 using Autofac;
 using Lokad.Cqrs.Core.Directory;
 
@@ -23,6 +24,8 @@ namespace Lokad.Cqrs.Core.Dispatch
         readonly MessageActivationMap _messageDirectory;
         readonly IMethodInvoker _invoker;
 
+        Func<TransactionScope> _optionalScopeFactory = null;
+
         public DispatchCommandBatch(
             ILifetimeScope container, 
             MessageActivationMap messageDirectory,
@@ -33,7 +36,13 @@ namespace Lokad.Cqrs.Core.Dispatch
             _messageDirectory = messageDirectory;
         }
 
-        public void DispatchMessage(ImmutableEnvelope message)
+        public void Transactional(Func<TransactionScope> factory)
+        {
+            _optionalScopeFactory = factory;
+        }
+
+
+        void ISingleThreadMessageDispatcher.DispatchMessage(ImmutableEnvelope message)
         {
             // empty message, hm...
             if (message.Items.Length == 0)
@@ -47,7 +56,19 @@ namespace Lokad.Cqrs.Core.Dispatch
                     throw new InvalidOperationException("Couldn't find consumer for " + item.MappedType);
                 }
             }
-            DispatchEnvelope(message);
+
+            if (null == _optionalScopeFactory)
+            {
+                DispatchEnvelope(message);
+            }
+            else
+            {
+                using (var scope = _optionalScopeFactory())
+                {
+                    DispatchEnvelope(message);
+                    scope.Complete();
+                }
+            }
         }
 
         protected virtual void DispatchEnvelope(ImmutableEnvelope message)
