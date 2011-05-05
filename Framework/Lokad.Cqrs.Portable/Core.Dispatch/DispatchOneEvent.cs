@@ -7,6 +7,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Transactions;
 using Autofac;
 using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Dispatch.Events;
@@ -24,6 +26,7 @@ namespace Lokad.Cqrs.Core.Dispatch
         readonly IDictionary<Type, Type[]> _dispatcher = new Dictionary<Type, Type[]>();
         readonly ISystemObserver _observer;
         readonly IMethodInvoker _invoker;
+        Func<TransactionScope> _scopeFactory;
 
         public DispatchOneEvent(
             ILifetimeScope container, 
@@ -35,6 +38,30 @@ namespace Lokad.Cqrs.Core.Dispatch
             _invoker = invoker;
             _observer = observer;
             _directory = directory;
+            Transactional(TransactionScopeOption.RequiresNew);
+        }
+
+
+        public void NoTransactions()
+        {
+            Transactional(TransactionScopeOption.Suppress);
+        }
+
+        public void Transactional(Func<TransactionScope> factory)
+        {
+            _scopeFactory = factory;
+        }
+        public void Transactional(TransactionScopeOption option, IsolationLevel level = IsolationLevel.Serializable, TimeSpan timeout = default(TimeSpan))
+        {
+            if (timeout == (default(TimeSpan)))
+            {
+                timeout = TimeSpan.FromMinutes(10);
+            }
+            _scopeFactory = () => new TransactionScope(option, new TransactionOptions()
+            {
+                IsolationLevel = level,
+                Timeout = Debugger.IsAttached ? TimeSpan.MaxValue : timeout
+            });
         }
 
         public void Init()
@@ -54,10 +81,20 @@ namespace Lokad.Cqrs.Core.Dispatch
                 throw new InvalidOperationException(
                     "Batch message arrived to the shared scope. Are you batching events or dispatching commands to shared scope?");
 
+            using (var tx = _scopeFactory())
+            {
+                DispatchEnvelope(envelope);
+                tx.Complete();
+            }
+        }
+
+        void DispatchEnvelope(ImmutableEnvelope envelope) 
+        {
             // we get failure if one of the subscribers fails
-            Type[] consumerTypes;
+            // hence, if any of the handlers fail - we give up
 
             var item = envelope.Items[0];
+            Type[] consumerTypes;
             if (_dispatcher.TryGetValue(item.MappedType, out consumerTypes))
             {
                 using (var unit = _container.BeginLifetimeScope(DispatchLifetimeScopeTags.MessageEnvelopeScopeTag))

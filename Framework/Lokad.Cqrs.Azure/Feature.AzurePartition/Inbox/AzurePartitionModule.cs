@@ -46,9 +46,13 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
         {
             DispatcherIs<DispatchOneEvent>();
         }
-        public void DispatchAsCommandBatch(Action<DispatchCommandBatch> optionalConfig = null)
+        public void DispatchAsCommandBatch(Action<DispatchCommandBatch> optionalConfig)
         {
             DispatcherIs(optionalConfig);
+        }
+        public void DispatchAsCommandBatch()
+        {
+            DispatcherIs<DispatchCommandBatch>();
         }
         public void DispatchToRoute(Func<ImmutableEnvelope,string> route)
         {

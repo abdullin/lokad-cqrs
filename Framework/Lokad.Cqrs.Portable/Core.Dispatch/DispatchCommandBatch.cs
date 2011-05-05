@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Transactions;
 using Autofac;
 using Lokad.Cqrs.Core.Directory;
@@ -24,7 +25,7 @@ namespace Lokad.Cqrs.Core.Dispatch
         readonly MessageActivationMap _messageDirectory;
         readonly IMethodInvoker _invoker;
 
-        Func<TransactionScope> _optionalScopeFactory = null;
+        Func<TransactionScope> _scopeFactory;
 
         public DispatchCommandBatch(
             ILifetimeScope container, 
@@ -34,11 +35,31 @@ namespace Lokad.Cqrs.Core.Dispatch
             _container = container;
             _invoker = invoker;
             _messageDirectory = messageDirectory;
+            
+            Transactional(TransactionScopeOption.RequiresNew);
+        }
+     
+
+        public void NoTransactions()
+        {
+            Transactional(TransactionScopeOption.Suppress);
         }
 
         public void Transactional(Func<TransactionScope> factory)
         {
-            _optionalScopeFactory = factory;
+            _scopeFactory = factory;
+        }
+        public void Transactional(TransactionScopeOption option, IsolationLevel level = IsolationLevel.Serializable, TimeSpan timeout = default(TimeSpan))
+        {
+            if (timeout == (default(TimeSpan)))
+            {
+                timeout = TimeSpan.FromMinutes(10);
+            }
+            _scopeFactory = () => new TransactionScope(option, new TransactionOptions()
+                {
+                    IsolationLevel = level,
+                    Timeout = Debugger.IsAttached ? TimeSpan.MaxValue : timeout
+                });
         }
 
 
@@ -57,17 +78,10 @@ namespace Lokad.Cqrs.Core.Dispatch
                 }
             }
 
-            if (null == _optionalScopeFactory)
+            using (var scope = _scopeFactory())
             {
                 DispatchEnvelope(message);
-            }
-            else
-            {
-                using (var scope = _optionalScopeFactory())
-                {
-                    DispatchEnvelope(message);
-                    scope.Complete();
-                }
+                scope.Complete();
             }
         }
 
