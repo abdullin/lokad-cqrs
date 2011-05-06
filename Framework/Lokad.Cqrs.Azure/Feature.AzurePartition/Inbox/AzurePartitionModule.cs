@@ -28,7 +28,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
         public AzurePartitionModule(string accountId, string[] queueNames)
         {
             _accountName = accountId;
-            _queueNames = queueNames.ToSet();
+            _queueNames = new HashSet<string>(queueNames);
             DispatchAsEvents();
         }
 

@@ -41,7 +41,7 @@ namespace Lokad.Cqrs.Core.Serialization
         /// </summary>
         /// <param name="types">The types.</param>
         public DataSerializerWithProtoBuf(IEnumerable<IKnowSerializationTypes> types)
-            : this(types.SelectMany(t => t.GetKnownTypes()).ToSet())
+            : this(new HashSet<Type>(types.SelectMany(t => t.GetKnownTypes())))
         {
         }
 
