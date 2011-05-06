@@ -52,22 +52,24 @@ namespace Lokad.Cqrs.Core.Serialization
 
         public void Serialize(object instance, Stream destination)
         {
-            _type2Formatter
-                .GetValue(instance.GetType())
-                .ExposeException(
-                    "Can't find serializer for unknown object type '{0}'. Have you passed all known types to the constructor?",
-                    instance.GetType())
-                .Serialize(destination, instance);
+            IFormatter formatter;
+            if (!_type2Formatter.TryGetValue(instance.GetType(), out formatter))
+            {
+                var s = string.Format("Can't find serializer for unknown object type '{0}'. Have you passed all known types to the constructor?", instance.GetType());
+                throw new InvalidOperationException(s);
+            }
+            formatter.Serialize(destination, instance);
         }
 
         public object Deserialize(Stream source, Type type)
         {
-            return _type2Formatter
-                .GetValue(type)
-                .ExposeException(
-                    "Can't find serializer for unknown object type '{0}'. Have you passed all known types to the constructor?",
-                    type)
-                .Deserialize(source);
+            IFormatter value;
+            if (!_type2Formatter.TryGetValue(type, out value))
+            {
+                var s = string.Format("Can't find serializer for unknown object type '{0}'. Have you passed all known types to the constructor?", type);
+                throw new InvalidOperationException(s);
+            }
+            return value.Deserialize(source);
         }
 
         /// <summary>

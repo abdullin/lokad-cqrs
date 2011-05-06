@@ -246,20 +246,33 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
                 case StorageConditionType.None:
                     return AccessCondition.None;
                 case StorageConditionType.IfUnmodifiedSince:
-                    var d1 = condition.LastModifiedUtc.ExposeException("'LastModifiedUtc' should be present.");
+                    var d1 = ExposeException(condition.LastModifiedUtc, "'LastModifiedUtc' should be present.");
                     return AccessCondition.IfNotModifiedSince(d1);
                 case StorageConditionType.IfMatch:
-                    var x = condition.ETag.ExposeException("'ETag' should be present");
+                    var x = ExposeException(condition.ETag, "'ETag' should be present");
                     return AccessCondition.IfMatch(x);
                 case StorageConditionType.IfModifiedSince:
-                    var utc = condition.LastModifiedUtc.ExposeException("'LastModifiedUtc' should be present.");
+                    var utc = ExposeException(condition.LastModifiedUtc, "'LastModifiedUtc' should be present.");
                     return AccessCondition.IfModifiedSince(utc);
                 case StorageConditionType.IfNoneMatch:
-                    var etag = condition.ETag.ExposeException("'ETag' should be present");
+                    var etag = ExposeException(condition.ETag, "'ETag' should be present");
                     return AccessCondition.IfNoneMatch(etag);
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+
+ 
+        static T ExposeException<T>(Maybe<T> maybe, string message)
+        {
+            if (message == null) throw new ArgumentNullException(@"message");
+            if (!maybe.HasValue)
+            {
+
+                throw new InvalidOperationException(message);
+            }
+            return maybe.Value;
         }
     }
 }

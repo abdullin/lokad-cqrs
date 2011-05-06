@@ -90,22 +90,6 @@ namespace Lokad.Cqrs
         }
      
 
-        /// <summary>
-        /// Throws the exception if maybe does not have value.
-        /// </summary>
-        /// <returns>actual value</returns>
-        /// <exception cref="InvalidOperationException">if maybe does not have value</exception>
-        public T ExposeException(string message, params object[] args)
-        {
-            if (message == null) throw new ArgumentNullException(@"message");
-            if (!_hasValue)
-            {
-                var text = string.Format(message, args);
-                throw new InvalidOperationException(text);
-            }
-
-            return _value;
-        }
 
         /// <summary>
         /// Converts this instance to <see cref="Maybe{T}"/>, 
@@ -234,19 +218,7 @@ namespace Lokad.Cqrs
 
 
 
-        /// <summary>
-        /// Performs an explicit conversion from <see cref="Maybe{T}"/> to <typeparamref name="T"/>.
-        /// </summary>
-        /// <param name="item">The item.</param>
-        /// <returns>The result of the conversion.</returns>
-        public static explicit operator T(Maybe<T> item)
-        {
-            if (item == null) throw new ArgumentNullException("item");
-            if (!item.HasValue) throw new ArgumentException("May be must have value");
-
-            return item.Value;
-        }
-
+    
 
 
         /// <summary>
