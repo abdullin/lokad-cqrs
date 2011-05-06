@@ -38,13 +38,15 @@ namespace Lokad.Cqrs.Core.Envelope
             return list;
         }
 
-        public static IDictionary<string, string> ItemAttributesFromContract(IEnumerable<ItemAttributeContract> attributes)
+        public static ImmutableAttribute[] ItemAttributesFromContract(ICollection<ItemAttributeContract> attributes)
         {
-            return attributes.ToDictionary(attribute => attribute.Name, attribute => attribute.Value);
+            return attributes
+                .Select(attribute => new ImmutableAttribute(attribute.Name, attribute.Value))
+                .ToArray();
         }
 
         public static ItemAttributeContract[] ItemAttributesToContract(
-            ICollection<KeyValuePair<string, string>> attributes)
+            ICollection<ImmutableAttribute> attributes)
         {
             var contracts = new ItemAttributeContract[attributes.Count];
             var pos = 0;
