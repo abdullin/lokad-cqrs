@@ -10,13 +10,13 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
     /// <summary>
     /// Storage root (Azure Blob account or file drive)
     /// </summary>
-    public interface IStorageRoot
+    public interface IStreamingRoot
     {
         /// <summary>
         /// Gets the container reference, identified by it's name
         /// </summary>
         /// <param name="name">The name.</param>
         /// <returns>new container referece</returns>
-        IStorageContainer GetContainer(string name);
+        IStreamingContainer GetContainer(string name);
     }
 }

@@ -19,7 +19,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
     {
         public const string LokadHashFieldName = "LokadContentMD5";
 
-        public static StorageItemInfo MapFetchedAttrbitues(CloudBlob blob)
+        public static StreamingItemInfo MapFetchedAttrbitues(CloudBlob blob)
         {
             var meta = new NameValueCollection(blob.Metadata);
             var properties = new Dictionary<string, string>(5);
@@ -40,7 +40,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
             properties["Length"] = props.Length.ToString();
             properties["Uri"] = blob.Uri.ToString();
 
-            return new StorageItemInfo(props.LastModifiedUtc, props.ETag, meta, properties);
+            return new StreamingItemInfo(props.LastModifiedUtc, props.ETag, meta, properties);
         }
 
         static void ReadAndVerifyHash(Stream stream, Action<Stream> reader, string hash)
@@ -61,7 +61,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
             var calculated = Convert.ToBase64String(md5.Hash);
 
             if (calculated != hash)
-                throw new StorageItemIntegrityException("Hash was provided, but it does not match.");
+                throw new StreamingItemIntegrityException("Hash was provided, but it does not match.");
         }
 
 
@@ -102,10 +102,10 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         }
 
         public static long Write(BlobRequestOptions mapped, CloudBlob blob, Action<Stream> writer,
-            StorageWriteOptions writeOptions)
+            StreamingWriteOptions writeOptions)
         {
-            var compressIfPossible = (writeOptions & StorageWriteOptions.CompressIfPossible) ==
-                StorageWriteOptions.CompressIfPossible;
+            var compressIfPossible = (writeOptions & StreamingWriteOptions.CompressIfPossible) ==
+                StreamingWriteOptions.CompressIfPossible;
 
             // we are adding our own hashing on top, to ensure
             // consistent behavior between Azure StorageClient versions

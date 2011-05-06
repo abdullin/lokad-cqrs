@@ -12,22 +12,22 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
     /// <summary>
     /// Windows Azure implementation of storage 
     /// </summary>
-    public sealed class BlobStorageRoot : IStorageRoot
+    public sealed class BlobStreamingRoot : IStreamingRoot
     {
         readonly CloudBlobClient _client;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BlobStorageRoot"/> class.
+        /// Initializes a new instance of the <see cref="BlobStreamingRoot"/> class.
         /// </summary>
         /// <param name="client">The client.</param>
-        public BlobStorageRoot(CloudBlobClient client)
+        public BlobStreamingRoot(CloudBlobClient client)
         {
             _client = client;
         }
 
-        public IStorageContainer GetContainer(string name)
+        public IStreamingContainer GetContainer(string name)
         {
-            return new BlobStorageContainer(_client.GetBlobDirectoryReference(name));
+            return new BlobStreamingContainer(_client.GetBlobDirectoryReference(name));
         }
     }
 }

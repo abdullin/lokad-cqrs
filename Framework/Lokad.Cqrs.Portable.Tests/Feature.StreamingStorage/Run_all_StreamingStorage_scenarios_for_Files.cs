@@ -25,15 +25,15 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
             _root.Create();
         }
 
-        public IStorageContainer GetContainer(string name)
+        public IStreamingContainer GetContainer(string name)
         {
             var combine = Path.Combine(_root.FullName, "test");
-            return new FileStorageContainer(new DirectoryInfo(combine));
+            return new FileStreamingContainer(new DirectoryInfo(combine));
         }
 
-        public StorageWriteOptions GetWriteHints()
+        public StreamingWriteOptions GetWriteHints()
         {
-            return StorageWriteOptions.None;
+            return StreamingWriteOptions.None;
         }
 
         [TestFixture]

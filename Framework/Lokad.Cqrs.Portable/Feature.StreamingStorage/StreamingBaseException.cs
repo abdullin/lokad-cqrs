@@ -11,7 +11,7 @@ using System.Runtime.Serialization;
 namespace Lokad.Cqrs.Feature.StreamingStorage
 {
     [Serializable]
-    public class StorageBaseException : Exception
+    public class StreamingBaseException : Exception
     {
         //
         // For guidelines regarding the creation of new exception types, see
@@ -20,19 +20,19 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         //    http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dncscol/html/csharp07192001.asp
         //
 
-        public StorageBaseException()
+        public StreamingBaseException()
         {
         }
 
-        public StorageBaseException(string message) : base(message)
+        public StreamingBaseException(string message) : base(message)
         {
         }
 
-        public StorageBaseException(string message, Exception inner) : base(message, inner)
+        public StreamingBaseException(string message, Exception inner) : base(message, inner)
         {
         }
 
-        protected StorageBaseException(
+        protected StreamingBaseException(
             SerializationInfo info,
             StreamingContext context) : base(info, context)
         {

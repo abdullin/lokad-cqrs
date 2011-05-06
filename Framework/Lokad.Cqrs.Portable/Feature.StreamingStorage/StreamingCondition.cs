@@ -17,26 +17,26 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         readonly string _etag;
         readonly DateTime? _lastModifiedUtc;
 
-        public StreamingCondition(StorageConditionType type, string eTag) : this()
+        public StreamingCondition(StreamingConditionType type, string eTag) : this()
         {
             if (eTag == null) throw new ArgumentNullException("eTag");
-            if (type == StorageConditionType.None) throw new ArgumentException("type");
+            if (type == StreamingConditionType.None) throw new ArgumentException("type");
             if (string.IsNullOrEmpty(eTag)) throw new ArgumentException("eTag");
 
             Type = type;
             _etag = eTag;
         }
 
-        public StreamingCondition(StorageConditionType type, DateTime lastModifiedUtc)
+        public StreamingCondition(StreamingConditionType type, DateTime lastModifiedUtc)
             : this()
         {
-            if (type == StorageConditionType.None) throw new ArgumentException("type");
+            if (type == StreamingConditionType.None) throw new ArgumentException("type");
 
             Type = type;
             _lastModifiedUtc = lastModifiedUtc;
         }
 
-        public StorageConditionType Type { get; private set; }
+        public StreamingConditionType Type { get; private set; }
 
         public Optional<string> ETag
         {
@@ -50,67 +50,67 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
 
 
         /// <summary>
-        /// <see cref="StorageConditionType.IfMatch"/>
+        /// <see cref="StreamingConditionType.IfMatch"/>
         /// </summary>
         /// <param name="tag">The tag to use in constructing this condition.</param>
         /// <returns>new storage condition</returns>
         public static StreamingCondition IfMatch(string tag)
         {
-            return new StreamingCondition(StorageConditionType.IfMatch, tag);
+            return new StreamingCondition(StreamingConditionType.IfMatch, tag);
         }
 
         public static StreamingCondition IfModifiedSince(DateTime lastModifiedUtc)
         {
-            return new StreamingCondition(StorageConditionType.IfModifiedSince, lastModifiedUtc);
+            return new StreamingCondition(StreamingConditionType.IfModifiedSince, lastModifiedUtc);
         }
 
         public static StreamingCondition IfUnmodifiedSince(DateTime lastModifiedUtc)
         {
-            return new StreamingCondition(StorageConditionType.IfUnmodifiedSince, lastModifiedUtc);
+            return new StreamingCondition(StreamingConditionType.IfUnmodifiedSince, lastModifiedUtc);
         }
 
         public static StreamingCondition IfNoneMatch(string tag)
         {
-            return new StreamingCondition(StorageConditionType.IfNoneMatch, tag);
+            return new StreamingCondition(StreamingConditionType.IfNoneMatch, tag);
         }
 
         public override string ToString()
         {
             switch (Type)
             {
-                case StorageConditionType.None:
+                case StreamingConditionType.None:
                     return "None";
-                case StorageConditionType.IfModifiedSince:
-                case StorageConditionType.IfUnmodifiedSince:
+                case StreamingConditionType.IfModifiedSince:
+                case StreamingConditionType.IfUnmodifiedSince:
                     return string.Format(CultureInfo.InvariantCulture, "{0} '{1}'", Type, _lastModifiedUtc);
-                case StorageConditionType.IfMatch:
-                case StorageConditionType.IfNoneMatch:
+                case StreamingConditionType.IfMatch:
+                case StreamingConditionType.IfNoneMatch:
                     return string.Format(CultureInfo.InvariantCulture, "{0} '{1}'", Type, _etag);
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
 
-        public bool Satisfy(params LocalStorageInfo[] info)
+        public bool Satisfy(params LocalStreamingInfo[] info)
         {
             // currently we have only a single match condition
             switch (Type)
             {
-                case StorageConditionType.None:
+                case StreamingConditionType.None:
                     // ???
                     return true;
-                case StorageConditionType.IfUnmodifiedSince:
+                case StreamingConditionType.IfUnmodifiedSince:
                     var j = LastModifiedUtc.Value;
                     return !info.Any(i => i.LastModifiedUtc > j);
-                case StorageConditionType.IfMatch:
+                case StreamingConditionType.IfMatch:
                     if (_etag == "*")
                         return info.Any();
                     var value = ETag.Value;
                     return info.Any(s => s.ETag == value);
-                case StorageConditionType.IfModifiedSince:
+                case StreamingConditionType.IfModifiedSince:
                     var k = LastModifiedUtc.Value;
                     return info.Any(i => i.LastModifiedUtc > k);
-                case StorageConditionType.IfNoneMatch:
+                case StreamingConditionType.IfNoneMatch:
                     if (_etag == "*")
                         return !info.Any();
                     var x = ETag.Value;

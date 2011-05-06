@@ -13,7 +13,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
     /// <summary>
     /// Base interface for performing storage operations against local or remote persistence.
     /// </summary>
-    public interface IStorageItem
+    public interface IStreamingItem
     {
         /// <summary>
         /// Gets the full path of the current iteб.
@@ -28,18 +28,18 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         /// <param name="condition">The condition.</param>
         /// <param name="options">The options.</param>
         /// <returns>number of bytes written</returns>
-        /// <exception cref="StorageItemIntegrityException">when integrity check fails during the upload</exception>
+        /// <exception cref="StreamingItemIntegrityException">when integrity check fails during the upload</exception>
         long Write(Action<Stream> writer, StreamingCondition condition = default(StreamingCondition),
-            StorageWriteOptions options = default(StorageWriteOptions));
+            StreamingWriteOptions options = default(StreamingWriteOptions));
 
         /// <summary>
         /// Attempts to read the storage item.
         /// </summary>
         /// <param name="reader">The reader.</param>
         /// <param name="condition">The condition.</param>
-        /// <exception cref="StorageItemNotFoundException">if the item does not exist.</exception>
-        /// <exception cref="StorageContainerNotFoundException">if the container for the item does not exist</exception>
-        /// <exception cref="StorageItemIntegrityException">when integrity check fails</exception>
+        /// <exception cref="StreamingItemNotFoundException">if the item does not exist.</exception>
+        /// <exception cref="StreamingContainerNotFoundException">if the container for the item does not exist</exception>
+        /// <exception cref="StreamingItemIntegrityException">when integrity check fails</exception>
         void ReadInto(ReaderDelegate reader, StreamingCondition condition = default(StreamingCondition));
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         /// </summary>
         /// <param name="condition">The condition.</param>
         /// <returns></returns>
-        Optional<StorageItemInfo> GetInfo(StreamingCondition condition = default(StreamingCondition));
+        Optional<StreamingItemInfo> GetInfo(StreamingCondition condition = default(StreamingCondition));
 
         /// <summary>
         /// Creates this storage item from another.
@@ -62,11 +62,11 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         /// <param name="condition">The condition.</param>
         /// <param name="copySourceCondition">The copy source condition.</param>
         /// <param name="options">The options.</param>
-        /// <exception cref="StorageItemNotFoundException">when source storage is not found</exception>
-        /// <exception cref="StorageItemIntegrityException">when integrity check fails</exception>
-        void CopyFrom(IStorageItem sourceItem,
+        /// <exception cref="StreamingItemNotFoundException">when source storage is not found</exception>
+        /// <exception cref="StreamingItemIntegrityException">when integrity check fails</exception>
+        void CopyFrom(IStreamingItem sourceItem,
             StreamingCondition condition = default(StreamingCondition),
             StreamingCondition copySourceCondition = default(StreamingCondition),
-            StorageWriteOptions options = default(StorageWriteOptions));
+            StreamingWriteOptions options = default(StreamingWriteOptions));
     }
 }

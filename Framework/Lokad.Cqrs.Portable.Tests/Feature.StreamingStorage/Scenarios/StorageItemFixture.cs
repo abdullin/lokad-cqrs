@@ -17,7 +17,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage.Scenarios
         readonly ITestStorage _factory = new TStorage();
 
 
-        static void Expect<TEx>(Action action) where TEx : StorageBaseException
+        static void Expect<TEx>(Action action) where TEx : StreamingBaseException
         {
             try
             {
@@ -30,15 +30,15 @@ namespace Lokad.Cqrs.Feature.StreamingStorage.Scenarios
         }
 
 
-        IStorageContainer GetContainer(string path)
+        IStreamingContainer GetContainer(string path)
         {
             return _factory.GetContainer(path);
         }
 
-        protected IStorageContainer TestContainer { get; private set; }
-        protected IStorageItem TestItem { get; private set; }
+        protected IStreamingContainer TestContainer { get; private set; }
+        protected IStreamingItem TestItem { get; private set; }
 
-        protected StorageWriteOptions WriteOptions { get; set; }
+        protected StreamingWriteOptions WriteOptions { get; set; }
 
         [SetUp]
         public void SetUp()
@@ -53,7 +53,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage.Scenarios
             TestContainer.Delete();
         }
 
-        protected IStorageItem GetItem(string path)
+        protected IStreamingItem GetItem(string path)
         {
             return TestContainer.GetItem(path);
         }
@@ -61,50 +61,50 @@ namespace Lokad.Cqrs.Feature.StreamingStorage.Scenarios
 
         protected void ExpectContainerNotFound(Action action)
         {
-            Expect<StorageContainerNotFoundException>(action);
+            Expect<StreamingContainerNotFoundException>(action);
         }
 
         protected void ExpectItemNotFound(Action action)
         {
-            Expect<StorageItemNotFoundException>(action);
+            Expect<StreamingItemNotFoundException>(action);
         }
 
         protected void ExpectConditionFailed(Action action)
         {
-            Expect<StorageConditionFailedException>(action);
+            Expect<StreamingConditionFailedException>(action);
         }
 
-        protected void Write(IStorageItem storageItem, Guid g, StreamingCondition condition = default(StreamingCondition))
+        protected void Write(IStreamingItem streamingItem, Guid g, StreamingCondition condition = default(StreamingCondition))
         {
-            storageItem.Write(stream => stream.Write(g.ToByteArray(), 0, 16), condition, WriteOptions);
+            streamingItem.Write(stream => stream.Write(g.ToByteArray(), 0, 16), condition, WriteOptions);
         }
 
 
-        protected void TryToRead(IStorageItem item, StreamingCondition condition = default(StreamingCondition))
+        protected void TryToRead(IStreamingItem item, StreamingCondition condition = default(StreamingCondition))
         {
             item.ReadInto((props, stream) => stream.Read(new byte[1], 0, 1), condition);
         }
 
-        protected void ShouldHaveGuid(IStorageItem storageItem, Guid g,
+        protected void ShouldHaveGuid(IStreamingItem streamingItem, Guid g,
             StreamingCondition condition = default(StreamingCondition))
         {
             var set = false;
             Guid actual = Guid.Empty;
-            StorageItemInfo storageItemInfo = null;
-            storageItem.ReadInto((properties, stream) =>
+            StreamingItemInfo streamingItemInfo = null;
+            streamingItem.ReadInto((properties, stream) =>
                 {
                     var b = new byte[16];
                     stream.Read(b, 0, 16);
                     actual = new Guid(b);
                     set = true;
-                    storageItemInfo = properties;
+                    streamingItemInfo = properties;
                 }, condition);
 
             Assert.AreEqual(g, actual);
 
 
-            Assert.AreNotEqual(DateTime.MinValue, storageItemInfo.LastModifiedUtc, "Valid date should be present");
-            Assert.That(storageItemInfo.ETag, Is.Not.Empty);
+            Assert.AreNotEqual(DateTime.MinValue, streamingItemInfo.LastModifiedUtc, "Valid date should be present");
+            Assert.That(streamingItemInfo.ETag, Is.Not.Empty);
 
             set = true;
 

@@ -9,6 +9,6 @@ namespace Lokad.Cqrs.Feature.StreamingStorage.Scenarios
 {
     public interface ITestStorage
     {
-        IStorageContainer GetContainer(string name);
+        IStreamingContainer GetContainer(string name);
     }
 }

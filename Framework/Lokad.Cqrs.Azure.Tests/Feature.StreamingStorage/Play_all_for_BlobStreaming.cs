@@ -21,10 +21,10 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
     {
         CloudBlobClient _client = CloudStorageAccount.DevelopmentStorageAccount.CreateCloudBlobClient();
 
-        public IStorageContainer GetContainer(string path)
+        public IStreamingContainer GetContainer(string path)
         {
             //UseLocalFiddler();
-            return new BlobStorageContainer(_client.GetBlobDirectoryReference(path));
+            return new BlobStreamingContainer(_client.GetBlobDirectoryReference(path));
         }
 
         public static CloudBlobClient GetCustom()
@@ -33,9 +33,9 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
                 CloudStorageAccount.Parse(File.ReadAllText(@"D:\Environment\Azure.blob.test")).CreateCloudBlobClient();
         }
 
-        public StorageWriteOptions GetWriteHints()
+        public StreamingWriteOptions GetWriteHints()
         {
-            return StorageWriteOptions.None;
+            return StreamingWriteOptions.None;
         }
 
         public Play_all_for_BlobStreaming UseLocalFiddler()
@@ -77,7 +77,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         {
             public When_reading_blob_item_with_gzip()
             {
-                WriteOptions |= StorageWriteOptions.CompressIfPossible;
+                WriteOptions |= StreamingWriteOptions.CompressIfPossible;
             }
         }
 
@@ -94,7 +94,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         {
             public When_writing_blob_item_with_gzip()
             {
-                WriteOptions |= StorageWriteOptions.CompressIfPossible;
+                WriteOptions |= StreamingWriteOptions.CompressIfPossible;
             }
         }
 

@@ -15,35 +15,35 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
     /// </summary>
     public static class StreamingErrors
     {
-        public static Exception ConditionFailed(IStorageItem item, StreamingCondition condition, Exception inner = null)
+        public static Exception ConditionFailed(IStreamingItem item, StreamingCondition condition, Exception inner = null)
         {
             var message = string.Format(CultureInfo.InvariantCulture, "Storage condition '{0}' failed for '{1}'",
                 condition,
                 item.FullPath);
-            return new StorageConditionFailedException(message, inner);
+            return new StreamingConditionFailedException(message, inner);
         }
 
-        public static Exception ItemNotFound(IStorageItem item, Exception inner = null)
+        public static Exception ItemNotFound(IStreamingItem item, Exception inner = null)
         {
             var message = string.Format(CultureInfo.InvariantCulture, "Storage item was not found: '{0}'.",
                 item.FullPath);
-            return new StorageItemNotFoundException(message, inner);
+            return new StreamingItemNotFoundException(message, inner);
         }
 
-        public static Exception IntegrityFailure(IStorageItem item, Exception inner = null)
+        public static Exception IntegrityFailure(IStreamingItem item, Exception inner = null)
         {
             var message = string.Format(CultureInfo.InvariantCulture,
                 "Local hash differs from metadata. Item was probably corrupted in trasfer, please retry: '{0}'.",
                 item.FullPath);
-            return new StorageItemIntegrityException(message, inner);
+            return new StreamingItemIntegrityException(message, inner);
         }
 
 
-        public static Exception ContainerNotFound(IStorageItem item, Exception inner = null)
+        public static Exception ContainerNotFound(IStreamingItem item, Exception inner = null)
         {
             var message = string.Format(CultureInfo.InvariantCulture, "Storage container was not found for: '{0}'.",
                 item.FullPath);
-            return new StorageContainerNotFoundException(message, inner);
+            return new StreamingContainerNotFoundException(message, inner);
         }
     }
 }

@@ -13,26 +13,26 @@ using System.IO;
 namespace Lokad.Cqrs.Feature.StreamingStorage
 {
     /// <summary>
-    /// File-based implementation of the <see cref="IStorageItem"/>
+    /// File-based implementation of the <see cref="IStreamingItem"/>
     /// </summary>
-    public sealed class FileStorageItem : IStorageItem
+    public sealed class FileStreamingItem : IStreamingItem
     {
         readonly FileInfo _file;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FileStorageItem"/> class.
+        /// Initializes a new instance of the <see cref="FileStreamingItem"/> class.
         /// </summary>
         /// <param name="file">The file.</param>
-        public FileStorageItem(FileInfo file)
+        public FileStreamingItem(FileInfo file)
         {
             _file = file;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FileStorageItem"/> class.
+        /// Initializes a new instance of the <see cref="FileStreamingItem"/> class.
         /// </summary>
         /// <param name="filePath">The file path.</param>
-        public FileStorageItem(string filePath)
+        public FileStreamingItem(string filePath)
         {
             _file = new FileInfo(filePath);
         }
@@ -41,7 +41,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         {
             var info = GetUnconditionalInfo();
             return info
-                .Convert(s => new LocalStorageInfo(s.LastModifiedUtc, s.ETag))
+                .Convert(s => new LocalStreamingInfo(s.LastModifiedUtc, s.ETag))
                 .Convert(s => condition.Satisfy(s), () => condition.Satisfy());
         }
 
@@ -53,8 +53,8 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         /// <param name="condition">The condition.</param>
         /// <param name="options">The options.</param>
         /// <returns>number of bytes written</returns>
-        /// <exception cref="StorageItemIntegrityException">when integrity check fails during the upload</exception>
-        public long Write(Action<Stream> writer, StreamingCondition condition, StorageWriteOptions options)
+        /// <exception cref="StreamingItemIntegrityException">when integrity check fails during the upload</exception>
+        public long Write(Action<Stream> writer, StreamingCondition condition, StreamingWriteOptions options)
         {
             Refresh();
 
@@ -75,9 +75,9 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         /// </summary>
         /// <param name="reader">The reader.</param>
         /// <param name="condition">The condition.</param>
-        /// <exception cref="StorageItemNotFoundException">if the item does not exist.</exception>
-        /// <exception cref="StorageContainerNotFoundException">if the container for the item does not exist</exception>
-        /// <exception cref="StorageItemIntegrityException">when integrity check fails</exception>
+        /// <exception cref="StreamingItemNotFoundException">if the item does not exist.</exception>
+        /// <exception cref="StreamingContainerNotFoundException">if the container for the item does not exist</exception>
+        /// <exception cref="StreamingItemIntegrityException">when integrity check fails</exception>
         public void ReadInto(ReaderDelegate reader, StreamingCondition condition)
         {
             Refresh();
@@ -124,26 +124,26 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         /// </summary>
         /// <param name="condition">The condition.</param>
         /// <returns></returns>
-        public Optional<StorageItemInfo> GetInfo(StreamingCondition condition)
+        public Optional<StreamingItemInfo> GetInfo(StreamingCondition condition)
         {
             Refresh();
             //ThrowIfContainerNotFound();
 
             if (_file.Exists && Satisfy(condition))
                 return GetUnconditionalInfo();
-            return Optional<StorageItemInfo>.Empty;
+            return Optional<StreamingItemInfo>.Empty;
         }
 
-        Optional<StorageItemInfo> GetUnconditionalInfo()
+        Optional<StreamingItemInfo> GetUnconditionalInfo()
         {
             if (!_file.Exists)
-                return Optional<StorageItemInfo>.Empty;
+                return Optional<StreamingItemInfo>.Empty;
 
             // yes, that's not full hashing, but for now we don't care
             var lastWriteTimeUtc = _file.LastWriteTimeUtc;
             var tag = string.Format("{0}-{1}", lastWriteTimeUtc.Ticks, _file.Length);
 
-            return new StorageItemInfo(lastWriteTimeUtc, tag, new NameValueCollection(0),
+            return new StreamingItemInfo(lastWriteTimeUtc, tag, new NameValueCollection(0),
                 new Dictionary<string, string>(0));
         }
 
@@ -154,12 +154,12 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         /// <param name="condition">The condition.</param>
         /// <param name="copySourceCondition">The copy source condition.</param>
         /// <param name="options">The options.</param>
-        /// <exception cref="StorageItemNotFoundException">when source storage is not found</exception>
-        /// <exception cref="StorageItemIntegrityException">when integrity check fails</exception>
-        public void CopyFrom(IStorageItem sourceItem, StreamingCondition condition, StreamingCondition copySourceCondition,
-            StorageWriteOptions options)
+        /// <exception cref="StreamingItemNotFoundException">when source storage is not found</exception>
+        /// <exception cref="StreamingItemIntegrityException">when integrity check fails</exception>
+        public void CopyFrom(IStreamingItem sourceItem, StreamingCondition condition, StreamingCondition copySourceCondition,
+            StreamingWriteOptions options)
         {
-            var item = sourceItem as FileStorageItem;
+            var item = sourceItem as FileStreamingItem;
 
             if (item != null)
             {

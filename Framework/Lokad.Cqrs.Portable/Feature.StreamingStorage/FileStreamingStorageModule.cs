@@ -33,7 +33,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
             
             directory.Create();
             var builder = new ContainerBuilder();
-            builder.RegisterInstance(new FileStorageContainer(directory)).As<IStorageRoot>();
+            builder.RegisterInstance(new FileStreamingContainer(directory)).As<IStreamingRoot>();
             builder.Update(componentRegistry);
         }
     }

@@ -25,8 +25,8 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
             builder.Register(c =>
                 {
                     var config = c.ResolveNamed<IAzureStorageConfiguration>(_accountName);
-                    return new BlobStorageRoot(config.CreateBlobClient());
-                }).As<IStorageRoot>().SingleInstance();
+                    return new BlobStreamingRoot(config.CreateBlobClient());
+                }).As<IStreamingRoot>().SingleInstance();
             builder.Update(componentRegistry);
         }
     }

@@ -10,7 +10,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
     /// <summary>
     /// Represents storage container reference.
     /// </summary>
-    public interface IStorageContainer
+    public interface IStreamingContainer
     {
         /// <summary>
         /// Gets the full path.
@@ -23,20 +23,20 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         /// </summary>
         /// <param name="name">The name.</param>
         /// <returns></returns>
-        IStorageContainer GetContainer(string name);
+        IStreamingContainer GetContainer(string name);
 
         /// <summary>
         /// Gets the storage item reference within the current container.
         /// </summary>
         /// <param name="name">The name.</param>
         /// <returns></returns>
-        IStorageItem GetItem(string name);
+        IStreamingItem GetItem(string name);
 
         /// <summary>
         /// Ensures that the current reference represents valid container
         /// </summary>
         /// <returns></returns>
-        IStorageContainer Create();
+        IStreamingContainer Create();
 
         /// <summary>
         /// Deletes this container

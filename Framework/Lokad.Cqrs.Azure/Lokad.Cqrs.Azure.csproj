@@ -89,9 +89,9 @@
     <Compile Include="Feature.StreamingStorage\AzureStreamingStorage.cs" />
     <Compile Include="IAzureStorageConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Feature.StreamingStorage\BlobStorageContainer.cs" />
-    <Compile Include="Feature.StreamingStorage\BlobStorageItem.cs" />
-    <Compile Include="Feature.StreamingStorage\BlobStorageRoot.cs" />
+    <Compile Include="Feature.StreamingStorage\BlobStreamingContainer.cs" />
+    <Compile Include="Feature.StreamingStorage\BlobStreamingItem.cs" />
+    <Compile Include="Feature.StreamingStorage\BlobStreamingRoot.cs" />
     <Compile Include="Feature.StreamingStorage\BlobStorageUtil.cs" />
     <Compile Include="Feature.StreamingStorage\SuppressFlushForStream.cs" />
     <Compile Include="Feature.AzurePartition\StatelessAzureQueueWriter.cs" />

@@ -11,11 +11,11 @@ using System.Text;
 namespace Lokad.Cqrs.Feature.StreamingStorage
 {
     /// <summary>
-    /// Helper extensions for the <see cref="IStorageItem"/>
+    /// Helper extensions for the <see cref="IStreamingItem"/>
     /// </summary>
-    public static class ExtendStorageItem
+    public static class ExtendStreamingItem
     {
-        public static void WriteText(this IStorageItem item, string text)
+        public static void WriteText(this IStreamingItem item, string text)
         {
             item.Write(s =>
                 {
@@ -26,7 +26,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
                 });
         }
 
-        public static void WriteText(this IStorageItem item, string text, Encoding encoding)
+        public static void WriteText(this IStreamingItem item, string text, Encoding encoding)
         {
             item.Write(s =>
                 {
@@ -37,7 +37,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
                 });
         }
 
-        public static string ReadText(this IStorageItem item)
+        public static string ReadText(this IStreamingItem item)
         {
             string result = null;
             item.ReadInto((props, stream) =>

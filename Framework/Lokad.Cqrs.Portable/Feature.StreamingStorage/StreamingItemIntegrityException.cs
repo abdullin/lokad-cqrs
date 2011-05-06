@@ -14,21 +14,21 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
     /// Happens, when data corruption was detected. Normally retrying the operation should solve the problem
     /// </summary>
     [Serializable]
-    public class StorageItemIntegrityException : StorageBaseException
+    public class StreamingItemIntegrityException : StreamingBaseException
     {
-        public StorageItemIntegrityException()
+        public StreamingItemIntegrityException()
         {
         }
 
-        public StorageItemIntegrityException(string message) : base(message)
+        public StreamingItemIntegrityException(string message) : base(message)
         {
         }
 
-        public StorageItemIntegrityException(string message, Exception inner) : base(message, inner)
+        public StreamingItemIntegrityException(string message, Exception inner) : base(message, inner)
         {
         }
 
-        protected StorageItemIntegrityException(
+        protected StreamingItemIntegrityException(
             SerializationInfo info,
             StreamingContext context) : base(info, context)
         {

@@ -22,9 +22,9 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         public sealed class Consumer : Define.Handle<Do>
         {
             readonly IMessageSender _sender;
-            readonly IStorageRoot _root;
+            readonly IStreamingRoot _root;
 
-            public Consumer(IMessageSender sender, IStorageRoot root)
+            public Consumer(IMessageSender sender, IStreamingRoot root)
             {
                 _sender = sender;
                 _root = root;

@@ -10,7 +10,7 @@ using System;
 namespace Lokad.Cqrs.Feature.StreamingStorage
 {
     [Flags]
-    public enum StorageWriteOptions
+    public enum StreamingWriteOptions
     {
         None,
         /// <summary>

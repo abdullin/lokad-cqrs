@@ -12,7 +12,7 @@ using System.Diagnostics;
 
 namespace Lokad.Cqrs.Feature.StreamingStorage
 {
-    public sealed class StorageItemInfo
+    public sealed class StreamingItemInfo
     {
         public DateTime LastModifiedUtc { get; private set; }
         public string ETag { get; private set; }
@@ -26,7 +26,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         //public string FullPath { get; private set; }
         //public string Name { get; private set; }
 
-        public StorageItemInfo(
+        public StreamingItemInfo(
             //string name,
             //string fullPath,
             DateTime lastModifiedUtc,

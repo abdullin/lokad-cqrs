@@ -26,13 +26,13 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
 
             client.RetryPolicy = RetryPolicies.NoRetry();
 
-            var root = new BlobStorageRoot(client);
+            var root = new BlobStreamingRoot(client);
             var cont = root.GetContainer("tests").Create();
 
             var storageItem = cont.GetItem("test");
 
 
-            storageItem.Write(w => w.WriteByte(1), options : StorageWriteOptions.CompressIfPossible);
+            storageItem.Write(w => w.WriteByte(1), options : StreamingWriteOptions.CompressIfPossible);
             storageItem.ReadInto((props, stream) => StreamUtil.BlockCopy(stream, new MemoryStream(), 10));
 
             var format = storageItem.GetInfo();

@@ -29,6 +29,8 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
             if (bufferSize <= 0)
                 throw new ArgumentOutOfRangeException("bufferSize", "Size of the buffer must be positive");
 
+            
+
             var buffer = new byte[bufferSize];
             if (buffer == null) throw new ArgumentNullException("buffer");
             var bufferSize1 = buffer.Length;

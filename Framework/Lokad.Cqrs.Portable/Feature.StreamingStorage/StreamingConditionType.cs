@@ -7,7 +7,7 @@
 
 namespace Lokad.Cqrs.Feature.StreamingStorage
 {
-    public enum StorageConditionType
+    public enum StreamingConditionType
     {
         None,
         IfUnmodifiedSince,

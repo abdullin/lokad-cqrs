@@ -13,33 +13,33 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
     /// <summary>
     /// Windows Azure implementation of storage 
     /// </summary>
-    public sealed class BlobStorageContainer : IStorageContainer
+    public sealed class BlobStreamingContainer : IStreamingContainer
     {
         readonly CloudBlobDirectory _directory;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BlobStorageContainer"/> class.
+        /// Initializes a new instance of the <see cref="BlobStreamingContainer"/> class.
         /// </summary>
         /// <param name="directory">The directory.</param>
-        public BlobStorageContainer(CloudBlobDirectory directory)
+        public BlobStreamingContainer(CloudBlobDirectory directory)
         {
             _directory = directory;
         }
 
-        public IStorageContainer GetContainer(string name)
+        public IStreamingContainer GetContainer(string name)
         {
             if (name == null) throw new ArgumentNullException("name");
 
-            return new BlobStorageContainer(_directory.GetSubdirectory(name));
+            return new BlobStreamingContainer(_directory.GetSubdirectory(name));
         }
 
-        public IStorageItem GetItem(string name)
+        public IStreamingItem GetItem(string name)
         {
             if (name == null) throw new ArgumentNullException("name");
-            return new BlobStorageItem(_directory.GetBlobReference(name));
+            return new BlobStreamingItem(_directory.GetBlobReference(name));
         }
 
-        public IStorageContainer Create()
+        public IStreamingContainer Create()
         {
             _directory.Container.CreateIfNotExist();
             return this;

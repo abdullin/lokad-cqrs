@@ -13,17 +13,17 @@ using Microsoft.WindowsAzure.StorageClient;
 namespace Lokad.Cqrs.Feature.StreamingStorage
 {
     /// <summary>
-    /// Azure BLOB implementation of the <see cref="IStorageItem"/>
+    /// Azure BLOB implementation of the <see cref="IStreamingItem"/>
     /// </summary>
-    public sealed class BlobStorageItem : IStorageItem
+    public sealed class BlobStreamingItem : IStreamingItem
     {
         readonly CloudBlob _blob;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BlobStorageItem"/> class.
+        /// Initializes a new instance of the <see cref="BlobStreamingItem"/> class.
         /// </summary>
         /// <param name="blob">The BLOB.</param>
-        public BlobStorageItem(CloudBlob blob)
+        public BlobStreamingItem(CloudBlob blob)
         {
             _blob = blob;
         }
@@ -36,7 +36,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         /// <param name="writer">The writer.</param>
         /// <param name="condition">The condition.</param>
         /// <param name="writeOptions">The write options.</param>
-        public long Write(Action<Stream> writer, StreamingCondition condition, StorageWriteOptions writeOptions)
+        public long Write(Action<Stream> writer, StreamingCondition condition, StreamingWriteOptions writeOptions)
         {
             try
             {
@@ -73,9 +73,9 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         /// </summary>
         /// <param name="reader">The reader.</param>
         /// <param name="condition">The condition.</param>
-        /// <exception cref="StorageItemNotFoundException">if the item does not exist.</exception>
-        /// <exception cref="StorageContainerNotFoundException">if the container for the item does not exist</exception>
-        /// <exception cref="StorageItemIntegrityException">when integrity check fails</exception>
+        /// <exception cref="StreamingItemNotFoundException">if the item does not exist.</exception>
+        /// <exception cref="StreamingContainerNotFoundException">if the container for the item does not exist</exception>
+        /// <exception cref="StreamingItemIntegrityException">when integrity check fails</exception>
         public void ReadInto(ReaderDelegate reader, StreamingCondition condition)
         {
             try
@@ -83,7 +83,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
                 var mapped = Map(condition);
                 BlobStorageUtil.Read(mapped, _blob, reader);
             }
-            catch (StorageItemIntegrityException e)
+            catch (StreamingItemIntegrityException e)
             {
                 throw StreamingErrors.IntegrityFailure(this, e);
             }
@@ -142,7 +142,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
             }
         }
 
-        public Optional<StorageItemInfo> GetInfo(StreamingCondition condition)
+        public Optional<StreamingItemInfo> GetInfo(StreamingCondition condition)
         {
             try
             {
@@ -157,12 +157,12 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
                     case StorageErrorCode.ResourceNotFound:
                     case StorageErrorCode.BlobNotFound:
                     case StorageErrorCode.ConditionFailed:
-                        return Optional<StorageItemInfo>.Empty;
+                        return Optional<StreamingItemInfo>.Empty;
                     case StorageErrorCode.BadRequest:
                         switch (e.StatusCode)
                         {
                             case HttpStatusCode.PreconditionFailed:
-                                return Optional<StorageItemInfo>.Empty;
+                                return Optional<StreamingItemInfo>.Empty;
                             default:
                                 throw;
                         }
@@ -171,12 +171,12 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
             }
         }
 
-        public void CopyFrom(IStorageItem sourceItem,
+        public void CopyFrom(IStreamingItem sourceItem,
             StreamingCondition condition,
             StreamingCondition copySourceCondition,
-            StorageWriteOptions writeOptions)
+            StreamingWriteOptions writeOptions)
         {
-            var item = sourceItem as BlobStorageItem;
+            var item = sourceItem as BlobStreamingItem;
 
             if (item != null)
             {
@@ -228,8 +228,8 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         static BlobRequestOptions Map(StreamingCondition condition,
             StreamingCondition copySourceAccessCondition = default(StreamingCondition))
         {
-            if ((condition.Type == StorageConditionType.None) &&
-                (copySourceAccessCondition.Type == StorageConditionType.None))
+            if ((condition.Type == StreamingConditionType.None) &&
+                (copySourceAccessCondition.Type == StreamingConditionType.None))
                 return null;
 
             return new BlobRequestOptions
@@ -243,18 +243,18 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         {
             switch (condition.Type)
             {
-                case StorageConditionType.None:
+                case StreamingConditionType.None:
                     return AccessCondition.None;
-                case StorageConditionType.IfUnmodifiedSince:
+                case StreamingConditionType.IfUnmodifiedSince:
                     var d1 = ExposeException(condition.LastModifiedUtc, "'LastModifiedUtc' should be present.");
                     return AccessCondition.IfNotModifiedSince(d1);
-                case StorageConditionType.IfMatch:
+                case StreamingConditionType.IfMatch:
                     var x = ExposeException(condition.ETag, "'ETag' should be present");
                     return AccessCondition.IfMatch(x);
-                case StorageConditionType.IfModifiedSince:
+                case StreamingConditionType.IfModifiedSince:
                     var utc = ExposeException(condition.LastModifiedUtc, "'LastModifiedUtc' should be present.");
                     return AccessCondition.IfModifiedSince(utc);
-                case StorageConditionType.IfNoneMatch:
+                case StreamingConditionType.IfNoneMatch:
                     var etag = ExposeException(condition.ETag, "'ETag' should be present");
                     return AccessCondition.IfNoneMatch(etag);
                 default:

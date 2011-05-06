@@ -11,14 +11,14 @@ using System.Runtime.Serialization;
 namespace Lokad.Cqrs.Feature.StreamingStorage
 {
     [Serializable]
-    public class StorageItemNotFoundException : StorageBaseException
+    public class StreamingItemNotFoundException : StreamingBaseException
     {
-        public StorageItemNotFoundException(string message, Exception inner) : base(message, inner)
+        public StreamingItemNotFoundException(string message, Exception inner) : base(message, inner)
         {
         }
 
 
-        protected StorageItemNotFoundException(
+        protected StreamingItemNotFoundException(
             SerializationInfo info,
             StreamingContext context)
             : base(info, context)
