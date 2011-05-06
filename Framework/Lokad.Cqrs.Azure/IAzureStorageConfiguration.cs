@@ -5,6 +5,7 @@
 
 #endregion
 
+using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs
@@ -12,6 +13,8 @@ namespace Lokad.Cqrs
     public interface IAzureStorageConfiguration
     {
         string AccountName { get; }
+
+        CloudStorageAccount UnderlyingAccount { get; }
         
         CloudBlobClient CreateBlobClient();
         CloudQueueClient CreateQueueClient();

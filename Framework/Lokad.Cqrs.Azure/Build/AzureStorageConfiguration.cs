@@ -35,8 +35,10 @@ namespace Lokad.Cqrs.Build
             get { return _accountName; }
         }
 
-
-        
+        public CloudStorageAccount UnderlyingAccount
+        {
+            get { return Account; }
+        }
 
         public CloudQueueClient CreateQueueClient()
         {
