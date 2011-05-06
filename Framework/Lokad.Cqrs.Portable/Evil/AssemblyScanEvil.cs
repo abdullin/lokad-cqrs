@@ -10,6 +10,9 @@ namespace Lokad.Cqrs.Evil
             if (String.IsNullOrEmpty(a.FullName))
                 return false;
 
+            if (a.IsDynamic)
+                return false;
+
             var prefixes = new[]
                 {
                     "System", "Microsoft", "nunit", "JetBrains", "Autofac", "mscorlib", "ProtoBuf"
