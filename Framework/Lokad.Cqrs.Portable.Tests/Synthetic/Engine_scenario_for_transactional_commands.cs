@@ -17,6 +17,11 @@ namespace Lokad.Cqrs.Synthetic
             public bool Fail;
         }
 
+        public sealed class Data
+        {
+            public int Count;
+        }
+
         public sealed class Handler : Define.Handle<Message>
         {
             readonly NuclearStorage _storage;
@@ -33,7 +38,7 @@ namespace Lokad.Cqrs.Synthetic
 
                 new TransactionTester()
                     {
-                        OnCommit = () => _storage.UpdateSingletonStruct<int>(i => i + 1)
+                        OnCommit = () => _storage.UpdateSingletonEnforcingNew<Data>(i => i.Count += 1)
                     };
             }
         }
@@ -51,7 +56,7 @@ namespace Lokad.Cqrs.Synthetic
 
             EnlistAssert(e =>
                 {
-                    var actual = e.Resolve<NuclearStorage>().GetSingletonOrDefault<int>();
+                    var actual = e.Resolve<NuclearStorage>().GetSingletonOrNew<Data>().Count;
                     Assert.AreEqual(2, actual, "Only first command batch should succeed");
                 });
         }

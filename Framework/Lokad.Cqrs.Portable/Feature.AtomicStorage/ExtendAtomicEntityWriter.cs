@@ -39,7 +39,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                 }, change, AddOrUpdateHint.ProbablyExists);
         }
 
-        public static TView AddOrUpdate<TKey,TView>(this IAtomicEntityWriter<TKey,TView> self, TKey key,
+        public static TView UpdateEnforcingNew<TKey,TView>(this IAtomicEntityWriter<TKey,TView> self, TKey key,
             Action<TView> update, AddOrUpdateHint hint = AddOrUpdateHint.ProbablyExists)
             where TView : new()
         {
@@ -48,11 +48,12 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                     var view = new TView();
                     update(view);
                     return view;
-                }, view1 =>
+                }, v =>
                     {
-                        update(view1);
-                        return view1;
+                        update(v);
+                        return v;
                     }, hint);
         }
+        
     }
 }

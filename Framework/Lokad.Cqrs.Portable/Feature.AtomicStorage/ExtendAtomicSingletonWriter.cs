@@ -11,6 +11,8 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 {
     public static class ExtendAtomicSingletonWriter
     {
+        
+
         public static TView AddOrUpdate<TView>(this IAtomicSingletonWriter<TView> self, Action<TView> update, AddOrUpdateHint hint = AddOrUpdateHint.ProbablyExists)
             where TView : new()
         {
