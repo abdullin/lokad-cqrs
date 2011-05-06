@@ -21,13 +21,14 @@ namespace Lokad.Cqrs.Core.Serialization
             var helper = new AttributeHelper(attribs);
 
 
-            var name = Maybe.String
+            var s1 = Maybe<string>.Empty;
+            var name = s1
                 .GetValue(() => helper.GetString<ProtoContractAttribute>(p => p.Name))
                 .GetValue(() => helper.GetString<DataContractAttribute>(p => p.Name))
                 .GetValue(() => helper.GetString<XmlTypeAttribute>(p => p.TypeName))
                 .GetValue(type.Name);
 
-            var ns = Maybe.String
+            var ns = s1
                 .GetValue(() => helper.GetString<DataContractAttribute>(p => p.Namespace))
                 .GetValue(() => helper.GetString<XmlTypeAttribute>(p => p.Namespace))
                 .Convert(s => s.Trim() + "/", "");
