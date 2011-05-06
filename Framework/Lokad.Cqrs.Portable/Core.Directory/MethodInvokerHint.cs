@@ -23,6 +23,7 @@ namespace Lokad.Cqrs.Core.Directory
 
         public static MethodInvokerHint FromConsumerSample<THandler>(Expression<Action<THandler>> expression)
         {
+            if (expression == null) throw new ArgumentNullException("expression");
             if (false == typeof(THandler).IsGenericType)
                 throw new InvalidOperationException("Type should be a generic like 'IConsumeMessage<IMessage>'");
 

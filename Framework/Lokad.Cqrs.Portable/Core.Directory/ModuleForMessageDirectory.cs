@@ -49,7 +49,8 @@ namespace Lokad.Cqrs.Core.Directory
 
 		public void HandlerSample<THandler>(Expression<Action<THandler>> action)
 		{
-			_hint = MethodInvokerHint.FromConsumerSample(action);
+		    if (action == null) throw new ArgumentNullException("action");
+		    _hint = MethodInvokerHint.FromConsumerSample(action);
 		}
 
         /// <summary>
