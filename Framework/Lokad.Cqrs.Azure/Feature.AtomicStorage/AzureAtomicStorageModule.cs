@@ -5,7 +5,6 @@
 
 #endregion
 
-using System;
 using Autofac;
 using Autofac.Core;
 
@@ -18,24 +17,12 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
     public sealed class AzureAtomicStorageModule : Module
     {
         readonly string _accountName;
-        IAzureAtomicStorageStrategy _strategy;
+        readonly IAzureAtomicStorageStrategy _strategy;
 
-        public AzureAtomicStorageModule(string accountName)
+        public AzureAtomicStorageModule(string accountName, IAzureAtomicStorageStrategy strategy)
         {
             _accountName = accountName;
-            _strategy = new DefaultAzureAtomicStorageStrategyBuilder().Build();
-        }
-
-        public void WithStrategy(IAzureAtomicStorageStrategy strategy)
-        {
             _strategy = strategy;
-        }
-
-        public void WithStrategy(Action<DefaultAzureAtomicStorageStrategyBuilder> config)
-        {
-            var strategy = new DefaultAzureAtomicStorageStrategyBuilder();
-            config(strategy);
-            _strategy = strategy.Build();
         }
 
         protected override void Load(ContainerBuilder builder)

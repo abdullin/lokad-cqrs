@@ -10,17 +10,23 @@ namespace Lokad.Cqrs.Build
 
         public static void AtomicIsInAzure(this StorageModule self, string accountId)
         {
-            var module = new AzureAtomicStorageModule(accountId);
-            self.EnlistModule(module);
-
+            AtomicIsInAzure(self, accountId, d => { });
         }
 
-        public static void AtomicIsInAzure(this StorageModule self, string accountId, Action<AzureAtomicStorageModule> config)
+        public static void AtomicIsInAzure(this StorageModule self, string accountId, Action<DefaultAzureAtomicStorageStrategyBuilder> config)
         {
-            var module = new AzureAtomicStorageModule(accountId);
-            config(module);
+            var builder = new DefaultAzureAtomicStorageStrategyBuilder();
+            config(builder);
+            AtomicIsInAzure(self, accountId, builder.Build());
+        }
+
+        public static void AtomicIsInAzure(this StorageModule self, string accountId, IAzureAtomicStorageStrategy strategy)
+        {
+            var module = new AzureAtomicStorageModule(accountId, strategy);
             self.EnlistModule(module);
         }
+
+
 
         public static void StreamingIsInAzure(this StorageModule self, string accountId)
         {
