@@ -71,7 +71,6 @@
     <Compile Include="Feature.AtomicStorage\AzureAtomicStorageFactory.cs" />
     <Compile Include="Feature.AtomicStorage\AzureAtomicStorageModule.cs" />
     <Compile Include="Core.Transport\MessagePrinter.cs" />
-    <Compile Include="Evil\ExtendIDictionary.cs" />
     <Compile Include="Evil\ExtendIEnumerable.cs" />
     <Compile Include="Feature.AtomicStorage\DefaultAzureAtomicStorageStrategy.cs" />
     <Compile Include="Feature.AtomicStorage\DefaultAzureAtomicStorageStrategyBuilder.cs" />

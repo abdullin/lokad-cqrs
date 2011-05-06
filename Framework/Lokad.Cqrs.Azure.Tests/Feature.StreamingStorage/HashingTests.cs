@@ -36,7 +36,14 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
             storageItem.ReadInto((props, stream) => StreamUtil.BlockCopy(stream, new MemoryStream(), 10));
 
             var format = storageItem.GetInfo();
-            Console.WriteLine("MD5: {0}", format.Value.Properties.GetValue("ContentMD5").GetValue("None"));
+
+            string ctx;
+            if (!format.Value.Properties.TryGetValue("ContentMD5", out ctx))
+            {
+                ctx = "None";
+            }
+
+            Console.WriteLine("MD5: {0}", ctx);
 
             //storageItem.ReadText();
         }
