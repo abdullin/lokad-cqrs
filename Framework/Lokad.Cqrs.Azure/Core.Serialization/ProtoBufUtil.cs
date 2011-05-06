@@ -25,7 +25,7 @@ namespace Lokad.Cqrs.Core.Serialization
                 .GetValue(() => helper.GetString<ProtoContractAttribute>(p => p.Name))
                 .GetValue(() => helper.GetString<DataContractAttribute>(p => p.Name))
                 .GetValue(() => helper.GetString<XmlTypeAttribute>(p => p.TypeName))
-                .GetValue(() => type.Name);
+                .GetValue(type.Name);
 
             var ns = Maybe.String
                 .GetValue(() => helper.GetString<DataContractAttribute>(p => p.Namespace))

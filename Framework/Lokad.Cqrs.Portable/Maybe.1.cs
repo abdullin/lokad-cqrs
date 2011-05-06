@@ -25,7 +25,7 @@ namespace Lokad.Cqrs
             _hasValue = hasValue;
         }
 
-        internal Maybe(T value)
+        Maybe(T value)
             : this(value, true)
         {
             // ReSharper disable CompareNonConstrainedGenericWithNull
@@ -73,17 +73,6 @@ namespace Lokad.Cqrs
         /// </summary>
         /// <param name="defaultValue">The default value.</param>
         /// <returns>value</returns>
-        public T GetValue(Func<T> defaultValue)
-        {
-            return _hasValue ? _value : defaultValue();
-        }
-
-        /// <summary>
-        /// Retrieves value from this instance, using a 
-        /// <paramref name="defaultValue"/> if it is absent.
-        /// </summary>
-        /// <param name="defaultValue">The default value.</param>
-        /// <returns>value</returns>
         public T GetValue(T defaultValue)
         {
             return _hasValue ? _value : defaultValue;
@@ -99,79 +88,7 @@ namespace Lokad.Cqrs
         {
             return _hasValue ? this : defaultValue();
         }
-
-        /// <summary>
-        /// Retrieves value from this instance, using a <paramref name="defaultValue"/>
-        /// if it is absent
-        /// </summary>
-        /// <param name="defaultValue">The default value to provide.</param>
-        /// <returns>maybe value</returns>
-        public Maybe<T> GetValue(Maybe<T> defaultValue)
-        {
-            return _hasValue ? this : defaultValue;
-        }
-
-        /// <summary>
-        /// Applies the specified action to the value, if it is present.
-        /// </summary>
-        /// <param name="action">The action.</param>
-        /// <returns>same instance for inlining</returns>
-        public Maybe<T> Apply(Action<T> action)
-        {
-            if (_hasValue)
-            {
-                action(_value);
-            }
-
-            return this;
-        }
-
-        /// <summary>
-        /// Executes the specified action, if the value is absent
-        /// </summary>
-        /// <param name="action">The action.</param>
-        /// <returns>same instance for inlining</returns>
-        public Maybe<T> Handle(Action action)
-        {
-            if (!_hasValue)
-            {
-                action();
-            }
-
-            return this;
-        }
-
-        /// <summary>
-        /// Exposes the specified exception if maybe does not have value.
-        /// </summary>
-        /// <param name="exception">The exception.</param>
-        /// <returns>actual value</returns>
-        /// <exception cref="Exception">if maybe does not have value</exception>
-        public T ExposeException(Func<Exception> exception)
-        {
-            if (!_hasValue)
-            {
-                throw exception();
-            }
-
-            return _value;
-        }
-
-        /// <summary>
-        /// Throws the exception if maybe does not have value.
-        /// </summary>
-        /// <returns>actual value</returns>
-        /// <exception cref="InvalidOperationException">if maybe does not have value</exception>
-        public T ExposeException(string message)
-        {
-            if (message == null) throw new ArgumentNullException(@"message");
-            if (!_hasValue)
-            {
-                throw new InvalidOperationException(message);
-            }
-
-            return _value;
-        }
+     
 
         /// <summary>
         /// Throws the exception if maybe does not have value.
@@ -188,17 +105,6 @@ namespace Lokad.Cqrs
             }
 
             return _value;
-        }
-
-        /// <summary>
-        /// Combines this optional with the pipeline function
-        /// </summary>
-        /// <typeparam name="TTarget">The type of the target.</typeparam>
-        /// <param name="combinator">The combinator (pipeline funcion).</param>
-        /// <returns>optional result</returns>
-        public Maybe<TTarget> Combine<TTarget>(Func<T, Maybe<TTarget>> combinator)
-        {
-            return _hasValue ? combinator(_value) : Maybe<TTarget>.Empty;
         }
 
         /// <summary>

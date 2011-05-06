@@ -13,16 +13,8 @@ namespace Lokad.Cqrs
     public static class Maybe
     {
         /// <summary>
-        /// Optional empty boolean
-        /// </summary>
-        public static readonly Maybe<bool> Bool = Maybe<bool>.Empty;
-
-        /// <summary>
         /// Optional empty string
         /// </summary>
         public static readonly Maybe<string> String = Maybe<string>.Empty;
-
-        public static readonly Maybe<int> Int32 = Maybe<int>.Empty;
-        public static readonly Maybe<long > Int64 = Maybe<long>.Empty;
     }
 }

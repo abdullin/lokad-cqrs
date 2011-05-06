@@ -39,7 +39,8 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
 
         bool Satisfy(StreamingCondition condition)
         {
-            return GetUnconditionalInfo()
+            var info = GetUnconditionalInfo();
+            return info
                 .Convert(s => new LocalStorageInfo(s.LastModifiedUtc, s.ETag))
                 .Convert(s => condition.Satisfy(s), () => condition.Satisfy());
         }
