@@ -33,7 +33,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
 
 
             storageItem.Write(w => w.WriteByte(1), options : StreamingWriteOptions.CompressIfPossible);
-            storageItem.ReadInto((props, stream) => StreamUtil.BlockCopy(stream, new MemoryStream(), 10));
+            storageItem.ReadInto((props, stream) => stream.CopyTo(new MemoryStream(), 10));
 
             var format = storageItem.GetInfo();
 

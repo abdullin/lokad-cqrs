@@ -179,7 +179,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
                 const int bufferSize = 64*1024;
                 Write(
                     targetStream =>
-                        sourceItem.ReadInto((props, stream) => StreamUtil.BlockCopy(stream, targetStream, bufferSize),
+                        sourceItem.ReadInto((props, stream) => stream.CopyTo(targetStream, bufferSize),
                             copySourceCondition), condition, options);
             }
         }

@@ -146,7 +146,6 @@
     <Compile Include="Feature.StreamingStorage\StreamingItemIntegrityException.cs" />
     <Compile Include="Feature.StreamingStorage\StreamingItemNotFoundException.cs" />
     <Compile Include="Feature.StreamingStorage\StreamingWriteOptions.cs" />
-    <Compile Include="Feature.StreamingStorage\StreamUtil.cs" />
     <Compile Include="IEngineProcess.cs" />
     <Compile Include="IEnvelopeSerializer.cs" />
     <Compile Include="IEnvelopeStreamer.cs" />
