@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace Lokad.Cqrs
 {
@@ -19,12 +20,12 @@ namespace Lokad.Cqrs
         public readonly string EnvelopeId;
         public readonly DateTime DeliverOnUtc;
         public readonly DateTime CreatedOnUtc;
-        internal readonly IDictionary<string, string> _attributes = new Dictionary<string, string>();
+        [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)] readonly ImmutableAttribute[] _attributes;
         
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
         public readonly ImmutableMessage[] Items;
 
-        public ImmutableEnvelope(string envelopeId, IDictionary<string, string> attributes, ImmutableMessage[] items,
+        public ImmutableEnvelope(string envelopeId, ImmutableAttribute[] attributes, ImmutableMessage[] items,
             DateTime deliverOnUtc, DateTime createdOnUtc)
         {
             EnvelopeId = envelopeId;
@@ -34,30 +35,39 @@ namespace Lokad.Cqrs
             CreatedOnUtc = createdOnUtc;
         }
 
-        
-
-
         public string GetAttribute(string name)
         {
-            return _attributes[name];
+            return _attributes.First(n => n.Key == name).Value;
         }
 
         public string GetAttribute(string name, string defaultValue)
         {
-            string result;
-            if (_attributes.TryGetValue(name, out result))
+            foreach (var attribute in _attributes)
             {
-                return result;
+                if (attribute.Key == name)
+                    return attribute.Value;
             }
             return defaultValue;
         }
 
 
-        
 
-        public ICollection<KeyValuePair<string, string>> GetAllAttributes()
+
+        public ICollection<ImmutableAttribute> GetAllAttributes()
         {
             return _attributes;
+        }
+    }
+
+    public sealed class ImmutableAttribute
+    {
+        public string Key { get; private set; }
+        public string Value { get; private set; }
+
+        public ImmutableAttribute(string key, string value)
+        {
+            Key = key;
+            Value = value;
         }
     }
 }

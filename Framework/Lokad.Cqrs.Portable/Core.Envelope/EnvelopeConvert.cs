@@ -14,26 +14,28 @@ namespace Lokad.Cqrs.Core.Envelope
 {
     static class EnvelopeConvert
     {
-        public static IDictionary<string, string> EnvelopeAttributesFromContract(
-            IEnumerable<EnvelopeAttributeContract> attributes)
+        public static ImmutableAttribute[] EnvelopeAttributesFromContract(
+            ICollection<EnvelopeAttributeContract> attributes)
         {
-            var dict = new Dictionary<string, string>();
+            var list = new ImmutableAttribute[attributes.Count];
 
+            var idx = 0;
             foreach (var attribute in attributes)
             {
                 switch (attribute.Type)
                 {
                     case EnvelopeAttributeTypeContract.Sender:
-                        dict[MessageAttributes.EnvelopeSender] = attribute.Name;
+                        list[idx] = new ImmutableAttribute(MessageAttributes.EnvelopeSender, attribute.Value);
                         break;
                     case EnvelopeAttributeTypeContract.CustomString:
-                        dict[attribute.Name] = attribute.Value;
+                        list[idx] = new ImmutableAttribute(attribute.Name, attribute.Value);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
+                idx += 1;
             }
-            return dict;
+            return list;
         }
 
         public static IDictionary<string, string> ItemAttributesFromContract(IEnumerable<ItemAttributeContract> attributes)
@@ -73,7 +75,7 @@ namespace Lokad.Cqrs.Core.Envelope
         }
 
         public static EnvelopeAttributeContract[] EnvelopeAttributesToContract(
-            ICollection<KeyValuePair<string, string>> attributes)
+            ICollection<ImmutableAttribute> attributes)
         {
             var contracts = new EnvelopeAttributeContract[attributes.Count];
             int pos = 0;

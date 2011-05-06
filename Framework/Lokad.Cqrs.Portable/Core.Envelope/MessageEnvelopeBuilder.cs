@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Lokad.Cqrs.Core.Envelope
 {
@@ -72,7 +73,7 @@ namespace Lokad.Cqrs.Core.Envelope
 
         public ImmutableEnvelope Build()
         {
-            var attributes = new Dictionary<string, string>(Attributes);
+            var attributes = Attributes.Select(p => new ImmutableAttribute(p.Key, p.Value)).ToArray();
             var items = new ImmutableMessage[Items.Count];
 
             for (int i = 0; i < items.Length; i++)

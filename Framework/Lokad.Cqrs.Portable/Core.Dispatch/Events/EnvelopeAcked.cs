@@ -7,9 +7,9 @@ namespace Lokad.Cqrs.Core.Dispatch.Events
     {
         public string QueueName { get; private set; }
         public string EnvelopeId { get; private set; }
-        public ICollection<KeyValuePair<string, string>> Attributes { get; private set; }
+        public ICollection<ImmutableAttribute> Attributes { get; private set; }
         
-        public EnvelopeAcked(string queueName, string envelopeId, ICollection<KeyValuePair<string,string>> attributes)
+        public EnvelopeAcked(string queueName, string envelopeId, ICollection<ImmutableAttribute> attributes)
         {
             QueueName = queueName;
             EnvelopeId = envelopeId;
