@@ -81,12 +81,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 
         public TSingleton UpdateSingletonEnforcingNew<TSingleton>(Action<TSingleton> update) where TSingleton : new()
         {
-            return Factory.GetSingletonWriter<TSingleton>().AddOrUpdate(() =>
-                {
-                    var singleton = new TSingleton();
-                    update(singleton);
-                    return singleton;
-                }, update);
+            return Factory.GetSingletonWriter<TSingleton>().UpdateEnforcingNew(update);
         }
 
         public TSingleton GetSingletonOrNew<TSingleton>() where TSingleton : new()

@@ -53,6 +53,16 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                 }, AddOrUpdateHint.ProbablyExists);
         }
 
+        public static TSingleton UpdateEnforcingNew<TSingleton>(this IAtomicSingletonWriter<TSingleton> self, Action<TSingleton> update) where TSingleton : new()
+        {
+            return self.AddOrUpdate(() =>
+            {
+                var singleton = new TSingleton();
+                update(singleton);
+                return singleton;
+            }, update);
+        }
+
 
     }
 }
