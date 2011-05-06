@@ -49,7 +49,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         }
 
 
-        public Maybe<TEntity> GetEntity<TEntity>(object key)
+        public Optional<TEntity> GetEntity<TEntity>(object key)
         {
             return Factory.GetEntityReader<object, TEntity>().Get(key);
         }
@@ -109,7 +109,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             return Factory.GetSingletonReader<TSingleton>().GetOrNew();
         }
 
-        public Maybe<TSingleton> GetSingleton<TSingleton>()
+        public Optional<TSingleton> GetSingleton<TSingleton>()
         {
             return Factory.GetSingletonReader<TSingleton>().Get();
         }

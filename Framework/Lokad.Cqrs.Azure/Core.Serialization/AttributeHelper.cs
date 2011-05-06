@@ -20,7 +20,7 @@ namespace Lokad.Cqrs.Core.Serialization
             _attributes = attributes;
         }
 
-        public Maybe<string> GetString<TAttribute>(Func<TAttribute, string> retriever)
+        public Optional<string> GetString<TAttribute>(Func<TAttribute, string> retriever)
             where TAttribute : Attribute
         {
             var v = FirstOrEmpty(_attributes
@@ -28,18 +28,18 @@ namespace Lokad.Cqrs.Core.Serialization
                 .Convert(retriever, "");
 
             if (String.IsNullOrEmpty(v))
-                return Maybe<string>.Empty;
+                return Optional<string>.Empty;
 
             return v;
         }
 
-        static Maybe<TSource> FirstOrEmpty<TSource>(IEnumerable<TSource> sequence)
+        static Optional<TSource> FirstOrEmpty<TSource>(IEnumerable<TSource> sequence)
         {
             foreach (var source in sequence)
             {
                 return source;
             }
-            return Maybe<TSource>.Empty;
+            return Optional<TSource>.Empty;
         }
     }
 }

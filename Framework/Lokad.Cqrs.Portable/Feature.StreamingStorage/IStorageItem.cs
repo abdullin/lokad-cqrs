@@ -53,7 +53,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         /// </summary>
         /// <param name="condition">The condition.</param>
         /// <returns></returns>
-        Maybe<StorageItemInfo> GetInfo(StreamingCondition condition = default(StreamingCondition));
+        Optional<StorageItemInfo> GetInfo(StreamingCondition condition = default(StreamingCondition));
 
         /// <summary>
         /// Creates this storage item from another.

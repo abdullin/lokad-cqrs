@@ -124,20 +124,20 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         /// </summary>
         /// <param name="condition">The condition.</param>
         /// <returns></returns>
-        public Maybe<StorageItemInfo> GetInfo(StreamingCondition condition)
+        public Optional<StorageItemInfo> GetInfo(StreamingCondition condition)
         {
             Refresh();
             //ThrowIfContainerNotFound();
 
             if (_file.Exists && Satisfy(condition))
                 return GetUnconditionalInfo();
-            return Maybe<StorageItemInfo>.Empty;
+            return Optional<StorageItemInfo>.Empty;
         }
 
-        Maybe<StorageItemInfo> GetUnconditionalInfo()
+        Optional<StorageItemInfo> GetUnconditionalInfo()
         {
             if (!_file.Exists)
-                return Maybe<StorageItemInfo>.Empty;
+                return Optional<StorageItemInfo>.Empty;
 
             // yes, that's not full hashing, but for now we don't care
             var lastWriteTimeUtc = _file.LastWriteTimeUtc;

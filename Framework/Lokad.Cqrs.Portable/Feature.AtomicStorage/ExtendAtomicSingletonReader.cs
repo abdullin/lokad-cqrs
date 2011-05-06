@@ -20,14 +20,14 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             return new TView();
         }
 
-        public static Maybe<TSingleton> Get<TSingleton>(this IAtomicSingletonReader<TSingleton> reader)
+        public static Optional<TSingleton> Get<TSingleton>(this IAtomicSingletonReader<TSingleton> reader)
         {
             TSingleton singleton;
             if (reader.TryGet(out singleton))
             {
                 return singleton;
             }
-            return Maybe<TSingleton>.Empty;
+            return Optional<TSingleton>.Empty;
         }
     }
 }

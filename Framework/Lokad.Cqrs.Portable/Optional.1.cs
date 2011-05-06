@@ -14,18 +14,18 @@ namespace Lokad.Cqrs
     /// </summary>
     /// <typeparam name="T">underlying type</typeparam>
     [Serializable]
-    public sealed class Maybe<T> : IEquatable<Maybe<T>> 
+    public sealed class Optional<T> : IEquatable<Optional<T>> 
     {
         readonly T _value;
         readonly bool _hasValue;
 
-        Maybe(T item, bool hasValue)
+        Optional(T item, bool hasValue)
         {
             _value = item;
             _hasValue = hasValue;
         }
 
-        Maybe(T value)
+        Optional(T value)
             : this(value, true)
         {
             // ReSharper disable CompareNonConstrainedGenericWithNull
@@ -39,7 +39,7 @@ namespace Lokad.Cqrs
         /// <summary>
         /// Default empty instance.
         /// </summary>
-        public static readonly Maybe<T> Empty = new Maybe<T>(default(T), false);
+        public static readonly Optional<T> Empty = new Optional<T>(default(T), false);
 
         /// <summary>
         /// Gets the underlying value.
@@ -84,7 +84,7 @@ namespace Lokad.Cqrs
         /// </summary>
         /// <param name="defaultValue">The default value to provide.</param>
         /// <returns>maybe value</returns>
-        public Maybe<T> GetValue(Func<Maybe<T>> defaultValue)
+        public Optional<T> GetValue(Func<Optional<T>> defaultValue)
         {
             return _hasValue ? this : defaultValue();
         }
@@ -92,15 +92,15 @@ namespace Lokad.Cqrs
 
 
         /// <summary>
-        /// Converts this instance to <see cref="Maybe{T}"/>, 
+        /// Converts this instance to <see cref="Optional{T}"/>, 
         /// while applying <paramref name="converter"/> if there is a value.
         /// </summary>
         /// <typeparam name="TTarget">The type of the target.</typeparam>
         /// <param name="converter">The converter.</param>
         /// <returns></returns>
-        public Maybe<TTarget> Convert<TTarget>(Func<T, TTarget> converter)
+        public Optional<TTarget> Convert<TTarget>(Func<T, TTarget> converter)
         {
-            return _hasValue ? converter(_value) : Maybe<TTarget>.Empty;
+            return _hasValue ? converter(_value) : Optional<TTarget>.Empty;
         }
 
         /// <summary>
@@ -130,18 +130,30 @@ namespace Lokad.Cqrs
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="Maybe{T}"/> is equal to the current <see cref="Maybe{T}"/>.
+        /// Retrieves converted value.
         /// </summary>
-        /// <param name="maybe">The <see cref="Maybe"/> to compare with.</param>
-        /// <returns>true if the objects are equal</returns>
-        public bool Equals(Maybe<T> maybe)
+        /// <typeparam name="TTarget">type of the conversion target</typeparam>
+        /// <param name="converter">The converter.</param>
+        
+        /// <returns>value</returns>
+        public Optional<TTarget> Combine<TTarget>(Func<T, Optional<TTarget>> converter)
         {
-            if (ReferenceEquals(null, maybe)) return false;
-            if (ReferenceEquals(this, maybe)) return true;
+            return _hasValue ? converter(_value) : Optional<TTarget>.Empty;
+        }
 
-            if (_hasValue != maybe._hasValue) return false;
+        /// <summary>
+        /// Determines whether the specified <see cref="Optional{T}"/> is equal to the current <see cref="Optional{T}"/>.
+        /// </summary>
+        /// <param name="optional">The <see cref="Optional{T}"/> to compare with.</param>
+        /// <returns>true if the objects are equal</returns>
+        public bool Equals(Optional<T> optional)
+        {
+            if (ReferenceEquals(null, optional)) return false;
+            if (ReferenceEquals(this, optional)) return true;
+
+            if (_hasValue != optional._hasValue) return false;
             if (!_hasValue) return true;
-            return _value.Equals(maybe._value);
+            return _value.Equals(optional._value);
         }
 
         /// <summary>
@@ -159,7 +171,7 @@ namespace Lokad.Cqrs
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
 
-            var maybe = obj as Maybe<T>;
+            var maybe = obj as Optional<T>;
             if (maybe == null) return false;
             return Equals(maybe);
         }
@@ -168,7 +180,7 @@ namespace Lokad.Cqrs
         /// Serves as a hash function for this instance.
         /// </summary>
         /// <returns>
-        /// A hash code for the current <see cref="Maybe{T}"/>.
+        /// A hash code for the current <see cref="Optional{T}"/>.
         /// </returns>
         public override int GetHashCode()
         {
@@ -186,7 +198,7 @@ namespace Lokad.Cqrs
         /// <param name="left">The left.</param>
         /// <param name="right">The right.</param>
         /// <returns>The result of the operator.</returns>
-        public static bool operator ==(Maybe<T> left, Maybe<T> right)
+        public static bool operator ==(Optional<T> left, Optional<T> right)
         {
             return Equals(left, right);
         }
@@ -197,23 +209,23 @@ namespace Lokad.Cqrs
         /// <param name="left">The left.</param>
         /// <param name="right">The right.</param>
         /// <returns>The result of the operator.</returns>
-        public static bool operator !=(Maybe<T> left, Maybe<T> right)
+        public static bool operator !=(Optional<T> left, Optional<T> right)
         {
             return !Equals(left, right);
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <typeparamref name="T"/> to <see cref="Maybe{T}"/>.
+        /// Performs an implicit conversion from <typeparamref name="T"/> to <see cref="Optional{T}"/>.
         /// </summary>
         /// <param name="item">The item.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator Maybe<T>(T item)
+        public static implicit operator Optional<T>(T item)
         {
             // ReSharper disable CompareNonConstrainedGenericWithNull
             if (item == null) throw new ArgumentNullException("item");
             // ReSharper restore CompareNonConstrainedGenericWithNull
 
-            return new Maybe<T>(item);
+            return new Optional<T>(item);
         }
 
 

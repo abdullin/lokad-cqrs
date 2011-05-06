@@ -21,7 +21,7 @@ namespace Lokad.Cqrs.Core.Serialization
             var helper = new AttributeHelper(attribs);
 
 
-            var s1 = Maybe<string>.Empty;
+            var s1 = Optional<string>.Empty;
             var name = s1
                 .GetValue(() => helper.GetString<ProtoContractAttribute>(p => p.Name))
                 .GetValue(() => helper.GetString<DataContractAttribute>(p => p.Name))

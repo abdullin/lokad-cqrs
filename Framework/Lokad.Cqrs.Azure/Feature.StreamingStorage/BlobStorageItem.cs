@@ -142,7 +142,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
             }
         }
 
-        public Maybe<StorageItemInfo> GetInfo(StreamingCondition condition)
+        public Optional<StorageItemInfo> GetInfo(StreamingCondition condition)
         {
             try
             {
@@ -157,12 +157,12 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
                     case StorageErrorCode.ResourceNotFound:
                     case StorageErrorCode.BlobNotFound:
                     case StorageErrorCode.ConditionFailed:
-                        return Maybe<StorageItemInfo>.Empty;
+                        return Optional<StorageItemInfo>.Empty;
                     case StorageErrorCode.BadRequest:
                         switch (e.StatusCode)
                         {
                             case HttpStatusCode.PreconditionFailed:
-                                return Maybe<StorageItemInfo>.Empty;
+                                return Optional<StorageItemInfo>.Empty;
                             default:
                                 throw;
                         }
@@ -264,15 +264,15 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
 
 
  
-        static T ExposeException<T>(Maybe<T> maybe, string message)
+        static T ExposeException<T>(Optional<T> optional, string message)
         {
             if (message == null) throw new ArgumentNullException(@"message");
-            if (!maybe.HasValue)
+            if (!optional.HasValue)
             {
 
                 throw new InvalidOperationException(message);
             }
-            return maybe.Value;
+            return optional.Value;
         }
     }
 }

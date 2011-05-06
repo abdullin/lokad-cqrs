@@ -10,7 +10,7 @@ using NUnit.Framework;
 namespace Lokad.Cqrs
 {
     /// <summary>
-    /// Extends <see cref="Maybe{T}"/> for the purposes of testing
+    /// Extends <see cref="Optional{T}"/> for the purposes of testing
     /// </summary>
     public static class ExtendMaybe
     {
@@ -20,7 +20,7 @@ namespace Lokad.Cqrs
         /// <typeparam name="TValue">The type of the value.</typeparam>
         /// <param name="result">The result.</param>
         /// <returns>same instance for inlining</returns>
-        public static void ShouldPass<TValue>(this Maybe<TValue> result)
+        public static void ShouldPass<TValue>(this Optional<TValue> result)
         {
             Assert.IsTrue(result.HasValue, "Maybe should have value");
             return;
@@ -30,11 +30,11 @@ namespace Lokad.Cqrs
         /// Checks that the optional does not have any value
         /// </summary>
         /// <typeparam name="TValue">The type of the value.</typeparam>
-        /// <param name="maybe">The maybe.</param>
+        /// <param name="optional">The maybe.</param>
         /// <returns>same instance for inlining</returns>
-        public static void ShouldFail<TValue>(this Maybe<TValue> maybe)
+        public static void ShouldFail<TValue>(this Optional<TValue> optional)
         {
-            Assert.IsFalse(maybe.HasValue, "Maybe should not have value");
+            Assert.IsFalse(optional.HasValue, "Maybe should not have value");
             return;
         }
     }

@@ -38,14 +38,14 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
 
         public StorageConditionType Type { get; private set; }
 
-        public Maybe<string> ETag
+        public Optional<string> ETag
         {
-            get { return _etag ?? Maybe<string>.Empty; }
+            get { return _etag ?? Optional<string>.Empty; }
         }
 
-        public Maybe<DateTime> LastModifiedUtc
+        public Optional<DateTime> LastModifiedUtc
         {
-            get { return _lastModifiedUtc ?? Maybe<DateTime>.Empty; }
+            get { return _lastModifiedUtc ?? Optional<DateTime>.Empty; }
         }
 
 
