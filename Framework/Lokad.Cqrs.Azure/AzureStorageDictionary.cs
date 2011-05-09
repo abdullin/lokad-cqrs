@@ -19,6 +19,17 @@ namespace Lokad.Cqrs
             return _dictionary.TryGetValue(accountId, out config);
         }
 
+        public IAzureStorageConfiguration GetOrThrow(string accountId)
+        {
+            IAzureStorageConfiguration value;
+            if (_dictionary.TryGetValue(accountId,out value))
+            {
+                return value;
+            }
+            var message = string.Format("Failed to locate Azure config with id '{0}'. Have you registered it in Azure?", accountId);
+            throw new InvalidOperationException(message);
+        }
+
         public ICollection<IAzureStorageConfiguration> GetAll()
         {
             return _dictionary.Values;
