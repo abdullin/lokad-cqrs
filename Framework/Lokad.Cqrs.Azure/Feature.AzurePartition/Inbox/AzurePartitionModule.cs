@@ -11,7 +11,6 @@ using System.Linq;
 using Autofac;
 using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Dispatch;
-using Lokad.Cqrs.Evil;
 
 // ReSharper disable MemberCanBePrivate.Global
 
@@ -58,8 +57,6 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
         {
             DispatcherIs<DispatchMessagesToRoute>(c => c.SpecifyRouter(route));
         }
-        
-
 
         protected override void Load(ContainerBuilder builder)
         {

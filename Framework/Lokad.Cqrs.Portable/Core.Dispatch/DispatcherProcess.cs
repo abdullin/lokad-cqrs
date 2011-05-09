@@ -119,8 +119,11 @@ namespace Lokad.Cqrs.Core.Dispatch
             {
                 if (processed)
                 {
-                    _inbox.AckMessage(context);
+                    // 1st step - dequarantine, if present
                     _quarantine.Clear(context);
+                    // 2nd step - ack.
+                    _inbox.AckMessage(context);
+                    // 3rd - notify.
                     _observer.Notify(new EnvelopeAcked(context.QueueName, context.Unpacked.EnvelopeId, context.Unpacked.GetAllAttributes()));
                 }
             }
