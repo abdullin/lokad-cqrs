@@ -79,7 +79,7 @@
     <Compile Include="Build\Engine\Events\EngineStarted.cs" />
     <Compile Include="Build\Engine\Events\EngineStopped.cs" />
     <Compile Include="Core.Directory\DomainAssemblyScanner.cs" />
-    <Compile Include="Core.Directory\ModuleForMessageDirectory.cs" />
+    <Compile Include="Core.Directory\MessageDirectoryModule.cs" />
     <Compile Include="Core.Directory\MessageDirectoryBuilder.cs" />
     <Compile Include="Core.Directory\MessageActivationInfo.cs" />
     <Compile Include="Core.Directory\MessageMapping.cs" />

@@ -47,9 +47,9 @@ namespace Lokad.Cqrs.Build.Engine
         /// </summary>
         /// <param name="config">configuration syntax.</param>
         /// <returns>same builder for inline multiple configuration statements</returns>
-        public CqrsEngineBuilder Domain(Action<ModuleForMessageDirectory> config)
+        public CqrsEngineBuilder Domain(Action<MessageDirectoryModule> config)
         {
-            var directory = new ModuleForMessageDirectory();
+            var directory = new MessageDirectoryModule();
             config(directory);
             EnlistModule(directory);
             return this;
@@ -119,7 +119,7 @@ namespace Lokad.Cqrs.Build.Engine
             _builder.RegisterType<CqrsEngineHost>().SingleInstance();
 
             // conditional registrations and defaults
-            if (!IsEnlisted<ModuleForMessageDirectory>())
+            if (!IsEnlisted<MessageDirectoryModule>())
             {
                 Domain(m => m.InUserAssemblies());
             }
