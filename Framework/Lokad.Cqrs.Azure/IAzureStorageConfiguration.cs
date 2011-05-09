@@ -18,5 +18,6 @@ namespace Lokad.Cqrs
         
         CloudBlobClient CreateBlobClient();
         CloudQueueClient CreateQueueClient();
+        CloudTableClient CreateTableClient();
     }
 }

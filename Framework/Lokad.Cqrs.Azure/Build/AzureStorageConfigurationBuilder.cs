@@ -15,8 +15,9 @@ namespace Lokad.Cqrs.Build
     {
         readonly CloudStorageAccount _account;
 
-        Action<CloudQueueClient> _queueClientConfiguration;
-        Action<CloudBlobClient> _blobClientConfiguration;
+        Action<CloudQueueClient> _queueConfig;
+        Action<CloudBlobClient> _blobConfig;
+        Action<CloudTableClient> _tableConfig;
         readonly string _accountId;
         bool _cleanAccount;
 
@@ -26,11 +27,11 @@ namespace Lokad.Cqrs.Build
         {
             if (replaceOld)
             {
-                _queueClientConfiguration = configure;
+                _queueConfig = configure;
             }
             else
             {
-                _queueClientConfiguration += configure;
+                _queueConfig += configure;
             }
             return this;
         }
@@ -40,11 +41,25 @@ namespace Lokad.Cqrs.Build
         {
             if (replaceOld)
             {
-                _blobClientConfiguration = configure;
+                _blobConfig = configure;
             }
             else
             {
-                _blobClientConfiguration += configure;
+                _blobConfig += configure;
+            }
+            return this;
+        }
+
+        public AzureStorageConfigurationBuilder ConfigureTableClient(Action<CloudTableClient> configure,
+    bool replaceOld = false)
+        {
+            if (replaceOld)
+            {
+                _tableConfig = configure;
+            }
+            else
+            {
+                _tableConfig += configure;
             }
             return this;
         }
@@ -53,8 +68,9 @@ namespace Lokad.Cqrs.Build
         public AzureStorageConfigurationBuilder(CloudStorageAccount account, string accountId)
         {
             // defaults
-            _queueClientConfiguration = client => client.RetryPolicy = RetryPolicies.NoRetry();
-            _blobClientConfiguration = client => client.RetryPolicy = RetryPolicies.NoRetry();
+            _queueConfig = client => client.RetryPolicy = RetryPolicies.NoRetry();
+            _blobConfig = client => client.RetryPolicy = RetryPolicies.NoRetry();
+            _tableConfig = client => client.RetryPolicy = RetryPolicies.NoRetry();
             _account = account;
             _accountId = accountId;
         }
@@ -66,7 +82,10 @@ namespace Lokad.Cqrs.Build
 
         internal AzureStorageConfiguration Build()
         {
-            return new AzureStorageConfiguration(_account, _queueClientConfiguration, _blobClientConfiguration,
+            return new AzureStorageConfiguration(_account, 
+                _queueConfig, 
+                _blobConfig, 
+                _tableConfig,
                 _accountId);
         }
     }

@@ -9,6 +9,7 @@ namespace Lokad.Cqrs.Build
     {
         readonly Action<CloudQueueClient> _queueClientConfiguration;
         readonly Action<CloudBlobClient> _blobClientConfiguration;
+        readonly Action<CloudTableClient> _tableClientConfiguration;
         public readonly CloudStorageAccount Account;
         readonly string _accountName;
 
@@ -21,9 +22,10 @@ namespace Lokad.Cqrs.Build
         }
 
         public AzureStorageConfiguration(CloudStorageAccount account, Action<CloudQueueClient> queueClientConfiguration,
-            Action<CloudBlobClient> blobClientConfiguration, string customName)
+            Action<CloudBlobClient> blobClientConfiguration, Action<CloudTableClient> tableClientConfiguration, string customName)
         {
             _queueClientConfiguration = queueClientConfiguration;
+            _tableClientConfiguration = tableClientConfiguration;
             _blobClientConfiguration = blobClientConfiguration;
             Account = account;
             _accountName = customName ?? account.Credentials.AccountName;
@@ -44,6 +46,13 @@ namespace Lokad.Cqrs.Build
         {
             var client = Account.CreateCloudQueueClient();
             _queueClientConfiguration(client);
+            return client;
+        }
+
+        public CloudTableClient CreateTableClient()
+        {
+            var client = Account.CreateCloudTableClient();
+            _tableClientConfiguration(client);
             return client;
         }
 
