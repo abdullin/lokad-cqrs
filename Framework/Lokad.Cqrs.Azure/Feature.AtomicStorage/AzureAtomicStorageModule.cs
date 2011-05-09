@@ -62,6 +62,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                 .RegisterType<AzureAtomicStorageFactory>()
                 .As<IAtomicStorageFactory>()
                 .WithParameter(TypedParameter.From(_strategy))
+                .WithParameter(ResolvedParameter.ForNamed<IAzureStorageConfiguration>(_accountName))
                 .SingleInstance();
 
             builder
