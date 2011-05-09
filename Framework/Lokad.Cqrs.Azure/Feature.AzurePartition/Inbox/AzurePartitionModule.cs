@@ -89,10 +89,10 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
 
             var streamer = context.Resolve<IEnvelopeStreamer>();
 
-            var configurations = context.Resolve<IEnumerable<IAzureStorageConfiguration>>();
+            var configurations = context.Resolve<AzureStorageDictionary>();
 
-            var configuration = configurations.FirstOrDefault(c => c.AccountName == _accountName);
-            if (configuration == null)
+            IAzureStorageConfiguration config;
+            if (!configurations.TryGet(_accountName, out config))
             {
                 var message = string.Format("Failed to locate Azure account '{0}'. Have you registered it?",
                     _accountName);
@@ -100,7 +100,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
             }
 
             var scheduling = context.Resolve<AzureSchedulingProcess>();
-            var factory = new AzurePartitionFactory(streamer, log, configuration, _queueVisibilityTimeout, scheduling);
+            var factory = new AzurePartitionFactory(streamer, log, config, _queueVisibilityTimeout, scheduling);
             
             var notifier = factory.GetNotifier(_queueNames.ToArray());
             var quarantine = new MemoryQuarantine();

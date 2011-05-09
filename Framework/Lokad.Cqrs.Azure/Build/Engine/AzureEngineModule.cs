@@ -30,8 +30,7 @@ namespace Lokad.Cqrs.Build.Engine
     {
         static readonly Regex QueueName = new Regex("^[A-Za-z][A-Za-z0-9]{2,62}", RegexOptions.Compiled);
 
-        readonly IDictionary<string, AzureStorageConfiguration> _configs =
-            new Dictionary<string, AzureStorageConfiguration>();
+        readonly AzureStorageDictionary _configs = new AzureStorageDictionary();
 
         readonly IList<IModule> _modules = new List<IModule>();
 
@@ -51,7 +50,7 @@ namespace Lokad.Cqrs.Build.Engine
             var builder = new AzureStorageConfigurationBuilder(account, accountId);
             tuning(builder);
             var configuration = builder.Build();
-            _configs.Add(configuration.AccountName, configuration);
+            _configs.Register(configuration);
         }
 
         /// <summary>
@@ -116,17 +115,12 @@ namespace Lokad.Cqrs.Build.Engine
         {
             var builder = new ContainerBuilder();
 
-            if (!_configs.ContainsKey("azure-dev"))
+            if (!_configs.Contains("azure-dev"))
             {
                 AddAzureAccount("azure-dev", CloudStorageAccount.DevelopmentStorageAccount);
             }
 
-            foreach (var config in _configs)
-            {
-                // register as list
-                builder.RegisterInstance(config.Value).As<IAzureStorageConfiguration>();
-                builder.RegisterInstance(config.Value).Named(config.Key, typeof (IAzureStorageConfiguration));
-            }
+            builder.RegisterInstance(_configs);
 
             foreach (var partition in _modules)
             {
@@ -137,12 +131,9 @@ namespace Lokad.Cqrs.Build.Engine
 
             builder.Update(componentRegistry);
 
-            var configurations = _configs.Values;
-
             if (WipeAccountsAtStartUp)
             {
-
-                WipeAzureAccount.Fast(configurations);
+                WipeAzureAccount.Fast(_configs.GetAll());
             }
         }
     }

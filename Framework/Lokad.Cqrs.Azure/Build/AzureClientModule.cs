@@ -11,8 +11,7 @@ namespace Lokad.Cqrs.Build
 {
     public sealed class AzureClientModule : BuildSyntaxHelper, IModule
     {
-        readonly IDictionary<string, AzureStorageConfiguration> _configs =
-            new Dictionary<string, AzureStorageConfiguration>();
+        readonly AzureStorageDictionary _dictionary = new AzureStorageDictionary();
 
         readonly IList<IModule> _modules = new List<IModule>();
 
@@ -30,7 +29,7 @@ namespace Lokad.Cqrs.Build
             var builder = new AzureStorageConfigurationBuilder(account, accountId);
             tuning(builder);
             var configuration = builder.Build();
-            _configs.Add(configuration.AccountName, configuration);
+            _dictionary.Register(configuration);
         }
 
         /// <summary>
@@ -62,17 +61,13 @@ namespace Lokad.Cqrs.Build
         {
             var builder = new ContainerBuilder();
 
-            if (!_configs.ContainsKey("azure-dev"))
+            if (!_dictionary.Contains("azure-dev"))
             {
                 AddAzureAccount("azure-dev", CloudStorageAccount.DevelopmentStorageAccount);
             }
 
-            foreach (var config in _configs)
-            {
-                // register as list
-                builder.RegisterInstance(config.Value).As<IAzureStorageConfiguration>();
-                builder.RegisterInstance(config.Value).Named(config.Key, typeof(IAzureStorageConfiguration));
-            }
+            builder.RegisterInstance(_dictionary);
+
 
             foreach (var partition in _modules)
             {

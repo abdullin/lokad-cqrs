@@ -6,39 +6,36 @@
 #endregion
 
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
 using Lokad.Cqrs.Core.Outbox;
 
 namespace Lokad.Cqrs.Feature.AzurePartition.Sender
 {
     public sealed class AzureWriteQueueFactory : IQueueWriterFactory
     {
-        readonly IAzureStorageConfiguration[] _configurations;
+        readonly AzureStorageDictionary _configurations;
         readonly IEnvelopeStreamer _streamer;
 
         readonly ConcurrentDictionary<string, IQueueWriter> _writeQueues =
             new ConcurrentDictionary<string, IQueueWriter>();
 
         public AzureWriteQueueFactory(
-            IEnumerable<IAzureStorageConfiguration> accounts,
+            AzureStorageDictionary accounts,
             IEnvelopeStreamer streamer)
         {
-            _configurations = accounts.ToArray();
+            _configurations = accounts;
             _streamer = streamer;
         }
 
 
         public bool TryGetWriteQueue(string endpointName, string queueName, out IQueueWriter writer)
         {
-            foreach (var configuration in _configurations)
+            IAzureStorageConfiguration config;
+            if (_configurations.TryGet(endpointName, out config))
             {
-                if (endpointName != configuration.AccountName) continue;
-
                 writer = _writeQueues.GetOrAdd(queueName, name =>
                     {
-                        var queue = configuration.CreateQueueClient().GetQueueReference(name);
-                        var container = configuration.CreateBlobClient().GetContainerReference(name);
+                        var queue = config.CreateQueueClient().GetQueueReference(name);
+                        var container = config.CreateBlobClient().GetContainerReference(name);
                         var v = new StatelessAzureQueueWriter(_streamer, container, queue);
                         v.Init();
                         return v;
@@ -49,7 +46,5 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Sender
             writer = null;
             return false;
         }
-
-        
     }
 }
