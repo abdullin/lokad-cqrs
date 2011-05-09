@@ -67,6 +67,10 @@ namespace Lokad.Cqrs.Build
             }
 
             builder.RegisterInstance(_dictionary);
+            foreach (var config in _dictionary.GetAll())
+            {
+                builder.RegisterInstance(config).Named<IAzureStorageConfiguration>(config.AccountName);
+            }
 
 
             foreach (var partition in _modules)
