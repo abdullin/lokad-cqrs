@@ -8,7 +8,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Reflection;
 using Autofac;
 using Autofac.Core;
 using Lokad.Cqrs.Core.Directory.Default;
@@ -18,7 +17,7 @@ namespace Lokad.Cqrs.Core.Directory
     /// <summary>
     /// Module for building CQRS domains.
     /// </summary>
-    public class ModuleForMessageDirectory : IModule
+    public class MessageDirectoryModule : IModule
     {
         readonly DomainAssemblyScanner _scanner = new DomainAssemblyScanner();
         readonly ContainerBuilder _builder;
@@ -28,9 +27,9 @@ namespace Lokad.Cqrs.Core.Directory
         Type _contextFactoryType;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ModuleForMessageDirectory"/> class.
+        /// Initializes a new instance of the <see cref="MessageDirectoryModule"/> class.
         /// </summary>
-        public ModuleForMessageDirectory()
+        public MessageDirectoryModule()
         {
             _builder = new ContainerBuilder();
 
@@ -53,66 +52,13 @@ namespace Lokad.Cqrs.Core.Directory
 		    _hint = MethodInvokerHint.FromConsumerSample(action);
 		}
 
-        /// <summary>
-        /// <para>Specifies custom rule for finding messages - where they derive from the provided interface. </para>
-        /// <para>By default we expect messages to derive from <see cref="IMessage"/>.</para>
-        /// </summary>
-        /// <typeparam name="TInterface">The type of the interface.</typeparam>
-        /// <returns>same module instance for chaining fluent configurations</returns>
-        public ModuleForMessageDirectory WhereMessagesAre<TInterface>()
-        {
-            _scanner.WhereMessages(type =>
-                typeof (TInterface).IsAssignableFrom(type)
-                    && type.IsAbstract == false);
-            _scanner.WithAssemblyOf<TInterface>();
-
-            return this;
-        }
-
-
-        /// <summary>
-        /// <para>Specifies custom rule for finding message consumers - where they derive from the provided interface. </para>
-        /// <para>By default we expect consumers to derive from <see cref="IConsumeMessage"/>.</para>
-        /// </summary>
-        /// <typeparam name="TInterface">The type of the interface.</typeparam>
-        /// <returns>same module instance for chaining fluent configurations</returns>
-        public ModuleForMessageDirectory WhereConsumersAre<TInterface>()
-        {
-            _scanner.WhereConsumers(type =>
-                typeof (TInterface).IsAssignableFrom(type)
-                    && type.IsAbstract == false);
-            _scanner.WithAssemblyOf<TInterface>();
-            return this;
-        }
-
-        /// <summary>
-        /// Specifies custom lookup rule for the consumers
-        /// </summary>
-        /// <param name="customFilterForConsumers">The custom filter for consumers.</param>
-        /// <returns>same module instance for chaining fluent configurations</returns>
-        public ModuleForMessageDirectory WhereConsumers(Predicate<Type> customFilterForConsumers)
-        {
-            _scanner.WhereConsumers(customFilterForConsumers);
-            return this;
-        }
-
-        /// <summary>
-        /// Specifies custom lookup rule for the messages.
-        /// </summary>
-        /// <param name="customFilterForMessages">The custom filter for messages.</param>
-        /// <returns>same module instance for chaining fluent configurations</returns>
-        public ModuleForMessageDirectory WhereMessages(Predicate<Type> customFilterForMessages)
-        {
-            _scanner.WhereMessages(customFilterForMessages);
-            return this;
-        }
 
         /// <summary>
         /// Includes assemblies of the specified types into the discovery process
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns>same module instance for chaining fluent configurations</returns>
-        public ModuleForMessageDirectory InAssemblyOf<T>()
+        public MessageDirectoryModule InAssemblyOf<T>()
         {
             _scanner.WithAssemblyOf<T>();
             return this;
@@ -126,7 +72,7 @@ namespace Lokad.Cqrs.Core.Directory
         /// <returns>
         /// same module instance for chaining fluent configurations
         /// </returns>
-        public ModuleForMessageDirectory InAssemblyOf<T1, T2>()
+        public MessageDirectoryModule InAssemblyOf<T1, T2>()
         {
             _scanner.WithAssemblyOf<T1>();
             _scanner.WithAssemblyOf<T2>();
@@ -134,7 +80,7 @@ namespace Lokad.Cqrs.Core.Directory
         }
 
 
-        public ModuleForMessageDirectory InUserAssemblies()
+        public MessageDirectoryModule InUserAssemblies()
         {
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
@@ -158,22 +104,11 @@ namespace Lokad.Cqrs.Core.Directory
         /// <returns>
         /// same module instance for chaining fluent configurations
         /// </returns>
-        public ModuleForMessageDirectory InAssemblyOf<T1, T2, T3>()
+        public MessageDirectoryModule InAssemblyOf<T1, T2, T3>()
         {
             _scanner.WithAssemblyOf<T1>();
             _scanner.WithAssemblyOf<T2>();
             _scanner.WithAssemblyOf<T3>();
-
-            return this;
-        }
-
-        /// <summary>
-        /// Includes the current assembly in the discovery
-        /// </summary>
-        /// same module instance for chaining fluent configurations
-        public ModuleForMessageDirectory InCurrentAssembly()
-        {
-            _scanner.WithAssembly(Assembly.GetCallingAssembly());
 
             return this;
         }
