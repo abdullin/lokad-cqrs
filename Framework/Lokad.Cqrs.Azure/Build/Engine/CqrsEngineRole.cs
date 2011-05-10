@@ -29,7 +29,6 @@ namespace Lokad.Cqrs.Build.Engine
         {
             // this is actually azure initialization;
             _host = BuildHost();
-            _host.Initialize();
             return base.OnStart();
         }
 

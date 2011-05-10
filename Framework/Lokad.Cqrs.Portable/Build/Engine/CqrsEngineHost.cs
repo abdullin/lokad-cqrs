@@ -60,9 +60,11 @@ namespace Lokad.Cqrs.Build.Engine
                     _observer.Notify(new EngineStopped(watch.Elapsed));
                 });
         }
+        bool _initialized = false;
 
-        public void Initialize()
+        internal void Initialize()
         {
+         
             _observer.Notify(new EngineInitializationStarted());
             foreach (var process in _serverProcesses)
             {
