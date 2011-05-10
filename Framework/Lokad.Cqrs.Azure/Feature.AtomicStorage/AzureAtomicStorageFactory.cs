@@ -6,8 +6,10 @@
 #endregion
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
@@ -72,22 +74,45 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 
             folders.Add(_strategy.GetFolderForSingleton());
             var client = _storage.CreateBlobClient();
-            folders
+
+
+            var bag = new ConcurrentBag<string>();
+            var all = folders
                 .AsParallel()
-                .WithDegreeOfParallelism(folders.Count)
-                .ForAll(t => client
-                    .GetContainerReference(t)
-                    .CreateIfNotExist());
+                .Select(f =>
+                    {
+                        var container = client.GetContainerReference(f);
+                        return Task.Factory.FromAsync<bool>(container.BeginCreateIfNotExist,
+                            result =>
+                                {
+                                    var created = container.EndCreateIfNotExist(result);
+                                    if (created)
+                                    {
+                                        bag.Add(f);
+                                    }
+                                    return created;
+                                }, null);
+                    })
+                .ToArray();
+
+            Task.WaitAll(all);
+
+            if (bag.Any())
+            {
+                _observer.Notify(new AtomicStorageInitialized(bag.ToArray()));
+            }
         }
 
         readonly IAzureAtomicStorageStrategy _strategy;
         readonly IAzureStorageConfiguration _storage;
+        readonly ISystemObserver _observer;
 
 
-        public AzureAtomicStorageFactory(IAzureAtomicStorageStrategy strategy, IAzureStorageConfiguration storage)
+        public AzureAtomicStorageFactory(IAzureAtomicStorageStrategy strategy, IAzureStorageConfiguration storage, ISystemObserver observer)
         {
             _strategy = strategy;
             _storage = storage;
+            _observer = observer;
         }
 
         public NuclearStorage CreateSimplifiedStorage(bool dontInitialize = false)
@@ -98,6 +123,21 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                 Initialize();
             }
             return storage;
+        }
+    }
+
+    public sealed class AtomicStorageInitialized : ISystemEvent
+    {
+        public string[] CreatedFolders;
+
+        public AtomicStorageInitialized(string[] createdFolders)
+        {
+            CreatedFolders = createdFolders;
+        }
+
+        public override string ToString()
+        {
+            return string.Format("Azure atomic storage created: {0}", string.Join(", ", CreatedFolders));
         }
     }
 }
