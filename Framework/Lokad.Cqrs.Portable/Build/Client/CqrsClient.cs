@@ -5,12 +5,11 @@ namespace Lokad.Cqrs.Build.Client
 {
     public sealed class CqrsClient 
     {
-        readonly ILifetimeScope _scope;
-
+        public ILifetimeScope Scope { get; private set; }
 
         public CqrsClient(ILifetimeScope scope)
         {
-            _scope = scope;
+            Scope = scope;
         }
 
         public IMessageSender Sender
@@ -18,7 +17,7 @@ namespace Lokad.Cqrs.Build.Client
             get
             {
                 IMessageSender sender;
-                if(_scope.TryResolve(out sender))
+                if(Scope.TryResolve(out sender))
                 {
                     return sender;
                 }
@@ -29,7 +28,7 @@ namespace Lokad.Cqrs.Build.Client
 
         public TService Resolve<TService>()
         {
-            return _scope.Resolve<TService>();
+            return Scope.Resolve<TService>();
         }
     }
 }

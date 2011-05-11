@@ -91,6 +91,14 @@ namespace Lokad.Cqrs.Build.Client
 
         public CqrsClient Build()
         {
+            AutoConfigure();
+
+            var container = _builder.Build();
+            return new CqrsClient(container);
+        }
+
+        void AutoConfigure() 
+        {
             InnerSystemRegisterObservations();
             // conditional registrations and defaults
             if (!IsEnlisted<MessageDirectoryModule>())
@@ -114,9 +122,12 @@ namespace Lokad.Cqrs.Build.Client
             {
                 _builder.RegisterModule(module);
             }
+        }
 
-            var container = _builder.Build();
-            return new CqrsClient(container);
+        public void Update(IContainer container)
+        {
+            AutoConfigure();
+            _builder.Update(container);
         }
     }
 }

@@ -31,6 +31,7 @@ namespace Lokad.Cqrs
                     m.AddAzureSender("azure-dev", "incoming", x => x.IdGeneratorForTests());
                     m.WipeAccountsAtStartUp = true;
                 });
+            
         }
 
         [Test]
