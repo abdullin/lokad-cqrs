@@ -12,12 +12,12 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 
-[assembly : AssemblyTitle("Lokad.Cqrs")]
+[assembly : AssemblyTitle("Lokad.Cqrs.Azure")]
 [assembly : AssemblyDescription("")]
 [assembly : AssemblyConfiguration("")]
-[assembly : AssemblyCompany("Microsoft")]
+[assembly : AssemblyCompany("Lokad SAS")]
 [assembly : AssemblyProduct("Lokad.Cqrs")]
-[assembly : AssemblyCopyright("Copyright © Microsoft 2011")]
+[assembly : AssemblyCopyright("Copyright © Lokad 2011")]
 [assembly : AssemblyTrademark("")]
 [assembly : AssemblyCulture("")]
 
@@ -42,5 +42,5 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 
-[assembly : AssemblyVersion("1.0.0.0")]
-[assembly : AssemblyFileVersion("1.0.0.0")]
+[assembly : AssemblyVersion("2.0.0.0")]
+[assembly : AssemblyFileVersion("2.0.0.0")]
