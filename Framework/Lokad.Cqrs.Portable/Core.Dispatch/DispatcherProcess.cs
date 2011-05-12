@@ -10,7 +10,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Lokad.Cqrs.Core.Dispatch.Events;
 using Lokad.Cqrs.Core.Inbox;
-using System.Linq;
 
 namespace Lokad.Cqrs.Core.Dispatch
 {
@@ -106,7 +105,7 @@ namespace Lokad.Cqrs.Core.Dispatch
                 // quarantine is atomic with the processing
                 if (_quarantine.Accept(context, dispatchEx))
                 {
-                    _observer.Notify(new EnvelopeQuarantined(dispatchEx, context.Unpacked.EnvelopeId, context.QueueName));
+                    _observer.Notify(new EnvelopeQuarantined(dispatchEx, context.Unpacked, context.QueueName));
                     // acking message is the last step!
                     _inbox.AckMessage(context);
                 }
