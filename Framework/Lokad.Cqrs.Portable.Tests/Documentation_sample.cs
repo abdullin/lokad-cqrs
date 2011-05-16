@@ -81,17 +81,12 @@ namespace Lokad.Cqrs
 
             using (var engine = builder.Build())
             {
-                var control = engine.StartAndRun();
-
-                var sender = engine.Resolve<IMessageSender>();
-                sender.SendOne(new CreateCustomer
-                    {
-                        CustomerId = 1,
-                        CustomerName = "Rinat Abdullin"
-                    });
-
-                control.Token.WaitHandle.WaitOne(10000);
-                control.Cancel();
+                //engine.Resolve<IMessageSender>().SendOne(new CreateCustomer()
+                //{
+                //    CustomerId = 1,
+                //    CustomerName = "Rinat Abdullin"
+                //});
+                engine.RunForever();
             }
         }
     }

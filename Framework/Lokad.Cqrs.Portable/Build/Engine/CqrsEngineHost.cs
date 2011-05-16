@@ -34,11 +34,11 @@ namespace Lokad.Cqrs.Build.Engine
             _observer = observer;
         }
 
-        public CancellationTokenSource StartAndRun()
+        public void RunForever()
         {
             var token = new CancellationTokenSource();
             Start(token.Token);
-            return token;
+            token.Token.WaitHandle.WaitOne();
         }
 
         public Task Start(CancellationToken token)
