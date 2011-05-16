@@ -16,18 +16,6 @@ namespace Lokad.Cqrs
     [Serializable]
     public abstract class BuildSyntaxHelper
     {
-        protected static bool ContainsQueuePrefix(string queueName)
-        {
-            return queueName.Contains(":");
-        }
-
-        protected static void Assert(bool check, string text, params object[] args)
-        {
-            if (!check)
-                throw new InvalidOperationException(string.Format(text, args));
-        }
-
-
         /// <summary>
         /// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
         /// </summary>

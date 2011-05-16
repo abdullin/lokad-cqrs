@@ -100,6 +100,8 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             return Factory.GetSingletonReader<TSingleton>().Get();
         }
 
+
+
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override bool Equals(object obj)
         {
@@ -124,14 +126,4 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             return base.GetType();
         }
     }
-
-    public static class ExtendNuclearStorage
-    {
-        public static TSingleton UpdateSingleton<TSingleton>(this NuclearStorage storage, Action<TSingleton> update)
-            where TSingleton : new()
-        {
-            return storage.Factory.GetSingletonWriter<TSingleton>().UpdateEnforcingNew(update);
-        }
-    }
-
 }

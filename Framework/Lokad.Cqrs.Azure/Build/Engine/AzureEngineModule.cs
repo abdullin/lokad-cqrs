@@ -81,10 +81,17 @@ namespace Lokad.Cqrs.Build.Engine
         {
             foreach (var queue in queues)
             {
-                Assert(!ContainsQueuePrefix(queue),
-                    "Queue '{0}' should not contain queue prefix, since it's azure already", queue);
+                if (queue.Contains(":"))
+                {
+                    var message = string.Format("Queue '{0}' should not contain queue prefix, since it's azure already", queue);
+                    throw new InvalidOperationException(message);
+                }
 
-                Assert(QueueName.IsMatch(queue), "Queue name should match regex '{0}'", QueueName.ToString());
+                if (!QueueName.IsMatch(queue))
+                {
+                    var format = string.Format("Queue name should match regex '{0}'", QueueName);
+                    throw new InvalidOperationException(format);
+                }
             }
 
             var module = new AzurePartitionModule(accountId, queues);

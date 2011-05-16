@@ -53,6 +53,7 @@
     <Compile Include="Feature.AtomicStorage\AtomicStorageInitialization.cs" />
     <Compile Include="Feature.AtomicStorage\ExtendAtomicEntityWriter.cs" />
     <Compile Include="Feature.AtomicStorage\ExtendAtomicEntityReader.cs" />
+    <Compile Include="Feature.AtomicStorage\NuclearStorageExtensions.cs" />
     <Compile Include="Feature.AtomicStorage\IAtomicStorageFactory.cs" />
     <Compile Include="Feature.AtomicStorage\MemoryAtomicStorageModule.cs" />
     <Compile Include="Feature.AtomicStorage\NuclearStorage.cs" />

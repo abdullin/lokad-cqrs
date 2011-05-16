@@ -20,8 +20,11 @@ namespace Lokad.Cqrs.Build.Engine
         {
             foreach (var queue in queues)
             {
-                Assert(!ContainsQueuePrefix(queue),
-                    "Queue '{0}' should not contain queue prefix, since it's memory already", queue);
+                if (queue.Contains(":"))
+                {
+                    var message = string.Format("Queue '{0}' should not contain queue prefix, since it's memory already", queue);
+                    throw new InvalidOperationException(message);
+                }
             }
             var module = new ModuleForMemoryPartition(queues);
             config(module);
