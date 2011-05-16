@@ -11,7 +11,7 @@ using Autofac.Core;
 
 namespace Lokad.Cqrs.Feature.StreamingStorage
 {
-    public sealed class FileStreamingStorageModule : BuildSyntaxHelper, IModule
+    public sealed class FileStreamingStorageModule : HideObjectMembersFromIntelliSense, IModule
     {
         readonly string _localPath;
 

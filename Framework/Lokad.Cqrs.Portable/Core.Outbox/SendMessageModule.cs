@@ -14,7 +14,7 @@ using Lokad.Cqrs.Build;
 
 namespace Lokad.Cqrs.Core.Outbox
 {
-    public sealed class SendMessageModule : BuildSyntaxHelper, IModule
+    public sealed class SendMessageModule : HideObjectMembersFromIntelliSense, IModule
     {
         readonly string _queueName;
         readonly string _endpoint;

@@ -1,9 +1,15 @@
-﻿using System;
+﻿#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
+
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Autofac;
 using Autofac.Core;
-using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Core.Outbox;
 using Lokad.Cqrs.Feature.MemoryPartition;
 
@@ -12,7 +18,7 @@ namespace Lokad.Cqrs.Build.Engine
     /// <summary>
     /// Autofac syntax for configuring Azure storage
     /// </summary>
-    public sealed class MemoryModule : BuildSyntaxHelper, IModule
+    public sealed class MemoryModule : HideObjectMembersFromIntelliSense, IModule
     {
         readonly IList<IModule> _modules = new List<IModule>();
 
@@ -22,7 +28,8 @@ namespace Lokad.Cqrs.Build.Engine
             {
                 if (queue.Contains(":"))
                 {
-                    var message = string.Format("Queue '{0}' should not contain queue prefix, since it's memory already", queue);
+                    var message = string.Format(
+                        "Queue '{0}' should not contain queue prefix, since it's memory already", queue);
                     throw new InvalidOperationException(message);
                 }
             }
@@ -68,16 +75,16 @@ namespace Lokad.Cqrs.Build.Engine
         }
 
 
-
         public void AddMemoryProcess(string queueName, Action<ModuleForMemoryPartition> config)
         {
-            AddMemoryProcess(new[] { queueName }, config);
+            AddMemoryProcess(new[] {queueName}, config);
         }
 
         public void AddMemoryRouter(string queueName, Func<ImmutableEnvelope, string> config)
         {
             AddMemoryProcess(queueName, m => m.DispatchToRoute(config));
         }
+
         public void AddMemoryRouter(string[] queueNames, Func<ImmutableEnvelope, string> config)
         {
             AddMemoryProcess(queueNames, m => m.DispatchToRoute(config));

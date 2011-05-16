@@ -14,7 +14,7 @@ namespace Lokad.Cqrs
     /// Helper class for creating fluent APIs, that hides unused signatures
     /// </summary>
     [Serializable]
-    public abstract class BuildSyntaxHelper
+    public abstract class HideObjectMembersFromIntelliSense
     {
         /// <summary>
         /// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.

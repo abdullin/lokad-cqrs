@@ -9,7 +9,7 @@ using Microsoft.WindowsAzure;
 
 namespace Lokad.Cqrs.Build
 {
-    public sealed class AzureClientModule : BuildSyntaxHelper, IModule
+    public sealed class AzureClientModule : HideObjectMembersFromIntelliSense, IModule
     {
         readonly AzureStorageDictionary _dictionary = new AzureStorageDictionary();
 

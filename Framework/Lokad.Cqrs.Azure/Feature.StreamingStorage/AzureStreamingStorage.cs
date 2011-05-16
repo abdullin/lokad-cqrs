@@ -10,7 +10,7 @@ using Autofac.Core;
 
 namespace Lokad.Cqrs.Feature.StreamingStorage
 {
-    public sealed class AzureStreamingStorage : BuildSyntaxHelper, IModule
+    public sealed class AzureStreamingStorage : HideObjectMembersFromIntelliSense, IModule
     {
         readonly string _accountName;
 

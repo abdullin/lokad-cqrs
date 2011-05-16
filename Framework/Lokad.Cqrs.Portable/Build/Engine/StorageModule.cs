@@ -7,7 +7,7 @@ using Lokad.Cqrs.Feature.StreamingStorage;
 
 namespace Lokad.Cqrs.Build.Engine
 {
-    public sealed class StorageModule : BuildSyntaxHelper, IModule
+    public sealed class StorageModule : HideObjectMembersFromIntelliSense, IModule
     {
         readonly List<IModule> _modules = new List<IModule>();
 

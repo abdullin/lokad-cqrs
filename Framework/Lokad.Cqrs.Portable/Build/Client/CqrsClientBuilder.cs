@@ -10,7 +10,7 @@ using Lokad.Cqrs.Core.Serialization;
 
 namespace Lokad.Cqrs.Build.Client
 {
-    public class CqrsClientBuilder : BuildSyntaxHelper
+    public class CqrsClientBuilder : HideObjectMembersFromIntelliSense
     {
         readonly List<IModule> _enlistments = new List<IModule>();
 

@@ -12,7 +12,7 @@ using Lokad.Cqrs.Core.Envelope;
 
 namespace Lokad.Cqrs.Core.Serialization
 {
-    public sealed class SerializationModule : BuildSyntaxHelper, IModule
+    public sealed class SerializationModule : HideObjectMembersFromIntelliSense, IModule
     {
         readonly ContainerBuilder _builder = new ContainerBuilder();
 

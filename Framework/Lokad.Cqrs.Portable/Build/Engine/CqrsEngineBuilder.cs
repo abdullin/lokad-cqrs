@@ -22,7 +22,7 @@ namespace Lokad.Cqrs.Build.Engine
     /// <summary>
     /// Fluent API for creating and configuring <see cref="CqrsEngineHost"/>
     /// </summary>
-    public class CqrsEngineBuilder : BuildSyntaxHelper
+    public class CqrsEngineBuilder : HideObjectMembersFromIntelliSense
     {
         readonly HashSet<IModule> _moduleEnlistments = new HashSet<IModule>();
 

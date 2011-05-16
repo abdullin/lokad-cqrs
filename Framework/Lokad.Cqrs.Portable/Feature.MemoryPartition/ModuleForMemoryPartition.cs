@@ -13,7 +13,7 @@ using Lokad.Cqrs.Core.Dispatch;
 
 namespace Lokad.Cqrs.Feature.MemoryPartition
 {
-    public sealed class ModuleForMemoryPartition : BuildSyntaxHelper, IModule
+    public sealed class ModuleForMemoryPartition : HideObjectMembersFromIntelliSense, IModule
     {
         readonly string[] _memoryQueues;
         Tuple<Type, Action<ISingleThreadMessageDispatcher>> _dispatcher;

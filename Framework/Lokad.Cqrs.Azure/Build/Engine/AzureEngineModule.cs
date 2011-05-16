@@ -26,7 +26,7 @@ namespace Lokad.Cqrs.Build.Engine
     /// <summary>
     /// Autofac syntax for configuring Azure storage
     /// </summary>
-    public sealed class AzureEngineModule : BuildSyntaxHelper, IModule
+    public sealed class AzureEngineModule : HideObjectMembersFromIntelliSense, IModule
     {
         static readonly Regex QueueName = new Regex("^[A-Za-z][A-Za-z0-9]{2,62}", RegexOptions.Compiled);
 

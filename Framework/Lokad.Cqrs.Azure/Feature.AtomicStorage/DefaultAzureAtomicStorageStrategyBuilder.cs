@@ -9,7 +9,7 @@ using System;
 
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
-    public sealed class DefaultAzureAtomicStorageStrategyBuilder : BuildSyntaxHelper
+    public sealed class DefaultAzureAtomicStorageStrategyBuilder : HideObjectMembersFromIntelliSense
     {
         Predicate<Type> _entityTypeFilter = type => typeof (Define.AtomicEntity).IsAssignableFrom(type);
         Predicate<Type> _singletonTypeFilter = type => typeof (Define.AtomicSingleton).IsAssignableFrom(type);

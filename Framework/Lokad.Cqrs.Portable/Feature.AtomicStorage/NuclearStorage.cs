@@ -18,7 +18,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
     /// <remarks>
     /// If you use as a stand-alone, make sure to call <see cref="Initialize"/> before proceeding.
     /// </remarks>
-    public sealed class NuclearStorage 
+    public sealed class NuclearStorage : HideObjectMembersFromIntelliSense
     {
         public readonly IAtomicStorageFactory Factory;
 
@@ -98,32 +98,6 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         public Optional<TSingleton> GetSingleton<TSingleton>()
         {
             return Factory.GetSingletonReader<TSingleton>().Get();
-        }
-
-
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public override bool Equals(object obj)
-        {
-            return base.Equals(obj);
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public override string ToString()
-        {
-            return base.ToString();
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public new Type GetType()
-        {
-            return base.GetType();
         }
     }
 }
