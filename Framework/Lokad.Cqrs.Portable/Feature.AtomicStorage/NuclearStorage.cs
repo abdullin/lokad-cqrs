@@ -6,7 +6,6 @@
 #endregion
 
 using System;
-using System.ComponentModel;
 
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
@@ -15,9 +14,6 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
     /// If you want to work with advanced functionality, either request specific interfaces from the container 
     /// or go through the advanced members on this instance. 
     /// </summary>
-    /// <remarks>
-    /// If you use as a stand-alone, make sure to call <see cref="Initialize"/> before proceeding.
-    /// </remarks>
     public sealed class NuclearStorage : HideObjectMembersFromIntelliSense
     {
         public readonly IAtomicStorageFactory Factory;
@@ -79,7 +75,8 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             return Factory.GetSingletonWriter<TSingleton>().AddOrUpdate(addFactory, update);
         }
 
-        public TSingleton AddOrUpdateSingleton<TSingleton>(Func<TSingleton> addFactory, Func<TSingleton,TSingleton> update)
+        public TSingleton AddOrUpdateSingleton<TSingleton>(Func<TSingleton> addFactory,
+            Func<TSingleton, TSingleton> update)
         {
             return Factory.GetSingletonWriter<TSingleton>().AddOrUpdate(addFactory, update);
         }
