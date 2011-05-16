@@ -6,6 +6,8 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
@@ -13,7 +15,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
     {
         Predicate<Type> _entityTypeFilter = type => typeof (Define.AtomicEntity).IsAssignableFrom(type);
         Predicate<Type> _singletonTypeFilter = type => typeof (Define.AtomicSingleton).IsAssignableFrom(type);
-
+        List<Assembly> _extraAssemblies = new List<Assembly>();
 
         public void WhereEntityIs<TEntityBase>()
         {
@@ -35,9 +37,19 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             _singletonTypeFilter = type => typeof (TSingletonBase).IsAssignableFrom(type);
         }
 
+        public void WithAssembly(Assembly assembly)
+        {
+            _extraAssemblies.Add(assembly);
+        }
+
+        public void WithAssemblyOf<T>()
+        {
+            _extraAssemblies.Add(typeof(T).Assembly);
+        }
+
         public IAzureAtomicStorageStrategy Build()
         {
-            return new DefaultAzureAtomicStorageStrategy(_entityTypeFilter, _singletonTypeFilter);
+            return new DefaultAzureAtomicStorageStrategy(_entityTypeFilter, _singletonTypeFilter, _extraAssemblies);
         }
     }
 }

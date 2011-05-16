@@ -6,9 +6,11 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using Lokad.Cqrs.Evil;
 using ProtoBuf;
 
@@ -18,11 +20,13 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
     {
         readonly Predicate<Type> _entityFilter;
         readonly Predicate<Type> _singletonFilter;
+        readonly ICollection<Assembly> _extraAssemblies;
 
-        public DefaultAzureAtomicStorageStrategy(Predicate<Type> entityFilter, Predicate<Type> singletonFilter)
+        public DefaultAzureAtomicStorageStrategy(Predicate<Type> entityFilter, Predicate<Type> singletonFilter, ICollection<Assembly> extraAssemblies)
         {
             _entityFilter = entityFilter;
             _singletonFilter = singletonFilter;
+            _extraAssemblies = extraAssemblies;
         }
 
         public string GetFolderForEntity(Type entityType)
@@ -67,6 +71,8 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             return AppDomain.CurrentDomain
                 .GetAssemblies()
                 .Where(AssemblyScanEvil.IsUserAssembly)
+                .Concat(_extraAssemblies)
+                .Distinct()
                 .SelectMany(t => t.GetExportedTypes())
                 .Where(t => !t.IsAbstract)
                 .Where(t => _entityFilter(t))
@@ -78,6 +84,8 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             return AppDomain.CurrentDomain
                 .GetAssemblies()
                 .Where(AssemblyScanEvil.IsUserAssembly)
+                .Concat(_extraAssemblies)
+                .Distinct()
                 .SelectMany(t => t.GetExportedTypes())
                 .Where(t => !t.IsAbstract)
                 .Where(t => _singletonFilter(t))
