@@ -41,6 +41,7 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core.Dispatch\IEnvelopeQuarantine.cs" />
     <Compile Include="HideObjectMembersFromIntelliSense.cs" />
     <Compile Include="Build\Client\CqrsClient.cs" />
     <Compile Include="Build\Client\CqrsClientBuilder.cs" />

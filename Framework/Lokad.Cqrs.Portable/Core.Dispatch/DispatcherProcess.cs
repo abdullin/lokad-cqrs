@@ -18,12 +18,12 @@ namespace Lokad.Cqrs.Core.Dispatch
         readonly ISingleThreadMessageDispatcher _dispatcher;
         readonly ISystemObserver _observer;
         readonly IPartitionInbox _inbox;
-        readonly MemoryQuarantine _quarantine;
+        readonly IEnvelopeQuarantine _quarantine;
 
         public DispatcherProcess(ISystemObserver observer,
             ISingleThreadMessageDispatcher dispatcher, 
-            IPartitionInbox inbox, 
-            MemoryQuarantine quarantine,
+            IPartitionInbox inbox,
+            IEnvelopeQuarantine quarantine,
             MessageDuplicationManager manager)
         {
             _dispatcher = dispatcher;
@@ -103,7 +103,7 @@ namespace Lokad.Cqrs.Core.Dispatch
 
                 _observer.Notify(new EnvelopeDispatchFailed(context.Unpacked, context.QueueName, dispatchEx));
                 // quarantine is atomic with the processing
-                if (_quarantine.Accept(context, dispatchEx))
+                if (_quarantine.TryToQuarantine(context, dispatchEx))
                 {
                     _observer.Notify(new EnvelopeQuarantined(dispatchEx, context.Unpacked, context.QueueName));
                     // acking message is the last step!
@@ -119,7 +119,7 @@ namespace Lokad.Cqrs.Core.Dispatch
                 if (processed)
                 {
                     // 1st step - dequarantine, if present
-                    _quarantine.Clear(context);
+                    _quarantine.TryRelease(context);
                     // 2nd step - ack.
                     _inbox.AckMessage(context);
                     // 3rd - notify.
