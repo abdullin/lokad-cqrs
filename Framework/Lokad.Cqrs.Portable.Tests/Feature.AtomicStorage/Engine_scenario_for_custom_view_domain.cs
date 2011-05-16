@@ -67,7 +67,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             public void Consume(Message message, MessageContext context)
             {
                 _view.UpdateEnforcingNew(1, v => v.Value += 1);
-                _storage.UpdateOrThrowEntity<CustomDomainViewWithTypedKey>(1, t => t.Value += 1);
+                _storage.UpdateEntity<CustomDomainViewWithTypedKey>(1, t => t.Value += 1);
 
                 var actual = _storage.GetEntity<CustomDomainViewWithTypedKey>(1).Convert(c => c.Value).GetValue(0);
 

@@ -34,6 +34,13 @@ namespace Lokad.Cqrs.Build.Engine
             _observer = observer;
         }
 
+        public CancellationTokenSource StartAndRun()
+        {
+            var token = new CancellationTokenSource();
+            Start(token.Token);
+            return token;
+        }
+
         public Task Start(CancellationToken token)
         {
             var tasks = _serverProcesses.Select(p => p.Start(token)).ToArray();
@@ -60,7 +67,7 @@ namespace Lokad.Cqrs.Build.Engine
                     _observer.Notify(new EngineStopped(watch.Elapsed));
                 });
         }
-        bool _initialized = false;
+
 
         internal void Initialize()
         {

@@ -21,6 +21,15 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                 }, hint); 
         }
 
+        public static TEntity Add<TKey,TEntity>(this IAtomicEntityWriter<TKey, TEntity> self, TKey key, TEntity newEntity)
+        {
+            return self.AddOrUpdate(key, newEntity, e =>
+                {
+                    var txt = String.Format("Entity '{0}' with key '{1}' should not exist.", typeof (TEntity).Name, key);
+                    throw new InvalidOperationException(txt);
+                }, AddOrUpdateHint.ProbablyDoesNotExist);
+        }
+
 
         public static TEntity UpdateOrThrow<TKey,TEntity>(this IAtomicEntityWriter<TKey,TEntity> self, TKey key, Func<TEntity, TEntity> change)
         {

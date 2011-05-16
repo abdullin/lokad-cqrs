@@ -37,13 +37,13 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             return Factory.GetSingletonWriter<TEntity>().TryDelete();
         }
 
-        public TEntity UpdateOrThrowEntity<TEntity>(object key, Action<TEntity> update)
+        public TEntity UpdateEntity<TEntity>(object key, Action<TEntity> update)
         {
             return Factory.GetEntityWriter<object, TEntity>().UpdateOrThrow(key, update);
         }
 
 
-        public TSingleton UpdateOrThrowSingleton<TSingleton>(Action<TSingleton> update)
+        public TSingleton UpdateSingletonOrThrow<TSingleton>(Action<TSingleton> update)
         {
             return Factory.GetSingletonWriter<TSingleton>().UpdateOrThrow(update);
         }
@@ -67,6 +67,11 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         public TEntity AddOrUpdateEntity<TEntity>(object key, Func<TEntity> addFactory, Action<TEntity> update)
         {
             return Factory.GetEntityWriter<object, TEntity>().AddOrUpdate(key, addFactory, update);
+        }
+
+        public TEntity AddEntity<TEntity>(object key, TEntity newEntity)
+        {
+            return Factory.GetEntityWriter<object, TEntity>().Add(key, newEntity);
         }
 
         public TSingleton AddOrUpdateSingleton<TSingleton>(Func<TSingleton> addFactory, Action<TSingleton> update)
@@ -119,4 +124,14 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             return base.GetType();
         }
     }
+
+    public static class ExtendNuclearStorage
+    {
+        public static TSingleton UpdateSingleton<TSingleton>(this NuclearStorage storage, Action<TSingleton> update)
+            where TSingleton : new()
+        {
+            return storage.Factory.GetSingletonWriter<TSingleton>().UpdateEnforcingNew(update);
+        }
+    }
+
 }

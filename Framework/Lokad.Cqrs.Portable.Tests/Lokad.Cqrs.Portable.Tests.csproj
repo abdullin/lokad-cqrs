@@ -51,6 +51,7 @@
     <Reference Include="System.Transactions" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Documentation_sample.cs" />
     <Compile Include="Feature.AtomicStorage\Syntax_verification.cs" />
     <Compile Include="Core.Directory\MessageDirectoryFixture.cs" />
     <Compile Include="Core.Directory\When_activations_constrained_to_handler_type_with_type.cs" />

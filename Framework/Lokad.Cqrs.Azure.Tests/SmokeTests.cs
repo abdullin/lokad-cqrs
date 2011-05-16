@@ -27,13 +27,13 @@ namespace Lokad.Cqrs
 
         static CqrsEngineHost BuildHost()
         {
-            var engine = new CqrsEngineBuilder();
-            engine.Azure(x =>
+            var builder = new CqrsEngineBuilder();
+            builder.Azure(x =>
                 {
                     x.AddAzureAccount("dev-store", CloudStorageAccount.DevelopmentStorageAccount);
                     x.AddAzureProcess("dev-store", "process-vip");
                 });
-            engine.Memory(x =>
+            builder.Memory(x =>
                 {
                     x.AddMemoryProcess("process-all");
                     x.AddMemoryRouter("inbox", e =>
@@ -45,7 +45,7 @@ namespace Lokad.Cqrs
                 });
 
 
-            return engine.Build();
+            return builder.Build();
         }
 
         #endregion

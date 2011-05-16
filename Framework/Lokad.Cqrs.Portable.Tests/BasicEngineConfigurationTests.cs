@@ -11,7 +11,6 @@ using System.Concurrency;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading;
-using Lokad.Cqrs.Build.Client;
 using Lokad.Cqrs.Build.Engine;
 using Lokad.Cqrs.Core.Dispatch.Events;
 using NUnit.Framework;
@@ -113,6 +112,4 @@ namespace Lokad.Cqrs
                 }));
         }
     }
-
-    
 }
