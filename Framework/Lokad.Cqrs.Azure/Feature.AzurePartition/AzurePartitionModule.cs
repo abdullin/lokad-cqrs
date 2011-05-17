@@ -21,7 +21,8 @@ namespace Lokad.Cqrs.Feature.AzurePartition
     {
         readonly HashSet<string> _queueNames = new HashSet<string>();
         TimeSpan _queueVisibilityTimeout = TimeSpan.FromSeconds(30);
-        PartialRegistration<ISingleThreadMessageDispatcher> _dispatcher;
+        PartialRegistration<ISingleThreadMessageDispatcher> _dispatcherPartial;
+        PartialRegistration<IEnvelopeQuarantine> _quarantinePartial;
 
         readonly string _accountName;
 
@@ -30,13 +31,20 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             _accountName = accountId;
             _queueNames = new HashSet<string>(queueNames);
             DispatchAsEvents();
+            QuarantineIs<MemoryQuarantine>();
         }
 
 
         public void DispatcherIs<TDispatcher>(Action<TDispatcher> optionalConfig = null)
             where TDispatcher : class, ISingleThreadMessageDispatcher
         {
-            _dispatcher = PartialRegistration<ISingleThreadMessageDispatcher>.From(optionalConfig);
+            _dispatcherPartial = PartialRegistration<ISingleThreadMessageDispatcher>.From(optionalConfig);
+        }
+
+        public void QuarantineIs<TQuarantine>(Action<TQuarantine> optionalConfig = null)
+            where TQuarantine : class, IEnvelopeQuarantine
+        {
+            _quarantinePartial = PartialRegistration<IEnvelopeQuarantine>.From(optionalConfig);
         }
 
         public void DispatchAsEvents()
@@ -58,7 +66,8 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 
         protected override void Load(ContainerBuilder builder)
         {
-            _dispatcher.Register(builder);
+            _dispatcherPartial.Register(builder);
+            _quarantinePartial.Register(builder);
             builder.Register(BuildConsumingProcess);
             builder.RegisterType<AzureSchedulingProcess>().As<IEngineProcess, AzureSchedulingProcess>();
         }
@@ -79,7 +88,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             var builder = context.Resolve<MessageDirectoryBuilder>();
 
             var map = builder.BuildActivationMap(_filter.DoesPassFilter);
-            var dispatcher = _dispatcher.ResolveWithTypedParams(context, map);
+            var dispatcher = _dispatcherPartial.ResolveWithTypedParams(context, map);
             dispatcher.Init();
 
             var streamer = context.Resolve<IEnvelopeStreamer>();
@@ -98,7 +107,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             var factory = new AzurePartitionFactory(streamer, log, config, _queueVisibilityTimeout, scheduling);
             
             var notifier = factory.GetNotifier(_queueNames.ToArray());
-            var quarantine = new MemoryQuarantine();
+            var quarantine = _quarantinePartial.ResolveWithTypedParams(context);
             var manager = context.Resolve<MessageDuplicationManager>();
             var transport = new DispatcherProcess(log, dispatcher, notifier, quarantine, manager);
             return transport;
