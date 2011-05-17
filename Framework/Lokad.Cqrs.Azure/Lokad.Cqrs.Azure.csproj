@@ -83,7 +83,7 @@
     <Compile Include="Feature.AzurePartition\Inbox\AzurePartitionFactory.cs" />
     <Compile Include="Feature.AzurePartition\StatelessAzureQueueReader.cs" />
     <Compile Include="Feature.AzurePartition\Events\FailedToAccessStorage.cs" />
-    <Compile Include="Feature.AzurePartition\Events\FailedToDeserializeMessage.cs" />
+    <Compile Include="Feature.AzurePartition\Events\EnvelopeDeserializationFailed.cs" />
     <Compile Include="Feature.AzurePartition\Events\FailedToReadMessage.cs" />
     <Compile Include="Core.Transport\GetEnvelopeResult.cs" />
     <Compile Include="Core.Transport\GetEnvelopeResultState.cs" />

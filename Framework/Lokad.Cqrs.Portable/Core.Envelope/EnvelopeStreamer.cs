@@ -27,7 +27,7 @@ namespace Lokad.Cqrs.Core.Envelope
             _dataSerializer = dataSerializer;
         }
 
-        public byte[] SaveReferenceMessage(EnvelopeReference reference)
+        public byte[] SaveEnvelopeReference(EnvelopeReference reference)
         {
             // important to use \r\n
             var builder = new StringBuilder();
@@ -41,7 +41,7 @@ namespace Lokad.Cqrs.Core.Envelope
         }
 
 
-        public byte[] SaveDataMessage(ImmutableEnvelope envelope)
+        public byte[] SaveEnvelopeData(ImmutableEnvelope envelope)
         {
             //  string contract, Guid messageId, Uri sender, 
             var itemContracts = new ItemContract[envelope.Items.Length];
@@ -91,7 +91,7 @@ namespace Lokad.Cqrs.Core.Envelope
             }
         }
 
-        public bool TryReadAsReference(byte[] buffer, out EnvelopeReference reference)
+        public bool TryReadAsEnvelopeReference(byte[] buffer, out EnvelopeReference reference)
         {
             if (BytesStart(buffer, Reference))
             {
@@ -119,7 +119,7 @@ namespace Lokad.Cqrs.Core.Envelope
         }
 
 
-        public ImmutableEnvelope ReadDataMessage(byte[] buffer)
+        public ImmutableEnvelope ReadAsEnvelopeData(byte[] buffer)
         {
             var header = MessageHeader.ReadHeader(buffer);
 

@@ -84,7 +84,8 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             }
             catch (Exception ex)
             {
-                _observer.Notify(new FailedToDeserializeMessage(ex, _queue.Name, message.Id));
+                _observer.Notify(new EnvelopeDeserializationFailed(ex, _queue.Name, message.Id));
+
 
                 // new poison details
                 _posionQueue.Value.AddMessage(message);
@@ -98,15 +99,14 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             var buffer = message.AsBytes;
 
             EnvelopeReference reference;
-            if (_streamer.TryReadAsReference(buffer, out reference))
+            if (_streamer.TryReadAsEnvelopeReference(buffer, out reference))
             {
                 if (reference.StorageContainer != _cloudBlob.Uri.ToString())
                     throw new InvalidOperationException("Wrong container used!");
                 var blob = _cloudBlob.GetBlobReference(reference.StorageReference);
                 buffer = blob.DownloadByteArray();
             }
-
-            var m = _streamer.ReadDataMessage(buffer);
+            var m = _streamer.ReadAsEnvelopeData(buffer);
             return new EnvelopeTransportContext(message, m, _queueName);
         }
 

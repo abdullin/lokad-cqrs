@@ -19,8 +19,8 @@ namespace Lokad.Cqrs.Core.Envelope
 
         protected override ImmutableEnvelope RoundtripViaSerializer(MessageEnvelopeBuilder builder)
         {
-            var bytes = _streamer.SaveDataMessage(builder.Build());
-            return _streamer.ReadDataMessage(bytes);
+            var bytes = _streamer.SaveEnvelopeData(builder.Build());
+            return _streamer.ReadAsEnvelopeData(bytes);
         }
     }
 }

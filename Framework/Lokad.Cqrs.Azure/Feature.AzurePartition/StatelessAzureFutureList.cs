@@ -63,7 +63,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
                 return;
             }
 
-            var bytes = _streamer.SaveDataMessage(envelope);
+            var bytes = _streamer.SaveEnvelopeData(envelope);
             _container.GetBlobReference(id).UploadByteArray(bytes);
 
             view.References.Add(id, envelope.DeliverOnUtc);
@@ -103,7 +103,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             foreach (var pair in pending)
             {
                 var item = _container.GetBlobReference(pair.Key).DownloadByteArray();
-                var env = _streamer.ReadDataMessage(item);
+                var env = _streamer.ReadAsEnvelopeData(item);
                 atomicTranfer(env);
                 view.References.Remove(pair.Key);
             }

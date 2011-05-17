@@ -25,7 +25,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 
         CloudQueueMessage PrepareCloudMessage(ImmutableEnvelope builder)
         {
-            var buffer = _streamer.SaveDataMessage(builder);
+            var buffer = _streamer.SaveEnvelopeData(builder);
             if (buffer.Length < CloudQueueLimit)
             {
                 // write message to queue
@@ -35,7 +35,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             var referenceId = DateTimeOffset.UtcNow.ToString(DateFormatInBlobName) + "-" + builder.EnvelopeId;
             _cloudBlob.GetBlobReference(referenceId).UploadByteArray(buffer);
             var reference = new EnvelopeReference(builder.EnvelopeId, _cloudBlob.Uri.ToString(), referenceId);
-            var blob = _streamer.SaveReferenceMessage(reference);
+            var blob = _streamer.SaveEnvelopeReference(reference);
             return new CloudQueueMessage(blob);
         }
 
