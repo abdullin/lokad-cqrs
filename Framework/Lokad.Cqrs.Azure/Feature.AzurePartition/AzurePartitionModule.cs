@@ -21,7 +21,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
     {
         readonly HashSet<string> _queueNames = new HashSet<string>();
         TimeSpan _queueVisibilityTimeout = TimeSpan.FromSeconds(30);
-        Tuple<Type, Action<ISingleThreadMessageDispatcher>> _dispatcher;
+        PartialRegistration<ISingleThreadMessageDispatcher> _dispatcher;
 
         readonly string _accountName;
 
@@ -36,10 +36,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
         public void DispatcherIs<TDispatcher>(Action<TDispatcher> optionalConfig = null)
             where TDispatcher : class, ISingleThreadMessageDispatcher
         {
-            var config = optionalConfig ?? (dispatcher => { });
-            var action = new Action<ISingleThreadMessageDispatcher>(d => config((TDispatcher) d));
-            _dispatcher = Tuple.Create(typeof (TDispatcher),
-                action);
+            _dispatcher = PartialRegistration<ISingleThreadMessageDispatcher>.From(optionalConfig);
         }
 
         public void DispatchAsEvents()
@@ -61,7 +58,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterType(_dispatcher.Item1);
+            _dispatcher.Register(builder);
             builder.Register(BuildConsumingProcess);
             builder.RegisterType<AzureSchedulingProcess>().As<IEngineProcess, AzureSchedulingProcess>();
         }
@@ -82,10 +79,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             var builder = context.Resolve<MessageDirectoryBuilder>();
 
             var map = builder.BuildActivationMap(_filter.DoesPassFilter);
-            var directory = TypedParameter.From(map);
-
-            var dispatcher = (ISingleThreadMessageDispatcher) context.Resolve(_dispatcher.Item1, directory);
-            _dispatcher.Item2(dispatcher);
+            var dispatcher = _dispatcher.ResolveWithTypedParams(context, map);
             dispatcher.Init();
 
             var streamer = context.Resolve<IEnvelopeStreamer>();

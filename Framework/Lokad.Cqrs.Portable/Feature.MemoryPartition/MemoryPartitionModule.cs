@@ -38,7 +38,7 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
         public void DispatcherIs<TDispatcher>(Action<TDispatcher> optionalConfig = null)
             where TDispatcher : class, ISingleThreadMessageDispatcher
         {
-            _dispatcherPartial =  PartialRegistration<ISingleThreadMessageDispatcher>.From(optionalConfig);
+            _dispatcherPartial = PartialRegistration<ISingleThreadMessageDispatcher>.From(optionalConfig);
         }
 
         public void QuarantineIs<TQuarantine>(Action<TQuarantine> optionalConfig = null)
