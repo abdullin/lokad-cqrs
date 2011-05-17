@@ -22,7 +22,7 @@ namespace Lokad.Cqrs.Build.Engine
     {
         readonly IList<IModule> _modules = new List<IModule>();
 
-        public void AddMemoryProcess(string[] queues, Action<ModuleForMemoryPartition> config)
+        public void AddMemoryProcess(string[] queues, Action<MemoryPartitionModule> config)
         {
             foreach (var queue in queues)
             {
@@ -33,7 +33,7 @@ namespace Lokad.Cqrs.Build.Engine
                     throw new InvalidOperationException(message);
                 }
             }
-            var module = new ModuleForMemoryPartition(queues);
+            var module = new MemoryPartitionModule(queues);
             config(module);
             _modules.Add(module);
         }
@@ -42,7 +42,7 @@ namespace Lokad.Cqrs.Build.Engine
         {
             var builder = new ContainerBuilder();
 
-            if (_modules.OfType<ModuleForMemoryPartition>().Any())
+            if (_modules.OfType<MemoryPartitionModule>().Any())
             {
                 builder.RegisterType<MemoryPartitionFactory>().As
                     <IQueueWriterFactory, IEngineProcess, MemoryPartitionFactory>().
@@ -75,7 +75,7 @@ namespace Lokad.Cqrs.Build.Engine
         }
 
 
-        public void AddMemoryProcess(string queueName, Action<ModuleForMemoryPartition> config)
+        public void AddMemoryProcess(string queueName, Action<MemoryPartitionModule> config)
         {
             AddMemoryProcess(new[] {queueName}, config);
         }

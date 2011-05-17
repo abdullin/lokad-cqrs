@@ -13,32 +13,38 @@ using Lokad.Cqrs.Core.Dispatch;
 
 namespace Lokad.Cqrs.Feature.MemoryPartition
 {
-    public sealed class ModuleForMemoryPartition : HideObjectMembersFromIntelliSense, IModule
+    public sealed class MemoryPartitionModule : HideObjectMembersFromIntelliSense, IModule
     {
         readonly string[] _memoryQueues;
-        Tuple<Type, Action<ISingleThreadMessageDispatcher>> _dispatcher;
+
+        PartialRegistration<ISingleThreadMessageDispatcher> _dispatcherPartial;
+        PartialRegistration<IEnvelopeQuarantine> _quarantinePartial;
+
         readonly MessageDirectoryFilter _filter = new MessageDirectoryFilter();
 
-        public ModuleForMemoryPartition WhereFilter(Action<MessageDirectoryFilter> filter)
+        public MemoryPartitionModule WhereFilter(Action<MessageDirectoryFilter> filter)
         {
             filter(_filter);
             return this;
         }
 
-
-        public ModuleForMemoryPartition(string[] memoryQueues)
+        public MemoryPartitionModule(string[] memoryQueues)
         {
             _memoryQueues = memoryQueues;
             DispatchAsEvents();
+            QuarantineIs<MemoryQuarantine>();
         }
 
         public void DispatcherIs<TDispatcher>(Action<TDispatcher> optionalConfig = null)
             where TDispatcher : class, ISingleThreadMessageDispatcher
         {
-            var config = optionalConfig ?? (dispatcher => { });
-            var action = new Action<ISingleThreadMessageDispatcher>(d => config((TDispatcher) d));
-            _dispatcher = Tuple.Create(typeof (TDispatcher),
-                action);
+            _dispatcherPartial =  PartialRegistration<ISingleThreadMessageDispatcher>.From(optionalConfig);
+        }
+
+        public void QuarantineIs<TQuarantine>(Action<TQuarantine> optionalConfig = null)
+            where TQuarantine : class, IEnvelopeQuarantine
+        {
+            _quarantinePartial = PartialRegistration<IEnvelopeQuarantine>.From(optionalConfig);
         }
 
         public void DispatchAsEvents()
@@ -65,16 +71,13 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
 
             var activations = builder.BuildActivationMap(_filter.DoesPassFilter);
 
-            var directory = TypedParameter.From(activations);
-
-            var dispatcher = (ISingleThreadMessageDispatcher) context.Resolve(_dispatcher.Item1, directory);
-            _dispatcher.Item2(dispatcher);
+            var dispatcher = _dispatcherPartial.ResolveWithTypedParams(context, activations);
             dispatcher.Init();
 
             var factory = context.Resolve<MemoryPartitionFactory>();
             var notifier = factory.GetMemoryInbox(_memoryQueues);
 
-            var quarantine = new MemoryQuarantine();
+            var quarantine = _quarantinePartial.ResolveWithTypedParams(context);
             var manager = context.Resolve<MessageDuplicationManager>();
             var transport = new DispatcherProcess(log, dispatcher, notifier, quarantine, manager);
             return transport;
@@ -83,7 +86,10 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
         public void Configure(IComponentRegistry componentRegistry)
         {
             var builder = new ContainerBuilder();
-            builder.RegisterType(_dispatcher.Item1);
+
+            _dispatcherPartial.Register(builder);
+            _quarantinePartial.Register(builder);
+
             builder.Register(BuildConsumingProcess);
             builder.Update(componentRegistry);
         }

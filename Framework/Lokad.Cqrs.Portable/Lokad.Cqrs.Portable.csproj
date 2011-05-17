@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core.Dispatch\IEnvelopeQuarantine.cs" />
+    <Compile Include="PartialRegistration.cs" />
     <Compile Include="HideObjectMembersFromIntelliSense.cs" />
     <Compile Include="Build\Client\CqrsClient.cs" />
     <Compile Include="Build\Client\CqrsClientBuilder.cs" />
@@ -128,7 +129,7 @@
     <Compile Include="Feature.MemoryPartition\MemoryFutureList.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryPartitionFactory.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryPartitionInbox.cs" />
-    <Compile Include="Feature.MemoryPartition\ModuleForMemoryPartition.cs" />
+    <Compile Include="Feature.MemoryPartition\MemoryPartitionModule.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryQueueWriter.cs" />
     <Compile Include="Feature.StreamingStorage\ExtendStreamingItem.cs" />
     <Compile Include="Feature.StreamingStorage\FileStreamingContainer.cs" />
