@@ -23,23 +23,16 @@ namespace Lokad.Cqrs.Core.Serialization
         public Optional<string> GetString<TAttribute>(Func<TAttribute, string> retriever)
             where TAttribute : Attribute
         {
-            var v = FirstOrEmpty(_attributes
-                .OfType<TAttribute>())
-                .Convert(retriever, "");
-
-            if (String.IsNullOrEmpty(v))
+            var result = "";
+            foreach (var attribute in _attributes.OfType<TAttribute>())
+            {
+                result = retriever(attribute);
+            }
+            
+            if (String.IsNullOrEmpty(result))
                 return Optional<string>.Empty;
 
-            return v;
-        }
-
-        static Optional<TSource> FirstOrEmpty<TSource>(IEnumerable<TSource> sequence)
-        {
-            foreach (var source in sequence)
-            {
-                return source;
-            }
-            return Optional<TSource>.Empty;
+            return result;
         }
     }
 }
