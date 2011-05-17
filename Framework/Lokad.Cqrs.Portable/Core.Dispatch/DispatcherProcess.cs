@@ -44,7 +44,7 @@ namespace Lokad.Cqrs.Core.Dispatch
         }
 
         readonly CancellationTokenSource _disposal = new CancellationTokenSource();
-        MessageDuplicationMemory _memory;
+        readonly MessageDuplicationMemory _memory;
 
         public Task Start(CancellationToken token)
         {

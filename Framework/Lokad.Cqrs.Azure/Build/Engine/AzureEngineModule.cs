@@ -13,6 +13,7 @@ using Autofac;
 using Autofac.Core;
 using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Core.Outbox;
+using Lokad.Cqrs.Feature.AzurePartition;
 using Lokad.Cqrs.Feature.AzurePartition.Inbox;
 using Lokad.Cqrs.Feature.AzurePartition.Sender;
 using Microsoft.WindowsAzure;

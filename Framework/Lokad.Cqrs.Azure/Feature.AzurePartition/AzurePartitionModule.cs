@@ -11,10 +11,11 @@ using System.Linq;
 using Autofac;
 using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Dispatch;
+using Lokad.Cqrs.Feature.AzurePartition.Inbox;
 
 // ReSharper disable MemberCanBePrivate.Global
 
-namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
+namespace Lokad.Cqrs.Feature.AzurePartition
 {
     public sealed class AzurePartitionModule : Module
     {
@@ -121,4 +122,6 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
             return this;
         }
     }
+
+
 }
