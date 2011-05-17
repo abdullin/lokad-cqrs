@@ -68,7 +68,7 @@ namespace Lokad.Cqrs
             }
         }
 
-        [Test]
+        [Test, Explicit]
         public void Run_in_test()
         {
             var builder = new CqrsEngineBuilder();

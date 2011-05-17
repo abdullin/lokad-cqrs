@@ -6,19 +6,19 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 using Lokad.Cqrs.Build.Engine;
-using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Core.Dispatch.Events;
 using NUnit.Framework;
+
+// ReSharper disable UnusedMember.Global
+// ReSharper disable InconsistentNaming
 
 namespace Lokad.Cqrs
 {
     [TestFixture]
-    public sealed class Given_MessageContext_configuration
+    public sealed class Given_MessageContext_Specified : FiniteEngineScenario
     {
         public sealed class MyContext
         {
@@ -59,29 +59,38 @@ namespace Lokad.Cqrs
                 Assert.AreEqual("valid", detail.Token);
                 var txt = string.Format("Consume B: {0} created on {1}", detail.MessageId, detail.Created);
                 Trace.WriteLine(txt);
+
             }
         }
 
-
-        [TestFixtureSetUp]
-        public void FixtureSetUp()
+        [Test]
+        public void Test()
         {
-            var builder = new CqrsEngineBuilder();
-            builder.Domain(m =>
+            EnlistBatch(new object[]
                 {
-                    m.HandlerSample<IMyHandler<IMyMessage>>(c => c.Consume(null, null));
-                    m.ContextFactory(BuildContextOnTheFly);
-                });
-            builder.Memory(m =>
+                    new MyMessageA(),
+                    new MyMessageB()
+                },
+                cb =>
+                    {
+                        cb.AddString("token", "valid");
+                        cb.AddString("aggregate", "customer-1");
+                    }
+                );
+            Enlist((observable, sender, arg3) => observable.OfType<EnvelopeAcked>().Subscribe(e => arg3.Cancel()));
+            TestConfiguration(b =>
                 {
-                    m.AddMemorySender("in", cm => cm.IdGeneratorForTests());
-                    m.AddMemoryProcess("in", d => d.DispatchAsCommandBatch());
+                    b.Domain(m =>
+                    {
+                        m.HandlerSample<IMyHandler<IMyMessage>>(c => c.Consume(null, null));
+                        m.ContextFactory(BuildContextOnTheFly);
+                    });
+                    b.Memory(m =>
+                    {
+                        m.AddMemorySender("in", cm => cm.IdGeneratorForTests());
+                        m.AddMemoryProcess("in", d => d.DispatchAsCommandBatch());
+                    });
                 });
-
-            var observer = new Subject<ISystemEvent>();
-            builder.EnlistObserver(observer);
-            _events = observer;
-            _engine = builder.Build();
         }
 
         static MyContext BuildContextOnTheFly(ImmutableEnvelope envelope, ImmutableMessage item)
@@ -90,45 +99,5 @@ namespace Lokad.Cqrs
             var token = envelope.GetAttribute("token", "");
             return new MyContext(messageId, token, envelope.CreatedOnUtc);
         }
-
-        CqrsEngineHost _engine;
-        IObservable<ISystemEvent> _events;
-
-
-        [Test]
-        public void Test()
-        {
-            using (var t = new CancellationTokenSource())
-            using (_events
-                .OfType<EnvelopeAcked>()
-                .Subscribe(a => t.Cancel()))
-            {
-                _engine.Start(t.Token);
-                var sender = _engine.Resolve<IMessageSender>();
-
-                sender.SendBatch(new object[]
-                    {
-                        new MyMessageA(),
-                        new MyMessageB()
-                    },
-                    cb =>
-                        {
-                            cb.AddString("token", "valid");
-                            cb.AddString("aggregate", "customer-1");
-                        }
-                    );
-                t.Token.WaitHandle.WaitOne(10000);
-
-                Assert.IsTrue(t.IsCancellationRequested);
-            }
-        }
-
-        [TestFixtureTearDown]
-        public void FixtureTearDown()
-        {
-            _engine.Dispose();
-        }
-
-        // ReSharper disable InconsistentNaming
     }
 }

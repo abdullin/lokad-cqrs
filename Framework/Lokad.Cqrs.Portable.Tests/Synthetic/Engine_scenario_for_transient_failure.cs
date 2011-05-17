@@ -36,7 +36,7 @@ namespace Lokad.Cqrs.Synthetic
             }
         }
 
-        protected override void Configure(CqrsEngineBuilder builder)
+        protected override void Configure(CqrsEngineBuilder b)
         {
             HandlerFailuresAreExpected = true;
 

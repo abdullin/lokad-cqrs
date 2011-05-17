@@ -56,9 +56,9 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
 
         }
 
-        protected override void Configure(CqrsEngineBuilder builder)
+        protected override void Configure(CqrsEngineBuilder b)
         {
-            builder.Memory(m =>
+            b.Memory(m =>
                 {
                     m.AddMemoryProcess("in");
                     m.AddMemorySender("in");

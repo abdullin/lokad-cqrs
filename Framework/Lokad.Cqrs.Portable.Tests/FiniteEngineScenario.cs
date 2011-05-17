@@ -13,25 +13,31 @@ using System.Linq;
 using System.Threading;
 using Lokad.Cqrs.Build.Engine;
 using Lokad.Cqrs.Core.Dispatch.Events;
+using Lokad.Cqrs.Core.Envelope;
 using NUnit.Framework;
 
 namespace Lokad.Cqrs
 {
-    public abstract class FiniteEngineScenario
+    public abstract class FiniteEngineScenario : HideObjectMembersFromIntelliSense
     {
         protected bool HandlerFailuresAreExpected { private get; set; }
-        readonly IList<object[]> _messages = new List<object[]>();
+        readonly IList<Action<IMessageSender>> _messages = new List<Action<IMessageSender>>();
 
         readonly IList<Action<CqrsEngineHost>> _asserts = new List<Action<CqrsEngineHost>>();
 
         protected void EnlistMessage(params object[] messages)
         {
-            _messages.Add(messages);
+            _messages.Add(sender => sender.SendBatch(messages));
+        }
+
+        protected void EnlistBatch(object[] messages, Action<MessageEnvelopeBuilder> build)
+        {
+            _messages.Add(sender => sender.SendBatch(messages, build));
         }
 
 
 
-        protected virtual void Configure(CqrsEngineBuilder builder) {}
+        protected virtual void Configure(CqrsEngineBuilder b) {}
         readonly List<string> _failures = new List<string>();
 
         readonly List<Func<IObservable<ISystemEvent>, IMessageSender, CancellationTokenSource, IDisposable>>
@@ -55,7 +61,11 @@ namespace Lokad.Cqrs
             Enlist((events, sender, t) => events
                 .OfType<EnvelopeAcked>()
                 .Where(ea => ea.Attributes.Any(p => p.Key == "finish"))
-                .Subscribe(c => t.Cancel()));
+                .Subscribe(c =>
+                    {
+                        if (t.IsCancellationRequested) return;
+                        t.Cancel();
+                    }));
 
             Enlist((events, sender, t) => events
                 .OfType<EnvelopeAcked>()
@@ -108,7 +118,7 @@ namespace Lokad.Cqrs
                     engine.Start(t.Token);
                     foreach (var message in _messages)
                     {
-                        sender.SendBatch(message);
+                        message(sender);
                     }
 
                     if (Debugger.IsAttached)

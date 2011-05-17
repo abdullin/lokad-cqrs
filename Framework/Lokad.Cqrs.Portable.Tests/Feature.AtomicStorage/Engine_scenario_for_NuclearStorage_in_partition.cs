@@ -52,7 +52,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         }
 
 
-        protected override void Configure(CqrsEngineBuilder builder)
+        protected override void Configure(CqrsEngineBuilder b)
         {
             EnlistMessage(new GoMessage());
         }

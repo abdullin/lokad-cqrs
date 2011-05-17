@@ -65,7 +65,15 @@ namespace Lokad.Cqrs
         [EditorBrowsable(EditorBrowsableState.Never)]
         public new Type GetType()
         {
+            
             return base.GetType();
         }
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        protected new object MemberwiseClone()
+        {
+            return this.MemberwiseClone();
+        }
+
+        
     }
 }
