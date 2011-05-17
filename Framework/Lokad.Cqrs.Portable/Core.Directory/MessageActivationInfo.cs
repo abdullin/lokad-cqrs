@@ -14,8 +14,8 @@ namespace Lokad.Cqrs.Core.Directory
     public sealed class MessageActivationInfo
     {
         public Type MessageType { get; internal set; }
-        public Type[] DirectConsumers { get; internal set; }
-        public Type[] DerivedConsumers { get; internal set; }
+        //public Type[] DirectConsumers { get; internal set; }
+        //public Type[] DerivedConsumers { get; internal set; }
         public Type[] AllConsumers { get; internal set; }
     }
 }

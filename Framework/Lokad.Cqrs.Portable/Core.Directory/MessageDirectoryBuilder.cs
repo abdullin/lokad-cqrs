@@ -58,14 +58,17 @@ namespace Lokad.Cqrs.Core.Directory
                         .ToArray();
 
                     return new MessageActivationInfo
-                    {
-                        MessageType = x.Key,
-                        AllConsumers = domainConsumers.Select(m => m.Consumer).Distinct().ToArray(),
-                        DerivedConsumers =
-                            domainConsumers.Where(m => !m.Direct).Select(m => m.Consumer).Distinct().ToArray(),
-                        DirectConsumers =
-                            domainConsumers.Where(m => m.Direct).Select(m => m.Consumer).Distinct().ToArray(),
-                    };
+                        {
+                            MessageType = x.Key,
+                            AllConsumers = domainConsumers
+                                .Select(m => m.Consumer)
+                                .Distinct()
+                                .ToArray(),
+                            //DerivedConsumers =
+                            //    domainConsumers.Where(m => !m.Direct).Select(m => m.Consumer).Distinct().ToArray(),
+                            //DirectConsumers =
+                            //    domainConsumers.Where(m => m.Direct).Select(m => m.Consumer).Distinct().ToArray(),
+                        };
                 }).ToList();
 
 
