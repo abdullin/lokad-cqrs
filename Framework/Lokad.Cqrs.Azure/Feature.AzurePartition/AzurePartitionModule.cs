@@ -24,6 +24,8 @@ namespace Lokad.Cqrs.Feature.AzurePartition
         PartialRegistration<ISingleThreadMessageDispatcher> _dispatcherPartial;
         PartialRegistration<IEnvelopeQuarantine> _quarantinePartial;
 
+        Func<uint, TimeSpan> _decayPolicy;
+
         readonly string _accountName;
 
         public AzurePartitionModule(string accountId, string[] queueNames)
@@ -32,6 +34,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             _queueNames = new HashSet<string>(queueNames);
             DispatchAsEvents();
             QuarantineIs<MemoryQuarantine>();
+            DecayPolicy(TimeSpan.FromSeconds(2));
         }
 
 
@@ -46,6 +49,29 @@ namespace Lokad.Cqrs.Feature.AzurePartition
         {
             _quarantinePartial = PartialRegistration<IEnvelopeQuarantine>.From(optionalConfig);
         }
+
+        public void DecayPolicy(TimeSpan timeout)
+        {
+            //var seconds = (Rand.Next(0, 1000) / 10000d).Seconds();
+            var seconds = timeout.TotalSeconds;
+            _decayPolicy = l =>
+                {
+                    if (l >= 31)
+                    {
+                        return timeout;
+                    }
+
+                    if (l == 0)
+                    {
+                        l += 1;
+                    }
+
+                    var foo = Math.Pow(2, (l - 1)/5.0)/64d*seconds;
+
+                    return TimeSpan.FromSeconds(foo);
+                };
+        }
+
 
         public void DispatchAsEvents()
         {
@@ -104,7 +130,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             }
 
             var scheduling = context.Resolve<AzureSchedulingProcess>();
-            var factory = new AzurePartitionFactory(streamer, log, config, _queueVisibilityTimeout, scheduling);
+            var factory = new AzurePartitionFactory(streamer, log, config, _queueVisibilityTimeout, scheduling, _decayPolicy);
             
             var notifier = factory.GetNotifier(_queueNames.ToArray());
             var quarantine = _quarantinePartial.ResolveWithTypedParams(context);
@@ -125,6 +151,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             return this;
         }
     }
+
 
 
 }

@@ -21,6 +21,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
         readonly IAzureStorageConfiguration _configuration;
         readonly TimeSpan _queueVisibilityTimeout;
         readonly AzureSchedulingProcess _process;
+        readonly Func<uint, TimeSpan> _decayPolicy;
 
         readonly ConcurrentDictionary<string, AzurePartitionInboxIntake> _intakes = new ConcurrentDictionary<string, AzurePartitionInboxIntake>();
 
@@ -29,11 +30,13 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
             ISystemObserver observer,
             IAzureStorageConfiguration configuration, 
             TimeSpan queueVisibilityTimeout,
-            AzureSchedulingProcess process)
+            AzureSchedulingProcess process, 
+            Func<uint, TimeSpan> decayPolicy)
         {
             _streamer = streamer;
             _queueVisibilityTimeout = queueVisibilityTimeout;
             _process = process;
+            _decayPolicy = decayPolicy;
             _configuration = configuration;
             _observer = observer;
         }
@@ -71,35 +74,9 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
             var scheduler = new StatelessAzureScheduler(writers, futures);
             _process.AddScheduler(scheduler);
 
-            var decayPolicy = BuildDecayPolicy(TimeSpan.FromSeconds(2));
-            return new AzurePartitionInbox(readers, futures, decayPolicy);
+            
+            return new AzurePartitionInbox(readers, futures, _decayPolicy);
         }
-
-        static Func<uint, TimeSpan> BuildDecayPolicy(TimeSpan maxDecay)
-        {
-            //var seconds = (Rand.Next(0, 1000) / 10000d).Seconds();
-            var seconds = maxDecay.TotalSeconds;
-            return l =>
-                {
-                    if (l >= 31)
-                    {
-                        return maxDecay;
-                    }
-
-                    if (l == 0)
-                    {
-                        l += 1;
-                    }
-
-                    var foo = Math.Pow(2, (l - 1)/5.0)/64d*seconds;
-
-                    return TimeSpan.FromSeconds(foo);
-                };
-        }
-
-   
-
-        
     }
 
     public sealed class AzurePartitionInboxIntake
