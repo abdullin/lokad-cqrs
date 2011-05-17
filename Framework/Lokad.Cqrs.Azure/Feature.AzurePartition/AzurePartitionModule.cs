@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Autofac;
+using Autofac.Core;
 using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Feature.AzurePartition.Inbox;
@@ -17,7 +18,7 @@ using Lokad.Cqrs.Feature.AzurePartition.Inbox;
 
 namespace Lokad.Cqrs.Feature.AzurePartition
 {
-    public sealed class AzurePartitionModule : Module
+    public sealed class AzurePartitionModule : HideObjectMembersFromIntelliSense, IModule
     {
         readonly HashSet<string> _queueNames = new HashSet<string>();
         TimeSpan _queueVisibilityTimeout = TimeSpan.FromSeconds(30);
@@ -90,14 +91,6 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             DispatcherIs<DispatchMessagesToRoute>(c => c.SpecifyRouter(route));
         }
 
-        protected override void Load(ContainerBuilder builder)
-        {
-            _dispatcherPartial.Register(builder);
-            _quarantinePartial.Register(builder);
-            builder.Register(BuildConsumingProcess);
-            builder.RegisterType<AzureSchedulingProcess>().As<IEngineProcess, AzureSchedulingProcess>();
-        }
-
         readonly MessageDirectoryFilter _filter = new MessageDirectoryFilter();
 
         public AzurePartitionModule DirectoryFilter(Action<MessageDirectoryFilter> filter)
@@ -150,8 +143,15 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             _queueVisibilityTimeout = timespan;
             return this;
         }
+
+        public void Configure(IComponentRegistry componentRegistry)
+        {
+            var builder = new ContainerBuilder();
+            _dispatcherPartial.Register(builder);
+            _quarantinePartial.Register(builder);
+            builder.Register(BuildConsumingProcess);
+            builder.RegisterType<AzureSchedulingProcess>().As<IEngineProcess, AzureSchedulingProcess>();
+            builder.Update(componentRegistry);
+        }
     }
-
-
-
 }
