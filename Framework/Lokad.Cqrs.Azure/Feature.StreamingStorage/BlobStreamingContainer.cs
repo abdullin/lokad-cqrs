@@ -6,7 +6,9 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using Microsoft.WindowsAzure.StorageClient;
+using System.Linq;
 
 namespace Lokad.Cqrs.Feature.StreamingStorage
 {
@@ -61,6 +63,13 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
                         throw;
                 }
             }
+        }
+
+        public IEnumerable<string> ListItems()
+        {
+            return _directory.ListBlobs()
+                .Select(item => _directory.Uri.MakeRelativeUri(item.Uri).ToString())
+                .ToArray();
         }
 
         public bool Exists()

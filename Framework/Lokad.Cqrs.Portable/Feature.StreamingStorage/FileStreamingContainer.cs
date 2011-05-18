@@ -5,7 +5,10 @@
 
 #endregion
 
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Lokad.Cqrs.Feature.StreamingStorage
 {
@@ -62,6 +65,11 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         {
             _root.Refresh();
             return _root.Exists;
+        }
+
+        public IEnumerable<string> ListItems()
+        {
+            return _root.GetFiles().Select(f => f.Name).ToArray();
         }
 
         public string FullPath

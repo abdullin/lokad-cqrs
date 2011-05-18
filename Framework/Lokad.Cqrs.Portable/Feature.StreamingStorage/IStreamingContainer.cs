@@ -5,6 +5,8 @@
 
 #endregion
 
+using System.Collections.Generic;
+
 namespace Lokad.Cqrs.Feature.StreamingStorage
 {
     /// <summary>
@@ -48,5 +50,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         /// </summary>
         /// <returns></returns>
         bool Exists();
+
+        IEnumerable<string> ListItems();
     }
 }
