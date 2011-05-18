@@ -12,9 +12,12 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Lokad.Cqrs.Evil;
-
+// ReSharper disable UnusedMember.Global
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
+    /// <summary>
+    /// Allows to configure default implementation of <see cref="IAzureAtomicStorageStrategy"/>
+    /// </summary>
     public sealed class DefaultAzureAtomicStorageStrategyBuilder : HideObjectMembersFromIntelliSense
     {
         Predicate<Type> _entityTypeFilter = type => typeof (Define.AtomicEntity).IsAssignableFrom(type);
@@ -26,12 +29,21 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         Func<Type, string> _folderForEntity = type => CleanName("atomic-" +type.Name);
         Func<Type, object, string> _nameForEntity =
             (type, key) => (CleanName(type.Name) + "-" + Convert.ToString(key, CultureInfo.InvariantCulture).ToLowerInvariant()) + ".pb";
-        
+
+        /// <summary>
+        /// Provides custom folder for storing singletons.
+        /// </summary>
+        /// <param name="folderName">Name of the folder.</param>
         public void FolderForSingleton(string folderName)
         {
             _folderForSingleton = folderName;
         }
 
+        /// <summary>
+        /// Helper to clean the name, making it suitable for azure storage
+        /// </summary>
+        /// <param name="typeName">Name of the type.</param>
+        /// <returns></returns>
         public static string CleanName(string typeName)
         {
             var sb = new StringBuilder();
@@ -57,50 +69,91 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             return sb.ToString();
         }
 
-        public void NameForSingleton(Func<Type,string> namer)
+        /// <summary>
+        /// Provides custom naming convention for the singleton files
+        /// </summary>
+        /// <param name="namingConvention">The naming convention.</param>
+        public void NameForSingleton(Func<Type,string> namingConvention)
         {
-            _nameForSingleton = namer;
+            _nameForSingleton = namingConvention;
         }
-        public void FolderForEntity(Func<Type,string> naming)
+        /// <summary>
+        /// Provides custom naming convention for entity folders.
+        /// </summary>
+        /// <param name="namingConvention">The naming convention.</param>
+        public void FolderForEntity(Func<Type,string> namingConvention)
         {
-            _folderForEntity = naming;
+            _folderForEntity = namingConvention;
         }
 
-        public void NameForEntity(Func<Type,object,string> naming)
+        /// <summary>
+        /// Provides custom naming convention for entity files.
+        /// </summary>
+        /// <param name="namingConvention">The naming convention.</param>
+        public void NameForEntity(Func<Type,object,string> namingConvention)
         {
-            _nameForEntity = naming;
+            _nameForEntity = namingConvention;
         }
 
+        /// <summary>
+        /// Specifies base entity type to use in assembly scans. Default is <see cref="Define.AtomicEntity"/>
+        /// </summary>
+        /// <typeparam name="TEntityBase">Base entity class from which all atomic entities are derived.</typeparam>
         public void WhereEntityIs<TEntityBase>()
         {
             _entityTypeFilter = type => typeof (TEntityBase).IsAssignableFrom(type);
         }
 
+        /// <summary>
+        /// Allows to specify completely custom search pattern for entity types. Default is to look for inheritors from 
+        /// <see cref="Define.AtomicEntity"/>
+        /// </summary>
+        /// <param name="predicate">The predicate.</param>
         public void WhereEntity(Predicate<Type> predicate)
         {
             _entityTypeFilter = predicate;
         }
 
+        /// <summary>
+        /// Allows to specify completely cstom search pattern for singleton types. Default behavior is to look for
+        /// inheritors from <see cref="Define.AtomicSingleton"/>
+        /// </summary>
+        /// <param name="predicate">The predicate.</param>
         public void WhereSingleton(Predicate<Type> predicate)
         {
             _singletonTypeFilter = predicate;
         }
-
+        /// <summary>
+        /// Specifies base singleton type to use in assembly scans. Default is <see cref="Define.AtomicSingleton"/>
+        /// </summary>
+        /// <typeparam name="TSingletonBase">Base singleton class from which all atomic singletons are derived.</typeparam>
         public void WhereSingletonIs<TSingletonBase>()
         {
             _singletonTypeFilter = type => typeof (TSingletonBase).IsAssignableFrom(type);
         }
 
+        /// <summary>
+        /// Specifies an additional assembly to scan for atomic types (in addition to the loaded assemblies)
+        /// </summary>
+        /// <param name="assembly">The assembly to include into scan for atomic types.</param>
         public void WithAssembly(Assembly assembly)
         {
             _extraAssemblies.Add(assembly);
         }
 
+        /// <summary>
+        /// Specifies an additional assembly to scan for atomic types (in addition to the loaded assemblies)
+        /// </summary>
+        /// <typeparam name="T">type, located in assembly to include in scan</typeparam>
         public void WithAssemblyOf<T>()
         {
             _extraAssemblies.Add(typeof(T).Assembly);
         }
 
+        /// <summary>
+        /// Builds new instance of immutable <see cref="IAzureAtomicStorageStrategy"/>
+        /// </summary>
+        /// <returns></returns>
         public IAzureAtomicStorageStrategy Build()
         {
             var types = AppDomain.CurrentDomain

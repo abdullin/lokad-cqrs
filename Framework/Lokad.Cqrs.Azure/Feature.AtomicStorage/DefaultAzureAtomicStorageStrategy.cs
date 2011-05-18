@@ -6,12 +6,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using Lokad.Cqrs.Evil;
 using ProtoBuf;
 
 namespace Lokad.Cqrs.Feature.AtomicStorage
@@ -21,13 +16,15 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         readonly Type[] _entityTypes;
         readonly Type[] _singletonTypes;
 
-        string _folderForSingleton;
-        Func<Type, string> _nameForSingleton;
-        Func<Type, string> _folderForEntity;
-        Func<Type, object, string> _nameForEntity;
+        readonly string _folderForSingleton;
+        readonly Func<Type, string> _nameForSingleton;
+        readonly Func<Type, string> _folderForEntity;
+        readonly Func<Type, object, string> _nameForEntity;
 
 
-        public DefaultAzureAtomicStorageStrategy(Type[] entityTypes, Type[] singletonTypes, string folderForSingleton, Func<Type, string> nameForSingleton, Func<Type, string> folderForEntity, Func<Type, object, string> nameForEntity)
+        public DefaultAzureAtomicStorageStrategy(Type[] entityTypes, Type[] singletonTypes, string folderForSingleton,
+            Func<Type, string> nameForSingleton, Func<Type, string> folderForEntity,
+            Func<Type, object, string> nameForEntity)
         {
             _entityTypes = entityTypes;
             _nameForEntity = nameForEntity;
