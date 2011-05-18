@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using Lokad.Cqrs.Evil;
 
 namespace Lokad.Cqrs.Feature.AtomicStorage
@@ -21,14 +22,41 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         readonly List<Assembly> _extraAssemblies = new List<Assembly>();
 
         string _folderForSingleton = "atomic-singleton";
-        Func<Type, string> _nameForSingleton = type => type.Name.ToLowerInvariant() + ".pb";
-        Func<Type, string> _folderForEntity = type => "atomic-" +type.Name.ToLowerInvariant();
-        Func<Type, object, string> _nameForEntity = (type,key) => Convert.ToString(key, CultureInfo.InvariantCulture).ToLowerInvariant() + ".pb";
+        Func<Type, string> _nameForSingleton = type => CleanName(type.Name) + ".pb";
+        Func<Type, string> _folderForEntity = type => CleanName("atomic-" +type.Name);
+        Func<Type, object, string> _nameForEntity =
+            (type, key) => (CleanName(type.Name) + "-" + Convert.ToString(key, CultureInfo.InvariantCulture).ToLowerInvariant()) + ".pb";
         
         public void FolderForSingleton(string folderName)
         {
             _folderForSingleton = folderName;
         }
+
+        public static string CleanName(string typeName)
+        {
+            var sb = new StringBuilder();
+
+            bool lastWasUpper = false;
+            bool lastWasSymbol = true;
+
+            foreach (var c in typeName)
+            {
+                var splitRequired = char.IsUpper(c) || !char.IsLetterOrDigit(c);
+                if (splitRequired && !lastWasUpper && !lastWasSymbol)
+                {
+                    sb.Append('-');
+                }
+                lastWasUpper = char.IsUpper(c);
+                lastWasSymbol = !char.IsLetterOrDigit(c);
+
+                if (char.IsLetterOrDigit(c))
+                {
+                    sb.Append(char.ToLowerInvariant(c));
+                }
+            }
+            return sb.ToString();
+        }
+
         public void NameForSingleton(Func<Type,string> namer)
         {
             _nameForSingleton = namer;

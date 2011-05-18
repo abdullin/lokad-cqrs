@@ -62,6 +62,7 @@
   <ItemGroup>
     <Compile Include="BasicClientConfigurationTests.cs" />
     <Compile Include="Feature.AtomicStorage\Run_all_AtomicStorage_scenarios_on_Azure.cs" />
+    <Compile Include="Feature.AtomicStorage\When_DefaultAzureAtomicStorageStrategy_is_used.cs" />
     <Compile Include="Synthetic\Run_all_Synthetic_tests_on_azure.cs" />
     <Compile Include="Core.Serialization\ProtobufFixture.cs" />
     <Compile Include="Core.Envelope\Play_all_for_ProtoBuf.cs" />

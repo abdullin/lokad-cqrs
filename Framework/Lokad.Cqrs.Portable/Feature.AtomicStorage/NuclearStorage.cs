@@ -91,7 +91,6 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             return Factory.GetSingletonReader<TSingleton>().GetOrNew();
         }
 
-
         public Optional<TSingleton> GetSingleton<TSingleton>()
         {
             return Factory.GetSingletonReader<TSingleton>().Get();
