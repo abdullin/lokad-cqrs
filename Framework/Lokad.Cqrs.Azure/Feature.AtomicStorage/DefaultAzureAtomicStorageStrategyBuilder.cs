@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using Lokad.Cqrs.Evil;
@@ -18,6 +19,29 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         Predicate<Type> _entityTypeFilter = type => typeof (Define.AtomicEntity).IsAssignableFrom(type);
         Predicate<Type> _singletonTypeFilter = type => typeof (Define.AtomicSingleton).IsAssignableFrom(type);
         readonly List<Assembly> _extraAssemblies = new List<Assembly>();
+
+        string _folderForSingleton = "atomic-singleton";
+        Func<Type, string> _nameForSingleton = type => type.Name.ToLowerInvariant() + ".pb";
+        Func<Type, string> _folderForEntity = type => "atomic-" +type.Name.ToLowerInvariant();
+        Func<Type, object, string> _nameForEntity = (type,key) => Convert.ToString(key, CultureInfo.InvariantCulture).ToLowerInvariant() + ".pb";
+        
+        public void FolderForSingleton(string folderName)
+        {
+            _folderForSingleton = folderName;
+        }
+        public void NameForSingleton(Func<Type,string> namer)
+        {
+            _nameForSingleton = namer;
+        }
+        public void FolderForEntity(Func<Type,string> naming)
+        {
+            _folderForEntity = naming;
+        }
+
+        public void NameForEntity(Func<Type,object,string> naming)
+        {
+            _nameForEntity = naming;
+        }
 
         public void WhereEntityIs<TEntityBase>()
         {
@@ -67,7 +91,13 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                 .Where(t => _singletonTypeFilter(t))
                 .ToArray();
 
-            return new DefaultAzureAtomicStorageStrategy(entities, singletons);
+            return new DefaultAzureAtomicStorageStrategy(
+                entities, 
+                singletons, 
+                _folderForSingleton, 
+                _nameForSingleton, 
+                _folderForEntity, 
+                _nameForEntity);
         }
     }
 }

@@ -21,30 +21,40 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         readonly Type[] _entityTypes;
         readonly Type[] _singletonTypes;
 
-        public DefaultAzureAtomicStorageStrategy(Type[] entityTypes, Type[] singletonTypes)
+        string _folderForSingleton;
+        Func<Type, string> _nameForSingleton;
+        Func<Type, string> _folderForEntity;
+        Func<Type, object, string> _nameForEntity;
+
+
+        public DefaultAzureAtomicStorageStrategy(Type[] entityTypes, Type[] singletonTypes, string folderForSingleton, Func<Type, string> nameForSingleton, Func<Type, string> folderForEntity, Func<Type, object, string> nameForEntity)
         {
             _entityTypes = entityTypes;
+            _nameForEntity = nameForEntity;
+            _folderForEntity = folderForEntity;
+            _nameForSingleton = nameForSingleton;
+            _folderForSingleton = folderForSingleton;
             _singletonTypes = singletonTypes;
         }
 
         public string GetFolderForEntity(Type entityType)
         {
-            return "atomic-" +entityType.Name.ToLowerInvariant();
+            return _folderForEntity(entityType);
         }
 
         public string GetFolderForSingleton()
         {
-            return "atomic-singleton";
+            return _folderForSingleton;
         }
 
         public string GetNameForEntity(Type entity, object key)
         {
-            return Convert.ToString(key, CultureInfo.InvariantCulture).ToLowerInvariant() + ".pb";
+            return _nameForEntity(entity, key);
         }
 
         public string GetNameForSingleton(Type singletonType)
         {
-            return singletonType.Name.ToLowerInvariant() + ".pb";
+            return _nameForSingleton(singletonType);
         }
 
         public byte[] Serialize<TEntity>(TEntity entity)
