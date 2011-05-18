@@ -7,7 +7,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using Lokad.Cqrs.Evil;
 
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
@@ -15,7 +17,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
     {
         Predicate<Type> _entityTypeFilter = type => typeof (Define.AtomicEntity).IsAssignableFrom(type);
         Predicate<Type> _singletonTypeFilter = type => typeof (Define.AtomicSingleton).IsAssignableFrom(type);
-        List<Assembly> _extraAssemblies = new List<Assembly>();
+        readonly List<Assembly> _extraAssemblies = new List<Assembly>();
 
         public void WhereEntityIs<TEntityBase>()
         {
@@ -49,7 +51,23 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 
         public IAzureAtomicStorageStrategy Build()
         {
-            return new DefaultAzureAtomicStorageStrategy(_entityTypeFilter, _singletonTypeFilter, _extraAssemblies);
+            var types = AppDomain.CurrentDomain
+                .GetAssemblies()
+                .Where(AssemblyScanEvil.IsUserAssembly)
+                .Concat(_extraAssemblies)
+                .Distinct()
+                .SelectMany(t => t.GetExportedTypes())
+                .Where(t => !t.IsAbstract)
+                .ToArray();
+            var entities = types
+                .Where(t => _entityTypeFilter(t))
+                .ToArray();
+
+            var singletons = types
+                .Where(t => _singletonTypeFilter(t))
+                .ToArray();
+
+            return new DefaultAzureAtomicStorageStrategy(entities, singletons);
         }
     }
 }

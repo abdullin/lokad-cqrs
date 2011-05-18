@@ -18,15 +18,13 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 {
     public sealed class DefaultAzureAtomicStorageStrategy : IAzureAtomicStorageStrategy
     {
-        readonly Predicate<Type> _entityFilter;
-        readonly Predicate<Type> _singletonFilter;
-        readonly ICollection<Assembly> _extraAssemblies;
+        readonly Type[] _entityTypes;
+        readonly Type[] _singletonTypes;
 
-        public DefaultAzureAtomicStorageStrategy(Predicate<Type> entityFilter, Predicate<Type> singletonFilter, ICollection<Assembly> extraAssemblies)
+        public DefaultAzureAtomicStorageStrategy(Type[] entityTypes, Type[] singletonTypes)
         {
-            _entityFilter = entityFilter;
-            _singletonFilter = singletonFilter;
-            _extraAssemblies = extraAssemblies;
+            _entityTypes = entityTypes;
+            _singletonTypes = singletonTypes;
         }
 
         public string GetFolderForEntity(Type entityType)
@@ -68,28 +66,12 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 
         public Type[] GetEntityTypes()
         {
-            return AppDomain.CurrentDomain
-                .GetAssemblies()
-                .Where(AssemblyScanEvil.IsUserAssembly)
-                .Concat(_extraAssemblies)
-                .Distinct()
-                .SelectMany(t => t.GetExportedTypes())
-                .Where(t => !t.IsAbstract)
-                .Where(t => _entityFilter(t))
-                .ToArray();
+            return _entityTypes;
         }
 
         public Type[] GetSingletonTypes()
         {
-            return AppDomain.CurrentDomain
-                .GetAssemblies()
-                .Where(AssemblyScanEvil.IsUserAssembly)
-                .Concat(_extraAssemblies)
-                .Distinct()
-                .SelectMany(t => t.GetExportedTypes())
-                .Where(t => !t.IsAbstract)
-                .Where(t => _singletonFilter(t))
-                .ToArray();
+            return _singletonTypes;
         }
     }
 }
