@@ -30,7 +30,7 @@ namespace Lokad.Cqrs.Build
 
         public static void StreamingIsInAzure(this StorageModule self, string accountId)
         {
-            var module = new AzureStreamingStorage(accountId);
+            var module = new AzureStreamingStorageModule(accountId);
             self.EnlistModule(module);
         }
     }

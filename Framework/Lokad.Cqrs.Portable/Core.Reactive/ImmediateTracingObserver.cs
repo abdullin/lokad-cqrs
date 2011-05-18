@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace Lokad.Cqrs.Core.Reactive
 {
-    public sealed class ImmediateTracingObserver : IObserver<ISystemEvent>
+    public sealed class ImmediateTracingObserver : IObserver<ISystemEvent>, ISystemObserver
     {
         public void OnNext(ISystemEvent value)
         {
@@ -19,6 +19,11 @@ namespace Lokad.Cqrs.Core.Reactive
         public void OnCompleted()
         {
             Trace.WriteLine("Observing completed");
+        }
+
+        public void Notify(ISystemEvent @event)
+        {
+            OnNext(@event);
         }
     }
 }

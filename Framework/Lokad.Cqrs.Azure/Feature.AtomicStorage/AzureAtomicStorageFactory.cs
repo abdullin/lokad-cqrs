@@ -114,15 +114,5 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             _storage = storage;
             _observer = observer;
         }
-
-        public NuclearStorage CreateSimplifiedStorage(bool dontInitialize = false)
-        {
-            var storage = new NuclearStorage(this);
-            if (!dontInitialize)
-            {
-                Initialize();
-            }
-            return storage;
-        }
     }
 }
