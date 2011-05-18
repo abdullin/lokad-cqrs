@@ -8,6 +8,15 @@ namespace Lokad.Cqrs
 {
     public static class AzureStorage
     {
+        public static NuclearStorage CreateNuclear(CloudStorageAccount account)
+        {
+            return CreateNuclear(account, b => { });
+        }
+
+        public static NuclearStorage CreateNuclear(IAzureStorageConfiguration config)
+        {
+            return CreateNuclear(config, b => { });
+        }
         public static NuclearStorage CreateNuclear(IAzureStorageConfiguration config, IAzureAtomicStorageStrategy strategy)
         {
             var factory = new AzureAtomicStorageFactory(strategy, config, new ImmediateTracingObserver());
