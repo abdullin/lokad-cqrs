@@ -49,6 +49,14 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         }
 
         [TestFixture]
+        public sealed class When_listing_blob_items :
+            When_listing_items_in<Run_all_StreamingStorage_scenarios_for_Files>
+        {
+            
+        }
+
+
+        [TestFixture]
         public sealed class When_writing_blob_item
             : When_writing_item_in<Run_all_StreamingStorage_scenarios_for_Files>
         {

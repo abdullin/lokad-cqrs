@@ -69,7 +69,14 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
 
         public IEnumerable<string> ListItems()
         {
-            return _root.GetFiles().Select(f => f.Name).ToArray();
+            try
+            {
+                return _root.GetFiles().Select(f => f.Name).ToArray();
+            }
+            catch (DirectoryNotFoundException e)
+            {
+                throw StreamingErrors.ContainerNotFound(this, e);
+            }
         }
 
         public string FullPath

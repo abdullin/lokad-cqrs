@@ -67,9 +67,22 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
 
         public IEnumerable<string> ListItems()
         {
-            return _directory.ListBlobs()
-                .Select(item => _directory.Uri.MakeRelativeUri(item.Uri).ToString())
-                .ToArray();
+            try
+            {
+                return _directory.ListBlobs()
+                    .Select(item => _directory.Uri.MakeRelativeUri(item.Uri).ToString())
+                    .ToArray();
+            }
+            catch (StorageClientException e)
+            {
+                switch (e.ErrorCode)
+                {
+                    case StorageErrorCode.ContainerNotFound:
+                        throw StreamingErrors.ContainerNotFound(this, e);
+                    default:
+                        throw;
+                }
+            }
         }
 
         public bool Exists()

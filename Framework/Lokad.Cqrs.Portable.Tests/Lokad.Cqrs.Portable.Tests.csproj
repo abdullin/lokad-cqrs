@@ -69,6 +69,7 @@
     <Compile Include="ExtendMaybe.cs" />
     <Compile Include="Feature.AtomicStorage\Engine_scenario_for_custom_view_domain.cs" />
     <Compile Include="Feature.StreamingStorage\Engine_scenario_for_streaming_storage.cs" />
+    <Compile Include="Feature.StreamingStorage\Scenarios\When_listing_items_in.cs" />
     <Compile Include="FiniteEngineScenario.cs" />
     <Compile Include="Feature.AtomicStorage\Run_all_engine_scenarios_in_memory.cs" />
     <Compile Include="Feature.AtomicStorage\Engine_scenario_for_NuclearStorage_in_partition.cs" />

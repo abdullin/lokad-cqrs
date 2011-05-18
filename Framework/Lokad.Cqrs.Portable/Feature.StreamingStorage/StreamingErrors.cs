@@ -45,5 +45,12 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
                 item.FullPath);
             return new StreamingContainerNotFoundException(message, inner);
         }
+
+        public static Exception ContainerNotFound(IStreamingContainer item, Exception inner = null)
+        {
+            var message = string.Format(CultureInfo.InvariantCulture, "Storage container was not found: '{0}'.",
+                item.FullPath);
+            return new StreamingContainerNotFoundException(message, inner);
+        }
     }
 }

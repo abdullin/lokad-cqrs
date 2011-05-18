@@ -19,7 +19,14 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
 {
     public sealed class Play_all_for_BlobStreaming : ITestStorage
     {
-        CloudBlobClient _client = CloudStorageAccount.DevelopmentStorageAccount.CreateCloudBlobClient();
+        CloudBlobClient _client = CreateCloudBlobClient();
+
+        static CloudBlobClient CreateCloudBlobClient()
+        {
+            var client = CloudStorageAccount.DevelopmentStorageAccount.CreateCloudBlobClient();
+            client.RetryPolicy = RetryPolicies.NoRetry();
+            return client;
+        }
 
         public IStreamingContainer GetContainer(string path)
         {
@@ -85,6 +92,12 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         [TestFixture]
         public sealed class When_writing_blob_item
             : When_writing_item_in<Play_all_for_BlobStreaming>
+        {
+        }
+
+        [TestFixture]
+        public sealed class When_listing_blob_items
+            : When_listing_items_in<Play_all_for_BlobStreaming>
         {
         }
 
