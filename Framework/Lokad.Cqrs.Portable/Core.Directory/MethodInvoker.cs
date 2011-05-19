@@ -1,16 +1,21 @@
-﻿using System;
+﻿#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
+
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
+using System;
 using System.Diagnostics;
 using System.Reflection;
 using Lokad.Cqrs.Evil;
 
 namespace Lokad.Cqrs.Core.Directory
 {
-    public sealed class MethodInvoker : IMethodInvoker
+    sealed class MethodInvoker : IMethodInvoker
     {
-
-        readonly Func<ImmutableEnvelope, ImmutableMessage, object> _contextProvider;
         readonly MethodInvokerHint _hint;
-
+        readonly IMethodContextManager _context;
 
         [DebuggerNonUserCode]
         public void InvokeConsume(object messageHandler, ImmutableMessage item, ImmutableEnvelope envelope)
@@ -19,58 +24,36 @@ namespace Lokad.Cqrs.Core.Directory
             var content = item.Content;
             var messageType = item.MappedType;
 
-            if (_hint.HasContext)
-            {
-                var contextType = _hint.MessageContextType.Value;
-                var consume = handlerType.GetMethod(_hint.MethodName, new[] { messageType, contextType });
-                if (null == consume)
-                {
-                    throw new InvalidOperationException(
-                        string.Format("Unable to find consuming method {0}.{1}({2}, {3}).",
-                            handlerType.Name,
-                            _hint.MethodName,
-                            messageType.Name,
-                            contextType.Name));
-                }
-                var converted = _contextProvider(envelope,item);
-                try
-                {
-                    consume.Invoke(messageHandler, new[] { content, converted });
-                }
-                catch (TargetInvocationException e)
-                {
 
-                    throw InvocationUtil.Inner(e);
-                }
+            var consume = handlerType.GetMethod(_hint.MethodName, new[] {messageType});
+
+            if (null == consume)
+            {
+                throw new InvalidOperationException(string.Format("Unable to find consuming method {0}.{1}({2}).",
+                    handlerType.Name,
+                    _hint.MethodName,
+                    messageType.Name));
             }
-            else
+
+            try
             {
-                var consume = handlerType.GetMethod(_hint.MethodName, new[] { messageType });
-
-                if (null == consume)
-                {
-                    throw new InvalidOperationException(string.Format("Unable to find consuming method {0}.{1}({2}).",
-                        handlerType.Name,
-                        _hint.MethodName,
-                        messageType.Name));
-                }
-
-                try
-                {
-                    consume.Invoke(messageHandler, new[] { content });
-                }
-                catch (TargetInvocationException e)
-                {
-                    throw InvocationUtil.Inner(e);
-                }
-
+                _context.SetContext(envelope, item);
+                consume.Invoke(messageHandler, new[] {content});
+            }
+            catch (TargetInvocationException e)
+            {
+                throw InvocationUtil.Inner(e);
+            }
+            finally
+            {
+                _context.ClearContext();
             }
         }
 
-        public MethodInvoker(Func<ImmutableEnvelope, ImmutableMessage, object> contextProvider, MethodInvokerHint hint)
+        public MethodInvoker(MethodInvokerHint hint, IMethodContextManager context)
         {
-            _contextProvider = contextProvider;
             _hint = hint;
+            _context = context;
         }
     }
 }

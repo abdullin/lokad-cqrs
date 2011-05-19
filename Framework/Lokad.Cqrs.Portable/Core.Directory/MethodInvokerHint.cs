@@ -7,17 +7,13 @@ namespace Lokad.Cqrs.Core.Directory
     public sealed class MethodInvokerHint
     {
         public readonly Type ConsumerTypeDefinition;
-        public readonly Optional<Type> MessageContextType;
         public readonly string MethodName;
-        public readonly bool HasContext;
         public readonly Type MessageInterface;
 
-        public MethodInvokerHint(Type consumerTypeDefinition, Optional<Type> messageContextType, string methodName, Type messageinterface)
+        public MethodInvokerHint(Type consumerTypeDefinition, string methodName, Type messageinterface)
         {
             ConsumerTypeDefinition = consumerTypeDefinition;
-            MessageContextType = messageContextType;
             MethodName = methodName;
-            HasContext = messageContextType.HasValue;
             MessageInterface = messageinterface;
         }
 
@@ -62,13 +58,8 @@ namespace Lokad.Cqrs.Core.Directory
             }
             var method = matches[0];
 
-            var genericParameters = method.GetParameters();
-
-            if (genericParameters.Length == 2)
-            {
-                return new MethodInvokerHint(declaringGenericInterface, genericParameters[1].ParameterType, method.Name, messageInterface);
-            }
-            return new MethodInvokerHint(declaringGenericInterface, Optional<Type>.Empty, method.Name, messageInterface);
+            
+            return new MethodInvokerHint(declaringGenericInterface, method.Name, messageInterface);
         }
     }
 }

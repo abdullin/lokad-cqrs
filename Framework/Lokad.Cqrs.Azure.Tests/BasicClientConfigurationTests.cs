@@ -23,7 +23,7 @@ namespace Lokad.Cqrs
         
         public sealed class Handler : Define.Handle<Message>
         {
-            public void Consume(Message message, MessageContext context)
+            public void Consume(Message message)
             {
                 
             }

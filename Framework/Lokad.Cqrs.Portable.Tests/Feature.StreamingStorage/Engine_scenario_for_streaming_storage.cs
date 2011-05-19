@@ -30,7 +30,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
                 _root = root;
             }
 
-            public void Consume(Do message, MessageContext context)
+            public void Consume(Do message)
             {
                 
 

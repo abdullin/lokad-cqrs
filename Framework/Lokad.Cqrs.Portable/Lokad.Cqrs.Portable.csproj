@@ -41,7 +41,11 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core.Directory\IMethodContextManager.cs" />
+    <Compile Include="Core.Directory\MethodContextManager.cs" />
     <Compile Include="Core.Dispatch\IEnvelopeQuarantine.cs" />
+    <Compile Include="ImmutableAttribute.cs" />
+    <Compile Include="MessageContext.cs" />
     <Compile Include="PartialRegistration.cs" />
     <Compile Include="HideObjectMembersFromIntelliSense.cs" />
     <Compile Include="Build\Client\CqrsClient.cs" />
@@ -64,7 +68,6 @@
     <Compile Include="Feature.AtomicStorage\MemoryAtomicStorageFactory.cs" />
     <Compile Include="Feature.AtomicStorage\MemoryAtomicStorageStrategy.cs" />
     <Compile Include="Feature.StreamingStorage\FileStreamingStorageModule.cs" />
-    <Compile Include="MessageContext.cs" />
     <Compile Include="Core.Directory\IMethodInvoker.cs" />
     <Compile Include="Core.Directory\MessageActivationMap.cs" />
     <Compile Include="Core.Directory\MessageDirectoryFilter.cs" />

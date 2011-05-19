@@ -9,6 +9,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using Lokad.Cqrs.Build.Engine;
+using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Dispatch.Events;
 using NUnit.Framework;
 
@@ -38,7 +39,7 @@ namespace Lokad.Cqrs
 
         public interface IMyHandler<TMessage> where TMessage : IMyMessage
         {
-            void Consume(TMessage message, MyContext detail);
+            void Consume(TMessage message);
         }
 
         public sealed class MyMessageA : IMyMessage {}
@@ -47,15 +48,24 @@ namespace Lokad.Cqrs
 
         public sealed class MyHandler : IMyHandler<MyMessageA>, IMyHandler<MyMessageB>
         {
-            public void Consume(MyMessageA messageA, MyContext detail)
+            Func<MyContext> _context;
+
+            public MyHandler(Func<MyContext> context)
             {
+                _context = context;
+            }
+
+            public void Consume(MyMessageA messageA)
+            {
+                var detail = _context();
                 Assert.AreEqual("valid", detail.Token);
                 var txt = string.Format("consume A: {0} created on {1}", detail.MessageId, detail.Created);
                 Trace.WriteLine(txt);
             }
 
-            public void Consume(MyMessageB messageA, MyContext detail)
+            public void Consume(MyMessageB messageA)
             {
+                var detail = _context();
                 Assert.AreEqual("valid", detail.Token);
                 var txt = string.Format("Consume B: {0} created on {1}", detail.MessageId, detail.Created);
                 Trace.WriteLine(txt);
@@ -82,7 +92,7 @@ namespace Lokad.Cqrs
                 {
                     b.Domain(m =>
                     {
-                        m.HandlerSample<IMyHandler<IMyMessage>>(c => c.Consume(null, null));
+                        m.HandlerSample<IMyHandler<IMyMessage>>(c => c.Consume(null));
                         m.ContextFactory(BuildContextOnTheFly);
                     });
                     b.Memory(m =>
@@ -99,5 +109,6 @@ namespace Lokad.Cqrs
             var token = envelope.GetAttribute("token", "");
             return new MyContext(messageId, token, envelope.CreatedOnUtc);
         }
+
     }
 }

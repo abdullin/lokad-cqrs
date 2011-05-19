@@ -43,7 +43,7 @@ namespace Lokad.Cqrs
                 _sender = sender;
             }
 
-            public void Consume(Message1 message, MessageContext context)
+            public void Consume(Message1 message)
             {
                 if (message.Block < 5)
                 {

@@ -30,7 +30,7 @@ namespace Lokad.Cqrs.Synthetic
                 _storage = storage;
             }
 
-            public void Consume(Message message, MessageContext context)
+            public void Consume(Message message)
             {
                 if (message.Fail)
                     throw new InvalidOperationException("too much in one transaction");

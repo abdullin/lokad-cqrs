@@ -23,7 +23,7 @@ namespace Lokad.Cqrs.Synthetic
 
         public sealed class Handler : Define.Handle<Message>
         {
-            public void Consume(Message message, MessageContext context)
+            public void Consume(Message message)
             {
                 throw new NotImplementedException("Fail: try");
             }

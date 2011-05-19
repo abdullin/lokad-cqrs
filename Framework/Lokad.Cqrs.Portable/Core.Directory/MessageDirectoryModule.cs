@@ -21,11 +21,11 @@ namespace Lokad.Cqrs.Core.Directory
     {
         readonly DomainAssemblyScanner _scanner = new DomainAssemblyScanner();
         readonly ContainerBuilder _builder;
+        IMethodContextManager _contextManager;
         MethodInvokerHint _hint;
+        Action<ContainerBuilder> _actionReg;
 
-        Func<ImmutableEnvelope, ImmutableMessage, object> _contextFactory;
-        Type _contextFactoryType;
-
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageDirectoryModule"/> class.
         /// </summary>
@@ -33,18 +33,18 @@ namespace Lokad.Cqrs.Core.Directory
         {
             _builder = new ContainerBuilder();
 
-            HandlerSample<IConsume<IMessage>>(a => a.Consume(null, null));
-            ContextFactory((envelope, item) => new MessageContext(envelope.EnvelopeId, envelope.CreatedOnUtc));
- 
+            HandlerSample<IConsume<IMessage>>(a => a.Consume(null));
+            ContextFactory((envelope, message) => new MessageContext(envelope.EnvelopeId, message.Index, envelope.CreatedOnUtc));
         }
 
-        public void ContextFactory<TResult>(Func<ImmutableEnvelope,ImmutableMessage, TResult> result)
-		{
-            _contextFactory = (envelope, item) => result(envelope, item);
-            _contextFactoryType = typeof (TResult);
-		}
 
-
+        public void ContextFactory<TContext>(Func<ImmutableEnvelope,ImmutableMessage, TContext> manager)
+            where TContext : class 
+        {
+            var instance = new MethodContextManager<TContext>(manager);
+            _contextManager = instance;
+            _actionReg = builder => builder.RegisterInstance<Func<TContext>>(instance.Get);
+        }
 
 		public void HandlerSample<THandler>(Expression<Action<THandler>> action)
 		{
@@ -130,17 +130,7 @@ namespace Lokad.Cqrs.Core.Directory
 
         void IModule.Configure(IComponentRegistry componentRegistry)
         {
-            if (_hint.HasContext)
-            {
-                if (!_hint.MessageContextType.Value.IsAssignableFrom(_contextFactoryType))
-                {
-                    throw new InvalidOperationException("Passed lambda returns object instance that is not assignable to: " + _hint.MessageContextType.Value);
-                }
-            }
-            
-            
-
-            var handler = new MethodInvoker(_contextFactory, _hint);
+            var handler = new MethodInvoker(_hint, _contextManager);
 
             _scanner.Constrain(_hint);
             var mappings = _scanner.Build(_hint.ConsumerTypeDefinition);
@@ -151,7 +141,7 @@ namespace Lokad.Cqrs.Core.Directory
             {
                 _builder.RegisterType(consumer);
             }
-
+            _actionReg(_builder);
             _builder.RegisterInstance(builder).As<MessageDirectoryBuilder>();
             _builder.RegisterInstance(new SerializationList(messages)).As<IKnowSerializationTypes>();
             _builder.RegisterInstance(handler).As<IMethodInvoker>();

@@ -56,7 +56,7 @@ namespace Lokad.Cqrs
                 _sender = sender;
             }
 
-            public void Consume(CreateCustomer cmd, MessageContext context)
+            public void Consume(CreateCustomer cmd)
             {
                 var customer = new Customer(cmd.CustomerId, cmd.CustomerName);
                 _storage.AddEntity(customer.Id, customer);
