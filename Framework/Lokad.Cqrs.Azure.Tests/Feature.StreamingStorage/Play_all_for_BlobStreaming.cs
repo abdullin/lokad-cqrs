@@ -19,10 +19,11 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
 {
     public sealed class Play_all_for_BlobStreaming : ITestStorage
     {
-        CloudBlobClient _client = CreateCloudBlobClient();
+        
 
         static CloudBlobClient CreateCloudBlobClient()
         {
+            
             var client = CloudStorageAccount.DevelopmentStorageAccount.CreateCloudBlobClient();
             client.RetryPolicy = RetryPolicies.NoRetry();
             return client;
@@ -31,7 +32,8 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         public IStreamingContainer GetContainer(string path)
         {
             //UseLocalFiddler();
-            return new BlobStreamingContainer(_client.GetBlobDirectoryReference(path));
+            var root = AzureStorage.CreateStreaming(CloudStorageAccount.DevelopmentStorageAccount);
+            return root.GetContainer(path);
         }
 
         public static CloudBlobClient GetCustom()
@@ -45,13 +47,13 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
             return StreamingWriteOptions.None;
         }
 
-        public Play_all_for_BlobStreaming UseLocalFiddler()
-        {
-            const string uri = "http://ipv4.fiddler:10000/devstoreaccount1";
-            var credentials = CloudStorageAccount.DevelopmentStorageAccount.Credentials;
-            _client = new CloudBlobClient(uri, credentials);
-            return this;
-        }
+        //public Play_all_for_BlobStreaming UseLocalFiddler()
+        //{
+        //    const string uri = "http://ipv4.fiddler:10000/devstoreaccount1";
+        //    var credentials = CloudStorageAccount.DevelopmentStorageAccount.Credentials;
+        //    _client = new CloudBlobClient(uri, credentials);
+        //    return this;
+        //}
 
         [TestFixture]
         public sealed class When_checking_blob_item

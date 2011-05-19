@@ -69,8 +69,23 @@ namespace Lokad.Cqrs.Build
         {
             // defaults
             _queueConfig = client => client.RetryPolicy = RetryPolicies.NoRetry();
-            _blobConfig = client => client.RetryPolicy = RetryPolicies.NoRetry();
+            _blobConfig = client =>
+                {
+                    client.RetryPolicy = RetryPolicies.NoRetry();
+                };
             _tableConfig = client => client.RetryPolicy = RetryPolicies.NoRetry();
+
+            
+            if (account.Credentials.AccountName == "devstoreaccount1")
+            {
+                _blobConfig += client =>
+                    {
+                        // http://stackoverflow.com/questions/4897826/
+                        // local dev store works poorly with multi-thread uploads
+                        client.ParallelOperationThreadCount = 1;
+                    };
+            }
+
             _account = account;
             _accountId = accountId;
         }

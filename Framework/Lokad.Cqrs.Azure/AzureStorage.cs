@@ -2,6 +2,7 @@
 using Lokad.Cqrs.Build;
 using Lokad.Cqrs.Core.Reactive;
 using Lokad.Cqrs.Feature.AtomicStorage;
+using Lokad.Cqrs.Feature.StreamingStorage;
 using Microsoft.WindowsAzure;
 
 namespace Lokad.Cqrs
@@ -35,6 +36,17 @@ namespace Lokad.Cqrs
             configStrategy(strategyBuilder);
             var strategy = strategyBuilder.Build();
             return CreateNuclear(config, strategy);
+        }
+
+        public static IStreamingRoot CreateStreaming(IAzureStorageConfiguration config)
+        {
+            return new BlobStreamingRoot(config.CreateBlobClient());
+        }
+
+        public static IStreamingRoot CreateStreaming(CloudStorageAccount config)
+        {
+            var account = new AzureStorageConfigurationBuilder(config, "default");
+            return CreateStreaming(account.Build());
         }
     }
 }
