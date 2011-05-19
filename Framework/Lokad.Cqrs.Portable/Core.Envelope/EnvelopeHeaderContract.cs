@@ -10,7 +10,7 @@ using System.IO;
 
 namespace Lokad.Cqrs.Core.Envelope
 {
-    public sealed class MessageHeader
+    public sealed class EnvelopeHeaderContract
     {
         public const int FixedSize = 20;
 
@@ -20,20 +20,20 @@ namespace Lokad.Cqrs.Core.Envelope
         public readonly long EnvelopeBytes;
         public readonly long CheckSum;
 
-        public MessageHeader(int messageFormatVersion, long envelopeBytes, long checksum)
+        public EnvelopeHeaderContract(int messageFormatVersion, long envelopeBytes, long checksum)
         {
             MessageFormatVersion = messageFormatVersion;
             EnvelopeBytes = envelopeBytes;
             CheckSum = checksum;
         }
 
-        public static MessageHeader ReadHeader(byte[] buffer)
+        public static EnvelopeHeaderContract ReadHeader(byte[] buffer)
         {
             var magic = BitConverter.ToInt32(buffer, 0);
             var envelopeBytes = BitConverter.ToInt64(buffer, 4);
             var checkSum = BitConverter.ToInt64(buffer, 4 + 8);
 
-            return new MessageHeader(magic, envelopeBytes, checkSum);
+            return new EnvelopeHeaderContract(magic, envelopeBytes, checkSum);
         }
 
         public void WriteToStream(MemoryStream stream)

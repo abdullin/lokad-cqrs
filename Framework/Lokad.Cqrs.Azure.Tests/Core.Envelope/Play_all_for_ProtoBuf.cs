@@ -17,7 +17,7 @@ namespace Lokad.Cqrs.Core.Envelope
     {
         readonly IEnvelopeStreamer _streamer = BuildStreamer(new EnvelopeSerializerWithProtoBuf());
 
-        protected override ImmutableEnvelope RoundtripViaSerializer(MessageEnvelopeBuilder builder)
+        protected override ImmutableEnvelope RoundtripViaSerializer(EnvelopeBuilder builder)
         {
             var bytes = _streamer.SaveEnvelopeData(builder.Build());
             return _streamer.ReadAsEnvelopeData(bytes);

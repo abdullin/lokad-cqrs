@@ -32,7 +32,7 @@ namespace Lokad.Cqrs.Core.Outbox
             InnerSendBatch(cb => { }, new[] {content});
         }
 
-        public void SendOne(object content, Action<MessageEnvelopeBuilder> configure)
+        public void SendOne(object content, Action<EnvelopeBuilder> configure)
         {
             InnerSendBatch(configure, new[] {content});
         }
@@ -43,19 +43,19 @@ namespace Lokad.Cqrs.Core.Outbox
             InnerSendBatch(cb => { }, content);
         }
 
-        public void SendBatch(object[] content, Action<MessageEnvelopeBuilder> builder)
+        public void SendBatch(object[] content, Action<EnvelopeBuilder> builder)
         {
             InnerSendBatch(builder, content);
         }
 
 
 
-        void InnerSendBatch(Action<MessageEnvelopeBuilder> configure, object[] messageItems) {
+        void InnerSendBatch(Action<EnvelopeBuilder> configure, object[] messageItems) {
             if (messageItems.Length == 0)
                 return;
 
             var id = _idGenerator();
-            var builder = MessageEnvelopeBuilder.FromItems(id, messageItems);
+            var builder = EnvelopeBuilder.FromItems(id, messageItems);
             
             configure(builder);
             var envelope = builder.Build();

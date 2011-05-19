@@ -10,22 +10,22 @@ using System.Runtime.Serialization;
 
 namespace Lokad.Cqrs.Core.Envelope
 {
-    [DataContract, Serializable]
+    [DataContract(Namespace = "Lokad.Cqrs.v2", Name = "Envelope"), Serializable]
     public sealed class EnvelopeContract
     {
         [DataMember(Order = 1)] public readonly string EnvelopeId;
         [DataMember(Order = 2)] public readonly EnvelopeAttributeContract[] EnvelopeAttributes;
-        [DataMember(Order = 3)] public readonly ItemContract[] Items;
+        [DataMember(Order = 3)] public readonly MessageContract[] Messages;
         [DataMember(Order = 4)] public readonly DateTime DeliverOnUtc;
         [DataMember(Order = 5)] public readonly DateTime CreatedOnUtc;
 
-        public EnvelopeContract(string envelopeId, EnvelopeAttributeContract[] envelopeAttributes, ItemContract[] items,
+        public EnvelopeContract(string envelopeId, EnvelopeAttributeContract[] envelopeAttributes, MessageContract[] messages,
             DateTime deliverOnUtc, DateTime createdOnUtc)
         {
             EnvelopeId = envelopeId;
             DeliverOnUtc = deliverOnUtc;
             EnvelopeAttributes = envelopeAttributes;
-            Items = items;
+            Messages = messages;
             CreatedOnUtc = createdOnUtc;
         }
 
@@ -33,11 +33,11 @@ namespace Lokad.Cqrs.Core.Envelope
         EnvelopeContract()
 // ReSharper restore UnusedMember.Local
         {
-            Items = NoItems;
+            Messages = NoMessages;
             EnvelopeAttributes = NoAttributes;
         }
 
-        static readonly ItemContract[] NoItems = new ItemContract[0];
+        static readonly MessageContract[] NoMessages = new MessageContract[0];
         static readonly EnvelopeAttributeContract[] NoAttributes = new EnvelopeAttributeContract[0];
     }
 }

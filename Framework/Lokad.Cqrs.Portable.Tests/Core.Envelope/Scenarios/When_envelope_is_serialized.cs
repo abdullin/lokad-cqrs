@@ -9,7 +9,7 @@ namespace Lokad.Cqrs.Core.Envelope.Scenarios
 
     public abstract class When_envelope_is_serialized
     {
-        protected abstract ImmutableEnvelope RoundtripViaSerializer(MessageEnvelopeBuilder builder);
+        protected abstract ImmutableEnvelope RoundtripViaSerializer(EnvelopeBuilder builder);
 
         protected static IEnvelopeStreamer BuildStreamer(IEnvelopeSerializer serializer)
         {
@@ -19,7 +19,7 @@ namespace Lokad.Cqrs.Core.Envelope.Scenarios
         [Test]
         public void Empty_roundtrip_should_work()
         {
-            var builder = new MessageEnvelopeBuilder("my-id");
+            var builder = new EnvelopeBuilder("my-id");
             var envelope = RoundtripViaSerializer(builder);
             Assert.AreEqual(envelope.EnvelopeId, "my-id");
         }
@@ -28,7 +28,7 @@ namespace Lokad.Cqrs.Core.Envelope.Scenarios
         public void Envelope_attributes_should_be_present()
         {
             var time = DateTime.UtcNow;
-            var builder = new MessageEnvelopeBuilder("my-id");
+            var builder = new EnvelopeBuilder("my-id");
             builder.AddString("Custom", "1");
             
 
@@ -44,7 +44,7 @@ namespace Lokad.Cqrs.Core.Envelope.Scenarios
         [Test]
         public void Payload_should_be_serialized()
         {
-            var builder = new MessageEnvelopeBuilder("my-id");
+            var builder = new EnvelopeBuilder("my-id");
             builder.AddItem(new MyMessage("42"));
 
             var envelope = RoundtripViaSerializer(builder);
@@ -56,7 +56,7 @@ namespace Lokad.Cqrs.Core.Envelope.Scenarios
         [Test]
         public void Multiple_payloads_are_handled_in_sequence()
         {
-            var builder = new MessageEnvelopeBuilder("my-id");
+            var builder = new EnvelopeBuilder("my-id");
 
             for (int i = 0; i < 5; i++)
             {

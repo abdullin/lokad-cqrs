@@ -10,7 +10,7 @@ using System.Runtime.Serialization;
 
 namespace Lokad.Cqrs.Core.Envelope
 {
-    [DataContract, Serializable]
+    [DataContract(Namespace = "Lokad.Cqrs.v2", Name = "EnvelopeAttribute"), Serializable]
     public sealed class EnvelopeAttributeContract
     {
         [DataMember(Order = 1)]

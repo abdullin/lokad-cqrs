@@ -10,8 +10,8 @@ using System.Runtime.Serialization;
 
 namespace Lokad.Cqrs.Core.Envelope
 {
-    [DataContract, Serializable]
-    public sealed class ItemAttributeContract
+    [DataContract(Namespace = "Lokad.Cqrs.v2", Name = "MessageAttribute"), Serializable]
+    public sealed class MessageAttributeContract
     {
         [DataMember(Order = 2)]
         public string Name { get; set; }

@@ -100,8 +100,8 @@
     <Compile Include="Core.Dispatch\ISingleThreadMessageDispatcher.cs" />
     <Compile Include="Core.Dispatch\MessageDuplicationManager.cs" />
     <Compile Include="Core.Dispatch\MessageDuplicationMemory.cs" />
-    <Compile Include="Core.Envelope\MessageEnvelopeBuilder.cs" />
-    <Compile Include="Core.Envelope\MessageItemBuilder.cs" />
+    <Compile Include="Core.Envelope\EnvelopeBuilder.cs" />
+    <Compile Include="Core.Envelope\MessageBuilder.cs" />
     <Compile Include="Evil\InvocationUtil.cs" />
     <Compile Include="Core.Inbox\IPartitionInbox.cs" />
     <Compile Include="Core.Inbox\EnvelopeTransportContext.cs" />
@@ -111,10 +111,10 @@
     <Compile Include="Core.Envelope\EnvelopeAttributeTypeContract.cs" />
     <Compile Include="Core.Envelope\EnvelopeContract.cs" />
     <Compile Include="Core.Envelope\EnvelopeStreamer.cs" />
-    <Compile Include="Core.Envelope\ItemAttributeContract.cs" />
-    <Compile Include="Core.Envelope\ItemContract.cs" />
+    <Compile Include="Core.Envelope\MessageAttributeContract.cs" />
+    <Compile Include="Core.Envelope\MessageContract.cs" />
     <Compile Include="Core.Envelope\MessageAttributes.cs" />
-    <Compile Include="Core.Envelope\MessageHeader.cs" />
+    <Compile Include="Core.Envelope\EnvelopeHeaderContract.cs" />
     <Compile Include="Core.Directory\Default\IConsume.cs" />
     <Compile Include="Core.Directory\Default\IConsumeMessage.cs" />
     <Compile Include="Core.Directory\Default\IMessage.cs" />

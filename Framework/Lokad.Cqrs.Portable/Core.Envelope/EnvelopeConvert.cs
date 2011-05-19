@@ -38,17 +38,17 @@ namespace Lokad.Cqrs.Core.Envelope
             return list;
         }
 
-        public static ImmutableAttribute[] ItemAttributesFromContract(ICollection<ItemAttributeContract> attributes)
+        public static ImmutableAttribute[] ItemAttributesFromContract(ICollection<MessageAttributeContract> attributes)
         {
             return attributes
                 .Select(attribute => new ImmutableAttribute(attribute.Name, attribute.Value))
                 .ToArray();
         }
 
-        public static ItemAttributeContract[] ItemAttributesToContract(
+        public static MessageAttributeContract[] ItemAttributesToContract(
             ICollection<ImmutableAttribute> attributes)
         {
-            var contracts = new ItemAttributeContract[attributes.Count];
+            var contracts = new MessageAttributeContract[attributes.Count];
             var pos = 0;
 
             foreach (var attrib in attributes)
@@ -67,9 +67,9 @@ namespace Lokad.Cqrs.Core.Envelope
             return contracts;
         }
 
-        static ItemAttributeContract ItemAttributeValueToContract(string name, string value)
+        static MessageAttributeContract ItemAttributeValueToContract(string name, string value)
         {
-            return new ItemAttributeContract()
+            return new MessageAttributeContract()
                 {
                     Name = name,
                     Value = value

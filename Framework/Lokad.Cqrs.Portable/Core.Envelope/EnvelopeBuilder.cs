@@ -11,13 +11,13 @@ using System.Linq;
 
 namespace Lokad.Cqrs.Core.Envelope
 {
-    public sealed class MessageEnvelopeBuilder
+    public sealed class EnvelopeBuilder
     {
         public readonly string EnvelopeId;
         readonly IDictionary<string, string> _attributes = new Dictionary<string, string>();
         DateTime _deliverOnUtc;
 
-        public readonly IList<MessageItemBuilder> Items = new List<MessageItemBuilder>();
+        public readonly IList<MessageBuilder> Items = new List<MessageBuilder>();
 
         
         public void AddString(string key, string value)
@@ -30,12 +30,12 @@ namespace Lokad.Cqrs.Core.Envelope
             _attributes.Add(tag,null);
         }
 
-        public MessageEnvelopeBuilder(string envelopeId)
+        public EnvelopeBuilder(string envelopeId)
         {
             EnvelopeId = envelopeId;
         }
 
-        public MessageItemBuilder AddItem<T>(T item)
+        public MessageBuilder AddItem<T>(T item)
         {
             // add KVPs after
             var t = typeof (T);
@@ -44,7 +44,7 @@ namespace Lokad.Cqrs.Core.Envelope
                 t = item.GetType();
             }
 
-            var messageItemToSave = new MessageItemBuilder(t, item);
+            var messageItemToSave = new MessageBuilder(t, item);
             Items.Add(messageItemToSave);
             return messageItemToSave;
         }
@@ -59,9 +59,9 @@ namespace Lokad.Cqrs.Core.Envelope
             _deliverOnUtc = deliveryDateUtc;
         }
 
-        public static MessageEnvelopeBuilder FromItems(string envelopeId, params object[] items)
+        public static EnvelopeBuilder FromItems(string envelopeId, params object[] items)
         {
-            var builder = new MessageEnvelopeBuilder(envelopeId);
+            var builder = new EnvelopeBuilder(envelopeId);
             foreach (var item in items)
             {
                 builder.AddItem(item);

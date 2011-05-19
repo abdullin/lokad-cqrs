@@ -30,7 +30,7 @@ namespace Lokad.Cqrs
             _messages.Add(sender => sender.SendBatch(messages));
         }
 
-        protected void EnlistBatch(object[] messages, Action<MessageEnvelopeBuilder> build)
+        protected void EnlistBatch(object[] messages, Action<EnvelopeBuilder> build)
         {
             _messages.Add(sender => sender.SendBatch(messages, build));
         }

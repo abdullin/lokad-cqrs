@@ -20,11 +20,11 @@ namespace Lokad.Cqrs
         /// </summary>
         /// <param name="content">The message to send.</param>
         void SendOne(object content);
-        void SendOne(object content, Action<MessageEnvelopeBuilder> configure);
+        void SendOne(object content, Action<EnvelopeBuilder> configure);
 
 
         
         void SendBatch(object[] content);
-        void SendBatch(object[] content, Action<MessageEnvelopeBuilder> builder);
+        void SendBatch(object[] content, Action<EnvelopeBuilder> builder);
     }
 }

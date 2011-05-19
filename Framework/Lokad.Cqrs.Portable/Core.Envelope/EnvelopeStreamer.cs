@@ -44,7 +44,7 @@ namespace Lokad.Cqrs.Core.Envelope
         public byte[] SaveEnvelopeData(ImmutableEnvelope envelope)
         {
             //  string contract, Guid messageId, Uri sender, 
-            var itemContracts = new ItemContract[envelope.Items.Length];
+            var itemContracts = new MessageContract[envelope.Items.Length];
             using (var content = new MemoryStream())
             {
                 int position = 0;
@@ -62,7 +62,7 @@ namespace Lokad.Cqrs.Core.Envelope
                     _dataSerializer.Serialize(item.Content, content);
                     int size = (int) content.Position - position;
                     var attribContracts = EnvelopeConvert.ItemAttributesToContract(item.GetAllAttributes());
-                    itemContracts[i] = new ItemContract(name, size, position, attribContracts);
+                    itemContracts[i] = new MessageContract(name, size, position, attribContracts);
 
                     position += size;
                 }
@@ -76,15 +76,15 @@ namespace Lokad.Cqrs.Core.Envelope
                 using (var stream = new MemoryStream())
                 {
                     // skip header
-                    stream.Seek(MessageHeader.FixedSize, SeekOrigin.Begin);
+                    stream.Seek(EnvelopeHeaderContract.FixedSize, SeekOrigin.Begin);
                     // save envelope attributes
                     _envelopeSerializer.SerializeEnvelope(stream, contract);
-                    var envelopeBytes = stream.Position - MessageHeader.FixedSize;
+                    var envelopeBytes = stream.Position - EnvelopeHeaderContract.FixedSize;
                     // copy data
                     content.WriteTo(stream);
                     // write the header
                     stream.Seek(0, SeekOrigin.Begin);
-                    var header = new MessageHeader(MessageHeader.Schema2DataFormat, envelopeBytes, 0);
+                    var header = new EnvelopeHeaderContract(EnvelopeHeaderContract.Schema2DataFormat, envelopeBytes, 0);
                     header.WriteToStream(stream);
                     return stream.ToArray();
                 }
@@ -121,28 +121,28 @@ namespace Lokad.Cqrs.Core.Envelope
 
         public ImmutableEnvelope ReadAsEnvelopeData(byte[] buffer)
         {
-            var header = MessageHeader.ReadHeader(buffer);
+            var header = EnvelopeHeaderContract.ReadHeader(buffer);
 
 
-            if (header.MessageFormatVersion != MessageHeader.Schema2DataFormat)
+            if (header.MessageFormatVersion != EnvelopeHeaderContract.Schema2DataFormat)
                 throw new InvalidOperationException("Unexpected message format");
 
 
             EnvelopeContract envelope;
-            using (var stream = new MemoryStream(buffer, MessageHeader.FixedSize, (int) header.EnvelopeBytes))
+            using (var stream = new MemoryStream(buffer, EnvelopeHeaderContract.FixedSize, (int) header.EnvelopeBytes))
             {
                 envelope = _envelopeSerializer.DeserializeEnvelope(stream);
             }
             
-            var items = new ImmutableMessage[envelope.Items.Length];
+            var items = new ImmutableMessage[envelope.Messages.Length];
 
             for (var i = 0; i < items.Length; i++)
             {
-                var itemContract = envelope.Items[i];
+                var itemContract = envelope.Messages[i];
                 var attributes = EnvelopeConvert.ItemAttributesFromContract(itemContract.Attributes);
                 Type contractType;
 
-                var itemPosition = MessageHeader.FixedSize + (int)header.EnvelopeBytes + (int)itemContract.ContentPosition;
+                var itemPosition = EnvelopeHeaderContract.FixedSize + (int)header.EnvelopeBytes + (int)itemContract.ContentPosition;
                 var itemSize = (int)itemContract.ContentSize;
                 if (_dataSerializer.TryGetContractTypeByName(itemContract.ContractName, out contractType))
                 {

@@ -10,13 +10,13 @@ using System.Collections.Generic;
 
 namespace Lokad.Cqrs.Core.Envelope
 {
-    public sealed class MessageItemBuilder
+    public sealed class MessageBuilder
     {
         internal readonly IDictionary<string, string> Attributes = new Dictionary<string, string>();
         public readonly Type MappedType;
         public readonly object Content;
 
-        public MessageItemBuilder(Type mappedType, object content)
+        public MessageBuilder(Type mappedType, object content)
         {
             MappedType = mappedType;
             Content = content;
