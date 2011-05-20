@@ -17,9 +17,9 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
     public sealed class AzureAtomicStorageModule : Module
     {
         readonly string _accountName;
-        readonly IAzureAtomicStorageStrategy _strategy;
+        readonly IAtomicStorageStrategy _strategy;
 
-        public AzureAtomicStorageModule(string accountName, IAzureAtomicStorageStrategy strategy)
+        public AzureAtomicStorageModule(string accountName, IAtomicStorageStrategy strategy)
         {
             _accountName = accountName;
             _strategy = strategy;

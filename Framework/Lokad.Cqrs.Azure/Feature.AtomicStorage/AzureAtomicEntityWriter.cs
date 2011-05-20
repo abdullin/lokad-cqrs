@@ -6,6 +6,7 @@
 #endregion
 
 using System;
+using System.IO;
 using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs.Feature.AtomicStorage
@@ -19,9 +20,9 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         //where TEntity : IAtomicEntity<TKey>
     {
         readonly CloudBlobContainer _container;
-        readonly IAzureAtomicStorageStrategy _strategy;
+        readonly IAtomicStorageStrategy _strategy;
 
-        public AzureAtomicEntityWriter(IAzureStorageConfiguration storage, IAzureAtomicStorageStrategy strategy)
+        public AzureAtomicEntityWriter(IAzureStorageConfiguration storage, IAtomicStorageStrategy strategy)
         {
             _strategy = strategy;
             var containerName = strategy.GetFolderForEntity(typeof (TEntity));
@@ -36,8 +37,11 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             TEntity view;
             try
             {
-                var data = blob.DownloadByteArray();
-                view = _strategy.Deserialize<TEntity>(data);
+                using (var stream = blob.OpenRead())
+                {
+                    view = _strategy.Deserialize<TEntity>(stream);
+                }
+                
                 view = updateViewFactory(view);
             }
             catch (StorageClientException ex)
@@ -56,12 +60,11 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                         throw;
 
                 }
-
-                
             }
-
-            var content = _strategy.Serialize(view);
-            blob.UploadByteArray(content);
+            using (var mem = blob.OpenWrite())
+            {
+                _strategy.Serialize(view, mem);
+            }
             return view;
         }
 

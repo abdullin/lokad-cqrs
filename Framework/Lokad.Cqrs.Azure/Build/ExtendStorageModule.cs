@@ -13,14 +13,14 @@ namespace Lokad.Cqrs.Build
             AtomicIsInAzure(self, accountId, d => { });
         }
 
-        public static void AtomicIsInAzure(this StorageModule self, string accountId, Action<DefaultAzureAtomicStorageStrategyBuilder> config)
+        public static void AtomicIsInAzure(this StorageModule self, string accountId, Action<DefaultAtomicStorageStrategyBuilder> config)
         {
-            var builder = new DefaultAzureAtomicStorageStrategyBuilder();
+            var builder = new DefaultAtomicStorageStrategyBuilder();
             config(builder);
             AtomicIsInAzure(self, accountId, builder.Build());
         }
 
-        public static void AtomicIsInAzure(this StorageModule self, string accountId, IAzureAtomicStorageStrategy strategy)
+        public static void AtomicIsInAzure(this StorageModule self, string accountId, IAtomicStorageStrategy strategy)
         {
             var module = new AzureAtomicStorageModule(accountId, strategy);
             self.EnlistModule(module);

@@ -15,7 +15,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         // ReSharper disable InconsistentNaming
 
 
-        static IAzureAtomicStorageStrategy Default = new DefaultAzureAtomicStorageStrategyBuilder().Build();
+        static IAtomicStorageStrategy Default = new DefaultAtomicStorageStrategyBuilder().Build();
 
         [Test]
         public void Valid_name_for_type_with_underscore()

@@ -6,17 +6,18 @@
 #endregion
 
 using System;
+using System.IO;
 
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
-    public interface IAzureAtomicStorageStrategy 
+    public interface IAtomicStorageStrategy 
     {
         string GetFolderForEntity(Type entityType);
         string GetFolderForSingleton();
         string GetNameForEntity(Type entity, object key);
         string GetNameForSingleton(Type singletonType);
-        byte[] Serialize<TEntity>(TEntity entity);
-        TEntity Deserialize<TEntity>(byte[] source);
+        void Serialize<TEntity>(TEntity entity, Stream stream);
+        TEntity Deserialize<TEntity>(Stream stream);
         Type[] GetEntityTypes();
         Type[] GetSingletonTypes();
     }

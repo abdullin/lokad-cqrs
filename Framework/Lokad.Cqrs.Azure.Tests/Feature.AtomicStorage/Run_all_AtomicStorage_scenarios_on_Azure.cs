@@ -51,7 +51,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             b.Storage(m => m.AtomicIsInAzure("azure-dev", DefaultWithCustomConfig));
         }
 
-        static void DefaultWithCustomConfig(DefaultAzureAtomicStorageStrategyBuilder builder)
+        static void DefaultWithCustomConfig(DefaultAtomicStorageStrategyBuilder builder)
         {
             builder.WhereEntity(type =>
                 {

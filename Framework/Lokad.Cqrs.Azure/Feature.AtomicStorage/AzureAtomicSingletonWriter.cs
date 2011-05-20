@@ -6,6 +6,7 @@
 #endregion
 
 using System;
+using System.IO;
 using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs.Feature.AtomicStorage
@@ -13,9 +14,9 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
     public sealed class AzureAtomicSingletonWriter<TView> : IAtomicSingletonWriter<TView>
     {
         readonly IAzureStorageConfiguration _storage;
-        readonly IAzureAtomicStorageStrategy _strategy;
+        readonly IAtomicStorageStrategy _strategy;
 
-        public AzureAtomicSingletonWriter(IAzureStorageConfiguration storage, IAzureAtomicStorageStrategy strategy)
+        public AzureAtomicSingletonWriter(IAzureStorageConfiguration storage, IAtomicStorageStrategy strategy)
         {
             _storage = storage;
             _strategy = strategy;
@@ -40,8 +41,10 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             TView view;
             try
             {
-                var data = blob.DownloadByteArray();
-                view = _strategy.Deserialize<TView>(data);
+                using (var mem = blob.OpenRead())
+                {
+                    view = _strategy.Deserialize<TView>(mem);
+                }
                 view = updateFactory(view);
             }
             catch (StorageClientException ex)
@@ -49,7 +52,10 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                 view = addFactory();
             }
 
-            blob.UploadByteArray(_strategy.Serialize(view));
+            using (var write = blob.OpenWrite())
+            {
+                _strategy.Serialize(view, write);
+            }
             return view;
         }
 

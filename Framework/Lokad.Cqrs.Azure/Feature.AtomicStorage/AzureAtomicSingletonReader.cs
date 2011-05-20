@@ -6,6 +6,7 @@
 #endregion
 
 using System;
+using System.IO;
 using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs.Feature.AtomicStorage
@@ -13,9 +14,9 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
     public sealed class AzureAtomicSingletonReader<TView> : IAtomicSingletonReader<TView>
     {
         readonly IAzureStorageConfiguration _storage;
-        readonly IAzureAtomicStorageStrategy _strategy;
+        readonly IAtomicStorageStrategy _strategy;
 
-        public AzureAtomicSingletonReader(IAzureStorageConfiguration storage, IAzureAtomicStorageStrategy strategy)
+        public AzureAtomicSingletonReader(IAzureStorageConfiguration storage, IAtomicStorageStrategy strategy)
         {
             _storage = storage;
             _strategy = strategy;
@@ -35,23 +36,24 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         public bool TryGet(out TView view)
         {
             var blob = GetBlob();
-            byte[] data;
             try
             {
                 // no retries and small timeout
-                data = blob.DownloadByteArray(new BlobRequestOptions
+                using(var data = blob.OpenRead(new BlobRequestOptions
                     {
                         RetryPolicy = RetryPolicies.NoRetry(),
                         Timeout = TimeSpan.FromSeconds(3)
-                    });
+                    }))
+                {
+                    view = _strategy.Deserialize<TView>(data);
+                    return true;
+                }
             }
             catch (StorageClientException ex)
             {
                 view = default(TView);
                 return false;
             }
-            view = _strategy.Deserialize<TView>(data);
-            return true;
         }
     }
 }

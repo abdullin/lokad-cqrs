@@ -103,12 +103,12 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             }
         }
 
-        readonly IAzureAtomicStorageStrategy _strategy;
+        readonly IAtomicStorageStrategy _strategy;
         readonly IAzureStorageConfiguration _storage;
         readonly ISystemObserver _observer;
 
 
-        public AzureAtomicStorageFactory(IAzureAtomicStorageStrategy strategy, IAzureStorageConfiguration storage, ISystemObserver observer)
+        public AzureAtomicStorageFactory(IAtomicStorageStrategy strategy, IAzureStorageConfiguration storage, ISystemObserver observer)
         {
             _strategy = strategy;
             _storage = storage;

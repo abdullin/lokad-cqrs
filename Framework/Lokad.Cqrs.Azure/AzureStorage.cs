@@ -18,21 +18,21 @@ namespace Lokad.Cqrs
         {
             return CreateNuclear(config, b => { });
         }
-        public static NuclearStorage CreateNuclear(IAzureStorageConfiguration config, IAzureAtomicStorageStrategy strategy)
+        public static NuclearStorage CreateNuclear(IAzureStorageConfiguration config, IAtomicStorageStrategy strategy)
         {
             var factory = new AzureAtomicStorageFactory(strategy, config, new ImmediateTracingObserver());
             factory.Initialize();
             return new NuclearStorage(factory);
         }
-        public static NuclearStorage CreateNuclear(CloudStorageAccount account, Action<DefaultAzureAtomicStorageStrategyBuilder> configStrategy)
+        public static NuclearStorage CreateNuclear(CloudStorageAccount account, Action<DefaultAtomicStorageStrategyBuilder> configStrategy)
         {
             var config = new AzureStorageConfigurationBuilder(account, "default").Build();
             return CreateNuclear(config, configStrategy);
         }
 
-        public static NuclearStorage CreateNuclear(IAzureStorageConfiguration config, Action<DefaultAzureAtomicStorageStrategyBuilder> configStrategy)
+        public static NuclearStorage CreateNuclear(IAzureStorageConfiguration config, Action<DefaultAtomicStorageStrategyBuilder> configStrategy)
         {
-            var strategyBuilder = new DefaultAzureAtomicStorageStrategyBuilder();
+            var strategyBuilder = new DefaultAtomicStorageStrategyBuilder();
             configStrategy(strategyBuilder);
             var strategy = strategyBuilder.Build();
             return CreateNuclear(config, strategy);

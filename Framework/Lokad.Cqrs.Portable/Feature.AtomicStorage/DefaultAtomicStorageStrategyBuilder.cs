@@ -16,9 +16,9 @@ using Lokad.Cqrs.Evil;
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
     /// <summary>
-    /// Allows to configure default implementation of <see cref="IAzureAtomicStorageStrategy"/>
+    /// Allows to configure default implementation of <see cref="IAtomicStorageStrategy"/>
     /// </summary>
-    public sealed class DefaultAzureAtomicStorageStrategyBuilder : HideObjectMembersFromIntelliSense
+    public sealed class DefaultAtomicStorageStrategyBuilder : HideObjectMembersFromIntelliSense
     {
         Predicate<Type> _entityTypeFilter = type => typeof (Define.AtomicEntity).IsAssignableFrom(type);
         Predicate<Type> _singletonTypeFilter = type => typeof (Define.AtomicSingleton).IsAssignableFrom(type);
@@ -29,6 +29,8 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         Func<Type, string> _folderForEntity = type => CleanName("atomic-" +type.Name);
         Func<Type, object, string> _nameForEntity =
             (type, key) => (CleanName(type.Name) + "-" + Convert.ToString(key, CultureInfo.InvariantCulture).ToLowerInvariant()) + ".pb";
+
+        IAtomicStorageSerializer _serializer;
 
         /// <summary>
         /// Provides custom folder for storing singletons.
@@ -84,6 +86,11 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         public void FolderForEntity(Func<Type,string> namingConvention)
         {
             _folderForEntity = namingConvention;
+        }
+
+        public void CustomStaticSerializer(IAtomicStorageSerializer serializer)
+        {
+            _serializer = serializer;
         }
 
         /// <summary>
@@ -151,10 +158,10 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         }
 
         /// <summary>
-        /// Builds new instance of immutable <see cref="IAzureAtomicStorageStrategy"/>
+        /// Builds new instance of immutable <see cref="IAtomicStorageStrategy"/>
         /// </summary>
         /// <returns></returns>
-        public IAzureAtomicStorageStrategy Build()
+        public IAtomicStorageStrategy Build()
         {
             var types = AppDomain.CurrentDomain
                 .GetAssemblies()
@@ -172,13 +179,13 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                 .Where(t => _singletonTypeFilter(t))
                 .ToArray();
 
-            return new DefaultAzureAtomicStorageStrategy(
+            return new DefaultAtomicStorageStrategy(
                 entities, 
                 singletons, 
                 _folderForSingleton, 
                 _nameForSingleton, 
                 _folderForEntity, 
-                _nameForEntity);
+                _nameForEntity, _serializer);
         }
     }
 }

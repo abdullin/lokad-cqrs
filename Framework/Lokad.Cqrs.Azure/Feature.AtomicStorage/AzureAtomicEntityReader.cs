@@ -19,14 +19,14 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         //where TEntity : IAtomicEntity<TKey>
     {
         readonly CloudBlobContainer _container;
-        readonly IAzureAtomicStorageStrategy _strategy;
+        readonly IAtomicStorageStrategy _strategy;
 
         string ComposeName(TKey key)
         {
             return _strategy.GetNameForEntity(typeof (TEntity), key);
         }
 
-        public AzureAtomicEntityReader(IAzureStorageConfiguration storage, IAzureAtomicStorageStrategy strategy)
+        public AzureAtomicEntityReader(IAzureStorageConfiguration storage, IAtomicStorageStrategy strategy)
         {
             _strategy = strategy;
             var containerName = strategy.GetFolderForEntity(typeof (TEntity));
@@ -36,23 +36,23 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         public bool TryGet(TKey key, out TEntity entity)
         {
             var blob = _container.GetBlobReference(ComposeName(key));
-            byte[] data;
             try
             {
-                data = blob.DownloadByteArray(new BlobRequestOptions
+                using (var data = blob.OpenRead(new BlobRequestOptions
                     {
                         RetryPolicy = RetryPolicies.NoRetry(),
                         Timeout = TimeSpan.FromSeconds(3)
-                    });
+                    }))
+                {
+                    entity = _strategy.Deserialize<TEntity>(data);
+                    return true;
+                }
             }
             catch (StorageClientException ex)
             {
                 entity = default(TEntity);
                 return false;
             }
-
-            entity = _strategy.Deserialize<TEntity>(data);
-            return true;
         }
     }
 }

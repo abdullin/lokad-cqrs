@@ -7,11 +7,10 @@
 
 using System;
 using System.IO;
-using ProtoBuf;
 
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
-    public sealed class DefaultAzureAtomicStorageStrategy : IAzureAtomicStorageStrategy
+    public sealed class DefaultAtomicStorageStrategy : IAtomicStorageStrategy
     {
         readonly Type[] _entityTypes;
         readonly Type[] _singletonTypes;
@@ -20,13 +19,15 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         readonly Func<Type, string> _nameForSingleton;
         readonly Func<Type, string> _folderForEntity;
         readonly Func<Type, object, string> _nameForEntity;
+        readonly IAtomicStorageSerializer _serializer = new AtomicStorageSerializerWithDataContracts();
 
 
-        public DefaultAzureAtomicStorageStrategy(Type[] entityTypes, Type[] singletonTypes, string folderForSingleton,
+        public DefaultAtomicStorageStrategy(Type[] entityTypes, Type[] singletonTypes, string folderForSingleton,
             Func<Type, string> nameForSingleton, Func<Type, string> folderForEntity,
-            Func<Type, object, string> nameForEntity)
+            Func<Type, object, string> nameForEntity, IAtomicStorageSerializer serializer)
         {
             _entityTypes = entityTypes;
+            _serializer = serializer;
             _nameForEntity = nameForEntity;
             _folderForEntity = folderForEntity;
             _nameForSingleton = nameForSingleton;
@@ -54,21 +55,14 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             return _nameForSingleton(singletonType);
         }
 
-        public byte[] Serialize<TEntity>(TEntity entity)
+        public void Serialize<TEntity>(TEntity entity, Stream stream)
         {
-            using (var memory = new MemoryStream())
-            {
-                Serializer.Serialize(memory, entity);
-                return memory.ToArray();
-            }
+            _serializer.Serialize(entity, stream);
         }
 
-        public TEntity Deserialize<TEntity>(byte[] source)
+        public TEntity Deserialize<TEntity>(Stream stream)
         {
-            using (var memory = new MemoryStream(source))
-            {
-                return Serializer.Deserialize<TEntity>(memory);
-            }
+            return _serializer.Deserialize<TEntity>(stream);
         }
 
         public Type[] GetEntityTypes()
