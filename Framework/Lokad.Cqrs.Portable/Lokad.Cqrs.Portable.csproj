@@ -47,9 +47,13 @@
     <Compile Include="Core.Dispatch\Events\EnvelopeDuplicateDiscarded.cs" />
     <Compile Include="Core.Dispatch\IEnvelopeQuarantine.cs" />
     <Compile Include="Core.Envelope\EnvelopePrinter.cs" />
+    <Compile Include="Feature.AtomicStorage\AddOrUpdateHint.cs" />
     <Compile Include="Feature.AtomicStorage\AtomicStorageSerializerWithDataContracts.cs" />
     <Compile Include="Feature.AtomicStorage\DefaultAtomicStorageStrategy.cs" />
     <Compile Include="Feature.AtomicStorage\DefaultAtomicStorageStrategyBuilder.cs" />
+    <Compile Include="Feature.AtomicStorage\FileAtomicEntityContainer.cs" />
+    <Compile Include="Feature.AtomicStorage\FileAtomicSingletonContainer.cs" />
+    <Compile Include="Feature.AtomicStorage\FileAtomicStorageFactory.cs" />
     <Compile Include="Feature.AtomicStorage\IAtomicStorageSerializer.cs" />
     <Compile Include="Feature.AtomicStorage\IAtomicStorageStrategy.cs" />
     <Compile Include="ImmutableAttribute.cs" />

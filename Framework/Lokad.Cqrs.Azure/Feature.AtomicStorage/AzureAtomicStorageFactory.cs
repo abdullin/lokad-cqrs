@@ -82,7 +82,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                 .Select(f =>
                     {
                         var container = client.GetContainerReference(f);
-                        return Task.Factory.FromAsync<bool>(container.BeginCreateIfNotExist,
+                        return Task.Factory.FromAsync(container.BeginCreateIfNotExist,
                             result =>
                                 {
                                     var created = container.EndCreateIfNotExist(result);

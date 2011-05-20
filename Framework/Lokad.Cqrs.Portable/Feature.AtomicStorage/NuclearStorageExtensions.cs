@@ -10,4 +10,6 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             return storage.Factory.GetSingletonWriter<TSingleton>().UpdateEnforcingNew(update);
         }
     }
+
+    
 }

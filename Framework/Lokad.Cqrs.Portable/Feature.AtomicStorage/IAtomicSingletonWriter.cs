@@ -21,10 +21,4 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         /// </summary>
         bool TryDelete();
     }
-
-    public enum AddOrUpdateHint
-    {
-        ProbablyExists,
-        ProbablyDoesNotExist
-    }
 }

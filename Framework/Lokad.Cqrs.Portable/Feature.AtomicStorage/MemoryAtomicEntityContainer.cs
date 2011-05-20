@@ -7,7 +7,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
     public sealed class MemoryAtomicEntityContainer<TKey,TEntity> : IAtomicEntityReader<TKey,TEntity>, IAtomicEntityWriter<TKey,TEntity>
     {
         readonly IAtomicStorageStrategy _strategy;
-        string _entityPrefix;
+        readonly string _entityPrefix;
         readonly ConcurrentDictionary<string, byte[]> _store;
 
         public MemoryAtomicEntityContainer(ConcurrentDictionary<string, byte[]> store, IAtomicStorageStrategy strategy)
