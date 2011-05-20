@@ -43,6 +43,10 @@ namespace Lokad.Cqrs.Core.Envelope
 
         public static EnvelopeBuilder CloneProperties(string newId, ImmutableEnvelope envelope)
         {
+            if (newId == envelope.EnvelopeId)
+            {
+                throw new InvalidOperationException("Envelope cloned for modification should have new identity.");
+            }
             var builder = new EnvelopeBuilder(newId);
             builder.OverrideCreatedOnUtc(envelope.CreatedOnUtc);
             builder.DeliverOnUtc(envelope.DeliverOnUtc);
