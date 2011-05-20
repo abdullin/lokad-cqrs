@@ -8,15 +8,19 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
     public sealed class AtomicStorageInitialization : IEngineProcess
     {
         readonly IEnumerable<IAtomicStorageFactory> _storage;
-        public AtomicStorageInitialization(IEnumerable<IAtomicStorageFactory> storage)
+        readonly ISystemObserver _observer;
+
+        public AtomicStorageInitialization(IEnumerable<IAtomicStorageFactory> storage, ISystemObserver observer)
         {
             _storage = storage;
+            _observer = observer;
         }
 
         public void Dispose() {}
@@ -25,7 +29,11 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         {
             foreach (var atomicStorageFactory in _storage)
             {
-                atomicStorageFactory.Initialize();
+                var folders = atomicStorageFactory.Initialize();
+                if (folders.Any())
+                {
+                    _observer.Notify(new AtomicStorageInitialized(folders.ToArray(), atomicStorageFactory.GetType()));
+                }
             }
         }
 

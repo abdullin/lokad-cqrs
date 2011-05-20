@@ -49,7 +49,7 @@ namespace Lokad.Cqrs
                 };
         }
 
-        public static void Fast(ICollection<IAzureStorageConfiguration> configurations)
+        public static void Fast(params IAzureAccessConfiguration[] configurations)
         {
             var items = configurations
                 .AsParallel()

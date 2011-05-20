@@ -18,8 +18,7 @@ namespace Lokad.Cqrs.Build
         Action<CloudQueueClient> _queueConfig;
         Action<CloudBlobClient> _blobConfig;
         Action<CloudTableClient> _tableConfig;
-        readonly string _accountId;
-        bool _cleanAccount;
+        string _accountId;
 
 
         public AzureStorageConfigurationBuilder ConfigureQueueClient(Action<CloudQueueClient> configure,
@@ -64,8 +63,13 @@ namespace Lokad.Cqrs.Build
             return this;
         }
 
+        public void Named(string accountId)
+        {
+            _accountId = accountId;
+        }
 
-        public AzureStorageConfigurationBuilder(CloudStorageAccount account, string accountId)
+
+        public AzureStorageConfigurationBuilder(CloudStorageAccount account)
         {
             // defaults
             _queueConfig = client => client.RetryPolicy = RetryPolicies.NoRetry();
@@ -87,17 +91,12 @@ namespace Lokad.Cqrs.Build
             }
 
             _account = account;
-            _accountId = accountId;
+            _accountId = account.Credentials.AccountName;
         }
 
-        public void CleanAtStartup()
+        internal AzureAccessConfiguration Build()
         {
-            _cleanAccount = true;
-        }
-
-        internal AzureStorageConfiguration Build()
-        {
-            return new AzureStorageConfiguration(_account, 
+            return new AzureAccessConfiguration(_account, 
                 _queueConfig, 
                 _blobConfig, 
                 _tableConfig,

@@ -20,9 +20,11 @@ namespace Lokad.Cqrs
 
         static void CurrentConfig(CqrsEngineBuilder b)
         {
+            var dev = AzureStorage.CreateConfigurationForDev();
+
             b.Azure(m =>
                 {
-                    m.AddAzureAccount("azure-dev", CloudStorageAccount.DevelopmentStorageAccount);
+                    m.AddAzureAccount(dev);
                     m.AddAzureProcess("azure-dev", new[] {"incoming"}, c =>
                         {
                             c.QueueVisibility(1);

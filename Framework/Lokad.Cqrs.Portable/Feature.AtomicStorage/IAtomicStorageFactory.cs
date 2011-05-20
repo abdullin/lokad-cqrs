@@ -1,4 +1,6 @@
-﻿namespace Lokad.Cqrs.Feature.AtomicStorage
+﻿using System.Collections.Generic;
+
+namespace Lokad.Cqrs.Feature.AtomicStorage
 {
     public interface IAtomicStorageFactory 
     {
@@ -11,6 +13,6 @@
         /// <summary>
         /// Call this once on start-up to initialize folders
         /// </summary>
-        void Initialize();
+        IEnumerable<string> Initialize();
     }
 }

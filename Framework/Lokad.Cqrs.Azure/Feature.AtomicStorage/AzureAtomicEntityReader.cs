@@ -26,11 +26,11 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             return _strategy.GetNameForEntity(typeof (TEntity), key);
         }
 
-        public AzureAtomicEntityReader(IAzureStorageConfiguration storage, IAtomicStorageStrategy strategy)
+        public AzureAtomicEntityReader(IAzureAccessConfiguration access, IAtomicStorageStrategy strategy)
         {
             _strategy = strategy;
             var containerName = strategy.GetFolderForEntity(typeof (TEntity));
-            _container = storage.CreateBlobClient().GetContainerReference(containerName);
+            _container = access.CreateBlobClient().GetContainerReference(containerName);
         }
 
         public bool TryGet(TKey key, out TEntity entity)

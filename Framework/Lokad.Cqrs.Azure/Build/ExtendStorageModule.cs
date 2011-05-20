@@ -7,26 +7,29 @@ namespace Lokad.Cqrs.Build
 {
     public static class ExtendStorageModule
     {
+        //public static void AtomicIsInAzure(Action<DefaultAtomicStorageStrategyBuilder> configure)
+        //{
+        //    var dictionary = new ConcurrentDictionary<string, byte[]>();
+        //    var builder = new DefaultAtomicStorageStrategyBuilder();
+        //    configure(builder);
+        //    AtomicIs(new MemoryAtomicStorageFactory(dictionary, builder.Build()));
+        //}
+        //public static void AtomicIsInAzure(this StorageModule self, string accountId)
+        //{
+        //    AtomicIsInAzure(self, accountId, d => { });
+        //}
 
-        public static void AtomicIsInAzure(this StorageModule self, string accountId)
-        {
-            AtomicIsInAzure(self, accountId, d => { });
-        }
-
-        public static void AtomicIsInAzure(this StorageModule self, string accountId, Action<DefaultAtomicStorageStrategyBuilder> config)
+        public static void AtomicIsInAzure(this StorageModule self, IAzureAccessConfiguration access, Action<DefaultAtomicStorageStrategyBuilder> config)
         {
             var builder = new DefaultAtomicStorageStrategyBuilder();
             config(builder);
-            AtomicIsInAzure(self, accountId, builder.Build());
+            AtomicIsInAzure(self, access, builder.Build());
         }
 
-        public static void AtomicIsInAzure(this StorageModule self, string accountId, IAtomicStorageStrategy strategy)
+        public static void AtomicIsInAzure(this StorageModule self, IAzureAccessConfiguration access, IAtomicStorageStrategy strategy)
         {
-            var module = new AzureAtomicStorageModule(accountId, strategy);
-            self.EnlistModule(module);
+            self.AtomicIs(new AzureAtomicStorageFactory(strategy, access));
         }
-
-
 
         public static void StreamingIsInAzure(this StorageModule self, string accountId)
         {

@@ -42,19 +42,20 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         /// <summary>
         /// Call this once on start-up to initialize folders
         /// </summary>
-        public void Initialize()
+        public IEnumerable<string> Initialize()
         {
             lock (_initializationLock)
             {
                 if (_initialized)
-                    return;
-                DoInitialize();
+                    return Enumerable.Empty<string>();
+                var collection = DoInitialize();
 
                 _initialized = true;
+                return collection;
             }
         }
 
-        void DoInitialize()
+        ICollection<string> DoInitialize()
         {
             var folders = new HashSet<string>();
 
@@ -73,11 +74,20 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                 folders.Add(folder);
             }
 
+            var list = new List<string>();
+
             folders.Add(_strategy.GetFolderForSingleton());
             foreach (var folder in folders)
             {
-                Directory.CreateDirectory(Path.Combine(_folderPath, folder));
+                var path = Path.Combine(_folderPath, folder);
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                    list.Add(path);
+                }
+                
             }
+            return list;
         }
     }
 }

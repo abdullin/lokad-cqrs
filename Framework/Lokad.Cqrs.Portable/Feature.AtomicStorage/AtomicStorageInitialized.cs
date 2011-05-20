@@ -5,20 +5,24 @@
 
 #endregion
 
+using System;
+
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
     public sealed class AtomicStorageInitialized : ISystemEvent
     {
-        public string[] CreatedFolders;
+        public readonly string[] CreatedFolders;
+        public readonly Type Storage;
 
-        public AtomicStorageInitialized(string[] createdFolders)
+        public AtomicStorageInitialized(string[] createdFolders, Type storage)
         {
             CreatedFolders = createdFolders;
+            Storage = storage;
         }
 
         public override string ToString()
         {
-            return string.Format("Azure atomic storage created: {0}", string.Join(", ", CreatedFolders));
+            return string.Format("{1} created: {0}", string.Join(", ", CreatedFolders), Storage.Name);
         }
     }
 }

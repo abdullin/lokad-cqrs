@@ -52,13 +52,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AzureStorageDictionary.cs" />
-    <Compile Include="Build\AzureStorageConfiguration.cs" />
+    <Compile Include="AzureAccessRegistry.cs" />
+    <Compile Include="Build\AzureAccessConfiguration.cs" />
     <Compile Include="Build\AzureClientModule.cs" />
     <Compile Include="Build\Engine\AzureEngineModule.cs" />
     <Compile Include="Build\Engine\ExtendCqrsEngineBuilder.cs" />
     <Compile Include="Build\Client\ExtendCqrsClientBuilder.cs" />
-    <Compile Include="Feature.AtomicStorage\AtomicStorageInitialized.cs" />
     <Compile Include="AzureStorage.cs" />
     <Compile Include="Feature.AzurePartition\Inbox\AzureSchedulingProcess.cs" />
     <Compile Include="WipeAzureAccount.cs" />
@@ -73,7 +72,6 @@
     <Compile Include="Feature.AtomicStorage\AzureAtomicEntityReader.cs" />
     <Compile Include="Feature.AtomicStorage\AzureAtomicSingletonWriter.cs" />
     <Compile Include="Feature.AtomicStorage\AzureAtomicStorageFactory.cs" />
-    <Compile Include="Feature.AtomicStorage\AzureAtomicStorageModule.cs" />
     <Compile Include="Core.Transport\MessagePrinter.cs" />
     <Compile Include="Build\AzureStorageConfigurationBuilder.cs" />
     <Compile Include="Feature.AzurePartition\Inbox\StatelessAzureScheduler.cs" />
@@ -88,7 +86,7 @@
     <Compile Include="Core.Transport\GetEnvelopeResultState.cs" />
     <Compile Include="Feature.AzurePartition\AzurePartitionModule.cs" />
     <Compile Include="Feature.StreamingStorage\AzureStreamingStorageModule.cs" />
-    <Compile Include="IAzureStorageConfiguration.cs" />
+    <Compile Include="IAzureAccessConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Feature.StreamingStorage\BlobStreamingContainer.cs" />
     <Compile Include="Feature.StreamingStorage\BlobStreamingItem.cs" />

@@ -30,8 +30,7 @@ namespace Lokad.Cqrs
             var builder = new CqrsEngineBuilder();
             builder.Azure(x =>
                 {
-                    x.AddAzureAccount("dev-store", CloudStorageAccount.DevelopmentStorageAccount);
-                    x.AddAzureProcess("dev-store", "process-vip");
+                    x.AddAzureProcess("azure-dev", "process-vip");
                 });
             builder.Memory(x =>
                 {
@@ -39,7 +38,7 @@ namespace Lokad.Cqrs
                     x.AddMemoryRouter("inbox", e =>
                         {
                             var isVip = e.Items.Any(i => i.MappedType == typeof (VipMessage));
-                            return isVip ? "dev-store:process-vip" : "memory:process-all";
+                            return isVip ? "azure-dev:process-vip" : "memory:process-all";
                         });
                     x.AddMemorySender("inbox", cm => cm.IdGeneratorForTests());
                 });

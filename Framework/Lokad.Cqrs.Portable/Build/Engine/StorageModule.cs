@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Autofac;
 using Autofac.Core;
@@ -9,25 +10,37 @@ namespace Lokad.Cqrs.Build.Engine
 {
     public sealed class StorageModule : HideObjectMembersFromIntelliSense, IModule
     {
-        readonly List<IModule> _modules = new List<IModule>();
+        IAtomicStorageFactory _atomicStorageFactory;
 
-        public void AtomicIsInMemory(Action<DefaultAtomicStorageStrategyBuilder> config)
+        public void AtomicIs(IAtomicStorageFactory factory)
         {
-            var builder = new DefaultAtomicStorageStrategyBuilder();
-            config(builder);
-            
-            _modules.Add(new MemoryAtomicStorageModule(builder.Build()));
+            _atomicStorageFactory = factory;
         }
 
-        public void AtomicIsInMemory(IAtomicStorageStrategy strategy)
-        {
-            _modules.Add(new MemoryAtomicStorageModule(strategy));
-        }
-
+        //public void AtomicIs(Func<IComponentContext>)
         public void AtomicIsInMemory()
         {
             AtomicIsInMemory(builder => { });
         }
+
+        public void AtomicIsInMemory(Action<DefaultAtomicStorageStrategyBuilder> configure)
+        {
+            var dictionary = new ConcurrentDictionary<string, byte[]>();
+            var builder = new DefaultAtomicStorageStrategyBuilder();
+            configure(builder);
+            AtomicIs(new MemoryAtomicStorageFactory(dictionary, builder.Build()));
+        }
+
+        public void AtomicIsInFiles(string folder, Action<DefaultAtomicStorageStrategyBuilder> configure)
+        {
+            var builder = new DefaultAtomicStorageStrategyBuilder();
+            configure(builder);
+            AtomicIs(new FileAtomicStorageFactory(folder, builder.Build()));
+        }
+
+
+        readonly List<IModule> _modules = new List<IModule>();
+
 
         public void StreamingIsInFiles(string filePath)
         {
@@ -49,17 +62,21 @@ namespace Lokad.Cqrs.Build.Engine
 
         void IModule.Configure(IComponentRegistry componentRegistry)
         {
-            if (_modules.Count == 0)
-            {
-                AtomicIsInMemory();
-            }
-
             var builder = new ContainerBuilder();
-            foreach (var module in _modules)
+
+            if (_atomicStorageFactory == null)
             {
-                builder.RegisterModule(module);
+                AtomicIsInMemory(strategyBuilder => { });
             }
+            
+
+            var source = new AtomicRegistrationSource(_atomicStorageFactory);
+            builder.RegisterSource(source);
+            builder.RegisterInstance(new NuclearStorage(_atomicStorageFactory));
+            builder.RegisterType<AtomicStorageInitialization>().As<IEngineProcess>().SingleInstance();
+            
             builder.Update(componentRegistry);
         }
     }
+
 }

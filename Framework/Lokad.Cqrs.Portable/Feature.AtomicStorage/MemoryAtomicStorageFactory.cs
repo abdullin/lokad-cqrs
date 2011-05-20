@@ -6,6 +6,8 @@
 #endregion
 
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
@@ -41,6 +43,9 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             return new MemoryAtomicSingletonContainer<TSingleton>(_store,_strategy);
         }
 
-        public void Initialize() {}
+        public IEnumerable<string> Initialize()
+        {
+            return Enumerable.Empty<string>();
+        }
     }
 }

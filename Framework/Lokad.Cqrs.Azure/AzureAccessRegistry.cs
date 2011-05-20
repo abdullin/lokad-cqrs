@@ -4,24 +4,24 @@ using System.Collections.Generic;
 
 namespace Lokad.Cqrs
 {
-    public sealed class AzureStorageDictionary
+    public sealed class AzureAccessRegistry
     {
-        readonly ConcurrentDictionary<string, IAzureStorageConfiguration> _dictionary = new ConcurrentDictionary<string, IAzureStorageConfiguration>();
+        readonly ConcurrentDictionary<string, IAzureAccessConfiguration> _dictionary = new ConcurrentDictionary<string, IAzureAccessConfiguration>();
 
-        public void Register(IAzureStorageConfiguration config)
+        public void Register(IAzureAccessConfiguration config)
         {
             // replace
             _dictionary.AddOrUpdate(config.AccountName, config, (s, configuration) => config);
         }
 
-        public bool TryGet(string accountId, out IAzureStorageConfiguration config)
+        public bool TryGet(string accountId, out IAzureAccessConfiguration config)
         {
             return _dictionary.TryGetValue(accountId, out config);
         }
 
-        public IAzureStorageConfiguration GetOrThrow(string accountId)
+        public IAzureAccessConfiguration GetOrThrow(string accountId)
         {
-            IAzureStorageConfiguration value;
+            IAzureAccessConfiguration value;
             if (_dictionary.TryGetValue(accountId,out value))
             {
                 return value;
@@ -30,7 +30,7 @@ namespace Lokad.Cqrs
             throw new InvalidOperationException(message);
         }
 
-        public ICollection<IAzureStorageConfiguration> GetAll()
+        public ICollection<IAzureAccessConfiguration> GetAll()
         {
             return _dictionary.Values;
         }

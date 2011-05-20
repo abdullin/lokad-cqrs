@@ -17,43 +17,45 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
     {
         public IAtomicEntityWriter<TKey, TEntity> GetEntityWriter<TKey, TEntity>()
         {
-            return new AzureAtomicEntityWriter<TKey, TEntity>(_storage, _strategy);
+            return new AzureAtomicEntityWriter<TKey, TEntity>(_access, _strategy);
         }
 
         public IAtomicEntityReader<TKey, TEntity> GetEntityReader<TKey, TEntity>()
         {
-            return new AzureAtomicEntityReader<TKey, TEntity>(_storage, _strategy);
+            return new AzureAtomicEntityReader<TKey, TEntity>(_access, _strategy);
         }
 
         public IAtomicSingletonReader<TSingleton> GetSingletonReader<TSingleton>()
         {
-            return new AzureAtomicSingletonReader<TSingleton>(_storage, _strategy);
+            return new AzureAtomicSingletonReader<TSingleton>(_access, _strategy);
         }
 
         public IAtomicSingletonWriter<TSingleton> GetSingletonWriter<TSingleton>()
         {
-            return new AzureAtomicSingletonWriter<TSingleton>(_storage, _strategy);
+            return new AzureAtomicSingletonWriter<TSingleton>(_access, _strategy);
         }
 
         readonly object _initializationLock = new object();
         bool _initialized;
+        
 
         /// <summary>
         /// Call this once on start-up to initialize folders
         /// </summary>
-        public void Initialize()
+        public IEnumerable<string> Initialize()
         {
             lock (_initializationLock)
             {
                 if (_initialized)
-                    return;
-                DoInitialize();
+                    return Enumerable.Empty<string>();
+                var result = DoInitialize();
 
                 _initialized = true;
+                return result;
             }
         }
 
-        void DoInitialize()
+        string[] DoInitialize()
         {
             var folders = new HashSet<string>();
 
@@ -73,7 +75,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             }
 
             folders.Add(_strategy.GetFolderForSingleton());
-            var client = _storage.CreateBlobClient();
+            var client = _access.CreateBlobClient();
 
 
             var bag = new ConcurrentBag<string>();
@@ -97,22 +99,17 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 
             Task.WaitAll(all);
 
-            if (bag.Any())
-            {
-                _observer.Notify(new AtomicStorageInitialized(bag.ToArray()));
-            }
+            return bag.ToArray();
         }
 
         readonly IAtomicStorageStrategy _strategy;
-        readonly IAzureStorageConfiguration _storage;
-        readonly ISystemObserver _observer;
+        readonly IAzureAccessConfiguration _access;
 
 
-        public AzureAtomicStorageFactory(IAtomicStorageStrategy strategy, IAzureStorageConfiguration storage, ISystemObserver observer)
+        public AzureAtomicStorageFactory(IAtomicStorageStrategy strategy, IAzureAccessConfiguration access)
         {
             _strategy = strategy;
-            _storage = storage;
-            _observer = observer;
+            _access = access;
         }
     }
 }

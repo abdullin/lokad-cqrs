@@ -31,39 +31,25 @@ namespace Lokad.Cqrs.Build.Engine
     {
         static readonly Regex QueueName = new Regex("^[A-Za-z][A-Za-z0-9]{2,62}", RegexOptions.Compiled);
 
-        readonly AzureStorageDictionary _configs = new AzureStorageDictionary();
+        readonly AzureAccessRegistry _configs = new AzureAccessRegistry();
 
         readonly IList<IModule> _modules = new List<IModule>();
 
         public bool WipeAccountsAtStartUp { get; set; }
 
-        /// <summary>
-        /// Registers the specified storage account as default into the container
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="account">The account.</param>
-        /// <returns>
-        /// same builder for inling multiple configuration statements
-        /// </returns>
-        public void AddAzureAccount(string accountId, CloudStorageAccount account,
-            Action<AzureStorageConfigurationBuilder> tuning)
-        {
-            var builder = new AzureStorageConfigurationBuilder(account, accountId);
-            tuning(builder);
-            var configuration = builder.Build();
-            _configs.Register(configuration);
-        }
+
+     
 
         /// <summary>
         /// Registers the specified storage account as default into the container
         /// </summary>
-        /// <param name="account">The account.</param>
-        /// <returns>
-        /// same builder for inling multiple configuration statements
-        /// </returns>
-        public void AddAzureAccount(string accountId, CloudStorageAccount account)
+        /// <param name="configs">The configs.</param>
+        public void AddAzureAccount(params IAzureAccessConfiguration[] configs)
         {
-            AddAzureAccount(accountId, account, builder => { });
+            foreach (var config in configs)
+            {
+                _configs.Register(config);
+            }
         }
 
         public void AddAzureSender(string accountId, string queueName, Action<SendMessageModule> configure)
@@ -121,17 +107,13 @@ namespace Lokad.Cqrs.Build.Engine
 
         public void Configure(IComponentRegistry componentRegistry)
         {
+            _configs.Register(AzureStorage.CreateConfigurationForDev());
             var builder = new ContainerBuilder();
-
-            if (!_configs.Contains("azure-dev"))
-            {
-                AddAzureAccount("azure-dev", CloudStorageAccount.DevelopmentStorageAccount);
-            }
 
             builder.RegisterInstance(_configs);
             foreach (var config in _configs.GetAll())
             {
-                builder.RegisterInstance(config).Named<IAzureStorageConfiguration>(config.AccountName);
+                builder.RegisterInstance(config).Named<IAzureAccessConfiguration>(config.AccountName);
             }
 
             foreach (var partition in _modules)
@@ -145,7 +127,7 @@ namespace Lokad.Cqrs.Build.Engine
 
             if (WipeAccountsAtStartUp)
             {
-                WipeAzureAccount.Fast(_configs.GetAll());
+                WipeAzureAccount.Fast(_configs.GetAll().ToArray());
             }
         }
     }

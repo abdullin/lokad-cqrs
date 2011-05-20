@@ -123,7 +123,6 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
                 {
                     cb.Azure(m =>
                         {
-                            m.AddAzureAccount("azure-dev", CloudStorageAccount.DevelopmentStorageAccount);
                             m.WipeAccountsAtStartUp = true;
                         });
 

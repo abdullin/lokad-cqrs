@@ -37,11 +37,11 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                 .As(typeof (IAtomicSingletonReader<>))
                 .As(typeof (IAtomicSingletonWriter<>))
                 .SingleInstance();
-            builder
-                .RegisterType<NuclearStorage>()
-                .SingleInstance();
+            
 
             builder.Update(componentRegistry);
         }
     }
+
+    
 }

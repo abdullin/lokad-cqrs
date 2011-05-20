@@ -41,6 +41,7 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Build\Engine\AtomicRegistrationSource.cs" />
     <Compile Include="Core.Directory\IMethodContextManager.cs" />
     <Compile Include="Core.Directory\MethodContextManager.cs" />
     <Compile Include="Core.Dispatch\Events\DispatchRecoveryFailed.cs" />
@@ -48,6 +49,7 @@
     <Compile Include="Core.Dispatch\IEnvelopeQuarantine.cs" />
     <Compile Include="Core.Envelope\EnvelopePrinter.cs" />
     <Compile Include="Feature.AtomicStorage\AddOrUpdateHint.cs" />
+    <Compile Include="Feature.AtomicStorage\AtomicStorageInitialized.cs" />
     <Compile Include="Feature.AtomicStorage\AtomicStorageSerializerWithDataContracts.cs" />
     <Compile Include="Feature.AtomicStorage\DefaultAtomicStorageStrategy.cs" />
     <Compile Include="Feature.AtomicStorage\DefaultAtomicStorageStrategyBuilder.cs" />

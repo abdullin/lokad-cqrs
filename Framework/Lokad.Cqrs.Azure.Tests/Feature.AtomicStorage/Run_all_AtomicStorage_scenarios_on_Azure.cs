@@ -41,14 +41,16 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 
         static void CurrentConfig(CqrsEngineBuilder b)
         {
+
+
+            var account = AzureStorage.CreateConfigurationForDev();
             b.Azure(m =>
                 {
-                    m.AddAzureAccount("azure-dev", CloudStorageAccount.DevelopmentStorageAccount);
                     m.AddAzureProcess("azure-dev", new[] {"incoming"}, c => c.QueueVisibility(1));
                     m.AddAzureSender("azure-dev", "incoming", x => x.IdGeneratorForTests());
                     m.WipeAccountsAtStartUp = true;
                 });
-            b.Storage(m => m.AtomicIsInAzure("azure-dev", DefaultWithCustomConfig));
+            b.Storage(m => m.AtomicIsInAzure(account, DefaultWithCustomConfig));
         }
 
         static void DefaultWithCustomConfig(DefaultAtomicStorageStrategyBuilder builder)
