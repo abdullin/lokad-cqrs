@@ -45,5 +45,25 @@ namespace Lokad.Cqrs.Core.Reactive
         }
     }
 
+    public sealed class ImmediateEventsObserver : IObserver<ISystemEvent>
+    {
+        public event Action<ISystemEvent> Event = @event => { }; 
+
+        public void OnNext(ISystemEvent value)
+        {
+            Event(value);
+        }
+
+        public void OnError(Exception error)
+        {
+            //throw new NotImplementedException();
+        }
+
+        public void OnCompleted()
+        {
+            //throw new NotImplementedException();
+        }
+    }
+
 
 }

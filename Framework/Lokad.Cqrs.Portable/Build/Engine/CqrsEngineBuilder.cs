@@ -80,7 +80,10 @@ namespace Lokad.Cqrs.Build.Engine
 
         public CqrsEngineBuilder EnlistObserver<TObserver>() where TObserver : IObserver<ISystemEvent>
         {
-            _builder.RegisterType<TObserver>().As<IObserver<ISystemEvent>>().SingleInstance();
+            _builder.RegisterType<TObserver>()
+                .As<IObserver<ISystemEvent>>()
+                .As<TObserver>()
+                .SingleInstance();
             return this;
         }
 

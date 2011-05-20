@@ -3,9 +3,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Transactions;
 using Lokad.Cqrs.Build.Engine;
-using Lokad.Cqrs.Core.Dispatch.Events;
 using Lokad.Cqrs.Feature.AtomicStorage;
-using NUnit.Framework;
 
 namespace Lokad.Cqrs.Synthetic
 {

@@ -92,6 +92,7 @@
     <Compile Include="Synthetic\Engine_scenario_for_permanent_failure.cs" />
     <Compile Include="Synthetic\Engine_scenario_for_transactional_commands.cs" />
     <Compile Include="Synthetic\Engine_scenario_for_transient_failure.cs" />
+    <Compile Include="Synthetic\Given_duplicate_configuration.cs" />
     <Compile Include="Synthetic\Run_all_Synthetic_scenarios_in_memory.cs" />
     <Compile Include="Synthetic\TransactionTester.cs" />
   </ItemGroup>
