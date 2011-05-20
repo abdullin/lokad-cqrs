@@ -88,12 +88,16 @@ namespace Lokad.Cqrs.Core.Dispatch
             var processed = false;
             try
             {
-                if (!_memory.DoWeRemember(context.Unpacked.EnvelopeId))
+                if (_memory.DoWeRemember(context.Unpacked.EnvelopeId))
+                {
+                    _observer.Notify(new EnvelopeDuplicateDiscarded(context.QueueName, context.Unpacked.EnvelopeId));
+                }
+                else
                 {
                     _dispatcher.DispatchMessage(context.Unpacked);
                     _memory.Memorize(context.Unpacked.EnvelopeId);
                 }
-                
+
                 processed = true;
             }
             catch (Exception dispatchEx)

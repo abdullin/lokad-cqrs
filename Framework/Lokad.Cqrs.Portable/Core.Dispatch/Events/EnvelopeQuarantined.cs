@@ -15,4 +15,16 @@ namespace Lokad.Cqrs.Core.Dispatch.Events
             QueueName = queueName;
         }
     }
+
+    public sealed class EnvelopeDuplicateDiscarded : ISystemEvent
+    {
+        public string QueueName { get; private set; }
+        public string EnvelopeId { get; private set; }
+
+        public EnvelopeDuplicateDiscarded(string queueName, string envelopeId)
+        {
+            QueueName = queueName;
+            EnvelopeId = envelopeId;
+        }
+    }
 }
