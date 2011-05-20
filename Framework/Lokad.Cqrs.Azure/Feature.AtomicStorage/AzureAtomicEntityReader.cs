@@ -50,8 +50,16 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             }
             catch (StorageClientException ex)
             {
-                entity = default(TEntity);
-                return false;
+                switch (ex.ErrorCode)
+                {
+                    case StorageErrorCode.ContainerNotFound:
+                    case StorageErrorCode.BlobNotFound:
+                    case StorageErrorCode.ResourceNotFound:
+                        entity = default(TEntity);
+                        return false;
+                    default:
+                        throw;
+                }
             }
         }
     }

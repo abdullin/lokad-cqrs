@@ -54,6 +54,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                             blob.Container.Name, typeof (TEntity).Name, _strategy.GetType().Name);
                         throw new InvalidOperationException(s, ex);
                     case StorageErrorCode.BlobNotFound:
+                    case StorageErrorCode.ResourceNotFound:
                         view = addViewFactory();
                         break;
                     default:

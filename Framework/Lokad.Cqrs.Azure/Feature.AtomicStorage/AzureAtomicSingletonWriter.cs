@@ -49,7 +49,20 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             }
             catch (StorageClientException ex)
             {
-                view = addFactory();
+                switch (ex.ErrorCode)
+                {
+                    case StorageErrorCode.ContainerNotFound:
+                        var s = string.Format(
+                            "Container '{0}' does not exist. You need to initialize this atomic storage and ensure that '{1}' is known to '{2}'.",
+                            blob.Container.Name, typeof(TView).Name, _strategy.GetType().Name);
+                        throw new InvalidOperationException(s, ex);
+                    case StorageErrorCode.BlobNotFound:
+                    case StorageErrorCode.ResourceNotFound:
+                        view = addFactory();
+                        break;
+                    default:
+                        throw;
+                }
             }
 
             using (var write = blob.OpenWrite())
