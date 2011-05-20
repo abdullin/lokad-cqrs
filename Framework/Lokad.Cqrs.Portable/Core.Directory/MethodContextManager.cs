@@ -1,5 +1,11 @@
-﻿using System;
-using System.Diagnostics;
+﻿#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
+
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
+using System;
 using System.Threading;
 
 namespace Lokad.Cqrs.Core.Directory
@@ -19,19 +25,11 @@ namespace Lokad.Cqrs.Core.Directory
         public void SetContext(ImmutableEnvelope envelope, ImmutableMessage message)
         {
             _context.Value = _factory(envelope, message);
-            if (Debugger.IsAttached)
-            {
-                Thread.CurrentThread.Name = string.Format("Consume: {0}", message.MappedType.Name);
-            }
         }
 
         public void ClearContext()
         {
             _context.Value = null;
-            if (Debugger.IsAttached)
-            {
-                Thread.CurrentThread.Name = "Consume: <Wait>";
-            }
         }
 
         public TContext Get()
