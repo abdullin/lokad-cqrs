@@ -55,7 +55,12 @@ namespace Lokad.Cqrs.Core.Outbox
                 return;
 
             var id = _idGenerator();
-            var builder = EnvelopeBuilder.FromItems(id, messageItems);
+
+            var builder = new EnvelopeBuilder(id);
+            foreach (var item in messageItems)
+            {
+                builder.AddItem(item);
+            }
             
             configure(builder);
             var envelope = builder.Build();
@@ -71,7 +76,7 @@ namespace Lokad.Cqrs.Core.Outbox
                 var action = new CommitActionEnlistment(() =>
                     {
                         _queue.PutMessage(envelope);
-                        _observer.Notify(new EnvelopeSent(_queueName, envelope.EnvelopeId, false,
+                        _observer.Notify(new EnvelopeSent(_queueName, envelope.EnvelopeId, true,
                             envelope.Items.Select(x => x.MappedType.Name).ToArray()));
                     });
                 Transaction.Current.EnlistVolatile(action, EnlistmentOptions.None);

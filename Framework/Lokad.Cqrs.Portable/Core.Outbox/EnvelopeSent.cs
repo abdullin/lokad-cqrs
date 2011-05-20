@@ -24,7 +24,11 @@ namespace Lokad.Cqrs.Core.Outbox
 
         public override string ToString()
         {
-            return string.Format("[{0}] sent to '{1}' ({2})", EnvelopeId, QueueName, string.Join(",", MappedTypes));
+            return string.Format("Sent {0}{1} to '{2}' as [{3}]", 
+                string.Join("+", MappedTypes), 
+                Transactional ? " +tx" : "",
+                QueueName, 
+                EnvelopeId);
         }
     }
 }

@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 namespace Lokad.Cqrs.Core.Envelope
 {
-    public sealed class MessageBuilder
+    public sealed class MessageBuilder : HideObjectMembersFromIntelliSense
     {
         internal readonly IDictionary<string, string> Attributes = new Dictionary<string, string>();
         public readonly Type MappedType;

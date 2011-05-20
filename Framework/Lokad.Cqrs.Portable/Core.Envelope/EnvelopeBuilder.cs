@@ -11,11 +11,12 @@ using System.Linq;
 
 namespace Lokad.Cqrs.Core.Envelope
 {
-    public sealed class EnvelopeBuilder
+    public sealed class EnvelopeBuilder : HideObjectMembersFromIntelliSense
     {
         public readonly string EnvelopeId;
         readonly IDictionary<string, string> _attributes = new Dictionary<string, string>();
         DateTime _deliverOnUtc;
+        DateTime _createdOnUtc = DateTime.UtcNow;
 
         public readonly IList<MessageBuilder> Items = new List<MessageBuilder>();
 
@@ -33,6 +34,24 @@ namespace Lokad.Cqrs.Core.Envelope
         public EnvelopeBuilder(string envelopeId)
         {
             EnvelopeId = envelopeId;
+        }
+
+        public void OverrideCreatedOnUtc(DateTime createdUtc)
+        {
+            _createdOnUtc = createdUtc;
+        }
+
+        public static EnvelopeBuilder CloneProperties(string newId, ImmutableEnvelope envelope)
+        {
+            var builder = new EnvelopeBuilder(newId);
+            builder.OverrideCreatedOnUtc(envelope.CreatedOnUtc);
+            builder.DeliverOnUtc(envelope.DeliverOnUtc);
+
+            foreach (var attribute in envelope.GetAllAttributes())
+            {
+                builder.AddString(attribute.Key, attribute.Value);
+            }
+            return builder;
         }
 
         public MessageBuilder AddItem<T>(T item)
@@ -59,18 +78,6 @@ namespace Lokad.Cqrs.Core.Envelope
             _deliverOnUtc = deliveryDateUtc;
         }
 
-        public static EnvelopeBuilder FromItems(string envelopeId, params object[] items)
-        {
-            var builder = new EnvelopeBuilder(envelopeId);
-            foreach (var item in items)
-            {
-                builder.AddItem(item);
-            }
-            
-            
-            return builder;
-        }
-
         public ImmutableEnvelope Build()
         {
             var attributes = _attributes.Select(p => new ImmutableAttribute(p.Key, p.Value)).ToArray();
@@ -82,8 +89,8 @@ namespace Lokad.Cqrs.Core.Envelope
                 var attribs = save.Attributes.Select(p => new ImmutableAttribute(p.Key, p.Value)).ToArray();
                 items[i] = new ImmutableMessage(save.MappedType, save.Content, attribs, i);
             }
-            var created = DateTime.UtcNow;
-            return new ImmutableEnvelope(EnvelopeId, attributes, items, _deliverOnUtc, created);
+            
+            return new ImmutableEnvelope(EnvelopeId, attributes, items, _deliverOnUtc, _createdOnUtc);
         }
     }
 }

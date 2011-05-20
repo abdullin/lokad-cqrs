@@ -79,22 +79,6 @@ namespace Lokad.Cqrs.Core.Directory
             return this;
         }
 
-
-        public MessageDirectoryModule InUserAssemblies()
-        {
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-            {
-                if (string.IsNullOrEmpty(assembly.FullName))
-                    continue;
-                if (assembly.FullName.StartsWith("System."))
-                    continue;
-                if (assembly.FullName.StartsWith("Microsoft."))
-                    continue;
-                _scanner.WithAssembly(assembly);
-            }
-            return this;
-        }
-
         /// <summary>
         /// Includes assemblies of the specified types into the discovery process
         /// </summary>
