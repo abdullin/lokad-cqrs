@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Core.Directory\IMethodContextManager.cs" />
     <Compile Include="Core.Directory\MethodContextManager.cs" />
+    <Compile Include="Core.Dispatch\Events\DispatchRecoveryFailed.cs" />
     <Compile Include="Core.Dispatch\Events\EnvelopeDuplicateDiscarded.cs" />
     <Compile Include="Core.Dispatch\IEnvelopeQuarantine.cs" />
     <Compile Include="Core.Envelope\EnvelopePrinter.cs" />

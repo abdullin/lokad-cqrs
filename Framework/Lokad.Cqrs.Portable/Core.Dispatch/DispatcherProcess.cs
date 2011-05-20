@@ -95,10 +95,6 @@ namespace Lokad.Cqrs.Core.Dispatch
                 }
                 else
                 {
-                    _observer.Notify(new EnvelopeDispatchStarted(
-                        context.QueueName, 
-                        context.Unpacked.Items.Select(i => i.MappedType).ToArray(), 
-                        context.Unpacked.EnvelopeId));
                     _dispatcher.DispatchMessage(context.Unpacked);
                     _memory.Memorize(context.Unpacked.EnvelopeId);
                 }
