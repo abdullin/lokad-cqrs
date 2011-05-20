@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 
 namespace Lokad.Cqrs.Core.Directory
@@ -18,11 +19,19 @@ namespace Lokad.Cqrs.Core.Directory
         public void SetContext(ImmutableEnvelope envelope, ImmutableMessage message)
         {
             _context.Value = _factory(envelope, message);
+            if (Debugger.IsAttached)
+            {
+                Thread.CurrentThread.Name = string.Format("Consume: {0}", message.MappedType.Name);
+            }
         }
 
         public void ClearContext()
         {
             _context.Value = null;
+            if (Debugger.IsAttached)
+            {
+                Thread.CurrentThread.Name = "Consume: <Wait>";
+            }
         }
 
         public TContext Get()
