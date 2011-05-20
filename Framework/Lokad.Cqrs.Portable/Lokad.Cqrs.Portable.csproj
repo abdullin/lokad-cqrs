@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Core.Directory\IMethodContextManager.cs" />
     <Compile Include="Core.Directory\MethodContextManager.cs" />
+    <Compile Include="Core.Dispatch\Events\EnvelopeDuplicateDiscarded.cs" />
     <Compile Include="Core.Dispatch\IEnvelopeQuarantine.cs" />
     <Compile Include="Core.Envelope\EnvelopePrinter.cs" />
     <Compile Include="ImmutableAttribute.cs" />
@@ -96,7 +97,7 @@
     <Compile Include="Core.Dispatch\DispatcherUtil.cs" />
     <Compile Include="Core.Dispatch\DispatchOneEvent.cs" />
     <Compile Include="Core.Dispatch\DispatchMessagesToRoute.cs" />
-    <Compile Include="Core.Dispatch\Events\FailedToAckEnvelope.cs" />
+    <Compile Include="Core.Dispatch\Events\EnvelopeAckFailed.cs" />
     <Compile Include="Core.Dispatch\Events\EnvelopeDispatchFailed.cs" />
     <Compile Include="Core.Dispatch\ISingleThreadMessageDispatcher.cs" />
     <Compile Include="Core.Dispatch\MessageDuplicationManager.cs" />

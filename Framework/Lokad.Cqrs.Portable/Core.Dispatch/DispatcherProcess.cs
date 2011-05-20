@@ -133,7 +133,7 @@ namespace Lokad.Cqrs.Core.Dispatch
             catch (Exception ex)
             {
                 // not a big deal. Message will be processed again.
-                _observer.Notify(new FailedToAckEnvelope(ex, context.Unpacked.EnvelopeId, context.QueueName));
+                _observer.Notify(new EnvelopeAckFailed(ex, context.Unpacked.EnvelopeId, context.QueueName));
             }
         }
     }
