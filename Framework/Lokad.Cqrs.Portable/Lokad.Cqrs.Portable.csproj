@@ -74,7 +74,6 @@
     <Compile Include="Feature.AtomicStorage\MemoryAtomicEntityContainer.cs" />
     <Compile Include="Feature.AtomicStorage\MemoryAtomicSingletonContainer.cs" />
     <Compile Include="Feature.AtomicStorage\MemoryAtomicStorageFactory.cs" />
-    <Compile Include="Feature.AtomicStorage\MemoryAtomicStorageStrategy.cs" />
     <Compile Include="Feature.StreamingStorage\FileStreamingStorageModule.cs" />
     <Compile Include="Core.Directory\IMethodInvoker.cs" />
     <Compile Include="Core.Directory\MessageActivationMap.cs" />

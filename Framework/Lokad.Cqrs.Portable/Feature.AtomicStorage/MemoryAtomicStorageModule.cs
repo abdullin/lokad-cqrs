@@ -1,21 +1,30 @@
-﻿using Autofac;
+﻿using System.Collections.Concurrent;
+using Autofac;
 using Autofac.Core;
 
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
     public sealed class MemoryAtomicStorageModule : IModule
     {
-        readonly MemoryAtomicStorageStrategy _strategy = new MemoryAtomicStorageStrategy();
+        readonly IAtomicStorageStrategy _strategy;
+
+        public MemoryAtomicStorageModule(IAtomicStorageStrategy strategy)
+        {
+            _strategy = strategy;
+        }
+
 
         public void Configure(IComponentRegistry componentRegistry)
         {
             var builder = new ContainerBuilder();
 
             builder.RegisterInstance(_strategy);
+            var store = new ConcurrentDictionary<string, byte[]>();
+            builder.RegisterInstance(store);
             builder
-                .RegisterInstance(new MemoryAtomicStorageFactory(_strategy))
+                .RegisterInstance(new MemoryAtomicStorageFactory(store, _strategy))
                 .As<IAtomicStorageFactory>();
-
+            
 
             builder
                 .RegisterGeneric(typeof (MemoryAtomicEntityContainer<,>))
@@ -29,7 +38,8 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                 .As(typeof (IAtomicSingletonWriter<>))
                 .SingleInstance();
             builder
-                .RegisterType<NuclearStorage>().SingleInstance();
+                .RegisterType<NuclearStorage>()
+                .SingleInstance();
 
             builder.Update(componentRegistry);
         }

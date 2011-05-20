@@ -30,7 +30,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         Func<Type, object, string> _nameForEntity =
             (type, key) => (CleanName(type.Name) + "-" + Convert.ToString(key, CultureInfo.InvariantCulture).ToLowerInvariant()) + ".pb";
 
-        IAtomicStorageSerializer _serializer;
+        IAtomicStorageSerializer _serializer = new AtomicStorageSerializerWithDataContracts();
 
         /// <summary>
         /// Provides custom folder for storing singletons.

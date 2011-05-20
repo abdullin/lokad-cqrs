@@ -7,27 +7,34 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.IO;
 
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
     public sealed class MemoryAtomicSingletonContainer<TEntity> :
         IAtomicSingletonReader<TEntity>, IAtomicSingletonWriter<TEntity>
     {
-        readonly ConcurrentDictionary<Type, object> _singletons;
-        readonly Type _type = typeof (TEntity);
+        readonly ConcurrentDictionary<string, byte[]> _store;
+        readonly IAtomicStorageStrategy _strategy;
+        readonly string _key;
 
-        public MemoryAtomicSingletonContainer(MemoryAtomicStorageStrategy strategy)
+        public MemoryAtomicSingletonContainer(ConcurrentDictionary<string,byte[]> store, IAtomicStorageStrategy strategy)
         {
-            _singletons = strategy.GetSingletonContainer();
+            _store = store;
+            _strategy = strategy;
+            _key = _strategy.GetFolderForSingleton() + ":" + _strategy.GetNameForSingleton(typeof(TEntity));
         }
 
         public bool TryGet(out TEntity singleton)
         {
-            object value;
-            if (_singletons.TryGetValue(_type, out value))
+            byte[] bytes;
+            if (_store.TryGetValue(_key, out bytes))
             {
-                singleton = (TEntity) value;
-                return true;
+                using (var mem = new MemoryStream(bytes))
+                {
+                    singleton = _strategy.Deserialize<TEntity>(mem);
+                    return true;
+                }
             }
             singleton = default(TEntity);
             return false;
@@ -35,32 +42,39 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 
         public TEntity AddOrUpdate(Func<TEntity> addFactory, Func<TEntity, TEntity> update, AddOrUpdateHint hint)
         {
-            return (TEntity) _singletons.AddOrUpdate(_type, t => addFactory(), (type, o) => update((TEntity) o));
-        }
-
-        public TEntity AddOrUpdate(Func<TEntity> addFactory, Action<TEntity> update, AddOrUpdateHint hint)
-        {
-            return AddOrUpdate(addFactory, entity =>
+            var result = default(TEntity);
+            _store.AddOrUpdate(_key, s =>
+            {
+                result = addFactory();
+                using (var memory = new MemoryStream())
                 {
-                    update(entity);
-                    return entity;
-                }, hint);
+                    _strategy.Serialize(result, memory);
+                    return memory.ToArray();
+                }
+            }, (s2, bytes) =>
+            {
+                TEntity entity;
+                using (var memory = new MemoryStream(bytes))
+                {
+                    entity = _strategy.Deserialize<TEntity>(memory);
+                }
+                result = update(entity);
+                using (var memory = new MemoryStream())
+                {
+                    _strategy.Serialize(result, memory);
+                    return memory.ToArray();
+                }
+            });
+            return result;
         }
 
-        public TEntity UpdateOrThrow(Action<TEntity> update)
-        {
-            return AddOrUpdate(() => { throw new InvalidOperationException("Item expected to exist"); }, update, AddOrUpdateHint.ProbablyExists);
-        }
 
-        public TEntity UpdateOrThrow(Func<TEntity, TEntity> update)
-        {
-            return AddOrUpdate(() => { throw new InvalidOperationException("Item expected to exist"); }, update, AddOrUpdateHint.ProbablyExists);
-        }
+       
 
         public bool TryDelete()
         {
-            object value;
-            return _singletons.TryRemove(_type, out value);
+            byte[] bytes;
+            return _store.TryRemove(_key, out bytes);
         }
     }
 }

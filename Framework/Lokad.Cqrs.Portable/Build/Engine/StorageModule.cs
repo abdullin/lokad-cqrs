@@ -11,9 +11,22 @@ namespace Lokad.Cqrs.Build.Engine
     {
         readonly List<IModule> _modules = new List<IModule>();
 
+        public void AtomicIsInMemory(Action<DefaultAtomicStorageStrategyBuilder> config)
+        {
+            var builder = new DefaultAtomicStorageStrategyBuilder();
+            config(builder);
+            
+            _modules.Add(new MemoryAtomicStorageModule(builder.Build()));
+        }
+
+        public void AtomicIsInMemory(IAtomicStorageStrategy strategy)
+        {
+            _modules.Add(new MemoryAtomicStorageModule(strategy));
+        }
+
         public void AtomicIsInMemory()
         {
-            _modules.Add(new MemoryAtomicStorageModule());
+            AtomicIsInMemory(builder => { });
         }
 
         public void StreamingIsInFiles(string filePath)
@@ -38,7 +51,7 @@ namespace Lokad.Cqrs.Build.Engine
         {
             if (_modules.Count == 0)
             {
-                _modules.Add(new MemoryAtomicStorageModule());
+                AtomicIsInMemory();
             }
 
             var builder = new ContainerBuilder();
