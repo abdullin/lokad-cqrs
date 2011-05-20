@@ -8,8 +8,6 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
-using Lokad.Cqrs.Build.Engine;
-using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Dispatch.Events;
 using NUnit.Framework;
 
@@ -48,7 +46,7 @@ namespace Lokad.Cqrs
 
         public sealed class MyHandler : IMyHandler<MyMessageA>, IMyHandler<MyMessageB>
         {
-            Func<MyContext> _context;
+            readonly Func<MyContext> _context;
 
             public MyHandler(Func<MyContext> context)
             {
@@ -69,7 +67,6 @@ namespace Lokad.Cqrs
                 Assert.AreEqual("valid", detail.Token);
                 var txt = string.Format("Consume B: {0} created on {1}", detail.MessageId, detail.Created);
                 Trace.WriteLine(txt);
-
             }
         }
 
@@ -91,15 +88,15 @@ namespace Lokad.Cqrs
             TestConfiguration(b =>
                 {
                     b.Domain(m =>
-                    {
-                        m.HandlerSample<IMyHandler<IMyMessage>>(c => c.Consume(null));
-                        m.ContextFactory(BuildContextOnTheFly);
-                    });
+                        {
+                            m.HandlerSample<IMyHandler<IMyMessage>>(c => c.Consume(null));
+                            m.ContextFactory(BuildContextOnTheFly);
+                        });
                     b.Memory(m =>
-                    {
-                        m.AddMemorySender("in", cm => cm.IdGeneratorForTests());
-                        m.AddMemoryProcess("in", d => d.DispatchAsCommandBatch());
-                    });
+                        {
+                            m.AddMemorySender("in", cm => cm.IdGeneratorForTests());
+                            m.AddMemoryProcess("in", d => d.DispatchAsCommandBatch());
+                        });
                 });
         }
 
@@ -109,6 +106,5 @@ namespace Lokad.Cqrs
             var token = envelope.GetAttribute("token", "");
             return new MyContext(messageId, token, envelope.CreatedOnUtc);
         }
-
     }
 }
