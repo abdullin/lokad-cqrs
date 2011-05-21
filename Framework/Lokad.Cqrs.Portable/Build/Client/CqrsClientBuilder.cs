@@ -5,8 +5,10 @@ using Autofac;
 using Autofac.Core;
 using Lokad.Cqrs.Build.Engine;
 using Lokad.Cqrs.Core.Directory;
+using Lokad.Cqrs.Core.Envelope;
 using Lokad.Cqrs.Core.Reactive;
 using Lokad.Cqrs.Core.Serialization;
+using Lokad.Cqrs.Core;
 
 namespace Lokad.Cqrs.Build.Client
 {
@@ -43,12 +45,18 @@ namespace Lokad.Cqrs.Build.Client
             return this;
         }
 
-        public CqrsClientBuilder Serialization(Action<SerializationModule> config)
+        IEnvelopeSerializer _envelopeSerializer = new EnvelopeSerializerWithDataContracts();
+        Func<Type[], IDataSerializer> _dataSerializer = types => new DataSerializerWithDataContracts(types);
+
+
+        public void RegisterDataSerializer(Func<Type[], IDataSerializer> serializer)
         {
-            var m = new SerializationModule();
-            config(m);
-            EnlistModule(m);
-            return this;
+            _dataSerializer = serializer;
+        }
+
+        public void RegisterEnvelopeSerializer(IEnvelopeSerializer serializer)
+        {
+            _envelopeSerializer = serializer;
         }
 
         readonly ContainerBuilder _builder = new ContainerBuilder();
@@ -94,6 +102,9 @@ namespace Lokad.Cqrs.Build.Client
             AutoConfigure();
 
             var container = _builder.Build();
+
+            container.ComponentRegistry.Register<IEnvelopeStreamer>(c => new EnvelopeStreamer(_envelopeSerializer, _dataSerializer(c.Resolve<IKnowSerializationTypes>().GetKnownTypes().ToArray())));
+
             return new CqrsClient(container);
         }
 
@@ -104,10 +115,6 @@ namespace Lokad.Cqrs.Build.Client
             if (!IsEnlisted<MessageDirectoryModule>())
             {
                 Domain(m => { });
-            }
-            if (!IsEnlisted<SerializationModule>())
-            {
-                Serialization(x => { });
             }
 
             if (Count<StorageModule>() == 0)

@@ -5,6 +5,8 @@
 
 #endregion
 
+using Lokad.Cqrs.Build.Client;
+using Lokad.Cqrs.Build.Engine;
 using Lokad.Cqrs.Core.Envelope;
 using Lokad.Cqrs.Core.Serialization;
 
@@ -12,13 +14,24 @@ namespace Lokad.Cqrs.Build
 {
     public static class ExtendSerializationModule
     {
-        public static void AutoDetectSerializer(this SerializationModule self)
+        public static void AutoDetectSerializer(this CqrsClientBuilder self)
         {
             self.RegisterDataSerializer(t => new DataSerializerWithAutoDetection(t));
             self.RegisterEnvelopeSerializer(new EnvelopeSerializerWithProtoBuf());
         }
 
-        public static void UseProtoBufSerialization(this SerializationModule self)
+        public static void UseProtoBufSerialization(this CqrsClientBuilder self)
+        {
+            self.RegisterDataSerializer(t => new DataSerializerWithProtoBuf(t));
+            self.RegisterEnvelopeSerializer(new EnvelopeSerializerWithProtoBuf());
+        }
+        public static void AutoDetectSerializer(this CqrsEngineBuilder self)
+        {
+            self.RegisterDataSerializer(t => new DataSerializerWithAutoDetection(t));
+            self.RegisterEnvelopeSerializer(new EnvelopeSerializerWithProtoBuf());
+        }
+
+        public static void UseProtoBufSerialization(this CqrsEngineBuilder self)
         {
             self.RegisterDataSerializer(t => new DataSerializerWithProtoBuf(t));
             self.RegisterEnvelopeSerializer(new EnvelopeSerializerWithProtoBuf());

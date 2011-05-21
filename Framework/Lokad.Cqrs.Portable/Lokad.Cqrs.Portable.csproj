@@ -90,7 +90,6 @@
     <Compile Include="Core.Dispatch\MemoryQuarantine.cs" />
     <Compile Include="Core.Dispatch\Events\EnvelopeAcked.cs" />
     <Compile Include="Core.Outbox\EnvelopeSent.cs" />
-    <Compile Include="Core.Serialization\SerializationModule.cs" />
     <Compile Include="Build\Engine\CqrsEngineBuilder.cs" />
     <Compile Include="Build\Engine\CqrsEngineHost.cs" />
     <Compile Include="Build\Engine\Events\EngineInitializationStarted.cs" />

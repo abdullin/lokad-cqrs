@@ -12,8 +12,10 @@ using Autofac;
 using Autofac.Core;
 using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Dispatch;
+using Lokad.Cqrs.Core.Envelope;
 using Lokad.Cqrs.Core.Reactive;
 using Lokad.Cqrs.Core.Serialization;
+using Lokad.Cqrs.Core;
 
 // ReSharper disable UnusedMethodReturnValue.Global
 
@@ -24,9 +26,26 @@ namespace Lokad.Cqrs.Build.Engine
     /// </summary>
     public class CqrsEngineBuilder : HideObjectMembersFromIntelliSense
     {
+
+        IEnvelopeSerializer _envelopeSerializer = new EnvelopeSerializerWithDataContracts();
+        Func<Type[], IDataSerializer> _dataSerializer = types => new DataSerializerWithDataContracts(types);
+
+
+        public void RegisterDataSerializer(Func<Type[], IDataSerializer> serializer)
+        {
+            _dataSerializer = serializer;
+        }
+
+        public void RegisterEnvelopeSerializer(IEnvelopeSerializer serializer)
+        {
+            _envelopeSerializer = serializer;
+        }
+
+
+
+
         readonly HashSet<IModule> _moduleEnlistments = new HashSet<IModule>();
-
-
+        
         bool IsEnlisted<TModule>() where TModule : IModule
         {
             return _moduleEnlistments.Count(x => x is TModule) > 0;
@@ -36,6 +55,8 @@ namespace Lokad.Cqrs.Build.Engine
         {
             return _moduleEnlistments.Count(x => x is TModule);
         }
+
+
 
         public void EnlistModule(IModule module)
         {
@@ -62,15 +83,6 @@ namespace Lokad.Cqrs.Build.Engine
             build(_builder);
             return this;
         }
-
-        public CqrsEngineBuilder Serialization(Action<SerializationModule> config)
-        {
-            var m = new SerializationModule();
-            config(m);
-            EnlistModule(m);
-            return this;
-        }
-
 
         public CqrsEngineBuilder EnlistObserver(IObserver<ISystemEvent> observer)
         {
@@ -126,10 +138,7 @@ namespace Lokad.Cqrs.Build.Engine
             {
                 Domain(m => { });
             }
-            if (!IsEnlisted<SerializationModule>())
-            {
-                Serialization(x => { });
-            }
+            
 
             if (Count<StorageModule>() == 0)
             {
@@ -150,6 +159,8 @@ namespace Lokad.Cqrs.Build.Engine
 
 
             var container = _builder.Build();
+            container.ComponentRegistry.Register<IEnvelopeStreamer>(c => new EnvelopeStreamer(_envelopeSerializer, _dataSerializer(c.Resolve<IKnowSerializationTypes>().GetKnownTypes().ToArray())));
+
             var host = container.Resolve<CqrsEngineHost>(TypedParameter.From(container));
             host.Initialize();
             return host;
