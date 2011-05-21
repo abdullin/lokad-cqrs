@@ -95,7 +95,7 @@ namespace Lokad.Cqrs
             }
         }
 
-        [Test]
+        [Test, Explicit]
         public void Test()
         {
             using (var host = BuildHost())

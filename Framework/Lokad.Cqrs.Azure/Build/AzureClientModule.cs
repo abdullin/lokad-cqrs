@@ -1,12 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
+
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
+using System;
 using System.ComponentModel;
 using Autofac;
 using Autofac.Core;
+using Lokad.Cqrs.Core;
 using Lokad.Cqrs.Core.Outbox;
 using Lokad.Cqrs.Feature.AzurePartition.Sender;
-using Microsoft.WindowsAzure;
-using Lokad.Cqrs.Core;
 
 namespace Lokad.Cqrs.Build
 {
@@ -14,7 +19,7 @@ namespace Lokad.Cqrs.Build
     {
         readonly AzureStorageRegistry _dictionary = new AzureStorageRegistry();
 
-        readonly IList<IModule> _modules = new List<IModule>();
+        Action<IComponentRegistry> _modules = context => { };
 
         /// <summary>
         /// Registers the specified storage account as default into the container
@@ -25,13 +30,12 @@ namespace Lokad.Cqrs.Build
             _dictionary.Register(storage);
         }
 
-   
 
         public void AddAzureSender(string accountId, string queueName, Action<SendMessageModule> configure)
         {
             var module = new SendMessageModule(accountId, queueName);
             configure(module);
-            _modules.Add(module);
+            _modules += module.Configure;
         }
 
         public void AddAzureSender(string accountId, string queueName)
@@ -42,32 +46,16 @@ namespace Lokad.Cqrs.Build
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void Configure(IComponentRegistry container)
         {
-            
-
             if (!_dictionary.Contains("azure-dev"))
             {
                 AddAzureAccount(AzureStorage.CreateConfigurationForDev());
             }
 
             container.Register(_dictionary);
+            container.Register<IQueueWriterFactory>(
+                c => new AzureWriteQueueFactory(_dictionary, c.Resolve<IEnvelopeStreamer>()));
 
-
-
-            var builder = new ContainerBuilder();
-
-            
-            //foreach (var config in _dictionary.GetAll())
-            //{
-            //    builder.RegisterInstance(config).Named<IAzureStorageConfiguration>(config.AccountName);
-            //}
-
-
-            foreach (var partition in _modules)
-            {
-                builder.RegisterModule(partition);
-            }
-            builder.RegisterType<AzureWriteQueueFactory>().As<IQueueWriterFactory>().SingleInstance();
-            builder.Update(container);
+            _modules(container);
         }
     }
 }

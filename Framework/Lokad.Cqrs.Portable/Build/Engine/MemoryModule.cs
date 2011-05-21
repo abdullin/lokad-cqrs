@@ -21,6 +21,7 @@ namespace Lokad.Cqrs.Build.Engine
     public sealed class MemoryModule : HideObjectMembersFromIntelliSense, IModule
     {
         readonly IList<IModule> _modules = new List<IModule>();
+        Action<IComponentRegistry> _funqlets = registry => { };
 
         public void AddMemoryProcess(string[] queues, Action<MemoryPartitionModule> config)
         {
@@ -40,6 +41,8 @@ namespace Lokad.Cqrs.Build.Engine
 
         public void Configure(IComponentRegistry componentRegistry)
         {
+            _funqlets(componentRegistry);
+
             var builder = new ContainerBuilder();
 
             if (_modules.OfType<MemoryPartitionModule>().Any())
@@ -71,7 +74,7 @@ namespace Lokad.Cqrs.Build.Engine
         {
             var module = new SendMessageModule("memory", queueName);
             config(module);
-            _modules.Add(module);
+            _funqlets += module.Configure;
         }
 
 

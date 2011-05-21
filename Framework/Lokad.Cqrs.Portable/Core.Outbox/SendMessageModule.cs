@@ -13,7 +13,7 @@ using Autofac.Core;
 
 namespace Lokad.Cqrs.Core.Outbox
 {
-    public sealed class SendMessageModule : HideObjectMembersFromIntelliSense, IModule
+    public sealed class SendMessageModule : HideObjectMembersFromIntelliSense
     {
         readonly string _queueName;
         readonly string _endpoint;

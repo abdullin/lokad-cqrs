@@ -34,6 +34,7 @@ namespace Lokad.Cqrs.Build.Engine
         readonly AzureStorageRegistry _configs = new AzureStorageRegistry();
 
         readonly IList<IModule> _modules = new List<IModule>();
+        Action<IComponentRegistry> _funqlets = registry => { };
 
         
 
@@ -53,7 +54,7 @@ namespace Lokad.Cqrs.Build.Engine
         {
             var module = new SendMessageModule(accountId, queueName);
             configure(module);
-            _modules.Add(module);
+            _funqlets += module.Configure;
         }
 
         public void AddAzureSender(string accountId, string queueName)
@@ -104,6 +105,7 @@ namespace Lokad.Cqrs.Build.Engine
 
         public void Configure(IComponentRegistry componentRegistry)
         {
+            _funqlets(componentRegistry);
             _configs.Register(AzureStorage.CreateConfigurationForDev());
             var builder = new ContainerBuilder();
 
