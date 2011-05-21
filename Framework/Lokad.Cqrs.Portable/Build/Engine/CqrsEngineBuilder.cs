@@ -127,6 +127,8 @@ namespace Lokad.Cqrs.Build.Engine
             // System presets
             InnerSystemRegisterObservations();
 
+            
+
             _builder.RegisterType<DispatcherProcess>();
             _builder.RegisterType<MessageDuplicationManager>().SingleInstance();
 
