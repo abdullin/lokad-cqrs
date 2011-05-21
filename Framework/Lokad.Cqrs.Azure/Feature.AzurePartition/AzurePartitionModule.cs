@@ -165,6 +165,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
         public void Configure(IComponentRegistry componentRegistry)
         {
             componentRegistry.Register(BuildConsumingProcess);
+
             var builder = new ContainerBuilder();
             builder.RegisterType<AzureSchedulingProcess>().As<IEngineProcess, AzureSchedulingProcess>();
             builder.Update(componentRegistry);

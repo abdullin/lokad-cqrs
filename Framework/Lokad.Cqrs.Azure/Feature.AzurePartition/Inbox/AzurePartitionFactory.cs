@@ -57,7 +57,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
             var future = new StatelessAzureFutureList(container, _streamer);
             var writer = new StatelessAzureQueueWriter(_streamer, container, queue);
 
-            return new AzurePartitionInboxIntake(name, writer, reader, future);
+            return new AzurePartitionInboxIntake(writer, reader, future);
         }
 
         public IPartitionInbox GetNotifier(string[] queueNames)
@@ -81,14 +81,12 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
 
     public sealed class AzurePartitionInboxIntake
     {
-        public readonly string Name;
         public readonly StatelessAzureQueueWriter Writer;
         public readonly StatelessAzureQueueReader Reader;
         public readonly StatelessAzureFutureList Future;
 
-        public AzurePartitionInboxIntake(string name, StatelessAzureQueueWriter writer, StatelessAzureQueueReader reader, StatelessAzureFutureList future)
+        public AzurePartitionInboxIntake(StatelessAzureQueueWriter writer, StatelessAzureQueueReader reader, StatelessAzureFutureList future)
         {
-            Name = name;
             Future = future;
             Writer = writer;
             Reader = reader;
