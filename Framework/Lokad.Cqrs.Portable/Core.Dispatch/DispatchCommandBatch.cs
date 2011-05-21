@@ -7,24 +7,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using Lokad.Cqrs.Core.Directory;
 
 namespace Lokad.Cqrs.Core.Dispatch
 {
-    public interface IMessageDispatchStrategy
-    {
-        IEnvelopeScope BeginEnvelopeScope();
-        
-    }
-
-    public interface IEnvelopeScope : IDisposable
-    {
-        void Dispatch(Type consumerType, ImmutableEnvelope envelop, ImmutableMessage message);
-        void Complete();
-    }
-
-
     /// <summary>
     /// Dispatch command batches to a single consumer. Uses sliding cache to 
     /// reduce message duplication
@@ -36,38 +22,11 @@ namespace Lokad.Cqrs.Core.Dispatch
         readonly MessageActivationMap _messageDirectory;
         readonly IMessageDispatchStrategy _strategy;
 
-        public DispatchCommandBatch(
-            MessageActivationMap messageDirectory, IMessageDispatchStrategy strategy)
+        public DispatchCommandBatch(MessageActivationMap messageDirectory, IMessageDispatchStrategy strategy)
         {
             _messageDirectory = messageDirectory;
             _strategy = strategy;
-            
-            //Transactional(TransactionScopeOption.RequiresNew);
         }
-     
-
-        //public void NoTransactions()
-        //{
-        //    Transactional(TransactionScopeOption.Suppress);
-        //}
-
-        //public void Transactional(Func<TransactionScope> factory)
-        //{
-        //    _scopeFactory = factory;
-        //}
-        //public void Transactional(TransactionScopeOption option, IsolationLevel level = IsolationLevel.Serializable, TimeSpan timeout = default(TimeSpan))
-        //{
-        //    if (timeout == (default(TimeSpan)))
-        //    {
-        //        timeout = TimeSpan.FromMinutes(10);
-        //    }
-        //    _scopeFactory = () => new TransactionScope(option, new TransactionOptions()
-        //        {
-        //            IsolationLevel = level,
-        //            Timeout = Debugger.IsAttached ? TimeSpan.MaxValue : timeout
-        //        });
-        //}
-
 
         void ISingleThreadMessageDispatcher.DispatchMessage(ImmutableEnvelope message)
         {
@@ -93,8 +52,6 @@ namespace Lokad.Cqrs.Core.Dispatch
                 }
                 scope.Complete();
             }
-
-            
         }
 
         public void Init()

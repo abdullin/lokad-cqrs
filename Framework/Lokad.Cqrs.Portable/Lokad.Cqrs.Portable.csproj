@@ -48,6 +48,8 @@
     <Compile Include="Core.Dispatch\Events\DispatchRecoveryFailed.cs" />
     <Compile Include="Core.Dispatch\Events\EnvelopeDuplicateDiscarded.cs" />
     <Compile Include="Core.Dispatch\IEnvelopeQuarantine.cs" />
+    <Compile Include="Core.Dispatch\IMessageDispatchScope.cs" />
+    <Compile Include="Core.Dispatch\IMessageDispatchStrategy.cs" />
     <Compile Include="Core.Envelope\EnvelopePrinter.cs" />
     <Compile Include="Core\FunqContainer.cs" />
     <Compile Include="Evil\TransactionEvil.cs" />

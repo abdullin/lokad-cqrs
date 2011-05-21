@@ -7,9 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Transactions;
-using Autofac;
 using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Dispatch.Events;
 
@@ -29,8 +26,8 @@ namespace Lokad.Cqrs.Core.Dispatch
         readonly IMessageDispatchStrategy _strategy;
 
         public DispatchOneEvent(
-            MessageActivationMap directory, 
-            ISystemObserver observer, 
+            MessageActivationMap directory,
+            ISystemObserver observer,
             IMessageDispatchStrategy strategy)
         {
             _observer = observer;
@@ -39,7 +36,7 @@ namespace Lokad.Cqrs.Core.Dispatch
         }
 
 
-      public void Init()
+        public void Init()
         {
             foreach (var message in _directory.Infos)
             {

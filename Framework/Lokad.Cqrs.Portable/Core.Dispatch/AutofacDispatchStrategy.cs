@@ -1,4 +1,11 @@
-﻿using System;
+﻿#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
+
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
+using System;
 using System.Transactions;
 using Autofac;
 using Lokad.Cqrs.Core.Directory;
@@ -10,7 +17,7 @@ namespace Lokad.Cqrs.Core.Dispatch
         readonly ILifetimeScope _scope;
         readonly Func<TransactionScope> _scopeFactory;
         readonly IMethodInvoker _invoker;
-        
+
         public AutofacDispatchStrategy(ILifetimeScope scope, Func<TransactionScope> scopeFactory, IMethodInvoker invoker)
         {
             _scope = scope;
@@ -18,21 +25,21 @@ namespace Lokad.Cqrs.Core.Dispatch
             _invoker = invoker;
         }
 
-        public IEnvelopeScope BeginEnvelopeScope()
+        public IMessageDispatchScope BeginEnvelopeScope()
         {
             var outer = _scope.BeginLifetimeScope(DispatchLifetimeScopeTags.MessageEnvelopeScopeTag);
             var tx = _scopeFactory();
 
-            return new AutofacEnvelopeScope(tx, outer, _invoker);
+            return new AutofacMessageDispatchScope(tx, outer, _invoker);
         }
 
-        sealed class AutofacEnvelopeScope : IEnvelopeScope
+        sealed class AutofacMessageDispatchScope : IMessageDispatchScope
         {
             readonly TransactionScope _tx;
             readonly ILifetimeScope _envelopeScope;
             readonly IMethodInvoker _invoker;
 
-            public AutofacEnvelopeScope(TransactionScope tx, ILifetimeScope envelopeScope, IMethodInvoker invoker)
+            public AutofacMessageDispatchScope(TransactionScope tx, ILifetimeScope envelopeScope, IMethodInvoker invoker)
             {
                 _tx = tx;
                 _envelopeScope = envelopeScope;
