@@ -6,11 +6,12 @@ namespace Lokad.Cqrs.Evil
 {
     public static class TransactionEvil
     {
-        public static Func<TransactionScope> NoTransactions()
+        public static Func<TransactionScope> Suppress()
         {
             return () => new TransactionScope(TransactionScopeOption.Suppress);
         }
-        public static Func<TransactionScope> Transactional(TransactionScopeOption option, IsolationLevel level = IsolationLevel.Serializable, TimeSpan timeout = default(TimeSpan))
+        
+        public static Func<TransactionScope> Factory(TransactionScopeOption option, IsolationLevel level = IsolationLevel.Serializable, TimeSpan timeout = default(TimeSpan))
         {
             if (timeout == (default(TimeSpan)))
             {

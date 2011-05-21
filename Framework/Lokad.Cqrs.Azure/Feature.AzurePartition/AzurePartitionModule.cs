@@ -24,33 +24,27 @@ namespace Lokad.Cqrs.Feature.AzurePartition
     public sealed class AzurePartitionModule : HideObjectMembersFromIntelliSense
     {
         readonly HashSet<string> _queueNames = new HashSet<string>();
-        TimeSpan _queueVisibilityTimeout = TimeSpan.FromSeconds(30);
+        TimeSpan _queueVisibilityTimeout;
         PartialRegistration<IEnvelopeQuarantine> _quarantinePartial;
 
         Func<uint, TimeSpan> _decayPolicy;
 
         readonly string _accountName;
-
-        Func<TransactionScope> _transactionScope;
-        Func<IComponentContext, Func<TransactionScope>, IMessageDispatchStrategy> _strategy;
+        
+        Func<IComponentContext, IMessageDispatchStrategy> _strategy;
         Func<IComponentContext, MessageActivationMap, IMessageDispatchStrategy, ISingleThreadMessageDispatcher> _dispatcher;
 
-        public void Transactional(Func<TransactionScope> factory)
-        {
-            _transactionScope = factory;
-        }
 
         public AzurePartitionModule(string accountId, string[] queueNames)
         {
+            DispatchStrategy(ctx => new AutofacDispatchStrategy(
+                ctx.Resolve<ILifetimeScope>(), 
+                TransactionEvil.Factory(TransactionScopeOption.RequiresNew), 
+                ctx.Resolve<IMethodInvoker>()));
 
-            _transactionScope = TransactionEvil.Transactional(TransactionScopeOption.RequiresNew);
-            _strategy = (context, tx) => new AutofacDispatchStrategy(
-                context.Resolve<ILifetimeScope>(),
-                tx,
-                context.Resolve<IMethodInvoker>());
-
-            _dispatcher = (ctx, map, strategy) => new DispatchOneEvent(map, ctx.Resolve<ISystemObserver>(), strategy); 
-
+            DispatchAsEvents();
+            
+            QueueVisibility(30000);
 
 
 
@@ -59,6 +53,11 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             
             QuarantineIs<MemoryQuarantine>();
             DecayPolicy(TimeSpan.FromSeconds(2));
+        }
+
+        public void DispatchStrategy(Func<IComponentContext, IMessageDispatchStrategy> factory)
+        {
+            _strategy = factory;
         }
 
 
@@ -125,7 +124,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 
             var map = builder.BuildActivationMap(_filter.DoesPassFilter);
 
-            var strategy = _strategy(context, _transactionScope);
+            var strategy = _strategy(context);
             var dispatcher = _dispatcher(context, map, strategy);
             dispatcher.Init();
 
