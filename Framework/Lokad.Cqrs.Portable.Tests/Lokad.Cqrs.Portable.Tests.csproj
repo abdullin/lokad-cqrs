@@ -55,6 +55,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Documentation_sample.cs" />
+    <Compile Include="Feature.AtomicStorage\Atomic_storage_scenarios.cs" />
+    <Compile Include="Feature.AtomicStorage\Given_File_Configuration.cs" />
     <Compile Include="Feature.AtomicStorage\Syntax_verification.cs" />
     <Compile Include="Core.Directory\MessageDirectoryFixture.cs" />
     <Compile Include="Core.Directory\When_activations_constrained_to_handler_type_with_type.cs" />
@@ -74,7 +76,7 @@
     <Compile Include="Feature.StreamingStorage\Engine_scenario_for_streaming_storage.cs" />
     <Compile Include="Feature.StreamingStorage\Scenarios\When_listing_items_in.cs" />
     <Compile Include="FiniteEngineScenario.cs" />
-    <Compile Include="Feature.AtomicStorage\Run_all_engine_scenarios_in_memory.cs" />
+    <Compile Include="Feature.AtomicStorage\Given_Memory_Configuration.cs" />
     <Compile Include="Feature.AtomicStorage\Engine_scenario_for_NuclearStorage_in_partition.cs" />
     <Compile Include="Feature.AtomicStorage\Engine_scenario_for_AtomicStorage_in_partition.cs" />
     <Compile Include="Feature.StreamingStorage\Run_all_StreamingStorage_scenarios_for_Files.cs" />

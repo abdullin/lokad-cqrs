@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using Autofac;
 using Autofac.Core;
 using Lokad.Cqrs.Feature.AtomicStorage;
@@ -11,6 +12,7 @@ namespace Lokad.Cqrs.Build.Engine
     public sealed class StorageModule : HideObjectMembersFromIntelliSense, IModule
     {
         IAtomicStorageFactory _atomicStorageFactory;
+        IStreamingRoot _streamingRoot;
 
         public void AtomicIs(IAtomicStorageFactory factory)
         {
@@ -44,14 +46,12 @@ namespace Lokad.Cqrs.Build.Engine
 
         public void StreamingIsInFiles(string filePath)
         {
-            _modules.Add(new FileStreamingStorageModule(filePath));
+            _streamingRoot = new FileStreamingContainer(filePath);
         }
 
-        public void StreamingIsInFiles(string filePath, Action<FileStreamingStorageModule> config)
+        public void StreamingIs(IStreamingRoot streamingRoot)
         {
-            var module = new FileStreamingStorageModule(filePath);
-            config(module);
-            _modules.Add(module);
+            _streamingRoot = streamingRoot;
         }
 
         public void EnlistModule(IModule module)
@@ -68,13 +68,21 @@ namespace Lokad.Cqrs.Build.Engine
             {
                 AtomicIsInMemory(strategyBuilder => { });
             }
+            if (_streamingRoot == null)
+            {
+                StreamingIsInFiles(Directory.GetCurrentDirectory());
+            }
             
 
             var source = new AtomicRegistrationSource(_atomicStorageFactory);
             builder.RegisterSource(source);
             builder.RegisterInstance(new NuclearStorage(_atomicStorageFactory));
-            builder.RegisterType<AtomicStorageInitialization>().As<IEngineProcess>().SingleInstance();
-            
+            builder
+                .Register(
+                    c => new AtomicStorageInitialization(new[] {_atomicStorageFactory}, c.Resolve<ISystemObserver>()))
+                .As<IEngineProcess>().SingleInstance();
+
+            builder.RegisterInstance(_streamingRoot);
             builder.Update(componentRegistry);
         }
     }

@@ -35,13 +35,15 @@ namespace Lokad.Cqrs
         [Test]
         public void Test()
         {
-            var events = new Subject<ISystemEvent>();
+            var dev = AzureStorage.CreateConfigurationForDev();
+            WipeAzureAccount.Fast(s => s.StartsWith("test-"), dev);
 
+            var events = new Subject<ISystemEvent>();
             var eb = new CqrsEngineBuilder();
             eb.Azure(c =>
                 {
-                    c.AddAzureProcess("azure-dev", "publish");
-                    c.WipeAccountsAtStartUp = true;
+                    c.AddAzureAccount(dev);
+                    c.AddAzureProcess("azure-dev", "test-publish");
                 });
             eb.EnlistObserver(events);
             var engine = eb.Build();
@@ -52,7 +54,7 @@ namespace Lokad.Cqrs
 
 
             var builder = new CqrsClientBuilder();
-            builder.Azure(c => c.AddAzureSender("azure-dev", "publish"));
+            builder.Azure(c => c.AddAzureSender("azure-dev", "test-publish"));
             var client = builder.Build();
 
 

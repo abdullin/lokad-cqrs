@@ -21,17 +21,18 @@ namespace Lokad.Cqrs
         static void CurrentConfig(CqrsEngineBuilder b)
         {
             var dev = AzureStorage.CreateConfigurationForDev();
-
+            
+            WipeAzureAccount.Fast(s => s.StartsWith("test-"), dev);
             b.Azure(m =>
                 {
                     m.AddAzureAccount(dev);
-                    m.AddAzureProcess("azure-dev", new[] {"incoming"}, c =>
+                    m.AddAzureProcess("azure-dev", new[] {"test-incoming"}, c =>
                         {
                             c.QueueVisibility(1);
                             c.DispatchAsCommandBatch();
                         });
-                    m.AddAzureSender("azure-dev", "incoming", x => x.IdGeneratorForTests());
-                    m.WipeAccountsAtStartUp = true;
+                    m.AddAzureSender("azure-dev", "test-incoming", x => x.IdGeneratorForTests());
+                    
                 });
             
         }
