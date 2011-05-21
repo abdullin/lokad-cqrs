@@ -12,5 +12,13 @@ namespace Lokad.Cqrs.Core
             builder.Register(reg).SingleInstance();
             builder.Update(registry);
         }
+
+        public static void Register<T>(this IComponentRegistry registry, T instance)
+            where T : class
+        {
+            var builder = new ContainerBuilder();
+            builder.RegisterInstance(instance);
+            builder.Update(registry);
+        }
     }
 }

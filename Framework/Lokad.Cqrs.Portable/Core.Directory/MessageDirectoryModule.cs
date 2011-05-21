@@ -20,10 +20,9 @@ namespace Lokad.Cqrs.Core.Directory
     public class MessageDirectoryModule : IModule
     {
         readonly DomainAssemblyScanner _scanner = new DomainAssemblyScanner();
-        readonly ContainerBuilder _builder;
         IMethodContextManager _contextManager;
         MethodInvokerHint _hint;
-        Action<ContainerBuilder> _actionReg;
+        Action<IComponentRegistry> _actionReg;
 
         
         /// <summary>
@@ -31,8 +30,6 @@ namespace Lokad.Cqrs.Core.Directory
         /// </summary>
         public MessageDirectoryModule()
         {
-            _builder = new ContainerBuilder();
-
             HandlerSample<IConsume<IMessage>>(a => a.Consume(null));
             ContextFactory((envelope, message) => new MessageContext(envelope.EnvelopeId, message.Index, envelope.CreatedOnUtc));
         }
@@ -43,7 +40,7 @@ namespace Lokad.Cqrs.Core.Directory
         {
             var instance = new MethodContextManager<TContext>(manager);
             _contextManager = instance;
-            _actionReg = builder => builder.RegisterInstance<Func<TContext>>(instance.Get);
+            _actionReg = c => c.Register<Func<TContext>>(instance.Get);
         }
 
 		public void HandlerSample<THandler>(Expression<Action<THandler>> action)
@@ -79,7 +76,7 @@ namespace Lokad.Cqrs.Core.Directory
         }
 
 
-        void IModule.Configure(IComponentRegistry componentRegistry)
+        void IModule.Configure(IComponentRegistry container)
         {
             var handler = new MethodInvoker(_hint, _contextManager);
 
@@ -88,15 +85,16 @@ namespace Lokad.Cqrs.Core.Directory
             var builder = new MessageDirectoryBuilder(mappings);
             var messages = builder.ListMessagesToSerialize();
 
+            var cb = new ContainerBuilder();
             foreach (var consumer in builder.ListConsumersToActivate())
             {
-                _builder.RegisterType(consumer);
+                cb.RegisterType(consumer);
             }
-            _actionReg(_builder);
-            _builder.RegisterInstance(builder).As<MessageDirectoryBuilder>();
-            _builder.RegisterInstance(new SerializationList(messages)).As<IKnowSerializationTypes>();
-            _builder.RegisterInstance(handler).As<IMethodInvoker>();
-            _builder.Update(componentRegistry);
+            cb.Update(container);
+            _actionReg(container);
+            container.Register(builder);
+            container.Register<IKnowSerializationTypes>(new SerializationList(messages));
+            container.Register<IMethodInvoker>(handler);
         }
 
         public sealed class DomainAwareMessageProfiler
