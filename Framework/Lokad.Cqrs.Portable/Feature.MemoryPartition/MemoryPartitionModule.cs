@@ -14,10 +14,11 @@ using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Core.Outbox;
 using Lokad.Cqrs.Evil;
+using Lokad.Cqrs.Core;
 
 namespace Lokad.Cqrs.Feature.MemoryPartition
 {
-    public sealed class MemoryPartitionModule : HideObjectMembersFromIntelliSense, IModule
+    public sealed class MemoryPartitionModule : HideObjectMembersFromIntelliSense
     {
         readonly string[] _memoryQueues;
 
@@ -101,16 +102,22 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
             var quarantine = _quarantineFactory(context);
             var manager = context.Resolve<MessageDuplicationManager>();
             var transport = new DispatcherProcess(log, dispatcher, notifier, quarantine, manager);
+
+           
             return transport;
         }
 
-        public void Configure(IComponentRegistry componentRegistry)
+        public void Configure(IComponentRegistry container)
         {
-            var builder = new ContainerBuilder();
-            
 
-            builder.Register(BuildConsumingProcess);
-            builder.Update(componentRegistry);
+            if (!container.IsRegistered(new TypedService(typeof(MemoryPartitionFactory))))
+            {
+                var mpf = new MemoryPartitionFactory();
+                container.Register(mpf);
+                container.Register<IEngineProcess>(mpf);
+                container.Register<IQueueWriterFactory>(mpf);
+            }
+            container.Register(BuildConsumingProcess);
         }
     }
 }

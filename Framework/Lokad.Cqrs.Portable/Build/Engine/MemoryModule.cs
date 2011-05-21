@@ -6,9 +6,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using Autofac;
 using Autofac.Core;
 using Lokad.Cqrs.Core.Outbox;
 using Lokad.Cqrs.Feature.MemoryPartition;
@@ -20,7 +17,6 @@ namespace Lokad.Cqrs.Build.Engine
     /// </summary>
     public sealed class MemoryModule : HideObjectMembersFromIntelliSense, IModule
     {
-        readonly IList<IModule> _modules = new List<IModule>();
         Action<IComponentRegistry> _funqlets = registry => { };
 
         public void AddMemoryProcess(string[] queues, Action<MemoryPartitionModule> config)
@@ -36,27 +32,12 @@ namespace Lokad.Cqrs.Build.Engine
             }
             var module = new MemoryPartitionModule(queues);
             config(module);
-            _modules.Add(module);
+            _funqlets += module.Configure;
         }
 
         public void Configure(IComponentRegistry componentRegistry)
         {
             _funqlets(componentRegistry);
-
-            var builder = new ContainerBuilder();
-
-            if (_modules.OfType<MemoryPartitionModule>().Any())
-            {
-                builder.RegisterType<MemoryPartitionFactory>().As
-                    <IQueueWriterFactory, IEngineProcess, MemoryPartitionFactory>().
-                    SingleInstance();
-            }
-            foreach (var module in _modules)
-            {
-                builder.RegisterModule(module);
-            }
-
-            builder.Update(componentRegistry);
         }
 
 
