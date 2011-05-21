@@ -15,65 +15,86 @@ using Lokad.Cqrs.Feature.AtomicStorage;
 
 namespace Lokad.Cqrs.Build.Engine
 {
-    public sealed class AtomicRegistrationSource : IRegistrationSource
+    public sealed class AtomicRegistrationCore
     {
         readonly IAtomicStorageFactory _factory;
 
-        public AtomicRegistrationSource(IAtomicStorageFactory factory)
+        public AtomicRegistrationCore(IAtomicStorageFactory factory)
         {
             _factory = factory;
+        }
+
+        public bool TryResolve(Type serviceType, out object instance)
+        {
+            instance = null;
+            if (serviceType.IsGenericType)
+                return false;
+
+            var definition = serviceType.GetGenericTypeDefinition();
+            var arguments = serviceType.GetGenericArguments();
+            
+            if (definition == typeof(IAtomicSingletonReader<>))
+            {
+                instance = typeof(IAtomicStorageFactory)
+                    .GetMethod("GetSingletonReader")
+                    .MakeGenericMethod(arguments)
+                    .Invoke(_factory, null);
+                return true;
+            }
+            if (definition == typeof(IAtomicSingletonWriter<>))
+            {
+                instance = typeof(IAtomicStorageFactory)
+                    .GetMethod("GetSingletonWriter")
+                    .MakeGenericMethod(arguments)
+                    .Invoke(_factory, null);
+                return true;
+            }
+            if (definition == typeof(IAtomicEntityReader<,>))
+            {
+                instance = typeof(IAtomicStorageFactory)
+                    .GetMethod("GetEntityReader")
+                    .MakeGenericMethod(arguments)
+                    .Invoke(_factory, null);
+                return true;
+            }
+            if (definition == typeof(IAtomicEntityWriter<,>))
+            {
+                instance = typeof(IAtomicStorageFactory)
+                    .GetMethod("GetEntityWriter")
+                    .MakeGenericMethod(arguments)
+                    .Invoke(_factory, null);
+                return true;
+            }
+            return false;
+        }
+    }
+    public sealed class AtomicRegistrationSource : IRegistrationSource
+    {
+        readonly AtomicRegistrationCore _core;
+
+        public AtomicRegistrationSource(AtomicRegistrationCore core)
+        {
+            _core = core;
         }
 
         public IEnumerable<IComponentRegistration> RegistrationsFor(Service service,
             Func<Service, IEnumerable<IComponentRegistration>> registrationAccessor)
         {
             var serviceWithType = service as IServiceWithType;
-            if (serviceWithType != null && serviceWithType.ServiceType.IsGenericType)
+            if (serviceWithType != null)
             {
-                var serviceType = serviceWithType.ServiceType;
-                var definition = serviceType.GetGenericTypeDefinition();
-                var arguments = serviceType.GetGenericArguments();
-
-                object instance = null;
-                if (definition == typeof (IAtomicSingletonReader<>))
-                {
-                    instance = typeof (IAtomicStorageFactory)
-                        .GetMethod("GetSingletonReader")
-                        .MakeGenericMethod(arguments)
-                        .Invoke(_factory, null);
-                }
-                else if (definition == typeof (IAtomicSingletonWriter<>))
-                {
-                    instance = typeof (IAtomicStorageFactory)
-                        .GetMethod("GetSingletonWriter")
-                        .MakeGenericMethod(arguments)
-                        .Invoke(_factory, null);
-                }
-                else if (definition == typeof (IAtomicEntityReader<,>))
-                {
-                    instance = typeof (IAtomicStorageFactory)
-                        .GetMethod("GetEntityReader")
-                        .MakeGenericMethod(arguments)
-                        .Invoke(_factory, null);
-                }
-                else if (definition == typeof (IAtomicEntityWriter<,>))
-                {
-                    instance = typeof (IAtomicStorageFactory)
-                        .GetMethod("GetEntityWriter")
-                        .MakeGenericMethod(arguments)
-                        .Invoke(_factory, null);
-                }
-                if (null != instance)
+                object instance;
+                if (_core.TryResolve(serviceWithType.ServiceType, out instance))
                 {
                     var data = new RegistrationData(service)
-                        {
-                            Sharing = InstanceSharing.Shared,
-                            Lifetime = new RootScopeLifetime()
-                        };
+                    {
+                        Sharing = InstanceSharing.Shared,
+                        Lifetime = new RootScopeLifetime()
+                    };
 
                     yield return
                         RegistrationBuilder.CreateRegistration(Guid.NewGuid(), data,
-                            new ProvidedInstanceActivator(instance), new[] {service});
+                            new ProvidedInstanceActivator(instance), new[] { service });
                 }
             }
         }

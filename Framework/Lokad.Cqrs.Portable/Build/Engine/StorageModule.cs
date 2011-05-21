@@ -72,9 +72,9 @@ namespace Lokad.Cqrs.Build.Engine
             {
                 StreamingIsInFiles(Directory.GetCurrentDirectory());
             }
-            
 
-            var source = new AtomicRegistrationSource(_atomicStorageFactory);
+            var core = new AtomicRegistrationCore(_atomicStorageFactory);
+            var source = new AtomicRegistrationSource(core);
             builder.RegisterSource(source);
             builder.RegisterInstance(new NuclearStorage(_atomicStorageFactory));
             builder
