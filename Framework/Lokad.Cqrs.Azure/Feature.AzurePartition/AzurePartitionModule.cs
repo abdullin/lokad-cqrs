@@ -16,6 +16,7 @@ using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Core.Outbox;
 using Lokad.Cqrs.Evil;
 using Lokad.Cqrs.Feature.AzurePartition.Inbox;
+using Lokad.Cqrs.Core;
 
 // ReSharper disable MemberCanBePrivate.Global
 
@@ -25,7 +26,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
     {
         readonly HashSet<string> _queueNames = new HashSet<string>();
         TimeSpan _queueVisibilityTimeout;
-        PartialRegistration<IEnvelopeQuarantine> _quarantinePartial;
+        Func<IComponentContext, IEnvelopeQuarantine> _quarantineFactory;
 
         Func<uint, TimeSpan> _decayPolicy;
 
@@ -50,8 +51,8 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 
             _accountName = accountId;
             _queueNames = new HashSet<string>(queueNames);
-            
-            QuarantineIs<MemoryQuarantine>();
+
+            Quarantine(c => new MemoryQuarantine());
             DecayPolicy(TimeSpan.FromSeconds(2));
         }
 
@@ -66,10 +67,9 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             _dispatcher = factory;
         }
 
-        public void QuarantineIs<TQuarantine>(Action<TQuarantine> optionalConfig = null)
-            where TQuarantine : class, IEnvelopeQuarantine
+        public void Quarantine(Func<IComponentContext, IEnvelopeQuarantine> factory)
         {
-            _quarantinePartial = PartialRegistration<IEnvelopeQuarantine>.From(optionalConfig);
+            _quarantineFactory = factory;
         }
 
         public void DecayPolicy(TimeSpan timeout)
@@ -144,7 +144,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             var factory = new AzurePartitionFactory(streamer, log, config, _queueVisibilityTimeout, scheduling, _decayPolicy);
             
             var notifier = factory.GetNotifier(_queueNames.ToArray());
-            var quarantine = _quarantinePartial.ResolveWithTypedParams(context);
+            var quarantine = _quarantineFactory(context);
             var manager = context.Resolve<MessageDuplicationManager>();
             var transport = new DispatcherProcess(log, dispatcher, notifier, quarantine, manager);
             return transport;
@@ -164,9 +164,8 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 
         public void Configure(IComponentRegistry componentRegistry)
         {
+            componentRegistry.Register(BuildConsumingProcess);
             var builder = new ContainerBuilder();
-            _quarantinePartial.Register(builder);
-            builder.Register(BuildConsumingProcess);
             builder.RegisterType<AzureSchedulingProcess>().As<IEngineProcess, AzureSchedulingProcess>();
             builder.Update(componentRegistry);
         }

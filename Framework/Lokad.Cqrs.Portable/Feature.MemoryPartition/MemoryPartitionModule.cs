@@ -22,11 +22,11 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
         readonly string[] _memoryQueues;
 
         
-        PartialRegistration<IEnvelopeQuarantine> _quarantinePartial;
         readonly MessageDirectoryFilter _filter = new MessageDirectoryFilter();
 
         Func<IComponentContext, IMessageDispatchStrategy> _strategy;
         Func<IComponentContext, MessageActivationMap, IMessageDispatchStrategy, ISingleThreadMessageDispatcher> _dispatcher;
+        Func<IComponentContext, IEnvelopeQuarantine> _quarantineFactory;
 
         public MemoryPartitionModule WhereFilter(Action<MessageDirectoryFilter> filter)
         {
@@ -45,9 +45,7 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
 
             DispatchAsEvents();
 
-            QuarantineIs<MemoryQuarantine>();
-
-
+            Quarantine(c => new MemoryQuarantine());
         }
 
 
@@ -63,10 +61,9 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
         }
 
 
-        public void QuarantineIs<TQuarantine>(Action<TQuarantine> optionalConfig = null)
-            where TQuarantine : class, IEnvelopeQuarantine
+        public void Quarantine(Func<IComponentContext, IEnvelopeQuarantine> factory)
         {
-            _quarantinePartial = PartialRegistration<IEnvelopeQuarantine>.From(optionalConfig);
+            _quarantineFactory = factory;
         }
 
         public void DispatchAsEvents()
@@ -101,7 +98,7 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
             var factory = context.Resolve<MemoryPartitionFactory>();
             var notifier = factory.GetMemoryInbox(_memoryQueues);
 
-            var quarantine = _quarantinePartial.ResolveWithTypedParams(context);
+            var quarantine = _quarantineFactory(context);
             var manager = context.Resolve<MessageDuplicationManager>();
             var transport = new DispatcherProcess(log, dispatcher, notifier, quarantine, manager);
             return transport;
@@ -110,7 +107,7 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
         public void Configure(IComponentRegistry componentRegistry)
         {
             var builder = new ContainerBuilder();
-            _quarantinePartial.Register(builder);
+            
 
             builder.Register(BuildConsumingProcess);
             builder.Update(componentRegistry);

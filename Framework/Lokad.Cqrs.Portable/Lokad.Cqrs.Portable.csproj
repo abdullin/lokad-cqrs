@@ -65,7 +65,6 @@
     <Compile Include="Feature.AtomicStorage\IAtomicStorageStrategy.cs" />
     <Compile Include="ImmutableAttribute.cs" />
     <Compile Include="MessageContext.cs" />
-    <Compile Include="PartialRegistration.cs" />
     <Compile Include="HideObjectMembersFromIntelliSense.cs" />
     <Compile Include="Build\Client\CqrsClient.cs" />
     <Compile Include="Build\Client\CqrsClientBuilder.cs" />
