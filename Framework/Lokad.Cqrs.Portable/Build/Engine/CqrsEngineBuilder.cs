@@ -44,7 +44,7 @@ namespace Lokad.Cqrs.Build.Engine
 
 
 
-        readonly HashSet<IModule> _moduleEnlistments = new HashSet<IModule>();
+        readonly List<IModule> _moduleEnlistments = new List<IModule>();
         
         bool IsEnlisted<TModule>() where TModule : IModule
         {
