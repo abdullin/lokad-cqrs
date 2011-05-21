@@ -8,59 +8,65 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Transactions;
-using Autofac;
 using Lokad.Cqrs.Core.Directory;
 
 namespace Lokad.Cqrs.Core.Dispatch
 {
+    public interface IMessageDispatchStrategy
+    {
+        IEnvelopeScope BeginEnvelopeScope();
+        
+    }
+
+    public interface IEnvelopeScope : IDisposable
+    {
+        void Dispatch(Type consumerType, ImmutableEnvelope envelop, ImmutableMessage message);
+        void Complete();
+    }
+
+
     /// <summary>
     /// Dispatch command batches to a single consumer. Uses sliding cache to 
     /// reduce message duplication
     /// </summary>
     public class DispatchCommandBatch : ISingleThreadMessageDispatcher
     {
-        readonly ILifetimeScope _container;
+        
         readonly IDictionary<Type, Type> _messageConsumers = new Dictionary<Type, Type>();
         readonly MessageActivationMap _messageDirectory;
-        readonly IMethodInvoker _invoker;
-
-        Func<TransactionScope> _scopeFactory;
+        readonly IMessageDispatchStrategy _strategy;
 
         public DispatchCommandBatch(
-            ILifetimeScope container, 
-            MessageActivationMap messageDirectory,
-            IMethodInvoker invoker)
+            MessageActivationMap messageDirectory, IMessageDispatchStrategy strategy)
         {
-            _container = container;
-            _invoker = invoker;
             _messageDirectory = messageDirectory;
+            _strategy = strategy;
             
-            Transactional(TransactionScopeOption.RequiresNew);
+            //Transactional(TransactionScopeOption.RequiresNew);
         }
      
 
-        public void NoTransactions()
-        {
-            Transactional(TransactionScopeOption.Suppress);
-        }
+        //public void NoTransactions()
+        //{
+        //    Transactional(TransactionScopeOption.Suppress);
+        //}
 
-        public void Transactional(Func<TransactionScope> factory)
-        {
-            _scopeFactory = factory;
-        }
-        public void Transactional(TransactionScopeOption option, IsolationLevel level = IsolationLevel.Serializable, TimeSpan timeout = default(TimeSpan))
-        {
-            if (timeout == (default(TimeSpan)))
-            {
-                timeout = TimeSpan.FromMinutes(10);
-            }
-            _scopeFactory = () => new TransactionScope(option, new TransactionOptions()
-                {
-                    IsolationLevel = level,
-                    Timeout = Debugger.IsAttached ? TimeSpan.MaxValue : timeout
-                });
-        }
+        //public void Transactional(Func<TransactionScope> factory)
+        //{
+        //    _scopeFactory = factory;
+        //}
+        //public void Transactional(TransactionScopeOption option, IsolationLevel level = IsolationLevel.Serializable, TimeSpan timeout = default(TimeSpan))
+        //{
+        //    if (timeout == (default(TimeSpan)))
+        //    {
+        //        timeout = TimeSpan.FromMinutes(10);
+        //    }
+        //    _scopeFactory = () => new TransactionScope(option, new TransactionOptions()
+        //        {
+        //            IsolationLevel = level,
+        //            Timeout = Debugger.IsAttached ? TimeSpan.MaxValue : timeout
+        //        });
+        //}
 
 
         void ISingleThreadMessageDispatcher.DispatchMessage(ImmutableEnvelope message)
@@ -78,33 +84,18 @@ namespace Lokad.Cqrs.Core.Dispatch
                 }
             }
 
-            using (var scope = _scopeFactory())
-            {
-                DispatchEnvelope(message);
-                scope.Complete();
-            }
-        }
-
-        protected virtual void DispatchEnvelope(ImmutableEnvelope message)
-        {
-            using (var unit = _container.BeginLifetimeScope(DispatchLifetimeScopeTags.MessageEnvelopeScopeTag))
+            using (var scope = _strategy.BeginEnvelopeScope())
             {
                 foreach (var item in message.Items)
                 {
-                    // we're dispatching them inside single lifetime scope
-                    // meaning same transaction,
-                    using (var scope = unit.BeginLifetimeScope(DispatchLifetimeScopeTags.MessageItemScopeTag))
-                    {
-                        var consumerType = _messageConsumers[item.MappedType];
-                        {
-                            var consumer = scope.Resolve(consumerType);
-                            _invoker.InvokeConsume(consumer, item, message);
-                        }
-                    }
+                    var consumerType = _messageConsumers[item.MappedType];
+                    scope.Dispatch(consumerType, message, item);
                 }
+                scope.Complete();
             }
-        }
 
+            
+        }
 
         public void Init()
         {
