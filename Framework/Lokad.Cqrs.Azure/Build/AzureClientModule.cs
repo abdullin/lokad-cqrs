@@ -6,6 +6,7 @@ using Autofac.Core;
 using Lokad.Cqrs.Core.Outbox;
 using Lokad.Cqrs.Feature.AzurePartition.Sender;
 using Microsoft.WindowsAzure;
+using Lokad.Cqrs.Core;
 
 namespace Lokad.Cqrs.Build
 {
@@ -39,20 +40,26 @@ namespace Lokad.Cqrs.Build
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void Configure(IComponentRegistry componentRegistry)
+        public void Configure(IComponentRegistry container)
         {
-            var builder = new ContainerBuilder();
+            
 
             if (!_dictionary.Contains("azure-dev"))
             {
                 AddAzureAccount(AzureStorage.CreateConfigurationForDev());
             }
 
-            builder.RegisterInstance(_dictionary);
-            foreach (var config in _dictionary.GetAll())
-            {
-                builder.RegisterInstance(config).Named<IAzureStorageConfiguration>(config.AccountName);
-            }
+            container.Register(_dictionary);
+
+
+
+            var builder = new ContainerBuilder();
+
+            
+            //foreach (var config in _dictionary.GetAll())
+            //{
+            //    builder.RegisterInstance(config).Named<IAzureStorageConfiguration>(config.AccountName);
+            //}
 
 
             foreach (var partition in _modules)
@@ -60,7 +67,7 @@ namespace Lokad.Cqrs.Build
                 builder.RegisterModule(partition);
             }
             builder.RegisterType<AzureWriteQueueFactory>().As<IQueueWriterFactory>().SingleInstance();
-            builder.Update(componentRegistry);
+            builder.Update(container);
         }
     }
 }

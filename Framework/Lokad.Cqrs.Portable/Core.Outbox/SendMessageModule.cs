@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.Threading;
 using Autofac;
 using Autofac.Core;
-using Lokad.Cqrs.Build;
 
 namespace Lokad.Cqrs.Core.Outbox
 {
@@ -18,7 +17,6 @@ namespace Lokad.Cqrs.Core.Outbox
     {
         readonly string _queueName;
         readonly string _endpoint;
-        readonly ContainerBuilder _builder = new ContainerBuilder();
         Func<string> _keyGenerator = () => Guid.NewGuid().ToString().ToLowerInvariant();
 
         public SendMessageModule(string endpoint, string queueName)
@@ -42,7 +40,7 @@ namespace Lokad.Cqrs.Core.Outbox
                 });
         }
 
-        DefaultMessageSender BuildDefaultMessageSender(IComponentContext c)
+        IMessageSender BuildDefaultMessageSender(IComponentContext c)
         {
             var factories = c.Resolve<IEnumerable<IQueueWriterFactory>>();
 
@@ -77,8 +75,7 @@ namespace Lokad.Cqrs.Core.Outbox
 
         public void Configure(IComponentRegistry componentRegistry)
         {
-            _builder.Register(BuildDefaultMessageSender).SingleInstance().As<IMessageSender>();
-            _builder.Update(componentRegistry);
+            componentRegistry.Register(BuildDefaultMessageSender);
         }
     }
 }
