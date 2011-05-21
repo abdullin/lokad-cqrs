@@ -128,7 +128,7 @@ namespace Lokad.Cqrs.Build.Engine
             }
             if (!IsEnlisted<SerializationModule>())
             {
-                Serialization(x => x.UseDataContractSerializer());
+                Serialization(x => { });
             }
 
             if (Count<StorageModule>() == 0)

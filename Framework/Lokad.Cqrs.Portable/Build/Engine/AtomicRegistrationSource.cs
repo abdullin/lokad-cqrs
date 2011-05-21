@@ -27,7 +27,7 @@ namespace Lokad.Cqrs.Build.Engine
         public bool TryResolve(Type serviceType, out object instance)
         {
             instance = null;
-            if (serviceType.IsGenericType)
+            if (!serviceType.IsGenericType)
                 return false;
 
             var definition = serviceType.GetGenericTypeDefinition();

@@ -5,45 +5,44 @@
 
 #endregion
 
+using System;
 using Autofac;
 using Autofac.Core;
 using Lokad.Cqrs.Build;
 using Lokad.Cqrs.Core.Envelope;
+using System.Linq;
 
 namespace Lokad.Cqrs.Core.Serialization
 {
     public sealed class SerializationModule : HideObjectMembersFromIntelliSense, IModule
     {
-        readonly ContainerBuilder _builder = new ContainerBuilder();
+        IEnvelopeSerializer _envelopeSerializer = new EnvelopeSerializerWithDataContracts();
+        Func<Type[], IDataSerializer> _dataSerializer = types => new DataSerializerWithDataContracts(types);
+        
 
-        public void RegisterDataSerializer<TSerializer>() where TSerializer : IDataSerializer
+        public void RegisterDataSerializer(Func<Type[],IDataSerializer> serializer)
         {
-            _builder
-                .RegisterType<TSerializer>()
-                .As<IDataSerializer>()
-                .SingleInstance();
+            _dataSerializer = serializer;
         }
 
-        public void RegisterEnvelopeSerializer<TEnvelopeSerializer>() where TEnvelopeSerializer : IEnvelopeSerializer
+        public void RegisterEnvelopeSerializer(IEnvelopeSerializer serializer)
         {
-            _builder
-                .RegisterType<TEnvelopeSerializer>()
-                .As<IEnvelopeSerializer>()
-                .SingleInstance();
+            _envelopeSerializer = serializer;
         }
 
-        public void UseDataContractSerializer()
+        public void Configure(IComponentRegistry container)
         {
-            RegisterDataSerializer<DataSerializerWithDataContracts>();
-            RegisterEnvelopeSerializer<EnvelopeSerializerWithDataContracts>();
+            container.Register(c => new EnvelopeStreamer(_envelopeSerializer, _dataSerializer(c.Resolve<IKnowSerializationTypes>().GetKnownTypes().ToArray())));
         }
+    }
 
-        public void Configure(IComponentRegistry componentRegistry)
+    public static class FunqContainer
+    {
+        public static void Register<T>(this IComponentRegistry registry, Func<IComponentContext,T> reg)
         {
-            _builder.RegisterType<EnvelopeStreamer>().As<IEnvelopeStreamer>()
-                .SingleInstance();
-
-            _builder.Update(componentRegistry);
+            var builder = new ContainerBuilder();
+            builder.Register(reg).SingleInstance();
+            builder.Update(registry);
         }
     }
 }
