@@ -64,39 +64,6 @@ namespace Lokad.Cqrs.Core.Directory
             return this;
         }
 
-        /// <summary>
-        /// Includes assemblies of the specified types into the discovery process
-        /// </summary>
-        /// <typeparam name="T1"></typeparam>
-        /// <typeparam name="T2"></typeparam>
-        /// <returns>
-        /// same module instance for chaining fluent configurations
-        /// </returns>
-        public MessageDirectoryModule InAssemblyOf<T1, T2>()
-        {
-            _scanner.WithAssemblyOf<T1>();
-            _scanner.WithAssemblyOf<T2>();
-            return this;
-        }
-
-        /// <summary>
-        /// Includes assemblies of the specified types into the discovery process
-        /// </summary>
-        /// <typeparam name="T1"></typeparam>
-        /// <typeparam name="T2"></typeparam>
-        /// <typeparam name="T3"></typeparam>
-        /// <returns>
-        /// same module instance for chaining fluent configurations
-        /// </returns>
-        public MessageDirectoryModule InAssemblyOf<T1, T2, T3>()
-        {
-            _scanner.WithAssemblyOf<T1>();
-            _scanner.WithAssemblyOf<T2>();
-            _scanner.WithAssemblyOf<T3>();
-
-            return this;
-        }
-
         sealed class SerializationList : IKnowSerializationTypes
         {
             public SerializationList(ICollection<Type> types)

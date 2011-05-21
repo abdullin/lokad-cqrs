@@ -8,7 +8,6 @@
 using System;
 using Autofac;
 using Autofac.Core;
-using Lokad.Cqrs.Build;
 using Lokad.Cqrs.Core.Envelope;
 using System.Linq;
 
@@ -33,16 +32,6 @@ namespace Lokad.Cqrs.Core.Serialization
         public void Configure(IComponentRegistry container)
         {
             container.Register(c => new EnvelopeStreamer(_envelopeSerializer, _dataSerializer(c.Resolve<IKnowSerializationTypes>().GetKnownTypes().ToArray())));
-        }
-    }
-
-    public static class FunqContainer
-    {
-        public static void Register<T>(this IComponentRegistry registry, Func<IComponentContext,T> reg)
-        {
-            var builder = new ContainerBuilder();
-            builder.Register(reg).SingleInstance();
-            builder.Update(registry);
         }
     }
 }

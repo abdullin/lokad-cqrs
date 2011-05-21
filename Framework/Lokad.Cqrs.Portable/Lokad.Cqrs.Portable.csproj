@@ -48,6 +48,7 @@
     <Compile Include="Core.Dispatch\Events\EnvelopeDuplicateDiscarded.cs" />
     <Compile Include="Core.Dispatch\IEnvelopeQuarantine.cs" />
     <Compile Include="Core.Envelope\EnvelopePrinter.cs" />
+    <Compile Include="Core\FunqContainer.cs" />
     <Compile Include="Feature.AtomicStorage\AddOrUpdateHint.cs" />
     <Compile Include="Feature.AtomicStorage\AtomicStorageInitialized.cs" />
     <Compile Include="Feature.AtomicStorage\AtomicStorageSerializerWithDataContracts.cs" />
