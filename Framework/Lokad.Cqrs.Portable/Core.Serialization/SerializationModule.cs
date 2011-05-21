@@ -31,7 +31,7 @@ namespace Lokad.Cqrs.Core.Serialization
 
         public void Configure(IComponentRegistry container)
         {
-            container.Register(c => new EnvelopeStreamer(_envelopeSerializer, _dataSerializer(c.Resolve<IKnowSerializationTypes>().GetKnownTypes().ToArray())));
+            container.Register<IEnvelopeStreamer>(c => new EnvelopeStreamer(_envelopeSerializer, _dataSerializer(c.Resolve<IKnowSerializationTypes>().GetKnownTypes().ToArray())));
         }
     }
 }
