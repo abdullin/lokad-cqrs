@@ -46,6 +46,11 @@ namespace Lokad.Cqrs
             return builder.Build();
         }
 
+        public static IAzureStorageConfiguration CreateConfiguration(string storageString, Action<AzureStorageConfigurationBuilder> config)
+        {
+            return CreateConfiguration(CloudStorageAccount.Parse(storageString), config);
+        }
+
         public static IAzureStorageConfiguration CreateConfigurationForDev()
         {
             return CreateConfiguration(CloudStorageAccount.DevelopmentStorageAccount, c => c.Named("azure-dev"));
