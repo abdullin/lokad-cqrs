@@ -18,7 +18,7 @@ using Lokad.Cqrs.Feature.AzurePartition.Inbox;
 
 namespace Lokad.Cqrs.Feature.AzurePartition
 {
-    public sealed class AzurePartitionModule : HideObjectMembersFromIntelliSense, IModule
+    public sealed class AzurePartitionModule : HideObjectMembersFromIntelliSense
     {
         readonly HashSet<string> _queueNames = new HashSet<string>();
         TimeSpan _queueVisibilityTimeout = TimeSpan.FromSeconds(30);

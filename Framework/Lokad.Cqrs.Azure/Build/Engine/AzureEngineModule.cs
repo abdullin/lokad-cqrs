@@ -17,6 +17,7 @@ using Lokad.Cqrs.Feature.AzurePartition;
 using Lokad.Cqrs.Feature.AzurePartition.Inbox;
 using Lokad.Cqrs.Feature.AzurePartition.Sender;
 using Microsoft.WindowsAzure;
+using Lokad.Cqrs.Core;
 
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedMethodReturnValue.Global
@@ -33,7 +34,6 @@ namespace Lokad.Cqrs.Build.Engine
 
         readonly AzureStorageRegistry _configs = new AzureStorageRegistry();
 
-        readonly IList<IModule> _modules = new List<IModule>();
         Action<IComponentRegistry> _funqlets = registry => { };
 
         
@@ -81,7 +81,7 @@ namespace Lokad.Cqrs.Build.Engine
 
             var module = new AzurePartitionModule(accountId, queues);
             config(module);
-            _modules.Add(module);
+            _funqlets += module.Configure;
         }
 
 
@@ -103,26 +103,12 @@ namespace Lokad.Cqrs.Build.Engine
         }
 
 
-        public void Configure(IComponentRegistry componentRegistry)
+        public void Configure(IComponentRegistry container)
         {
-            _funqlets(componentRegistry);
+            _funqlets(container);
             _configs.Register(AzureStorage.CreateConfigurationForDev());
-            var builder = new ContainerBuilder();
-
-            builder.RegisterInstance(_configs);
-            foreach (var config in _configs.GetAll())
-            {
-                builder.RegisterInstance(config).Named<IAzureStorageConfiguration>(config.AccountName);
-            }
-
-            foreach (var partition in _modules)
-            {
-                builder.RegisterModule(partition);
-            }
-
-            builder.RegisterType<AzureWriteQueueFactory>().As<IQueueWriterFactory>().SingleInstance();
-
-            builder.Update(componentRegistry);
+            container.Register(_configs);
+            container.Register<IQueueWriterFactory>(c => new AzureWriteQueueFactory(_configs, c.Resolve<IEnvelopeStreamer>()));
         }
     }
 }
