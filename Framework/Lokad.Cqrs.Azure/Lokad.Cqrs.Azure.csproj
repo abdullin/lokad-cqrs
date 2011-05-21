@@ -52,8 +52,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AzureAccessRegistry.cs" />
-    <Compile Include="Build\AzureAccessConfiguration.cs" />
+    <Compile Include="AzureStorageRegistry.cs" />
+    <Compile Include="Build\AzureStorageConfiguration.cs" />
     <Compile Include="Build\AzureClientModule.cs" />
     <Compile Include="Build\Engine\AzureEngineModule.cs" />
     <Compile Include="Build\Engine\ExtendCqrsEngineBuilder.cs" />
@@ -86,7 +86,7 @@
     <Compile Include="Core.Transport\GetEnvelopeResultState.cs" />
     <Compile Include="Feature.AzurePartition\AzurePartitionModule.cs" />
     <Compile Include="Feature.StreamingStorage\AzureStreamingStorageModule.cs" />
-    <Compile Include="IAzureAccessConfiguration.cs" />
+    <Compile Include="IAzureStorageConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Feature.StreamingStorage\BlobStreamingContainer.cs" />
     <Compile Include="Feature.StreamingStorage\BlobStreamingItem.cs" />

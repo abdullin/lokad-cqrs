@@ -112,9 +112,9 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 
             var streamer = context.Resolve<IEnvelopeStreamer>();
 
-            var configurations = context.Resolve<AzureAccessRegistry>();
+            var configurations = context.Resolve<AzureStorageRegistry>();
 
-            IAzureAccessConfiguration config;
+            IAzureStorageConfiguration config;
             if (!configurations.TryGet(_accountName, out config))
             {
                 var message = string.Format("Failed to locate Azure account '{0}'. Have you registered it?",

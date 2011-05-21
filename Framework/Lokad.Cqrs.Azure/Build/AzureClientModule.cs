@@ -11,7 +11,7 @@ namespace Lokad.Cqrs.Build
 {
     public sealed class AzureClientModule : HideObjectMembersFromIntelliSense, IModule
     {
-        readonly AzureAccessRegistry _dictionary = new AzureAccessRegistry();
+        readonly AzureStorageRegistry _dictionary = new AzureStorageRegistry();
 
         readonly IList<IModule> _modules = new List<IModule>();
 
@@ -70,7 +70,7 @@ namespace Lokad.Cqrs.Build
             builder.RegisterInstance(_dictionary);
             foreach (var config in _dictionary.GetAll())
             {
-                builder.RegisterInstance(config).Named<IAzureAccessConfiguration>(config.AccountName);
+                builder.RegisterInstance(config).Named<IAzureStorageConfiguration>(config.AccountName);
             }
 
 

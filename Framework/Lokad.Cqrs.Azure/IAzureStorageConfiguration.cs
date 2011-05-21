@@ -10,7 +10,7 @@ using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs
 {
-    public interface IAzureAccessConfiguration
+    public interface IAzureStorageConfiguration
     {
         string AccountName { get; }
 

@@ -17,22 +17,22 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
     {
         public IAtomicEntityWriter<TKey, TEntity> GetEntityWriter<TKey, TEntity>()
         {
-            return new AzureAtomicEntityWriter<TKey, TEntity>(_access, _strategy);
+            return new AzureAtomicEntityWriter<TKey, TEntity>(_storage, _strategy);
         }
 
         public IAtomicEntityReader<TKey, TEntity> GetEntityReader<TKey, TEntity>()
         {
-            return new AzureAtomicEntityReader<TKey, TEntity>(_access, _strategy);
+            return new AzureAtomicEntityReader<TKey, TEntity>(_storage, _strategy);
         }
 
         public IAtomicSingletonReader<TSingleton> GetSingletonReader<TSingleton>()
         {
-            return new AzureAtomicSingletonReader<TSingleton>(_access, _strategy);
+            return new AzureAtomicSingletonReader<TSingleton>(_storage, _strategy);
         }
 
         public IAtomicSingletonWriter<TSingleton> GetSingletonWriter<TSingleton>()
         {
-            return new AzureAtomicSingletonWriter<TSingleton>(_access, _strategy);
+            return new AzureAtomicSingletonWriter<TSingleton>(_storage, _strategy);
         }
 
         readonly object _initializationLock = new object();
@@ -75,7 +75,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             }
 
             folders.Add(_strategy.GetFolderForSingleton());
-            var client = _access.CreateBlobClient();
+            var client = _storage.CreateBlobClient();
 
 
             var bag = new ConcurrentBag<string>();
@@ -103,13 +103,13 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         }
 
         readonly IAtomicStorageStrategy _strategy;
-        readonly IAzureAccessConfiguration _access;
+        readonly IAzureStorageConfiguration _storage;
 
 
-        public AzureAtomicStorageFactory(IAtomicStorageStrategy strategy, IAzureAccessConfiguration access)
+        public AzureAtomicStorageFactory(IAtomicStorageStrategy strategy, IAzureStorageConfiguration storage)
         {
             _strategy = strategy;
-            _access = access;
+            _storage = storage;
         }
     }
 }

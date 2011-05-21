@@ -31,7 +31,7 @@ namespace Lokad.Cqrs.Build.Engine
     {
         static readonly Regex QueueName = new Regex("^[A-Za-z][A-Za-z0-9]{2,62}", RegexOptions.Compiled);
 
-        readonly AzureAccessRegistry _configs = new AzureAccessRegistry();
+        readonly AzureStorageRegistry _configs = new AzureStorageRegistry();
 
         readonly IList<IModule> _modules = new List<IModule>();
 
@@ -41,7 +41,7 @@ namespace Lokad.Cqrs.Build.Engine
         /// Registers the specified storage account as default into the container
         /// </summary>
         /// <param name="configs">The configs.</param>
-        public void AddAzureAccount(params IAzureAccessConfiguration[] configs)
+        public void AddAzureAccount(params IAzureStorageConfiguration[] configs)
         {
             foreach (var config in configs)
             {
@@ -110,7 +110,7 @@ namespace Lokad.Cqrs.Build.Engine
             builder.RegisterInstance(_configs);
             foreach (var config in _configs.GetAll())
             {
-                builder.RegisterInstance(config).Named<IAzureAccessConfiguration>(config.AccountName);
+                builder.RegisterInstance(config).Named<IAzureStorageConfiguration>(config.AccountName);
             }
 
             foreach (var partition in _modules)

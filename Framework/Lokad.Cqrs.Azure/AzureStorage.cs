@@ -14,11 +14,11 @@ namespace Lokad.Cqrs
             return CreateNuclear(account, b => { });
         }
 
-        public static NuclearStorage CreateNuclear(IAzureAccessConfiguration config)
+        public static NuclearStorage CreateNuclear(IAzureStorageConfiguration config)
         {
             return CreateNuclear(config, b => { });
         }
-        public static NuclearStorage CreateNuclear(IAzureAccessConfiguration config, IAtomicStorageStrategy strategy)
+        public static NuclearStorage CreateNuclear(IAzureStorageConfiguration config, IAtomicStorageStrategy strategy)
         {
             var factory = new AzureAtomicStorageFactory(strategy, config);
             factory.Initialize();
@@ -30,7 +30,7 @@ namespace Lokad.Cqrs
             return CreateNuclear(config, configStrategy);
         }
 
-        public static NuclearStorage CreateNuclear(IAzureAccessConfiguration config, Action<DefaultAtomicStorageStrategyBuilder> configStrategy)
+        public static NuclearStorage CreateNuclear(IAzureStorageConfiguration config, Action<DefaultAtomicStorageStrategyBuilder> configStrategy)
         {
             var strategyBuilder = new DefaultAtomicStorageStrategyBuilder();
             configStrategy(strategyBuilder);
@@ -38,7 +38,7 @@ namespace Lokad.Cqrs
             return CreateNuclear(config, strategy);
         }
 
-        public static IAzureAccessConfiguration CreateConfiguration(CloudStorageAccount account, Action<AzureStorageConfigurationBuilder> configStorage)
+        public static IAzureStorageConfiguration CreateConfiguration(CloudStorageAccount account, Action<AzureStorageConfigurationBuilder> configStorage)
         {
             var builder = new AzureStorageConfigurationBuilder(account);
             configStorage(builder);
@@ -46,17 +46,17 @@ namespace Lokad.Cqrs
             return builder.Build();
         }
 
-        public static IAzureAccessConfiguration CreateConfigurationForDev()
+        public static IAzureStorageConfiguration CreateConfigurationForDev()
         {
             return CreateConfiguration(CloudStorageAccount.DevelopmentStorageAccount, c => c.Named("azure-dev"));
         }
 
-        public static IAzureAccessConfiguration CreateConfiguration(CloudStorageAccount account)
+        public static IAzureStorageConfiguration CreateConfiguration(CloudStorageAccount account)
         {
             return CreateConfiguration(account, builder => { });
         }
 
-        public static IStreamingRoot CreateStreaming(IAzureAccessConfiguration config)
+        public static IStreamingRoot CreateStreaming(IAzureStorageConfiguration config)
         {
             return new BlobStreamingRoot(config.CreateBlobClient());
         }

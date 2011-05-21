@@ -12,14 +12,14 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Sender
 {
     public sealed class AzureWriteQueueFactory : IQueueWriterFactory
     {
-        readonly AzureAccessRegistry _configurations;
+        readonly AzureStorageRegistry _configurations;
         readonly IEnvelopeStreamer _streamer;
 
         readonly ConcurrentDictionary<string, IQueueWriter> _writeQueues =
             new ConcurrentDictionary<string, IQueueWriter>();
 
         public AzureWriteQueueFactory(
-            AzureAccessRegistry accounts,
+            AzureStorageRegistry accounts,
             IEnvelopeStreamer streamer)
         {
             _configurations = accounts;
@@ -29,7 +29,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Sender
 
         public bool TryGetWriteQueue(string endpointName, string queueName, out IQueueWriter writer)
         {
-            IAzureAccessConfiguration config;
+            IAzureStorageConfiguration config;
             if (_configurations.TryGet(endpointName, out config))
             {
                 writer = _writeQueues.GetOrAdd(queueName, name =>
