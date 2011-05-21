@@ -3,7 +3,7 @@ using Autofac;
 
 namespace Lokad.Cqrs.Build.Client
 {
-    public sealed class CqrsClient 
+    public sealed class CqrsClient : IDisposable
     {
         public ILifetimeScope Scope { get; private set; }
 
@@ -29,6 +29,11 @@ namespace Lokad.Cqrs.Build.Client
         public TService Resolve<TService>()
         {
             return Scope.Resolve<TService>();
+        }
+
+        public void Dispose()
+        {
+            Scope.Dispose();
         }
     }
 }
