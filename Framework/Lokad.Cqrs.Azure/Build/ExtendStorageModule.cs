@@ -31,10 +31,9 @@ namespace Lokad.Cqrs.Build
             self.AtomicIs(new AzureAtomicStorageFactory(strategy, storage));
         }
 
-        public static void StreamingIsInAzure(this StorageModule self, string accountId)
+        public static void StreamingIsInAzure(this StorageModule self, IAzureStorageConfiguration storage)
         {
-            var module = new AzureStreamingStorageModule(accountId);
-            self.EnlistModule(module);
+            self.StreamingIs(new BlobStreamingRoot(storage.CreateBlobClient()));
         }
     }
 }
