@@ -21,9 +21,9 @@ namespace Lokad.Cqrs.Core.Serialization
     {
         readonly IDataSerializer _serializer;
 
-        public DataSerializerWithAutoDetection(IEnumerable<IKnowSerializationTypes> providers)
+        public DataSerializerWithAutoDetection(ICollection<Type> types)
         {
-            var types = providers.SelectMany(p => p.GetKnownTypes()).ToArray();
+            
 
             var protoCount = types.Count(t => t.IsDefined(typeof (ProtoContractAttribute), false));
             var dataCount = types.Count(t => t.IsDefined(typeof (DataContractAttribute), false));

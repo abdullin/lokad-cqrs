@@ -12,16 +12,16 @@ namespace Lokad.Cqrs.Build
 {
     public static class ExtendSerializationModule
     {
-        public static void AutoDetectSerializer(this SerializationModule @this)
+        public static void AutoDetectSerializer(this SerializationModule self)
         {
-            @this.RegisterDataSerializer<DataSerializerWithAutoDetection>();
-            @this.RegisterEnvelopeSerializer<EnvelopeSerializerWithProtoBuf>();
+            self.RegisterDataSerializer(t => new DataSerializerWithAutoDetection(t));
+            self.RegisterEnvelopeSerializer(new EnvelopeSerializerWithProtoBuf());
         }
 
         public static void UseProtoBufSerialization(this SerializationModule self)
         {
-            self.RegisterDataSerializer<DataSerializerWithProtoBuf>();
-            self.RegisterEnvelopeSerializer<EnvelopeSerializerWithProtoBuf>();
+            self.RegisterDataSerializer(t => new DataSerializerWithProtoBuf(t));
+            self.RegisterEnvelopeSerializer(new EnvelopeSerializerWithProtoBuf());
         }
     }
 }
