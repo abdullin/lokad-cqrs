@@ -18,32 +18,13 @@ namespace Lokad.Cqrs.Build
         /// <summary>
         /// Registers the specified storage account as default into the container
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="account">The account.</param>
-        /// <returns>
-        /// same builder for inling multiple configuration statements
-        /// </returns>
-        public void AddAzureAccount(string accountId, CloudStorageAccount account,
-            Action<AzureStorageConfigurationBuilder> tuning)
+        /// <param name="storage">The storage.</param>
+        public void AddAzureAccount(IAzureStorageConfiguration storage)
         {
-            var builder = new AzureStorageConfigurationBuilder(account);
-            builder.Named(accountId);
-            tuning(builder);
-            var configuration = builder.Build();
-            _dictionary.Register(configuration);
+            _dictionary.Register(storage);
         }
 
-        /// <summary>
-        /// Registers the specified storage account as default into the container
-        /// </summary>
-        /// <param name="account">The account.</param>
-        /// <returns>
-        /// same builder for inling multiple configuration statements
-        /// </returns>
-        public void AddAzureAccount(string accountId, CloudStorageAccount account)
-        {
-            AddAzureAccount(accountId, account, builder => { });
-        }
+   
 
         public void AddAzureSender(string accountId, string queueName, Action<SendMessageModule> configure)
         {
@@ -64,7 +45,7 @@ namespace Lokad.Cqrs.Build
 
             if (!_dictionary.Contains("azure-dev"))
             {
-                AddAzureAccount("azure-dev", CloudStorageAccount.DevelopmentStorageAccount);
+                AddAzureAccount(AzureStorage.CreateConfigurationForDev());
             }
 
             builder.RegisterInstance(_dictionary);
