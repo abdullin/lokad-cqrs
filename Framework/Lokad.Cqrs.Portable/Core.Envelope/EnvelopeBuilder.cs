@@ -57,6 +57,17 @@ namespace Lokad.Cqrs.Core.Envelope
             }
             return builder;
         }
+        
+        public MessageBuilder AddItem(ImmutableMessage message)
+        {
+            var item = new MessageBuilder(message.MappedType, message.Content);
+            foreach (var attribute in message.GetAllAttributes())
+            {
+                item.AddAttribute(attribute.Key, attribute.Value);
+            }
+            Items.Add(item);
+            return item;
+        }
 
         public MessageBuilder AddItem<T>(T item)
         {
