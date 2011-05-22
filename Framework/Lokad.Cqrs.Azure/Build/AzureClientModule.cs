@@ -22,7 +22,7 @@ namespace Lokad.Cqrs.Build
 
 
 
-        public void AddAzureSender(IAzureStorageConfiguration config, string queueName, Action<SendMessageModule> configure)
+        public void AddAzureSender(IAzureStorageConfig config, string queueName, Action<SendMessageModule> configure)
         {
             var module = new SendMessageModule((context, endpoint) => new AzureQueueWriterFactory(config, context.Resolve<IEnvelopeStreamer>()), config.AccountName, queueName);
             configure(module);
@@ -31,7 +31,7 @@ namespace Lokad.Cqrs.Build
 
         
 
-        public void AddAzureSender(IAzureStorageConfiguration config, string queueName)
+        public void AddAzureSender(IAzureStorageConfig config, string queueName)
         {
             AddAzureSender(config, queueName, m => { });
         }

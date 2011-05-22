@@ -12,14 +12,14 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Sender
 {
     public sealed class AzureQueueWriterFactory : IQueueWriterFactory
     {
-        readonly IAzureStorageConfiguration _config;
+        readonly IAzureStorageConfig _config;
         readonly IEnvelopeStreamer _streamer;
 
         readonly ConcurrentDictionary<string, IQueueWriter> _writeQueues =
             new ConcurrentDictionary<string, IQueueWriter>();
 
         public AzureQueueWriterFactory(
-            IAzureStorageConfiguration accounts,
+            IAzureStorageConfig accounts,
             IEnvelopeStreamer streamer)
         {
             _config = accounts;

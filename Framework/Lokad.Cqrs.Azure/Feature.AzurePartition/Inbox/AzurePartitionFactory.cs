@@ -18,7 +18,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
     {
         readonly IEnvelopeStreamer _streamer;
         readonly ISystemObserver _observer;
-        readonly IAzureStorageConfiguration _configuration;
+        readonly IAzureStorageConfig _config;
         readonly TimeSpan _queueVisibilityTimeout;
         readonly AzureSchedulingProcess _process;
         readonly Func<uint, TimeSpan> _decayPolicy;
@@ -28,7 +28,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
         public AzurePartitionFactory(
             IEnvelopeStreamer streamer, 
             ISystemObserver observer,
-            IAzureStorageConfiguration configuration, 
+            IAzureStorageConfig config, 
             TimeSpan queueVisibilityTimeout,
             AzureSchedulingProcess process, 
             Func<uint, TimeSpan> decayPolicy)
@@ -37,18 +37,18 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
             _queueVisibilityTimeout = queueVisibilityTimeout;
             _process = process;
             _decayPolicy = decayPolicy;
-            _configuration = configuration;
+            _config = config;
             _observer = observer;
         }
 
         AzurePartitionInboxIntake BuildIntake(string name)
         {
-            var queue = _configuration.CreateQueueClient().GetQueueReference(name);
-            var container = _configuration.CreateBlobClient().GetContainerReference(name);
+            var queue = _config.CreateQueueClient().GetQueueReference(name);
+            var container = _config.CreateBlobClient().GetContainerReference(name);
             
             var poisonQueue = new Lazy<CloudQueue>(() =>
                 {
-                    var queueReference = _configuration.CreateQueueClient().GetQueueReference(name + "-poison");
+                    var queueReference = _config.CreateQueueClient().GetQueueReference(name + "-poison");
                     queueReference.CreateIfNotExist();
                     return queueReference;
                 }, LazyThreadSafetyMode.ExecutionAndPublication);

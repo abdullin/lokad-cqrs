@@ -33,19 +33,19 @@ namespace Lokad.Cqrs.Build.Engine
         
 
         
-        public void AddAzureSender(IAzureStorageConfiguration config, string queueName, Action<SendMessageModule> configure)
+        public void AddAzureSender(IAzureStorageConfig config, string queueName, Action<SendMessageModule> configure)
         {
             var module = new SendMessageModule((context, endpoint) => new AzureQueueWriterFactory(config, context.Resolve<IEnvelopeStreamer>()), config.AccountName, queueName);
             configure(module);
             _funqlets += module.Configure;
         }
 
-        public void AddAzureSender(IAzureStorageConfiguration config, string queueName)
+        public void AddAzureSender(IAzureStorageConfig config, string queueName)
         {
             AddAzureSender(config, queueName, m => { });
         }
 
-        public void AddAzureProcess(IAzureStorageConfiguration config, string[] queues, Action<AzurePartitionModule> configure)
+        public void AddAzureProcess(IAzureStorageConfig config, string[] queues, Action<AzurePartitionModule> configure)
         {
             foreach (var queue in queues)
             {
@@ -68,19 +68,19 @@ namespace Lokad.Cqrs.Build.Engine
         }
 
 
-        public void AddAzureProcess(IAzureStorageConfiguration config, string firstQueue, params string[] otherQueues)
+        public void AddAzureProcess(IAzureStorageConfig config, string firstQueue, params string[] otherQueues)
         {
             var queues = Enumerable.Repeat(firstQueue, 1).Concat(otherQueues).ToArray();
 
             AddAzureProcess(config, queues, m => { });
         }
 
-        public void AddAzureProcess(IAzureStorageConfiguration config, string firstQueue, Action<AzurePartitionModule> configure)
+        public void AddAzureProcess(IAzureStorageConfig config, string firstQueue, Action<AzurePartitionModule> configure)
         {
             AddAzureProcess(config, new[] { firstQueue}, configure);
         }
 
-        public void AddAzureRouter(IAzureStorageConfiguration config, string queueName, Func<ImmutableEnvelope, string> configure)
+        public void AddAzureRouter(IAzureStorageConfig config, string queueName, Func<ImmutableEnvelope, string> configure)
         {
             AddAzureProcess(config, new[] {queueName}, m => m.DispatchToRoute(configure));
         }

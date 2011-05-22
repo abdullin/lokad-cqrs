@@ -30,13 +30,13 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 
         Func<uint, TimeSpan> _decayPolicy;
 
-        readonly IAzureStorageConfiguration _config;
+        readonly IAzureStorageConfig _config;
 
 
         Func<IComponentContext, MessageActivationInfo[], IMessageDispatchStrategy, ISingleThreadMessageDispatcher> _dispatcher;
 
 
-        public AzurePartitionModule(IAzureStorageConfiguration config, string[] queueNames)
+        public AzurePartitionModule(IAzureStorageConfig config, string[] queueNames)
         {
             DispatchAsEvents();
             

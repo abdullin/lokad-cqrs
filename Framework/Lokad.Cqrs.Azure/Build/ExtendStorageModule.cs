@@ -19,19 +19,19 @@ namespace Lokad.Cqrs.Build
         //    AtomicIsInAzure(self, accountId, d => { });
         //}
 
-        public static void AtomicIsInAzure(this StorageModule self, IAzureStorageConfiguration storage, Action<DefaultAtomicStorageStrategyBuilder> config)
+        public static void AtomicIsInAzure(this StorageModule self, IAzureStorageConfig storage, Action<DefaultAtomicStorageStrategyBuilder> config)
         {
             var builder = new DefaultAtomicStorageStrategyBuilder();
             config(builder);
             AtomicIsInAzure(self, storage, builder.Build());
         }
 
-        public static void AtomicIsInAzure(this StorageModule self, IAzureStorageConfiguration storage, IAtomicStorageStrategy strategy)
+        public static void AtomicIsInAzure(this StorageModule self, IAzureStorageConfig storage, IAtomicStorageStrategy strategy)
         {
             self.AtomicIs(new AzureAtomicStorageFactory(strategy, storage));
         }
 
-        public static void StreamingIsInAzure(this StorageModule self, IAzureStorageConfiguration storage)
+        public static void StreamingIsInAzure(this StorageModule self, IAzureStorageConfig storage)
         {
             self.StreamingIs(new BlobStreamingRoot(storage.CreateBlobClient()));
         }

@@ -26,7 +26,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             return _strategy.GetNameForEntity(typeof (TEntity), key);
         }
 
-        public AzureAtomicEntityReader(IAzureStorageConfiguration storage, IAtomicStorageStrategy strategy)
+        public AzureAtomicEntityReader(IAzureStorageConfig storage, IAtomicStorageStrategy strategy)
         {
             _strategy = strategy;
             var containerName = strategy.GetFolderForEntity(typeof (TEntity));
