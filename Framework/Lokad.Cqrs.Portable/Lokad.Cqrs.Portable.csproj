@@ -84,7 +84,6 @@
     <Compile Include="Feature.AtomicStorage\MemoryAtomicEntityContainer.cs" />
     <Compile Include="Feature.AtomicStorage\MemoryAtomicSingletonContainer.cs" />
     <Compile Include="Feature.AtomicStorage\MemoryAtomicStorageFactory.cs" />
-    <Compile Include="Core.Directory\IMethodInvoker.cs" />
     <Compile Include="Core.Directory\MessageActivationMap.cs" />
     <Compile Include="Core.Directory\MessageDirectoryFilter.cs" />
     <Compile Include="Core.Directory\MethodInvoker.cs" />

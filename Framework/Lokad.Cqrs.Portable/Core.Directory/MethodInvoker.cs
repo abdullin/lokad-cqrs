@@ -12,11 +12,10 @@ using Lokad.Cqrs.Evil;
 
 namespace Lokad.Cqrs.Core.Directory
 {
-    sealed class MethodInvoker : IMethodInvoker
+    public sealed class MethodInvoker 
     {
-        readonly MethodInvokerHint _hint;
+        readonly Func<Type,Type, MethodInfo> _hint;
         readonly IMethodContextManager _context;
-
 
         [DebuggerNonUserCode]
         public void InvokeConsume(object messageHandler, ImmutableMessage item, ImmutableEnvelope envelope)
@@ -24,7 +23,7 @@ namespace Lokad.Cqrs.Core.Directory
             var handlerType = messageHandler.GetType();
             var content = item.Content;
             var messageType = item.MappedType;
-            var consume = _hint.Lookup(handlerType, messageType);
+            var consume = _hint(handlerType, messageType);
             try
             {
                 _context.SetContext(envelope, item);
@@ -40,7 +39,7 @@ namespace Lokad.Cqrs.Core.Directory
             }
         }
 
-        public MethodInvoker(MethodInvokerHint hint, IMethodContextManager context)
+        public MethodInvoker(Func<Type, Type, MethodInfo> hint, IMethodContextManager context)
         {
             _hint = hint;
             _context = context;

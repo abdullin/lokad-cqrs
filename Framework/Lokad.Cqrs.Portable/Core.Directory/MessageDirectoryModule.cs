@@ -92,8 +92,8 @@ namespace Lokad.Cqrs.Core.Directory
             _actionReg(container);
             container.Register(builder);
             container.Register<IKnowSerializationTypes>(new SerializationList(messages));
-            var invoker = new MethodInvoker(_hint, _contextManager);
-            container.Register<IMethodInvoker>(invoker);
+            var invoker = new MethodInvoker(_hint.Lookup, _contextManager);
+            container.Register(invoker);
         }
     }
 }

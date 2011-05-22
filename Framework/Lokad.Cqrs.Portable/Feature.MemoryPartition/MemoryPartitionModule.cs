@@ -42,7 +42,7 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
             DispatchStrategy(ctx => new AutofacDispatchStrategy(
                 ctx.Resolve<ILifetimeScope>(),
                 TransactionEvil.Factory(TransactionScopeOption.RequiresNew),
-                ctx.Resolve<IMethodInvoker>()));
+                ctx.Resolve<MethodInvoker>()));
 
             DispatchAsEvents();
 

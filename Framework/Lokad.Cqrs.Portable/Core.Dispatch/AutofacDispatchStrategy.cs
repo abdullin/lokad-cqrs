@@ -16,9 +16,9 @@ namespace Lokad.Cqrs.Core.Dispatch
     {
         readonly ILifetimeScope _scope;
         readonly Func<TransactionScope> _scopeFactory;
-        readonly IMethodInvoker _invoker;
+        readonly MethodInvoker _invoker;
 
-        public AutofacDispatchStrategy(ILifetimeScope scope, Func<TransactionScope> scopeFactory, IMethodInvoker invoker)
+        public AutofacDispatchStrategy(ILifetimeScope scope, Func<TransactionScope> scopeFactory, MethodInvoker invoker)
         {
             _scope = scope;
             _scopeFactory = scopeFactory;
@@ -37,9 +37,9 @@ namespace Lokad.Cqrs.Core.Dispatch
         {
             readonly TransactionScope _tx;
             readonly ILifetimeScope _envelopeScope;
-            readonly IMethodInvoker _invoker;
+            readonly MethodInvoker _invoker;
 
-            public AutofacMessageDispatchScope(TransactionScope tx, ILifetimeScope envelopeScope, IMethodInvoker invoker)
+            public AutofacMessageDispatchScope(TransactionScope tx, ILifetimeScope envelopeScope, MethodInvoker invoker)
             {
                 _tx = tx;
                 _envelopeScope = envelopeScope;
