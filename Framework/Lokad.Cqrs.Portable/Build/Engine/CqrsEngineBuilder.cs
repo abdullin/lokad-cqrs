@@ -144,6 +144,7 @@ namespace Lokad.Cqrs.Build.Engine
 
             
             reg.Register(_writerRegistry);
+            reg.Register(dataSerializer);
             reg.Register<IEnvelopeStreamer>(c => streamer);
             reg.Register(new MessageDuplicationManager());
             
