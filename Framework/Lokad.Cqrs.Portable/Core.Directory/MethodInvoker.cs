@@ -17,24 +17,14 @@ namespace Lokad.Cqrs.Core.Directory
         readonly MethodInvokerHint _hint;
         readonly IMethodContextManager _context;
 
+
         [DebuggerNonUserCode]
         public void InvokeConsume(object messageHandler, ImmutableMessage item, ImmutableEnvelope envelope)
         {
             var handlerType = messageHandler.GetType();
             var content = item.Content;
             var messageType = item.MappedType;
-
-
-            var consume = handlerType.GetMethod(_hint.MethodName, new[] {messageType});
-
-            if (null == consume)
-            {
-                throw new InvalidOperationException(string.Format("Unable to find consuming method {0}.{1}({2}).",
-                    handlerType.Name,
-                    _hint.MethodName,
-                    messageType.Name));
-            }
-
+            var consume = _hint.Lookup(handlerType, messageType);
             try
             {
                 _context.SetContext(envelope, item);
