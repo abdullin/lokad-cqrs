@@ -16,16 +16,6 @@ namespace Lokad.Cqrs.Build.Client
     {
         readonly List<IModule> _enlistments = new List<IModule>();
 
-        bool IsEnlisted<TModule>() where TModule : IModule
-        {
-            return _enlistments.Count(x => x is TModule) > 0;
-        }
-
-        int Count<TModule>() where TModule : IModule
-        {
-            return _enlistments.Count(x => x is TModule);
-        }
-
         public void EnlistModule(IModule module)
         {
             _enlistments.Add(module);
@@ -69,11 +59,12 @@ namespace Lokad.Cqrs.Build.Client
 
         public CqrsClientBuilder Storage(Action<StorageModule> configure)
         {
-            var m = new StorageModule();
-            configure(m);
-            EnlistModule(m);
+            configure(_storageModule);
             return this;
         }
+
+        MessageDirectoryModule _domain = new MessageDirectoryModule();
+        StorageModule _storageModule = new StorageModule();
 
         /// <summary>
         /// Configures the message domain for the instance of <see cref="CqrsEngineHost"/>.
@@ -82,9 +73,7 @@ namespace Lokad.Cqrs.Build.Client
         /// <returns>same builder for inline multiple configuration statements</returns>
         public CqrsClientBuilder Domain(Action<MessageDirectoryModule> config)
         {
-            var directory = new MessageDirectoryModule();
-            config(directory);
-            EnlistModule(directory);
+            config(_domain);
             return this;
         }
 
@@ -97,44 +86,42 @@ namespace Lokad.Cqrs.Build.Client
             }
         }
 
+        readonly List<Type> _serializationList = new List<Type>();
+
         public CqrsClient Build()
         {
             AutoConfigure();
 
             var container = _builder.Build();
 
-            container.ComponentRegistry.Register<IEnvelopeStreamer>(c => new EnvelopeStreamer(_envelopeSerializer, _dataSerializer(c.Resolve<IKnowSerializationTypes>().GetKnownTypes().ToArray())));
-
+            var registry = container.ComponentRegistry;
+            
+            Configure(registry);
             return new CqrsClient(container);
+        }
+
+        void Configure(IComponentRegistry reg)
+        {
+            reg.Register<IEnvelopeStreamer>(c =>
+                {
+                    var serializer = _dataSerializer(_serializationList.ToArray());
+                    return new EnvelopeStreamer(_envelopeSerializer, serializer);
+                });
+            _domain.Configure(reg, _serializationList);
+            _storageModule.Configure(reg);
         }
 
         void AutoConfigure() 
         {
             InnerSystemRegisterObservations();
-            // conditional registrations and defaults
-            if (!IsEnlisted<MessageDirectoryModule>())
-            {
-                Domain(m => { });
-            }
+            
 
-            if (Count<StorageModule>() == 0)
-            {
-                EnlistModule(new StorageModule());
-            }
-            if (Count<StorageModule>() > 1)
-            {
-                throw new InvalidOperationException("Only one storage module can be configured!");
-            }
             foreach (var module in _enlistments)
             {
                 _builder.RegisterModule(module);
             }
         }
 
-        public void Update(IContainer container)
-        {
-            AutoConfigure();
-            _builder.Update(container);
-        }
+     
     }
 }

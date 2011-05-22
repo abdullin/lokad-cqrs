@@ -9,7 +9,7 @@ using Lokad.Cqrs.Feature.StreamingStorage;
 
 namespace Lokad.Cqrs.Build.Engine
 {
-    public sealed class StorageModule : HideObjectMembersFromIntelliSense, IModule
+    public sealed class StorageModule : HideObjectMembersFromIntelliSense
     {
         IAtomicStorageFactory _atomicStorageFactory;
         IStreamingRoot _streamingRoot;
@@ -60,7 +60,7 @@ namespace Lokad.Cqrs.Build.Engine
         }
 
 
-        void IModule.Configure(IComponentRegistry componentRegistry)
+        public void Configure(IComponentRegistry componentRegistry)
         {
             var builder = new ContainerBuilder();
 

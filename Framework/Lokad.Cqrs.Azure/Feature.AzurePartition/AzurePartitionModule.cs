@@ -31,9 +31,9 @@ namespace Lokad.Cqrs.Feature.AzurePartition
         Func<uint, TimeSpan> _decayPolicy;
 
         readonly string _accountName;
-        
-        
-        Func<IComponentContext, MessageActivationMap, IMessageDispatchStrategy, ISingleThreadMessageDispatcher> _dispatcher;
+
+
+        Func<IComponentContext, MessageActivationInfo[], IMessageDispatchStrategy, ISingleThreadMessageDispatcher> _dispatcher;
 
 
         public AzurePartitionModule(string accountId, string[] queueNames)
@@ -53,7 +53,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 
 
 
-        public void DispatcherIs(Func<IComponentContext, MessageActivationMap, IMessageDispatchStrategy, ISingleThreadMessageDispatcher> factory)
+        public void DispatcherIs(Func<IComponentContext, MessageActivationInfo[], IMessageDispatchStrategy, ISingleThreadMessageDispatcher> factory)
         {
             _dispatcher = factory;
         }

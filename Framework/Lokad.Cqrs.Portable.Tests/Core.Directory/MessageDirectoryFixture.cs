@@ -17,6 +17,16 @@ namespace Lokad.Cqrs.Core.Directory
         protected MessageDirectoryBuilder Builder { get; set; }
         protected MessageMapping[] Mappings { get; set; }
 
+        protected Type[] QueryAllMessageTypes(MessageActivationInfo[] infos)
+        {
+            return infos.Select(i => i.MessageType).Distinct().ToArray();
+        }
+
+        protected Type[] QueryDistinctConsumingTypes(MessageActivationInfo[] info)
+        {
+            return info.SelectMany(c => c.AllConsumers).Distinct().Where(c => !c.IsAbstract).ToArray();
+        }
+
         public MessageDirectoryFixture()
         {
             var hint = MethodInvokerHint.FromConsumerSample<IConsumeMessage<IMessage>>(m => m.Consume(null));

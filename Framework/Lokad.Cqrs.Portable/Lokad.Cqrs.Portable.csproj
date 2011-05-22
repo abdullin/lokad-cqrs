@@ -84,7 +84,6 @@
     <Compile Include="Feature.AtomicStorage\MemoryAtomicEntityContainer.cs" />
     <Compile Include="Feature.AtomicStorage\MemoryAtomicSingletonContainer.cs" />
     <Compile Include="Feature.AtomicStorage\MemoryAtomicStorageFactory.cs" />
-    <Compile Include="Core.Directory\MessageActivationMap.cs" />
     <Compile Include="Core.Directory\MessageDirectoryFilter.cs" />
     <Compile Include="Core.Directory\MethodInvokerHint.cs" />
     <Compile Include="Core.Dispatch\Events\EnvelopeQuarantined.cs" />
@@ -168,7 +167,6 @@
     <Compile Include="IEngineProcess.cs" />
     <Compile Include="IEnvelopeSerializer.cs" />
     <Compile Include="IEnvelopeStreamer.cs" />
-    <Compile Include="IKnowSerializationTypes.cs" />
     <Compile Include="IMessageSender.cs" />
     <Compile Include="IDataSerializer.cs" />
     <Compile Include="Core.Outbox\IQueueWriter.cs" />

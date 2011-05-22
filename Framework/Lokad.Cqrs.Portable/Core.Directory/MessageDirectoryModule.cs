@@ -14,13 +14,14 @@ using Autofac.Core;
 using Lokad.Cqrs.Core.Directory.Default;
 using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Evil;
+using System.Linq;
 
 namespace Lokad.Cqrs.Core.Directory
 {
     /// <summary>
     /// Module for building CQRS domains.
     /// </summary>
-    public class MessageDirectoryModule : IModule
+    public class MessageDirectoryModule
     {
         readonly DomainAssemblyScanner _scanner = new DomainAssemblyScanner();
         IMethodContextManager _contextManager;
@@ -62,39 +63,39 @@ namespace Lokad.Cqrs.Core.Directory
             return this;
         }
 
-        sealed class SerializationList : IKnowSerializationTypes
-        {
-            public SerializationList(ICollection<Type> types)
-            {
-                _types = types;
-            }
 
-            readonly ICollection<Type> _types;
-            public IEnumerable<Type> GetKnownTypes()
-            {
-                return _types;
-            }
-        }
-
-
-        void IModule.Configure(IComponentRegistry container)
+        public void Configure(IComponentRegistry container, ICollection<Type> types)
         {
             _scanner.Constrain(_hint);
             var mappings = _scanner.Build(_hint.ConsumerTypeDefinition);
-            var builder = new MessageDirectoryBuilder(mappings);
-            var messages = builder.ListMessagesToSerialize();
 
+
+            var messageTypes = mappings
+                .Select(m => m.Message)
+                .Where(m => !m.IsAbstract)
+                .Distinct();
+
+            foreach (var messageType in messageTypes)
+            {
+                types.Add(messageType);
+            }
+            
+            var builder = new MessageDirectoryBuilder(mappings);
             var cb = new ContainerBuilder();
             var provider = _contextManager.GetContextProvider();
-            foreach (var consumer in builder.ListConsumersToActivate())
+
+            var consumers = mappings
+                .Select(x => x.Consumer)
+                .Where(x => !x.IsAbstract)
+                .Distinct()
+                .ToArray();
+
+            foreach (var consumer in consumers)
             {
                 cb.RegisterType(consumer);
                 cb.RegisterInstance(provider).AsSelf();
             }
             cb.Update(container);
-
-            
-            
             container.Register<IMessageDispatchStrategy>(c =>
             {
                 var scope = c.Resolve<ILifetimeScope>();
@@ -103,7 +104,12 @@ namespace Lokad.Cqrs.Core.Directory
             });
 
             container.Register(builder);
-            container.Register<IKnowSerializationTypes>(new SerializationList(messages));
+            
         }
+    }
+
+    public sealed class AutofacDispatchFactory
+    {
+        ICollection<MessageMapping> _mappings;
     }
 }

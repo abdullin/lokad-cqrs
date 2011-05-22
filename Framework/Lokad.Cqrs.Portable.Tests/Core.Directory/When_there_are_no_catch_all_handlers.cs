@@ -13,7 +13,7 @@ namespace Lokad.Cqrs.Core.Directory
     public sealed class When_there_are_no_catch_all_handlers : MessageDirectoryFixture
     {
         // ReSharper disable InconsistentNaming
-        MessageActivationMap Map { get; set; }
+        MessageActivationInfo[] Map { get; set; }
 
         [TestFixtureSetUp]
         public void FixtureSetUp()
@@ -24,7 +24,7 @@ namespace Lokad.Cqrs.Core.Directory
         [Test]
         public void Orphaned_messages_are_excluded()
         {
-            CollectionAssert.DoesNotContain(Map.QueryAllMessageTypes(), typeof (NonHandledCommand));
+            CollectionAssert.DoesNotContain(QueryAllMessageTypes(Map), typeof (NonHandledCommand));
         }
     }
 }

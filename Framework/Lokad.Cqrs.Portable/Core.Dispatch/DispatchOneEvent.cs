@@ -18,7 +18,7 @@ namespace Lokad.Cqrs.Core.Dispatch
     ///</summary>
     public sealed class DispatchOneEvent : ISingleThreadMessageDispatcher
     {
-        readonly MessageActivationMap _directory;
+        readonly MessageActivationInfo[] _directory;
         readonly IDictionary<Type, Type[]> _dispatcher = new Dictionary<Type, Type[]>();
         readonly ISystemObserver _observer;
 
@@ -26,7 +26,7 @@ namespace Lokad.Cqrs.Core.Dispatch
         readonly IMessageDispatchStrategy _strategy;
 
         public DispatchOneEvent(
-            MessageActivationMap directory,
+            MessageActivationInfo[] directory,
             ISystemObserver observer,
             IMessageDispatchStrategy strategy)
         {
@@ -38,7 +38,7 @@ namespace Lokad.Cqrs.Core.Dispatch
 
         public void Init()
         {
-            foreach (var message in _directory.Infos)
+            foreach (var message in _directory)
             {
                 if (message.AllConsumers.Length > 0)
                 {

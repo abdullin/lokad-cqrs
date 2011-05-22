@@ -7,8 +7,8 @@ namespace Lokad.Cqrs.Core.Directory
     [TestFixture]
     public sealed class When_activations_constrained_to_handler_type_with_interface : MessageDirectoryFixture
     {
-        
-        MessageActivationMap Map { get; set; }
+
+        MessageActivationInfo[] Map { get; set; }
 
         [TestFixtureSetUp]
         public void FixtureSetUp()
@@ -23,13 +23,14 @@ namespace Lokad.Cqrs.Core.Directory
                 .Where(t => typeof (ISomethingHappenedEvent).IsAssignableFrom(t))
                 .ToArray();
 
-            CollectionAssert.AreEquivalent(expected, Map.QueryAllMessageTypes());
+            CollectionAssert.AreEquivalent(expected, QueryAllMessageTypes(Map));
         }
 
         [Test]
         public void Only_single_consumer_is_allowed()
         {
-            CollectionAssert.AreEquivalent(new[] {typeof(WhenSomethingGenericHappened)}, Map.QueryDistinctConsumingTypes());
+            var expected = new[] {typeof(WhenSomethingGenericHappened)};
+            CollectionAssert.AreEquivalent(expected, QueryDistinctConsumingTypes(Map));
         }
     }
 }

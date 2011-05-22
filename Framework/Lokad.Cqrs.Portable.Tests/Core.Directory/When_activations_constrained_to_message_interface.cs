@@ -1,15 +1,12 @@
 ﻿using System.Linq;
 using NUnit.Framework;
-
+// ReSharper disable InconsistentNaming
 namespace Lokad.Cqrs.Core.Directory
 {
     [TestFixture]
     public sealed class When_activations_constrained_to_message_interface : MessageDirectoryFixture
     {
-        // ReSharper disable InconsistentNaming
-
-        // ReSharper disable InconsistentNaming
-        MessageActivationMap Map { get; set; }
+        MessageActivationInfo[] Map { get; set; }
 
         [TestFixtureSetUp]
         public void FixtureSetUp()
@@ -23,13 +20,13 @@ namespace Lokad.Cqrs.Core.Directory
             var derivedMessages = TestMessageTypes
                 .Where(t => typeof (ISomethingHappenedEvent).IsAssignableFrom(t));
 
-            CollectionAssert.IsSubsetOf(Map.QueryAllMessageTypes(), derivedMessages);
+            CollectionAssert.IsSubsetOf(QueryAllMessageTypes(Map), derivedMessages);
         }
 
         [Test]
         public void Non_handled_derived_messages_are_prohibited()
         {
-            CollectionAssert.DoesNotContain(Map.QueryAllMessageTypes(), typeof(SomethingUnexpectedHandled));
+            CollectionAssert.DoesNotContain(QueryAllMessageTypes(Map), typeof(SomethingUnexpectedHandled));
         }
         
     }

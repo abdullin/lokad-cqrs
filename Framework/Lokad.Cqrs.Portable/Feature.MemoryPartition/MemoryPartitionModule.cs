@@ -25,7 +25,7 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
         
         readonly MessageDirectoryFilter _filter = new MessageDirectoryFilter();
 
-        Func<IComponentContext, MessageActivationMap, IMessageDispatchStrategy, ISingleThreadMessageDispatcher> _dispatcher;
+        Func<IComponentContext, MessageActivationInfo[], IMessageDispatchStrategy, ISingleThreadMessageDispatcher> _dispatcher;
         Func<IComponentContext, IEnvelopeQuarantine> _quarantineFactory;
 
         public MemoryPartitionModule WhereFilter(Action<MessageDirectoryFilter> filter)
@@ -44,7 +44,7 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
             Quarantine(c => new MemoryQuarantine());
         }
 
-        public void DispatcherIs(Func<IComponentContext, MessageActivationMap, IMessageDispatchStrategy, ISingleThreadMessageDispatcher> factory)
+        public void DispatcherIs(Func<IComponentContext, MessageActivationInfo[], IMessageDispatchStrategy, ISingleThreadMessageDispatcher> factory)
         {
             _dispatcher = factory;
         }

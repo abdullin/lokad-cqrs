@@ -23,14 +23,14 @@ namespace Lokad.Cqrs.Core.Serialization
 
             var s1 = Optional<string>.Empty;
             var name = s1
-                .GetValue(() => helper.GetString<ProtoContractAttribute>(p => p.Name))
-                .GetValue(() => helper.GetString<DataContractAttribute>(p => p.Name))
-                .GetValue(() => helper.GetString<XmlTypeAttribute>(p => p.TypeName))
+                .Combine(() => helper.GetString<ProtoContractAttribute>(p => p.Name))
+                .Combine(() => helper.GetString<DataContractAttribute>(p => p.Name))
+                .Combine(() => helper.GetString<XmlTypeAttribute>(p => p.TypeName))
                 .GetValue(type.Name);
 
             var ns = s1
-                .GetValue(() => helper.GetString<DataContractAttribute>(p => p.Namespace))
-                .GetValue(() => helper.GetString<XmlTypeAttribute>(p => p.Namespace))
+                .Combine(() => helper.GetString<DataContractAttribute>(p => p.Namespace))
+                .Combine(() => helper.GetString<XmlTypeAttribute>(p => p.Namespace))
                 .Convert(s => s.Trim() + "/", "");
 
             return ns + name;

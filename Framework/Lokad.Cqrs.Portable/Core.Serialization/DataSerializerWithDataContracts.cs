@@ -56,15 +56,6 @@ namespace Lokad.Cqrs.Core.Serialization
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DataSerializerWithDataContracts"/> class.
-        /// </summary>
-        /// <param name="know">The know.</param>
-        public DataSerializerWithDataContracts(IEnumerable<IKnowSerializationTypes> know)
-            : this(new HashSet<Type>(know.SelectMany(t => t.GetKnownTypes()).Distinct()))
-        {
-        }
-
-        /// <summary>
         /// Serializes the object to the specified stream
         /// </summary>
         /// <param name="instance">The instance.</param>

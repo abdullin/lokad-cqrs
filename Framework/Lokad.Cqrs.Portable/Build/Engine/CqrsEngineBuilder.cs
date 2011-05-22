@@ -27,9 +27,11 @@ namespace Lokad.Cqrs.Build.Engine
     public class CqrsEngineBuilder : HideObjectMembersFromIntelliSense
     {
 
+        List<Type> _dataSerialization = new List<Type>();
         IEnvelopeSerializer _envelopeSerializer = new EnvelopeSerializerWithDataContracts();
         Func<Type[], IDataSerializer> _dataSerializer = types => new DataSerializerWithDataContracts(types);
 
+        
 
         public void RegisterDataSerializer(Func<Type[], IDataSerializer> serializer)
         {
@@ -51,17 +53,16 @@ namespace Lokad.Cqrs.Build.Engine
             return _moduleEnlistments.Count(x => x is TModule) > 0;
         }
 
-        int Count<TModule>() where TModule : IModule
-        {
-            return _moduleEnlistments.Count(x => x is TModule);
-        }
-
+        
 
 
         public void EnlistModule(IModule module)
         {
             _moduleEnlistments.Add(module);
         }
+
+        MessageDirectoryModule _domain = new MessageDirectoryModule();
+        StorageModule _storage = new StorageModule();
 
         /// <summary>
         /// Configures the message domain for the instance of <see cref="CqrsEngineHost"/>.
@@ -70,9 +71,7 @@ namespace Lokad.Cqrs.Build.Engine
         /// <returns>same builder for inline multiple configuration statements</returns>
         public CqrsEngineBuilder Domain(Action<MessageDirectoryModule> config)
         {
-            var directory = new MessageDirectoryModule();
-            config(directory);
-            EnlistModule(directory);
+            config(_domain);
             return this;
         }
 
@@ -101,6 +100,7 @@ namespace Lokad.Cqrs.Build.Engine
 
         public CqrsEngineBuilder Memory(Action<MemoryModule> configure)
         {
+            
             var m = new MemoryModule();
             configure(m);
             _builder.RegisterModule(m);
@@ -109,9 +109,7 @@ namespace Lokad.Cqrs.Build.Engine
 
         public CqrsEngineBuilder Storage(Action<StorageModule> configure)
         {
-            var m = new StorageModule();
-            configure(m);
-            EnlistModule(m);
+            configure(_storage);
             return this;
         }
 
@@ -131,26 +129,11 @@ namespace Lokad.Cqrs.Build.Engine
 
             _builder.RegisterType<DispatcherProcess>();
             _builder.RegisterType<MessageDuplicationManager>().SingleInstance();
-
-            // some defaults
             _builder.RegisterType<CqrsEngineHost>().SingleInstance();
 
-            // conditional registrations and defaults
-            if (!IsEnlisted<MessageDirectoryModule>())
-            {
-                Domain(m => { });
-            }
+
+                
             
-
-            if (Count<StorageModule>() == 0)
-            {
-                EnlistModule(new StorageModule());
-            }
-            if (Count<StorageModule>()> 1)
-            {
-                throw new InvalidOperationException("Only one storage module can be configured!");
-            }
-
             //if (_moduleEnlistments.Count(m => m is ))
 
 
@@ -159,13 +142,32 @@ namespace Lokad.Cqrs.Build.Engine
                 _builder.RegisterModule(module);
             }
 
+            
+
 
             var container = _builder.Build();
-            container.ComponentRegistry.Register<IEnvelopeStreamer>(c => new EnvelopeStreamer(_envelopeSerializer, _dataSerializer(c.Resolve<IKnowSerializationTypes>().GetKnownTypes().ToArray())));
+
+
+            Configure(container.ComponentRegistry);
+            
 
             var host = container.Resolve<CqrsEngineHost>(TypedParameter.From(container));
             host.Initialize();
             return host;
+        }
+
+        void Configure(IComponentRegistry registry)
+        {
+
+            registry.Register<IEnvelopeStreamer>(c =>
+                {
+                    var types = _dataSerialization.ToArray();
+                    var dataSerializer = _dataSerializer(types);
+                    return new EnvelopeStreamer(_envelopeSerializer, dataSerializer);
+                });
+
+            _domain.Configure(registry, _dataSerialization);
+            _storage.Configure(registry);
         }
 
         void InnerSystemRegisterObservations()
@@ -175,17 +177,6 @@ namespace Lokad.Cqrs.Build.Engine
             {
                 _builder.RegisterType<ImmediateTracingObserver>().As<IObserver<ISystemEvent>>().SingleInstance();
             }
-
-            //Builder.RegisterCallback(ci =>
-            //    {
-            //        var service = new TypedService(typeof(IObserver<ISystemEvent>));
-            //        if (ci.IsRegistered(service)) return;
-            //        var builder = new ContainerBuilder();
-            //        builder.RegisterType<ImmediateTracingObserver>()
-            //            .As<IObserver<ISystemEvent>>()
-            //            .SingleInstance();
-            //        builder.Update(ci);
-            //    });
         }
     }
 }

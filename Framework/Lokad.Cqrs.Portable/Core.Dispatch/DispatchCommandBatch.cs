@@ -19,10 +19,10 @@ namespace Lokad.Cqrs.Core.Dispatch
     {
         
         readonly IDictionary<Type, Type> _messageConsumers = new Dictionary<Type, Type>();
-        readonly MessageActivationMap _messageDirectory;
+        readonly MessageActivationInfo[] _messageDirectory;
         readonly IMessageDispatchStrategy _strategy;
 
-        public DispatchCommandBatch(MessageActivationMap messageDirectory, IMessageDispatchStrategy strategy)
+        public DispatchCommandBatch(MessageActivationInfo[] messageDirectory, IMessageDispatchStrategy strategy)
         {
             _messageDirectory = messageDirectory;
             _strategy = strategy;
@@ -56,9 +56,8 @@ namespace Lokad.Cqrs.Core.Dispatch
 
         public void Init()
         {
-            var infos = _messageDirectory.Infos;
-            DispatcherUtil.ThrowIfCommandHasMultipleConsumers(infos);
-            foreach (var messageInfo in infos)
+            DispatcherUtil.ThrowIfCommandHasMultipleConsumers(_messageDirectory);
+            foreach (var messageInfo in _messageDirectory)
             {
                 if (messageInfo.AllConsumers.Length > 0)
                 {
