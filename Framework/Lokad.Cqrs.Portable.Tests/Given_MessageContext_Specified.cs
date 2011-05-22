@@ -8,6 +8,7 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.Serialization;
 using Lokad.Cqrs.Core.Dispatch.Events;
 using NUnit.Framework;
 
@@ -39,9 +40,9 @@ namespace Lokad.Cqrs
         {
             void Consume(TMessage message);
         }
-
+        [DataContract]
         public sealed class MyMessageA : IMyMessage {}
-
+        [DataContract]
         public sealed class MyMessageB : IMyMessage {}
 
         public sealed class MyHandler : IMyHandler<MyMessageA>, IMyHandler<MyMessageB>

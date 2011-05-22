@@ -13,6 +13,7 @@ using Autofac;
 using Autofac.Core;
 using Lokad.Cqrs.Core.Directory.Default;
 using Lokad.Cqrs.Core.Dispatch;
+using Lokad.Cqrs.Core.Serialization;
 using Lokad.Cqrs.Evil;
 using System.Linq;
 
@@ -64,7 +65,7 @@ namespace Lokad.Cqrs.Core.Directory
         }
 
 
-        public void Configure(IComponentRegistry container, ICollection<Type> types)
+        public void Configure(IComponentRegistry container, SerializationContractRegistry types)
         {
             _scanner.Constrain(_hint);
             var mappings = _scanner.Build(_hint.ConsumerTypeDefinition);
@@ -75,10 +76,7 @@ namespace Lokad.Cqrs.Core.Directory
                 .Where(m => !m.IsAbstract)
                 .Distinct();
 
-            foreach (var messageType in messageTypes)
-            {
-                types.Add(messageType);
-            }
+            types.AddRange(messageTypes);
             
             var builder = new MessageDirectoryBuilder(mappings);
             

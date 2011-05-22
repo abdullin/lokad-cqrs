@@ -5,6 +5,7 @@
 
 #endregion
 
+using System.Runtime.Serialization;
 using Lokad.Cqrs.Build.Engine;
 using Lokad.Cqrs.Core.Directory.Default;
 using NUnit.Framework;
@@ -22,7 +23,7 @@ namespace Lokad.Cqrs
         {
             void Consume(TMessage message);
         }
-
+        [DataContract]
         public sealed class MyMessageA : IMyMessage {}
 
         public sealed class MyHandler : IMyHandler<MyMessageA>

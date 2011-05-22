@@ -53,6 +53,7 @@
     <Compile Include="Core.Envelope\EnvelopePrinter.cs" />
     <Compile Include="Core.Outbox\QueueWriterRegistry.cs" />
     <Compile Include="Core.Reactive\ImmediateEventsObserver.cs" />
+    <Compile Include="Core.Serialization\SerializationContractRegistry.cs" />
     <Compile Include="Core\FunqContainer.cs" />
     <Compile Include="Evil\TransactionEvil.cs" />
     <Compile Include="Feature.AtomicStorage\AddOrUpdateHint.cs" />

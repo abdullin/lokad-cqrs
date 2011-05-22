@@ -84,7 +84,7 @@ namespace Lokad.Cqrs.Build.Client
             return this;
         }
 
-        readonly List<Type> _serializationList = new List<Type>();
+        readonly SerializationContractRegistry _serializationList = new SerializationContractRegistry();
 
         public CqrsClient Build()
         {
@@ -102,14 +102,17 @@ namespace Lokad.Cqrs.Build.Client
         void Configure(IComponentRegistry reg, ISystemObserver observer)
         {
             reg.Register(observer);
-            reg.Register<IEnvelopeStreamer>(c =>
-                {
-                    var serializer = _dataSerializer(_serializationList.ToArray());
-                    return new EnvelopeStreamer(_envelopeSerializer, serializer);
-                });
-            reg.Register(_registry);
+            // domain should go before serialization
             _domain.Configure(reg, _serializationList);
             _storageModule.Configure(reg);
+
+            var serializer = _dataSerializer(_serializationList.GetAll());
+            var streamer = new EnvelopeStreamer(_envelopeSerializer, serializer);
+
+            
+            reg.Register(serializer);
+            reg.Register<IEnvelopeStreamer>(c => streamer);
+            reg.Register(_registry);
         }
     }
 }

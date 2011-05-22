@@ -26,7 +26,7 @@ namespace Lokad.Cqrs.Build.Engine
     /// </summary>
     public class CqrsEngineBuilder : HideObjectMembersFromIntelliSense
     {
-        readonly List<Type> _dataSerialization = new List<Type>();
+        readonly SerializationContractRegistry _dataSerialization = new SerializationContractRegistry();
         IEnvelopeSerializer _envelopeSerializer = new EnvelopeSerializerWithDataContracts();
         Func<Type[], IDataSerializer> _dataSerializer = types => new DataSerializerWithDataContracts(types);
         readonly MessageDirectoryModule _domain = new MessageDirectoryModule();
@@ -116,9 +116,12 @@ namespace Lokad.Cqrs.Build.Engine
                 _builder.RegisterModule(module);
             }
             var container = _builder.Build();
-
             var system = new SystemObserver(Observers.ToArray());
-            Configure(container.ComponentRegistry, system);
+
+            var reg = container.ComponentRegistry;
+            
+            
+            Configure(reg, system);
 
             var processes = container.Resolve<IEnumerable<IEngineProcess>>();
             var scope = container.Resolve<ILifetimeScope>();
@@ -127,22 +130,23 @@ namespace Lokad.Cqrs.Build.Engine
             return host;
         }
 
-        void Configure(IComponentRegistry container, ISystemObserver observer)
+        void Configure(IComponentRegistry reg, ISystemObserver system) 
         {
-            container.Register(observer);
-            container.Register<IEnvelopeStreamer>(c =>
-                {
-                    var types = _dataSerialization.ToArray();
-                    var dataSerializer = _dataSerializer(types);
-                    return new EnvelopeStreamer(_envelopeSerializer, dataSerializer);
-                });
+            reg.Register(system);
+            
+            // domain should go before serialization
+            _domain.Configure(reg, _dataSerialization);
+            _storage.Configure(reg);
 
-            container.Register(new MessageDuplicationManager());
-            container.Register(_writerRegistry);
+            var types = _dataSerialization.GetAll();
+            var dataSerializer = _dataSerializer(types);
+            var streamer = new EnvelopeStreamer(_envelopeSerializer, dataSerializer);
 
-            _domain.Configure(container, _dataSerialization);
-            _storage.Configure(container);
+            
+            reg.Register(_writerRegistry);
+            reg.Register<IEnvelopeStreamer>(c => streamer);
+            reg.Register(new MessageDuplicationManager());
+            
         }
     }
-
 }
