@@ -1,4 +1,5 @@
 ﻿using System.Threading;
+using Lokad.Cqrs.Build;
 using Lokad.Cqrs.Build.Engine;
 using Lokad.Cqrs.Core.Dispatch.Events;
 using Lokad.Cqrs.Core.Reactive;
@@ -26,7 +27,8 @@ namespace Lokad.Cqrs.Synthetic
                     m.AddMemorySender("in", s => s.IdGenerator(() => "same"));
                     m.AddMemoryRouter("in", c => "memory:null");
                 });
-            builder.EnlistObserver<ImmediateEventsObserver>();
+            var observer = new ImmediateEventsObserver();
+            builder.Observer(observer);
 
             using (var token = new CancellationTokenSource())
             using (var build = builder.Build())
@@ -35,7 +37,7 @@ namespace Lokad.Cqrs.Synthetic
                 sender.SendOne(new Message());
                 sender.SendOne(new Message());
 
-                build.Resolve<ImmediateEventsObserver>().Event += @event =>
+                observer.Event += @event =>
                     {
                         var e = @event as EnvelopeDuplicateDiscarded;
 

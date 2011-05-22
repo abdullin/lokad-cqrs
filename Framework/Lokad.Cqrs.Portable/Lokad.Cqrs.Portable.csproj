@@ -51,6 +51,7 @@
     <Compile Include="Core.Dispatch\IMessageDispatchScope.cs" />
     <Compile Include="Core.Dispatch\IMessageDispatchStrategy.cs" />
     <Compile Include="Core.Envelope\EnvelopePrinter.cs" />
+    <Compile Include="Core.Reactive\ImmediateEventsObserver.cs" />
     <Compile Include="Core\FunqContainer.cs" />
     <Compile Include="Evil\TransactionEvil.cs" />
     <Compile Include="Feature.AtomicStorage\AddOrUpdateHint.cs" />
@@ -140,7 +141,7 @@
     <Compile Include="Feature.AtomicStorage\IAtomicEntityWriter.cs" />
     <Compile Include="Feature.AtomicStorage\IAtomicSingletonReader.cs" />
     <Compile Include="Feature.AtomicStorage\IAtomicSingletonWriter.cs" />
-    <Compile Include="Core.Reactive\ReactiveSystemObserverAdapter.cs" />
+    <Compile Include="Core.Reactive\SystemObserver.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryFutureList.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryPartitionFactory.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryPartitionInbox.cs" />

@@ -58,7 +58,7 @@ namespace Lokad.Cqrs
         {
             var events = new Subject<ISystemEvent>(Scheduler.TaskPool);
             var builder = new CqrsEngineBuilder()
-                .EnlistObserver(events);
+                .Observer(events);
 
             config(builder);
 

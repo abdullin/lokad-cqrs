@@ -45,7 +45,7 @@ namespace Lokad.Cqrs
                     c.AddAzureAccount(dev);
                     c.AddAzureProcess("azure-dev", "test-publish");
                 });
-            eb.EnlistObserver(events);
+            eb.Observer(events);
             var engine = eb.Build();
             var source = new CancellationTokenSource();
             engine.Start(source.Token);

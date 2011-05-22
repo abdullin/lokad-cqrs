@@ -14,26 +14,31 @@ namespace Lokad.Cqrs.Build.Client
 {
     public class CqrsClientBuilder : HideObjectMembersFromIntelliSense
     {
+        readonly MessageDirectoryModule _domain = new MessageDirectoryModule();
+        readonly StorageModule _storageModule = new StorageModule();
+
         readonly List<IModule> _enlistments = new List<IModule>();
+
+
+        public readonly List<IObserver<ISystemEvent>> Observers = new List<IObserver<ISystemEvent>>()
+            {
+                new ImmediateTracingObserver()
+            };
+
 
         public void EnlistModule(IModule module)
         {
             _enlistments.Add(module);
         }
 
-        public bool DisableDefaultObserver { get; set; }
-
-        public CqrsClientBuilder EnlistObserver(IObserver<ISystemEvent> observer)
+        public CqrsClientBuilder Observer(IObserver<ISystemEvent> observer)
         {
-            _builder.RegisterInstance(observer);
+            Observers.Add(observer);
             return this;
         }
 
-        public CqrsClientBuilder EnlistObserver<TObserver>() where TObserver : IObserver<ISystemEvent>
-        {
-            _builder.RegisterType<TObserver>().As<IObserver<ISystemEvent>>().SingleInstance();
-            return this;
-        }
+
+     
 
         IEnvelopeSerializer _envelopeSerializer = new EnvelopeSerializerWithDataContracts();
         Func<Type[], IDataSerializer> _dataSerializer = types => new DataSerializerWithDataContracts(types);
@@ -63,9 +68,7 @@ namespace Lokad.Cqrs.Build.Client
             return this;
         }
 
-        MessageDirectoryModule _domain = new MessageDirectoryModule();
-        StorageModule _storageModule = new StorageModule();
-
+        
         /// <summary>
         /// Configures the message domain for the instance of <see cref="CqrsEngineHost"/>.
         /// </summary>
@@ -77,31 +80,24 @@ namespace Lokad.Cqrs.Build.Client
             return this;
         }
 
-        void InnerSystemRegisterObservations()
-        {
-            _builder.RegisterType<ReactiveSystemObserverAdapter>().SingleInstance().As<ISystemObserver>();
-            if (!DisableDefaultObserver)
-            {
-                _builder.RegisterType<ImmediateTracingObserver>().As<IObserver<ISystemEvent>>().SingleInstance();
-            }
-        }
-
         readonly List<Type> _serializationList = new List<Type>();
 
         public CqrsClient Build()
         {
-            AutoConfigure();
+            foreach (var module in _enlistments)
+            {
+                _builder.RegisterModule(module);
+            }
 
             var container = _builder.Build();
-
-            var registry = container.ComponentRegistry;
-            
-            Configure(registry);
+            var system = new SystemObserver(Observers.ToArray());
+            Configure(container.ComponentRegistry, system);
             return new CqrsClient(container);
         }
 
-        void Configure(IComponentRegistry reg)
+        void Configure(IComponentRegistry reg, ISystemObserver observer)
         {
+            reg.Register(observer);
             reg.Register<IEnvelopeStreamer>(c =>
                 {
                     var serializer = _dataSerializer(_serializationList.ToArray());
@@ -110,18 +106,5 @@ namespace Lokad.Cqrs.Build.Client
             _domain.Configure(reg, _serializationList);
             _storageModule.Configure(reg);
         }
-
-        void AutoConfigure() 
-        {
-            InnerSystemRegisterObservations();
-            
-
-            foreach (var module in _enlistments)
-            {
-                _builder.RegisterModule(module);
-            }
-        }
-
-     
     }
 }
