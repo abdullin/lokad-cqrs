@@ -32,13 +32,17 @@ namespace Lokad.Cqrs.Core.Directory
             _context.Value = null;
         }
 
-        public TContext Get()
+        public object GetContextProvider()
         {
-            if (_context.Value == null)
-            {
-                throw new InvalidOperationException("Context is not set outside of message invocation");
-            }
-            return _context.Value;
+            return new Func<TContext>(() =>
+                {
+                    if (_context.Value == null)
+                    {
+                        throw new InvalidOperationException("Context is not set outside of message invocation");
+                    }
+                    return _context.Value;
+                });
         }
+
     }
 }

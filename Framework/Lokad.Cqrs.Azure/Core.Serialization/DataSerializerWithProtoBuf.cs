@@ -36,15 +36,6 @@ namespace Lokad.Cqrs.Core.Serialization
             }
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DataSerializerWithProtoBuf"/> class.
-        /// </summary>
-        /// <param name="types">The types.</param>
-        public DataSerializerWithProtoBuf(IEnumerable<IKnowSerializationTypes> types)
-            : this(new HashSet<Type>(types.SelectMany(t => t.GetKnownTypes())))
-        {
-        }
-
         public static DataSerializerWithProtoBuf For<T>()
         {
             return new DataSerializerWithProtoBuf(new[] {typeof (T)});

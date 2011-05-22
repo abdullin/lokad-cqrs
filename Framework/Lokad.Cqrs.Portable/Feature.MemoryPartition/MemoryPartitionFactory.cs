@@ -5,78 +5,32 @@
 
 #endregion
 
-using System;
 using System.Collections.Concurrent;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Lokad.Cqrs.Core.Outbox;
 
 namespace Lokad.Cqrs.Feature.MemoryPartition
 {
-    public sealed class MemoryPartitionFactory : IQueueWriterFactory, IEngineProcess
+    public sealed class MemoryPartitionFactory
     {
-        readonly ConcurrentDictionary<string, BlockingCollection<ImmutableEnvelope>> _delivery =
-            new ConcurrentDictionary<string, BlockingCollection<ImmutableEnvelope>>();
+        readonly MemoryAccount _account;
 
-        readonly ConcurrentDictionary<string, MemoryFutureList> _pending =
-            new ConcurrentDictionary<string, MemoryFutureList>();
-
-
-        public bool TryGetWriteQueue(string endpoint, string queueName, out IQueueWriter writer)
+        public MemoryPartitionFactory(MemoryAccount account)
         {
-            if (endpoint != "memory")
-            {
-                writer = null;
-                return false;
-            }
-            
-            var queue = _delivery.GetOrAdd(queueName, s => new BlockingCollection<ImmutableEnvelope>());
-            writer = new MemoryQueueWriter(queue);
-            return true;
+            _account = account;
         }
+
 
         public MemoryPartitionInbox GetMemoryInbox(string[] queueNames)
         {
             var queues = queueNames
-                .Select(n => _delivery.GetOrAdd(n, s => new BlockingCollection<ImmutableEnvelope>()))
+                .Select(n => _account.Delivery.GetOrAdd(n, s => new BlockingCollection<ImmutableEnvelope>()))
                 .ToArray();
 
             var pending = queueNames
-                .Select(n => _pending.GetOrAdd(n, s => new MemoryFutureList()))
+                .Select(n => _account.Pending.GetOrAdd(n, s => new MemoryFutureList()))
                 .ToArray();
 
             return new MemoryPartitionInbox(queues, queueNames, pending);
-        }
-
-        public void Dispose()
-        {
-        }
-
-        public void Initialize()
-        {
-        }
-
-        public Task Start(CancellationToken token)
-        {
-            return Task.Factory.StartNew(() =>
-                {
-                    while (!token.IsCancellationRequested)
-                    {
-                        foreach (var list in _pending)
-                        {
-                            ImmutableEnvelope envelope;
-                            while (list.Value.TakePendingMessage(out envelope))
-                            {
-                                _delivery
-                                    .GetOrAdd(list.Key, n => new BlockingCollection<ImmutableEnvelope>())
-                                    .Add(envelope);
-                            }
-                        }
-
-                        token.WaitHandle.WaitOne(TimeSpan.FromSeconds(1));
-                    }
-                });
         }
     }
 }

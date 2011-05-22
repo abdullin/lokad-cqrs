@@ -16,7 +16,7 @@ namespace Lokad.Cqrs.Core.Directory
         // ReSharper disable InconsistentNaming
 
 
-        MessageActivationMap Map { get; set; }
+        MessageActivationInfo[] Map { get; set; }
 
         
 
@@ -29,14 +29,14 @@ namespace Lokad.Cqrs.Core.Directory
         [Test]
         public void Only_one_consumer_is_allowed()
         {
-            CollectionAssert.AreEquivalent(new[] { typeof(ListenToAll) }, Map.QueryDistinctConsumingTypes());
+            CollectionAssert.AreEquivalent(new[] { typeof(ListenToAll) }, Map.SelectMany(c => c.AllConsumers).Distinct());
         }
 
 
         [Test]
         public void All_messages_are_allowed()
         {
-            CollectionAssert.AreEquivalent(TestMessageTypes, Map.QueryAllMessageTypes());
+            CollectionAssert.AreEquivalent(TestMessageTypes, Map.Select(c => c.MessageType).Distinct());
         }
     }
 }

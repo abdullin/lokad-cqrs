@@ -8,11 +8,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Transactions;
 using Autofac;
 using Autofac.Core;
 using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Dispatch;
+using Lokad.Cqrs.Core.Outbox;
+using Lokad.Cqrs.Evil;
 using Lokad.Cqrs.Feature.AzurePartition.Inbox;
+using Lokad.Cqrs.Core;
 
 // ReSharper disable MemberCanBePrivate.Global
 
@@ -21,34 +25,42 @@ namespace Lokad.Cqrs.Feature.AzurePartition
     public sealed class AzurePartitionModule : HideObjectMembersFromIntelliSense
     {
         readonly HashSet<string> _queueNames = new HashSet<string>();
-        TimeSpan _queueVisibilityTimeout = TimeSpan.FromSeconds(30);
-        PartialRegistration<ISingleThreadMessageDispatcher> _dispatcherPartial;
-        PartialRegistration<IEnvelopeQuarantine> _quarantinePartial;
+        TimeSpan _queueVisibilityTimeout;
+        Func<IComponentContext, IEnvelopeQuarantine> _quarantineFactory;
 
         Func<uint, TimeSpan> _decayPolicy;
 
-        readonly string _accountName;
+        readonly IAzureStorageConfig _config;
 
-        public AzurePartitionModule(string accountId, string[] queueNames)
+
+        Func<IComponentContext, MessageActivationInfo[], IMessageDispatchStrategy, ISingleThreadMessageDispatcher> _dispatcher;
+
+
+        public AzurePartitionModule(IAzureStorageConfig config, string[] queueNames)
         {
-            _accountName = accountId;
-            _queueNames = new HashSet<string>(queueNames);
             DispatchAsEvents();
-            QuarantineIs<MemoryQuarantine>();
+            
+            QueueVisibility(30000);
+
+
+
+            _config = config;
+            _queueNames = new HashSet<string>(queueNames);
+
+            Quarantine(c => new MemoryQuarantine());
             DecayPolicy(TimeSpan.FromSeconds(2));
         }
 
 
-        public void DispatcherIs<TDispatcher>(Action<TDispatcher> optionalConfig = null)
-            where TDispatcher : class, ISingleThreadMessageDispatcher
+
+        public void DispatcherIs(Func<IComponentContext, MessageActivationInfo[], IMessageDispatchStrategy, ISingleThreadMessageDispatcher> factory)
         {
-            _dispatcherPartial = PartialRegistration<ISingleThreadMessageDispatcher>.From(optionalConfig);
+            _dispatcher = factory;
         }
 
-        public void QuarantineIs<TQuarantine>(Action<TQuarantine> optionalConfig = null)
-            where TQuarantine : class, IEnvelopeQuarantine
+        public void Quarantine(Func<IComponentContext, IEnvelopeQuarantine> factory)
         {
-            _quarantinePartial = PartialRegistration<IEnvelopeQuarantine>.From(optionalConfig);
+            _quarantineFactory = factory;
         }
 
         public void DecayPolicy(TimeSpan timeout)
@@ -76,19 +88,16 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 
         public void DispatchAsEvents()
         {
-            DispatcherIs<DispatchOneEvent>();
+            DispatcherIs((ctx, map, strategy) => new DispatchOneEvent(map, ctx.Resolve<ISystemObserver>(), strategy));
         }
-        public void DispatchAsCommandBatch(Action<DispatchCommandBatch> optionalConfig)
-        {
-            DispatcherIs(optionalConfig);
-        }
+        
         public void DispatchAsCommandBatch()
         {
-            DispatcherIs<DispatchCommandBatch>();
+            DispatcherIs((ctx, map, strategy) => new DispatchCommandBatch(map, strategy));
         }
         public void DispatchToRoute(Func<ImmutableEnvelope,string> route)
         {
-            DispatcherIs<DispatchMessagesToRoute>(c => c.SpecifyRouter(route));
+            DispatcherIs((ctx, map, strategy) => new DispatchMessagesToRoute(ctx.Resolve<QueueWriterRegistry>(), route));
         }
 
         readonly MessageDirectoryFilter _filter = new MessageDirectoryFilter();
@@ -102,31 +111,21 @@ namespace Lokad.Cqrs.Feature.AzurePartition
         IEngineProcess BuildConsumingProcess(IComponentContext context)
         {
             var log = context.Resolve<ISystemObserver>();
-
-
             var builder = context.Resolve<MessageDirectoryBuilder>();
 
             var map = builder.BuildActivationMap(_filter.DoesPassFilter);
-            var dispatcher = _dispatcherPartial.ResolveWithTypedParams(context, map);
+
+            var strategy = context.Resolve<IMessageDispatchStrategy>();
+            var dispatcher = _dispatcher(context, map, strategy);
             dispatcher.Init();
 
             var streamer = context.Resolve<IEnvelopeStreamer>();
 
-            var configurations = context.Resolve<AzureStorageRegistry>();
-
-            IAzureStorageConfiguration config;
-            if (!configurations.TryGet(_accountName, out config))
-            {
-                var message = string.Format("Failed to locate Azure account '{0}'. Have you registered it?",
-                    _accountName);
-                throw new InvalidOperationException(message);
-            }
-
             var scheduling = context.Resolve<AzureSchedulingProcess>();
-            var factory = new AzurePartitionFactory(streamer, log, config, _queueVisibilityTimeout, scheduling, _decayPolicy);
+            var factory = new AzurePartitionFactory(streamer, log, _config, _queueVisibilityTimeout, scheduling, _decayPolicy);
             
             var notifier = factory.GetNotifier(_queueNames.ToArray());
-            var quarantine = _quarantinePartial.ResolveWithTypedParams(context);
+            var quarantine = _quarantineFactory(context);
             var manager = context.Resolve<MessageDuplicationManager>();
             var transport = new DispatcherProcess(log, dispatcher, notifier, quarantine, manager);
             return transport;
@@ -144,14 +143,16 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             return this;
         }
 
-        public void Configure(IComponentRegistry componentRegistry)
+        public void Configure(IComponentRegistry container)
         {
-            var builder = new ContainerBuilder();
-            _dispatcherPartial.Register(builder);
-            _quarantinePartial.Register(builder);
-            builder.Register(BuildConsumingProcess);
-            builder.RegisterType<AzureSchedulingProcess>().As<IEngineProcess, AzureSchedulingProcess>();
-            builder.Update(componentRegistry);
+            container.Register(BuildConsumingProcess);
+
+            if (!container.IsRegistered(new TypedService(typeof(AzureSchedulingProcess))))
+            {
+                var process = new AzureSchedulingProcess();
+                container.Register(ctx => process);
+                container.Register<IEngineProcess>(process);
+            }
         }
     }
 }

@@ -20,5 +20,7 @@ namespace Lokad.Cqrs.Core
             builder.RegisterInstance(instance);
             builder.Update(registry);
         }
+
+        
     }
 }

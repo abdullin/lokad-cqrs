@@ -25,9 +25,8 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 
             b.Azure(m =>
                 {
-                    m.AddAzureAccount(account);
-                    m.AddAzureProcess("azure-dev", new[] {"test-incoming"}, c => c.QueueVisibility(1));
-                    m.AddAzureSender("azure-dev", "test-incoming", x => x.IdGeneratorForTests());
+                    m.AddAzureProcess(account, new[] {"test-incoming"}, c => c.QueueVisibility(1));
+                    m.AddAzureSender(account, "test-incoming", x => x.IdGeneratorForTests());
                 });
             b.Storage(m => m.AtomicIsInAzure(account, DefaultWithCustomConfig));
         }

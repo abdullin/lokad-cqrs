@@ -7,12 +7,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Autofac;
 using Autofac.Core;
 using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Core.Envelope;
+using Lokad.Cqrs.Core.Outbox;
 using Lokad.Cqrs.Core.Reactive;
 using Lokad.Cqrs.Core.Serialization;
 using Lokad.Cqrs.Core;
@@ -26,10 +26,19 @@ namespace Lokad.Cqrs.Build.Engine
     /// </summary>
     public class CqrsEngineBuilder : HideObjectMembersFromIntelliSense
     {
-
+        readonly SerializationContractRegistry _dataSerialization = new SerializationContractRegistry();
         IEnvelopeSerializer _envelopeSerializer = new EnvelopeSerializerWithDataContracts();
         Func<Type[], IDataSerializer> _dataSerializer = types => new DataSerializerWithDataContracts(types);
+        readonly MessageDirectoryModule _domain = new MessageDirectoryModule();
+        readonly StorageModule _storage = new StorageModule();
 
+        readonly QueueWriterRegistry _writerRegistry = new QueueWriterRegistry();
+
+        public readonly List<IObserver<ISystemEvent>> Observers = new List<IObserver<ISystemEvent>>
+            {
+                new ImmediateTracingObserver()
+            };
+        
 
         public void RegisterDataSerializer(Func<Type[], IDataSerializer> serializer)
         {
@@ -41,21 +50,7 @@ namespace Lokad.Cqrs.Build.Engine
             _envelopeSerializer = serializer;
         }
 
-
-
-
-        readonly HashSet<IModule> _moduleEnlistments = new HashSet<IModule>();
-        
-        bool IsEnlisted<TModule>() where TModule : IModule
-        {
-            return _moduleEnlistments.Count(x => x is TModule) > 0;
-        }
-
-        int Count<TModule>() where TModule : IModule
-        {
-            return _moduleEnlistments.Count(x => x is TModule);
-        }
-
+        readonly List<IModule> _moduleEnlistments = new List<IModule>();
 
 
         public void EnlistModule(IModule module)
@@ -63,6 +58,7 @@ namespace Lokad.Cqrs.Build.Engine
             _moduleEnlistments.Add(module);
         }
 
+        
         /// <summary>
         /// Configures the message domain for the instance of <see cref="CqrsEngineHost"/>.
         /// </summary>
@@ -70,9 +66,7 @@ namespace Lokad.Cqrs.Build.Engine
         /// <returns>same builder for inline multiple configuration statements</returns>
         public CqrsEngineBuilder Domain(Action<MessageDirectoryModule> config)
         {
-            var directory = new MessageDirectoryModule();
-            config(directory);
-            EnlistModule(directory);
+            config(_domain);
             return this;
         }
 
@@ -83,19 +77,10 @@ namespace Lokad.Cqrs.Build.Engine
             build(_builder);
             return this;
         }
-
-        public CqrsEngineBuilder EnlistObserver(IObserver<ISystemEvent> observer)
+        
+        public CqrsEngineBuilder Observer(IObserver<ISystemEvent> observer)
         {
-            _builder.RegisterInstance(observer);
-            return this;
-        }
-
-        public CqrsEngineBuilder EnlistObserver<TObserver>() where TObserver : IObserver<ISystemEvent>
-        {
-            _builder.RegisterType<TObserver>()
-                .As<IObserver<ISystemEvent>>()
-                .As<TObserver>()
-                .SingleInstance();
+            Observers.Add(observer);
             return this;
         }
 
@@ -103,19 +88,16 @@ namespace Lokad.Cqrs.Build.Engine
         {
             var m = new MemoryModule();
             configure(m);
-            _builder.RegisterModule(m);
+            EnlistModule(m);
             return this;
         }
 
         public CqrsEngineBuilder Storage(Action<StorageModule> configure)
         {
-            var m = new StorageModule();
-            configure(m);
-            EnlistModule(m);
+            configure(_storage);
             return this;
         }
 
-        public bool DisableDefaultObserver { get; set; }
 
         /// <summary>
         /// Builds this <see cref="CqrsEngineHost"/>.
@@ -125,67 +107,47 @@ namespace Lokad.Cqrs.Build.Engine
         {
             // nonconditional registrations
             // System presets
-            InnerSystemRegisterObservations();
-
-            
-
             _builder.RegisterType<DispatcherProcess>();
-            _builder.RegisterType<MessageDuplicationManager>().SingleInstance();
-
-            // some defaults
-            _builder.RegisterType<CqrsEngineHost>().SingleInstance();
-
-            // conditional registrations and defaults
-            if (!IsEnlisted<MessageDirectoryModule>())
-            {
-                Domain(m => { });
-            }
             
-
-            if (Count<StorageModule>() == 0)
-            {
-                EnlistModule(new StorageModule());
-            }
-            if (Count<StorageModule>()> 1)
-            {
-                throw new InvalidOperationException("Only one storage module can be configured!");
-            }
-
-            //if (_moduleEnlistments.Count(m => m is ))
-
-
+            
+            
             foreach (var module in _moduleEnlistments)
             {
                 _builder.RegisterModule(module);
             }
-
-
             var container = _builder.Build();
-            container.ComponentRegistry.Register<IEnvelopeStreamer>(c => new EnvelopeStreamer(_envelopeSerializer, _dataSerializer(c.Resolve<IKnowSerializationTypes>().GetKnownTypes().ToArray())));
+            var system = new SystemObserver(Observers.ToArray());
 
-            var host = container.Resolve<CqrsEngineHost>(TypedParameter.From(container));
+            var reg = container.ComponentRegistry;
+            
+            
+            Configure(reg, system);
+
+            var processes = container.Resolve<IEnumerable<IEngineProcess>>();
+            var scope = container.Resolve<ILifetimeScope>();
+            var host = new CqrsEngineHost(scope, system, processes);
             host.Initialize();
             return host;
         }
 
-        void InnerSystemRegisterObservations()
+        void Configure(IComponentRegistry reg, ISystemObserver system) 
         {
-            _builder.RegisterType<ReactiveSystemObserverAdapter>().SingleInstance().As<ISystemObserver>();
-            if (!DisableDefaultObserver)
-            {
-                _builder.RegisterType<ImmediateTracingObserver>().As<IObserver<ISystemEvent>>().SingleInstance();
-            }
+            reg.Register(system);
+            
+            // domain should go before serialization
+            _domain.Configure(reg, _dataSerialization);
+            _storage.Configure(reg);
 
-            //Builder.RegisterCallback(ci =>
-            //    {
-            //        var service = new TypedService(typeof(IObserver<ISystemEvent>));
-            //        if (ci.IsRegistered(service)) return;
-            //        var builder = new ContainerBuilder();
-            //        builder.RegisterType<ImmediateTracingObserver>()
-            //            .As<IObserver<ISystemEvent>>()
-            //            .SingleInstance();
-            //        builder.Update(ci);
-            //    });
+            var types = _dataSerialization.GetAndMakeReadOnly();
+            var dataSerializer = _dataSerializer(types);
+            var streamer = new EnvelopeStreamer(_envelopeSerializer, dataSerializer);
+
+            
+            reg.Register(_writerRegistry);
+            reg.Register(dataSerializer);
+            reg.Register<IEnvelopeStreamer>(c => streamer);
+            reg.Register(new MessageDuplicationManager());
+            
         }
     }
 }

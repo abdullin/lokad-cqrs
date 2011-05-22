@@ -1,19 +1,21 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Lokad.Cqrs.Core.Directory
 {
     public sealed class MethodInvokerHint
     {
         public readonly Type ConsumerTypeDefinition;
-        public readonly string MethodName;
+        public readonly Func<Type,Type,MethodInfo> Lookup;
         public readonly Type MessageInterface;
 
-        public MethodInvokerHint(Type consumerTypeDefinition, string methodName, Type messageinterface)
+        public MethodInvokerHint(Type consumerTypeDefinition, Type messageinterface, Func<Type, Type, MethodInfo> lookup)
         {
             ConsumerTypeDefinition = consumerTypeDefinition;
-            MethodName = methodName;
+            Lookup = lookup;
+            
             MessageInterface = messageinterface;
         }
 
@@ -57,9 +59,25 @@ namespace Lokad.Cqrs.Core.Directory
                 throw new InvalidOperationException("Can't find generic method definition");
             }
             var method = matches[0];
+            var name = method.Name;
+
+            Func<Type, Type, MethodInfo> lookup = (c, msg) =>
+                {
+                    var consume = c.GetMethod(name, new[] {msg});
+                    if (null == consume)
+                    {
+                        throw new InvalidOperationException(
+                            string.Format("Unable to find consuming method {0}.{1}({2}).",
+                                c.Name,
+                                name,
+                                msg.Name));
+                    }
+                    return consume;
+
+                };
 
             
-            return new MethodInvokerHint(declaringGenericInterface, method.Name, messageInterface);
+            return new MethodInvokerHint(declaringGenericInterface, messageInterface, lookup);
         }
     }
 }

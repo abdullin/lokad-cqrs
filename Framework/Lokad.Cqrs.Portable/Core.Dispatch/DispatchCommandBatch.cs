@@ -7,9 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Transactions;
-using Autofac;
 using Lokad.Cqrs.Core.Directory;
 
 namespace Lokad.Cqrs.Core.Dispatch
@@ -20,48 +17,16 @@ namespace Lokad.Cqrs.Core.Dispatch
     /// </summary>
     public class DispatchCommandBatch : ISingleThreadMessageDispatcher
     {
-        readonly ILifetimeScope _container;
+        
         readonly IDictionary<Type, Type> _messageConsumers = new Dictionary<Type, Type>();
-        readonly MessageActivationMap _messageDirectory;
-        readonly IMethodInvoker _invoker;
+        readonly MessageActivationInfo[] _messageDirectory;
+        readonly IMessageDispatchStrategy _strategy;
 
-        Func<TransactionScope> _scopeFactory;
-
-        public DispatchCommandBatch(
-            ILifetimeScope container, 
-            MessageActivationMap messageDirectory,
-            IMethodInvoker invoker)
+        public DispatchCommandBatch(MessageActivationInfo[] messageDirectory, IMessageDispatchStrategy strategy)
         {
-            _container = container;
-            _invoker = invoker;
             _messageDirectory = messageDirectory;
-            
-            Transactional(TransactionScopeOption.RequiresNew);
+            _strategy = strategy;
         }
-     
-
-        public void NoTransactions()
-        {
-            Transactional(TransactionScopeOption.Suppress);
-        }
-
-        public void Transactional(Func<TransactionScope> factory)
-        {
-            _scopeFactory = factory;
-        }
-        public void Transactional(TransactionScopeOption option, IsolationLevel level = IsolationLevel.Serializable, TimeSpan timeout = default(TimeSpan))
-        {
-            if (timeout == (default(TimeSpan)))
-            {
-                timeout = TimeSpan.FromMinutes(10);
-            }
-            _scopeFactory = () => new TransactionScope(option, new TransactionOptions()
-                {
-                    IsolationLevel = level,
-                    Timeout = Debugger.IsAttached ? TimeSpan.MaxValue : timeout
-                });
-        }
-
 
         void ISingleThreadMessageDispatcher.DispatchMessage(ImmutableEnvelope message)
         {
@@ -78,39 +43,21 @@ namespace Lokad.Cqrs.Core.Dispatch
                 }
             }
 
-            using (var scope = _scopeFactory())
+            using (var scope = _strategy.BeginEnvelopeScope())
             {
-                DispatchEnvelope(message);
+                foreach (var item in message.Items)
+                {
+                    var consumerType = _messageConsumers[item.MappedType];
+                    scope.Dispatch(consumerType, message, item);
+                }
                 scope.Complete();
             }
         }
 
-        protected virtual void DispatchEnvelope(ImmutableEnvelope message)
-        {
-            using (var unit = _container.BeginLifetimeScope(DispatchLifetimeScopeTags.MessageEnvelopeScopeTag))
-            {
-                foreach (var item in message.Items)
-                {
-                    // we're dispatching them inside single lifetime scope
-                    // meaning same transaction,
-                    using (var scope = unit.BeginLifetimeScope(DispatchLifetimeScopeTags.MessageItemScopeTag))
-                    {
-                        var consumerType = _messageConsumers[item.MappedType];
-                        {
-                            var consumer = scope.Resolve(consumerType);
-                            _invoker.InvokeConsume(consumer, item, message);
-                        }
-                    }
-                }
-            }
-        }
-
-
         public void Init()
         {
-            var infos = _messageDirectory.Infos;
-            DispatcherUtil.ThrowIfCommandHasMultipleConsumers(infos);
-            foreach (var messageInfo in infos)
+            DispatcherUtil.ThrowIfCommandHasMultipleConsumers(_messageDirectory);
+            foreach (var messageInfo in _messageDirectory)
             {
                 if (messageInfo.AllConsumers.Length > 0)
                 {

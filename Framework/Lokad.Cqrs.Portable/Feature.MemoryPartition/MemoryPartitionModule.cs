@@ -6,21 +6,26 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Transactions;
 using Autofac;
 using Autofac.Core;
 using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Dispatch;
+using Lokad.Cqrs.Core.Outbox;
+using Lokad.Cqrs.Core;
 
 namespace Lokad.Cqrs.Feature.MemoryPartition
 {
-    public sealed class MemoryPartitionModule : HideObjectMembersFromIntelliSense, IModule
+    public sealed class MemoryPartitionModule : HideObjectMembersFromIntelliSense
     {
         readonly string[] _memoryQueues;
 
-        PartialRegistration<ISingleThreadMessageDispatcher> _dispatcherPartial;
-        PartialRegistration<IEnvelopeQuarantine> _quarantinePartial;
-
+        
         readonly MessageDirectoryFilter _filter = new MessageDirectoryFilter();
+
+        Func<IComponentContext, MessageActivationInfo[], IMessageDispatchStrategy, ISingleThreadMessageDispatcher> _dispatcher;
+        Func<IComponentContext, IEnvelopeQuarantine> _quarantineFactory;
 
         public MemoryPartitionModule WhereFilter(Action<MessageDirectoryFilter> filter)
         {
@@ -31,35 +36,36 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
         public MemoryPartitionModule(string[] memoryQueues)
         {
             _memoryQueues = memoryQueues;
+
+
             DispatchAsEvents();
-            QuarantineIs<MemoryQuarantine>();
+
+            Quarantine(c => new MemoryQuarantine());
         }
 
-        public void DispatcherIs<TDispatcher>(Action<TDispatcher> optionalConfig = null)
-            where TDispatcher : class, ISingleThreadMessageDispatcher
+        public void DispatcherIs(Func<IComponentContext, MessageActivationInfo[], IMessageDispatchStrategy, ISingleThreadMessageDispatcher> factory)
         {
-            _dispatcherPartial = PartialRegistration<ISingleThreadMessageDispatcher>.From(optionalConfig);
+            _dispatcher = factory;
         }
 
-        public void QuarantineIs<TQuarantine>(Action<TQuarantine> optionalConfig = null)
-            where TQuarantine : class, IEnvelopeQuarantine
+
+        public void Quarantine(Func<IComponentContext, IEnvelopeQuarantine> factory)
         {
-            _quarantinePartial = PartialRegistration<IEnvelopeQuarantine>.From(optionalConfig);
+            _quarantineFactory = factory;
         }
 
         public void DispatchAsEvents()
         {
-            DispatcherIs<DispatchOneEvent>();
+            DispatcherIs((ctx, map, strategy) => new DispatchOneEvent(map, ctx.Resolve<ISystemObserver>(), strategy));
         }
 
-        public void DispatchAsCommandBatch(Action<DispatchCommandBatch> optionalConfig = null)
+        public void DispatchAsCommandBatch()
         {
-            DispatcherIs(optionalConfig);
+            DispatcherIs((ctx, map, strategy) => new DispatchCommandBatch(map, strategy));
         }
-
         public void DispatchToRoute(Func<ImmutableEnvelope, string> route)
         {
-            DispatcherIs<DispatchMessagesToRoute>(c => c.SpecifyRouter(route));
+            DispatcherIs((ctx, map, strategy) => new DispatchMessagesToRoute(ctx.Resolve<QueueWriterRegistry>(), route));
         }
 
         IEngineProcess BuildConsumingProcess(IComponentContext context)
@@ -69,29 +75,32 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
 
             var builder = context.Resolve<MessageDirectoryBuilder>();
 
-            var activations = builder.BuildActivationMap(_filter.DoesPassFilter);
-
-            var dispatcher = _dispatcherPartial.ResolveWithTypedParams(context, activations);
+            var map = builder.BuildActivationMap(_filter.DoesPassFilter);
+            var strategy = context.Resolve<IMessageDispatchStrategy>();
+            var dispatcher = _dispatcher(context, map, strategy);
             dispatcher.Init();
 
-            var factory = context.Resolve<MemoryPartitionFactory>();
+            var account = context.Resolve<MemoryAccount>();
+            var factory = new MemoryPartitionFactory(account);
             var notifier = factory.GetMemoryInbox(_memoryQueues);
 
-            var quarantine = _quarantinePartial.ResolveWithTypedParams(context);
+            var quarantine = _quarantineFactory(context);
             var manager = context.Resolve<MessageDuplicationManager>();
             var transport = new DispatcherProcess(log, dispatcher, notifier, quarantine, manager);
+
+           
             return transport;
         }
 
-        public void Configure(IComponentRegistry componentRegistry)
+        public void Configure(IComponentRegistry container)
         {
-            var builder = new ContainerBuilder();
-
-            _dispatcherPartial.Register(builder);
-            _quarantinePartial.Register(builder);
-
-            builder.Register(BuildConsumingProcess);
-            builder.Update(componentRegistry);
+            if (!container.IsRegistered(new TypedService(typeof(MemoryAccount))))
+            {
+                var account = new MemoryAccount();
+                container.Register(account);
+                container.Register<IEngineProcess>(new MemorySchedulingProcess(account));
+            }
+            container.Register(BuildConsumingProcess);
         }
     }
 }

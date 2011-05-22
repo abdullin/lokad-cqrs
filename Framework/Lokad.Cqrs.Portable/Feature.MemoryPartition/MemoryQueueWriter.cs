@@ -14,9 +14,12 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
     {
         readonly BlockingCollection<ImmutableEnvelope> _queue;
 
-        public MemoryQueueWriter(BlockingCollection<ImmutableEnvelope> queue)
+        public string Name { get; private set; }
+
+        public MemoryQueueWriter(BlockingCollection<ImmutableEnvelope> queue, string name)
         {
             _queue = queue;
+            Name = name;
         }
 
         public void PutMessage(ImmutableEnvelope envelope)

@@ -8,22 +8,26 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Transactions;
 using Autofac;
 using Autofac.Core;
 using Lokad.Cqrs.Core.Directory.Default;
+using Lokad.Cqrs.Core.Dispatch;
+using Lokad.Cqrs.Core.Serialization;
+using Lokad.Cqrs.Evil;
+using System.Linq;
 
 namespace Lokad.Cqrs.Core.Directory
 {
     /// <summary>
     /// Module for building CQRS domains.
     /// </summary>
-    public class MessageDirectoryModule : IModule
+    public class MessageDirectoryModule : HideObjectMembersFromIntelliSense
     {
         readonly DomainAssemblyScanner _scanner = new DomainAssemblyScanner();
         IMethodContextManager _contextManager;
         MethodInvokerHint _hint;
-        Action<IComponentRegistry> _actionReg;
-
+        
         
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageDirectoryModule"/> class.
@@ -40,7 +44,6 @@ namespace Lokad.Cqrs.Core.Directory
         {
             var instance = new MethodContextManager<TContext>(manager);
             _contextManager = instance;
-            _actionReg = c => c.Register<Func<TContext>>(instance.Get);
         }
 
 		public void HandlerSample<THandler>(Expression<Action<THandler>> action)
@@ -61,95 +64,46 @@ namespace Lokad.Cqrs.Core.Directory
             return this;
         }
 
-        sealed class SerializationList : IKnowSerializationTypes
+
+        public void Configure(IComponentRegistry container, SerializationContractRegistry types)
         {
-            public SerializationList(ICollection<Type> types)
-            {
-                _types = types;
-            }
-
-            readonly ICollection<Type> _types;
-            public IEnumerable<Type> GetKnownTypes()
-            {
-                return _types;
-            }
-        }
-
-
-        void IModule.Configure(IComponentRegistry container)
-        {
-            var handler = new MethodInvoker(_hint, _contextManager);
-
             _scanner.Constrain(_hint);
             var mappings = _scanner.Build(_hint.ConsumerTypeDefinition);
+
+
+            var messageTypes = mappings
+                .Select(m => m.Message)
+                .Where(m => !m.IsAbstract)
+                .Distinct();
+
+            types.AddRange(messageTypes);
+            
             var builder = new MessageDirectoryBuilder(mappings);
-            var messages = builder.ListMessagesToSerialize();
+            
+            var provider = _contextManager.GetContextProvider();
+
+            var consumers = mappings
+                .Select(x => x.Consumer)
+                .Where(x => !x.IsAbstract)
+                .Distinct()
+                .ToArray();
 
             var cb = new ContainerBuilder();
-            foreach (var consumer in builder.ListConsumersToActivate())
+            foreach (var consumer in consumers)
             {
                 cb.RegisterType(consumer);
             }
+            cb.RegisterInstance(provider).AsSelf();
             cb.Update(container);
-            _actionReg(container);
+            container.Register<IMessageDispatchStrategy>(c =>
+            {
+                var scope = c.Resolve<ILifetimeScope>();
+                var tx = TransactionEvil.Factory(TransactionScopeOption.RequiresNew);
+                return new AutofacDispatchStrategy(scope, tx, _hint.Lookup, _contextManager);
+            });
+
             container.Register(builder);
-            container.Register<IKnowSerializationTypes>(new SerializationList(messages));
-            container.Register<IMethodInvoker>(handler);
-        }
-
-        public sealed class DomainAwareMessageProfiler
-        {
-            //readonly IDictionary<Type, GetInfoDelegate> _delegates;
-
-            //public DomainAwareMessageProfiler(MessageDirectory directory)
-            //{
-            //    _delegates = BuildFrom(directory);
-            //}
-
-
-            //public string GetReadableMessageInfo(UnpackedMessage message)
-            //{
-            //    GetInfoDelegate value;
-
-            //    if (_delegates.TryGetValue(message.ContractType, out value))
-            //    {
-            //        return value(message);
-            //    }
-            //    return GetDefaultInfo(message);
-            //}
-
-            //static string GetDefaultInfo(UnpackedMessage message)
-            //{
-            //    var contract = message.ContractType.Name;
-            //    return message
-            //        .GetState<CloudQueueMessage>()
-            //        .Convert(s => contract + " - " + s.Id, contract);
-            //}
-
-            //static IDictionary<Type, GetInfoDelegate> BuildFrom(MessageDirectory directory)
-            //{
-            //    var delegates = new Dictionary<Type, GetInfoDelegate>();
-            //    foreach (var message in directory.Messages)
-            //    {
-            //        if (message.MessageType.IsInterface)
-            //            continue;
-
-            //        var type = message.MessageType;
-            //        var hasStringOverride = type.GetMethod("ToString").DeclaringType != typeof (object);
-
-            //        if (hasStringOverride)
-            //        {
-            //            delegates.Add(type, m => m.Content.ToString());
-            //        }
-            //        else
-            //        {
-            //            delegates.Add(type, GetDefaultInfo);
-            //        }
-            //    }
-            //    return delegates;
-            //}
-
-            //delegate string GetInfoDelegate(UnpackedMessage message);
+            
         }
     }
 }

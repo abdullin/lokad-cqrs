@@ -49,15 +49,15 @@ namespace Lokad.Cqrs
                 };
         }
 
-        public static void Fast(Predicate<string> name, params IAzureStorageConfiguration[] configurations)
+        public static void Fast(Predicate<string> name, params IAzureStorageConfig[] configs)
         {
-            var items = configurations
+            var items = configs
                 .AsParallel()
                 .Select(c => c.CreateBlobClient())
                 .SelectMany(c => c.ListContainers().Where(_ => name(_.Name)))
                 .Select(c => Task.Factory.FromAsync(c.BeginDelete, EndDelete(c), null));
 
-            var queues = configurations
+            var queues = configs
                 .AsParallel()
                 .Select(c => c.CreateQueueClient())
                 .SelectMany(c => c.ListQueues().Where(_ => name(_.Name)))

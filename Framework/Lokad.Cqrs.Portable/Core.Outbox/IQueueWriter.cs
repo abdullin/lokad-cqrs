@@ -9,6 +9,7 @@ namespace Lokad.Cqrs.Core.Outbox
 {
     public interface IQueueWriter
     {
+        string Name { get; }
         void PutMessage(ImmutableEnvelope envelope);
         void Init();
     }

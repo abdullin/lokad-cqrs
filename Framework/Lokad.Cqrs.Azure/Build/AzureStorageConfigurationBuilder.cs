@@ -94,9 +94,9 @@ namespace Lokad.Cqrs.Build
             _accountId = account.Credentials.AccountName;
         }
 
-        internal AzureStorageConfiguration Build()
+        internal AzureStorageConfig Build()
         {
-            return new AzureStorageConfiguration(_account, 
+            return new AzureStorageConfig(_account, 
                 _queueConfig, 
                 _blobConfig, 
                 _tableConfig,

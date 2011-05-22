@@ -28,37 +28,24 @@ namespace Lokad.Cqrs.Build.Engine
     {
         static readonly Regex QueueName = new Regex("^[A-Za-z][A-Za-z0-9]{2,62}", RegexOptions.Compiled);
 
-        readonly AzureStorageRegistry _configs = new AzureStorageRegistry();
-
         Action<IComponentRegistry> _funqlets = registry => { };
-
+        
         
 
-        /// <summary>
-        /// Registers the specified storage account as default into the container
-        /// </summary>
-        /// <param name="configs">The configs.</param>
-        public void AddAzureAccount(params IAzureStorageConfiguration[] configs)
+        
+        public void AddAzureSender(IAzureStorageConfig config, string queueName, Action<SendMessageModule> configure)
         {
-            foreach (var config in configs)
-            {
-                _configs.Register(config);
-            }
-        }
-
-        public void AddAzureSender(string accountId, string queueName, Action<SendMessageModule> configure)
-        {
-            var module = new SendMessageModule(accountId, queueName);
+            var module = new SendMessageModule((context, endpoint) => new AzureQueueWriterFactory(config, context.Resolve<IEnvelopeStreamer>()), config.AccountName, queueName);
             configure(module);
             _funqlets += module.Configure;
         }
 
-        public void AddAzureSender(string accountId, string queueName)
+        public void AddAzureSender(IAzureStorageConfig config, string queueName)
         {
-            AddAzureSender(accountId, queueName, m => { });
+            AddAzureSender(config, queueName, m => { });
         }
 
-        public void AddAzureProcess(string accountId, string[] queues, Action<AzurePartitionModule> config)
+        public void AddAzureProcess(IAzureStorageConfig config, string[] queues, Action<AzurePartitionModule> configure)
         {
             foreach (var queue in queues)
             {
@@ -75,36 +62,33 @@ namespace Lokad.Cqrs.Build.Engine
                 }
             }
 
-            var module = new AzurePartitionModule(accountId, queues);
-            config(module);
+            var module = new AzurePartitionModule(config, queues);
+            configure(module);
             _funqlets += module.Configure;
         }
 
 
-        public void AddAzureProcess(string accountId, string firstQueue, params string[] otherQueues)
+        public void AddAzureProcess(IAzureStorageConfig config, string firstQueue, params string[] otherQueues)
         {
             var queues = Enumerable.Repeat(firstQueue, 1).Concat(otherQueues).ToArray();
 
-            AddAzureProcess(accountId, queues, m => { });
+            AddAzureProcess(config, queues, m => { });
         }
 
-        public void AddAzureProcess(string accountId, string firstQueue, Action<AzurePartitionModule> config)
+        public void AddAzureProcess(IAzureStorageConfig config, string firstQueue, Action<AzurePartitionModule> configure)
         {
-            AddAzureProcess(accountId, new[] { firstQueue}, config);
+            AddAzureProcess(config, new[] { firstQueue}, configure);
         }
 
-        public void AddAzureRouter(string accountId, string queueName, Func<ImmutableEnvelope, string> config)
+        public void AddAzureRouter(IAzureStorageConfig config, string queueName, Func<ImmutableEnvelope, string> configure)
         {
-            AddAzureProcess(accountId, new[] {queueName}, m => m.DispatchToRoute(config));
+            AddAzureProcess(config, new[] {queueName}, m => m.DispatchToRoute(configure));
         }
 
 
         public void Configure(IComponentRegistry container)
         {
             _funqlets(container);
-            _configs.Register(AzureStorage.CreateConfigurationForDev());
-            container.Register(_configs);
-            container.Register<IQueueWriterFactory>(c => new AzureWriteQueueFactory(_configs, c.Resolve<IEnvelopeStreamer>()));
         }
     }
 }

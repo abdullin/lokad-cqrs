@@ -27,54 +27,21 @@ namespace Lokad.Cqrs.Core.Directory
             _mappings = mappings;
         }
 
-        public ICollection<Type> ListMessagesToSerialize()
+        public MessageActivationInfo[] BuildActivationMap(Func<MessageMapping, bool> filter)
         {
             return _mappings
-                .Select(x => x.Message)
-                .Where(x => !x.IsAbstract)
-                .Distinct()
+                .Where(filter)
+                .GroupBy(x => x.Message)
+                .Select(x => new MessageActivationInfo
+                    {
+                        MessageType = x.Key,
+                        AllConsumers = x
+                            .Where(t => t.Consumer != typeof (MessageMapping.BusNull))
+                            .Select(m => m.Consumer)
+                            .Distinct()
+                            .ToArray(),
+                    })
                 .ToArray();
-        }
-
-        public ICollection<Type> ListConsumersToActivate()
-        {
-            return _mappings
-                .Select(x => x.Consumer)
-                .Where(x => !x.IsAbstract)
-                .Distinct()
-                .ToArray();
-        }
-
-        public MessageActivationMap BuildActivationMap(Func<MessageMapping, bool> filter)
-        {
-            var mappings = _mappings.Where(filter);
-
-            var messages = mappings
-                .ToLookup(x => x.Message)
-                .Select(x =>
-                {
-                    var domainConsumers = x
-                        .Where(t => t.Consumer != typeof(MessageMapping.BusNull))
-                        .ToArray();
-
-                    return new MessageActivationInfo
-                        {
-                            MessageType = x.Key,
-                            AllConsumers = domainConsumers
-                                .Select(m => m.Consumer)
-                                .Distinct()
-                                .ToArray(),
-                            //DerivedConsumers =
-                            //    domainConsumers.Where(m => !m.Direct).Select(m => m.Consumer).Distinct().ToArray(),
-                            //DirectConsumers =
-                            //    domainConsumers.Where(m => m.Direct).Select(m => m.Consumer).Distinct().ToArray(),
-                        };
-                }).ToList();
-
-
-
-            
-            return new MessageActivationMap(messages);
         }
     }
 }

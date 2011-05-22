@@ -12,14 +12,22 @@ namespace Lokad.Cqrs.Core.Directory
         public void All_concrete_messages_discovered_for_serialization()
         {
             var expected = TestMessageTypes.Where(t => !t.IsAbstract).ToArray();
-            CollectionAssert.AreEquivalent(expected, Builder.ListMessagesToSerialize());
+            var enumerable = Mappings
+                .Select(m => m.Message)
+                .Where(m => !m.IsAbstract)
+                .Distinct();
+            CollectionAssert.AreEquivalent(expected, enumerable);
         }
 
         [Test]
         public void Al_concrete_handlers_discovered_for_activation()
         {
             var expected = TestConsumerTypes.Where(t => !t.IsAbstract).ToArray();
-            CollectionAssert.AreEquivalent(expected, Builder.ListConsumersToActivate());
+            var enumerable = Mappings
+                .Select(m => m.Consumer)
+                .Where(m => !m.IsAbstract)
+                .Distinct();
+            CollectionAssert.AreEquivalent(expected, enumerable);
         }
     }
 }

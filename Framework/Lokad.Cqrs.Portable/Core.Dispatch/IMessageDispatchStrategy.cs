@@ -5,11 +5,10 @@
 
 #endregion
 
-namespace Lokad.Cqrs.Core.Outbox
+namespace Lokad.Cqrs.Core.Dispatch
 {
-    public interface IQueueWriterFactory
+    public interface IMessageDispatchStrategy
     {
-        string Endpoint { get; }
-        IQueueWriter GetWriteQueue(string queueName);
+        IMessageDispatchScope BeginEnvelopeScope();
     }
 }

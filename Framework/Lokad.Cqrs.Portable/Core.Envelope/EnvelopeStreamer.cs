@@ -15,8 +15,8 @@ namespace Lokad.Cqrs.Core.Envelope
 {
     public sealed class EnvelopeStreamer : IEnvelopeStreamer
     {
-        const string RefernceSignature = "[cqrs-ref-r1]";
-        static readonly byte[] Reference = Encoding.Unicode.GetBytes(RefernceSignature);
+        const string ReferenceSignature = "[cqrs-ref-r1]";
+        static readonly byte[] Reference = Encoding.Unicode.GetBytes(ReferenceSignature);
 
         readonly IEnvelopeSerializer _envelopeSerializer;
         readonly IDataSerializer _dataSerializer;

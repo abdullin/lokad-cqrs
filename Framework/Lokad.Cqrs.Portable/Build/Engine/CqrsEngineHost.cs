@@ -14,6 +14,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using Lokad.Cqrs.Build.Engine.Events;
+using Lokad.Cqrs.Core.Reactive;
 using Lokad.Cqrs.Evil;
 
 namespace Lokad.Cqrs.Build.Engine
@@ -21,12 +22,12 @@ namespace Lokad.Cqrs.Build.Engine
     public sealed class CqrsEngineHost : IDisposable
     {
         public ILifetimeScope Container { get; private set; }
-        readonly ISystemObserver _observer;
+        readonly SystemObserver _observer;
         readonly IEnumerable<IEngineProcess> _serverProcesses;
 
         public CqrsEngineHost(
             ILifetimeScope container,
-            ISystemObserver observer,
+            SystemObserver observer,
             IEnumerable<IEngineProcess> serverProcesses)
         {
             Container = container;
@@ -95,6 +96,7 @@ namespace Lokad.Cqrs.Build.Engine
         public void Dispose()
         {
             Container.Dispose();
+            _observer.Dispose();
         }
     }
 }

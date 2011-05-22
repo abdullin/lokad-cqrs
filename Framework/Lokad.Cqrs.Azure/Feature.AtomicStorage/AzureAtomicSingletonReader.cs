@@ -13,10 +13,10 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 {
     public sealed class AzureAtomicSingletonReader<TView> : IAtomicSingletonReader<TView>
     {
-        readonly IAzureStorageConfiguration _storage;
+        readonly IAzureStorageConfig _storage;
         readonly IAtomicStorageStrategy _strategy;
 
-        public AzureAtomicSingletonReader(IAzureStorageConfiguration storage, IAtomicStorageStrategy strategy)
+        public AzureAtomicSingletonReader(IAzureStorageConfig storage, IAtomicStorageStrategy strategy)
         {
             _storage = storage;
             _strategy = strategy;

@@ -22,7 +22,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         readonly CloudBlobContainer _container;
         readonly IAtomicStorageStrategy _strategy;
 
-        public AzureAtomicEntityWriter(IAzureStorageConfiguration storage, IAtomicStorageStrategy strategy)
+        public AzureAtomicEntityWriter(IAzureStorageConfig storage, IAtomicStorageStrategy strategy)
         {
             _strategy = strategy;
             var containerName = strategy.GetFolderForEntity(typeof (TEntity));

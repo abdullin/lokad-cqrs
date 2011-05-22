@@ -17,44 +17,28 @@ namespace Lokad.Cqrs.Build
 {
     public sealed class AzureClientModule : HideObjectMembersFromIntelliSense, IModule
     {
-        readonly AzureStorageRegistry _dictionary = new AzureStorageRegistry();
-
         Action<IComponentRegistry> _modules = context => { };
 
-        /// <summary>
-        /// Registers the specified storage account as default into the container
-        /// </summary>
-        /// <param name="storage">The storage.</param>
-        public void AddAzureAccount(IAzureStorageConfiguration storage)
-        {
-            _dictionary.Register(storage);
-        }
 
 
-        public void AddAzureSender(string accountId, string queueName, Action<SendMessageModule> configure)
+
+        public void AddAzureSender(IAzureStorageConfig config, string queueName, Action<SendMessageModule> configure)
         {
-            var module = new SendMessageModule(accountId, queueName);
+            var module = new SendMessageModule((context, endpoint) => new AzureQueueWriterFactory(config, context.Resolve<IEnvelopeStreamer>()), config.AccountName, queueName);
             configure(module);
             _modules += module.Configure;
         }
 
-        public void AddAzureSender(string accountId, string queueName)
+        
+
+        public void AddAzureSender(IAzureStorageConfig config, string queueName)
         {
-            AddAzureSender(accountId, queueName, m => { });
+            AddAzureSender(config, queueName, m => { });
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void Configure(IComponentRegistry container)
         {
-            if (!_dictionary.Contains("azure-dev"))
-            {
-                AddAzureAccount(AzureStorage.CreateConfigurationForDev());
-            }
-
-            container.Register(_dictionary);
-            container.Register<IQueueWriterFactory>(
-                c => new AzureWriteQueueFactory(_dictionary, c.Resolve<IEnvelopeStreamer>()));
-
             _modules(container);
         }
     }
