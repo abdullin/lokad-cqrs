@@ -12,8 +12,6 @@ using System.Runtime.Serialization;
 using System.Threading;
 using Lokad.Cqrs.Build.Engine;
 using Lokad.Cqrs.Core.Directory.Default;
-using Lokad.Cqrs.Evil;
-using Microsoft.WindowsAzure;
 using NUnit.Framework;
 
 namespace Lokad.Cqrs
@@ -23,7 +21,6 @@ namespace Lokad.Cqrs
     {
         // ReSharper disable InconsistentNaming
 
-        #region Setup/Teardown
 
         static CqrsEngineHost BuildHost()
         {
@@ -44,7 +41,6 @@ namespace Lokad.Cqrs
             return builder.Build();
         }
 
-        #endregion
 
         [DataContract]
         public sealed class VipMessage : IMessage
@@ -73,7 +69,8 @@ namespace Lokad.Cqrs
             {
                 if (value.Length > 20)
                 {
-                    Trace.WriteLine(string.Format("[{0}]: {1}... ({2})", _context().EnvelopeId, value.Substring(0, 16), value.Length));
+                    Trace.WriteLine(string.Format("[{0}]: {1}... ({2})", _context().EnvelopeId, value.Substring(0, 16),
+                        value.Length));
                 }
                 else
                 {
@@ -101,7 +98,8 @@ namespace Lokad.Cqrs
 
                 client.SendOne(new VipMessage {Word = "VIP1 Message"});
                 client.SendOne(new UsualMessage {Word = "Usual Large:" + new string(')', 9000)});
-                client.SendOne(new VipMessage {Word = "VIP Delayed Large :" + new string(')', 9000)}, cb => cb.DelayBy(TimeSpan.FromSeconds(3)));
+                client.SendOne(new VipMessage {Word = "VIP Delayed Large :" + new string(')', 9000)},
+                    cb => cb.DelayBy(TimeSpan.FromSeconds(3)));
                 client.SendOne(new UsualMessage {Word = "Usual Delayed"}, cb => cb.DelayBy(TimeSpan.FromSeconds(2)));
 
                 //client.SendBatch(new VipMessage { Word = " VIP with usual "}, new UsualMessage() { Word = "Vip with usual"});
