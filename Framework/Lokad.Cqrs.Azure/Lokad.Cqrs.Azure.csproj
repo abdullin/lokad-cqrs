@@ -72,7 +72,6 @@
     <Compile Include="Feature.AtomicStorage\AzureAtomicEntityReader.cs" />
     <Compile Include="Feature.AtomicStorage\AzureAtomicSingletonWriter.cs" />
     <Compile Include="Feature.AtomicStorage\AzureAtomicStorageFactory.cs" />
-    <Compile Include="Core.Transport\MessagePrinter.cs" />
     <Compile Include="Build\AzureStorageConfigurationBuilder.cs" />
     <Compile Include="Feature.AzurePartition\Inbox\StatelessAzureScheduler.cs" />
     <Compile Include="Feature.AzurePartition\StatelessAzureFutureList.cs" />

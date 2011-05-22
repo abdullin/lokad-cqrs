@@ -78,8 +78,6 @@ namespace Lokad.Cqrs.Core.Directory
 
         void IModule.Configure(IComponentRegistry container)
         {
-            var handler = new MethodInvoker(_hint, _contextManager);
-
             _scanner.Constrain(_hint);
             var mappings = _scanner.Build(_hint.ConsumerTypeDefinition);
             var builder = new MessageDirectoryBuilder(mappings);
@@ -94,7 +92,8 @@ namespace Lokad.Cqrs.Core.Directory
             _actionReg(container);
             container.Register(builder);
             container.Register<IKnowSerializationTypes>(new SerializationList(messages));
-            container.Register<IMethodInvoker>(handler);
+            var invoker = new MethodInvoker(_hint, _contextManager);
+            container.Register<IMethodInvoker>(invoker);
         }
 
         public sealed class DomainAwareMessageProfiler
