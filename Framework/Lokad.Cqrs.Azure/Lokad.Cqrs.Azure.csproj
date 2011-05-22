@@ -92,7 +92,7 @@
     <Compile Include="Feature.StreamingStorage\BlobStorageUtil.cs" />
     <Compile Include="Feature.StreamingStorage\SuppressFlushForStream.cs" />
     <Compile Include="Feature.AzurePartition\StatelessAzureQueueWriter.cs" />
-    <Compile Include="Feature.AzurePartition\Sender\AzureWriteQueueFactory.cs" />
+    <Compile Include="Feature.AzurePartition\Sender\AzureQueueWriterFactory.cs" />
     <Compile Include="Core.Serialization\AttributeHelper.cs" />
     <Compile Include="Core.Serialization\DataSerializerWithProtoBuf.cs" />
     <Compile Include="Core.Serialization\ProtoBufUtil.cs" />

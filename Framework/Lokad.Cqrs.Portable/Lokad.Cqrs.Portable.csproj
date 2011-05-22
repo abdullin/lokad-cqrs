@@ -51,6 +51,7 @@
     <Compile Include="Core.Dispatch\IMessageDispatchScope.cs" />
     <Compile Include="Core.Dispatch\IMessageDispatchStrategy.cs" />
     <Compile Include="Core.Envelope\EnvelopePrinter.cs" />
+    <Compile Include="Core.Outbox\QueueWriterRegistry.cs" />
     <Compile Include="Core.Reactive\ImmediateEventsObserver.cs" />
     <Compile Include="Core\FunqContainer.cs" />
     <Compile Include="Evil\TransactionEvil.cs" />
@@ -64,6 +65,9 @@
     <Compile Include="Feature.AtomicStorage\FileAtomicStorageFactory.cs" />
     <Compile Include="Feature.AtomicStorage\IAtomicStorageSerializer.cs" />
     <Compile Include="Feature.AtomicStorage\IAtomicStorageStrategy.cs" />
+    <Compile Include="Feature.MemoryPartition\MemoryAccount.cs" />
+    <Compile Include="Feature.MemoryPartition\MemoryQueueWriterFactory.cs" />
+    <Compile Include="Feature.MemoryPartition\MemorySchedulingProcess.cs" />
     <Compile Include="ImmutableAttribute.cs" />
     <Compile Include="MessageContext.cs" />
     <Compile Include="HideObjectMembersFromIntelliSense.cs" />

@@ -39,14 +39,10 @@ namespace Lokad.Cqrs
             WipeAzureAccount.Fast(s => s.StartsWith("test-"), dev);
 
             var events = new Subject<ISystemEvent>();
-            var eb = new CqrsEngineBuilder();
-            eb.Azure(c =>
-                {
-                    c.AddAzureAccount(dev);
-                    c.AddAzureProcess("azure-dev", "test-publish");
-                });
-            eb.Observer(events);
-            var engine = eb.Build();
+            var engine = new CqrsEngineBuilder()
+                .Azure(c => c.AddAzureProcess(dev, "test-publish"))
+                .Observer(events)
+                .Build();
             var source = new CancellationTokenSource();
             engine.Start(source.Token);
 
@@ -54,7 +50,7 @@ namespace Lokad.Cqrs
 
 
             var builder = new CqrsClientBuilder();
-            builder.Azure(c => c.AddAzureSender("azure-dev", "test-publish"));
+            builder.Azure(c => c.AddAzureSender(dev, "test-publish"));
             var client = builder.Build();
 
 

@@ -30,13 +30,13 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 
         Func<uint, TimeSpan> _decayPolicy;
 
-        readonly string _accountName;
+        readonly IAzureStorageConfiguration _config;
 
 
         Func<IComponentContext, MessageActivationInfo[], IMessageDispatchStrategy, ISingleThreadMessageDispatcher> _dispatcher;
 
 
-        public AzurePartitionModule(string accountId, string[] queueNames)
+        public AzurePartitionModule(IAzureStorageConfiguration config, string[] queueNames)
         {
             DispatchAsEvents();
             
@@ -44,7 +44,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 
 
 
-            _accountName = accountId;
+            _config = config;
             _queueNames = new HashSet<string>(queueNames);
 
             Quarantine(c => new MemoryQuarantine());
@@ -97,7 +97,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
         }
         public void DispatchToRoute(Func<ImmutableEnvelope,string> route)
         {
-            DispatcherIs((ctx, map, strategy) => new DispatchMessagesToRoute(ctx.Resolve<IEnumerable<IQueueWriterFactory>>(), route));
+            DispatcherIs((ctx, map, strategy) => new DispatchMessagesToRoute(ctx.Resolve<QueueWriterRegistry>(), route));
         }
 
         readonly MessageDirectoryFilter _filter = new MessageDirectoryFilter();
@@ -121,18 +121,8 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 
             var streamer = context.Resolve<IEnvelopeStreamer>();
 
-            var configurations = context.Resolve<AzureStorageRegistry>();
-
-            IAzureStorageConfiguration config;
-            if (!configurations.TryGet(_accountName, out config))
-            {
-                var message = string.Format("Failed to locate Azure account '{0}'. Have you registered it?",
-                    _accountName);
-                throw new InvalidOperationException(message);
-            }
-
             var scheduling = context.Resolve<AzureSchedulingProcess>();
-            var factory = new AzurePartitionFactory(streamer, log, config, _queueVisibilityTimeout, scheduling, _decayPolicy);
+            var factory = new AzurePartitionFactory(streamer, log, _config, _queueVisibilityTimeout, scheduling, _decayPolicy);
             
             var notifier = factory.GetNotifier(_queueNames.ToArray());
             var quarantine = _quarantineFactory(context);
@@ -153,13 +143,16 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             return this;
         }
 
-        public void Configure(IComponentRegistry componentRegistry)
+        public void Configure(IComponentRegistry container)
         {
-            componentRegistry.Register(BuildConsumingProcess);
+            container.Register(BuildConsumingProcess);
 
-            var builder = new ContainerBuilder();
-            builder.RegisterType<AzureSchedulingProcess>().As<IEngineProcess, AzureSchedulingProcess>();
-            builder.Update(componentRegistry);
+            if (!container.IsRegistered(new TypedService(typeof(AzureSchedulingProcess))))
+            {
+                var process = new AzureSchedulingProcess();
+                container.Register(ctx => process);
+                container.Register<IEngineProcess>(process);
+            }
         }
     }
 }

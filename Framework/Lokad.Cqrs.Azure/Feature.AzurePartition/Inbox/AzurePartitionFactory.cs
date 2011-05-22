@@ -55,7 +55,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
 
             var reader = new StatelessAzureQueueReader(name, queue, container, poisonQueue,  _observer, _streamer, _queueVisibilityTimeout);
             var future = new StatelessAzureFutureList(container, _streamer);
-            var writer = new StatelessAzureQueueWriter(_streamer, container, queue);
+            var writer = new StatelessAzureQueueWriter(_streamer, container, queue, name);
 
             return new AzurePartitionInboxIntake(writer, reader, future);
         }

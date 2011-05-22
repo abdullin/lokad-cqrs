@@ -13,7 +13,6 @@ using Autofac.Core;
 using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Core.Outbox;
-using Lokad.Cqrs.Evil;
 using Lokad.Cqrs.Core;
 
 namespace Lokad.Cqrs.Feature.MemoryPartition
@@ -38,7 +37,7 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
         {
             _memoryQueues = memoryQueues;
 
-            
+
             DispatchAsEvents();
 
             Quarantine(c => new MemoryQuarantine());
@@ -66,7 +65,7 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
         }
         public void DispatchToRoute(Func<ImmutableEnvelope, string> route)
         {
-            DispatcherIs((ctx, map, strategy) => new DispatchMessagesToRoute(ctx.Resolve<IEnumerable<IQueueWriterFactory>>(), route));
+            DispatcherIs((ctx, map, strategy) => new DispatchMessagesToRoute(ctx.Resolve<QueueWriterRegistry>(), route));
         }
 
         IEngineProcess BuildConsumingProcess(IComponentContext context)
@@ -81,9 +80,8 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
             var dispatcher = _dispatcher(context, map, strategy);
             dispatcher.Init();
 
-
-
-            var factory = context.Resolve<MemoryPartitionFactory>();
+            var account = context.Resolve<MemoryAccount>();
+            var factory = new MemoryPartitionFactory(account);
             var notifier = factory.GetMemoryInbox(_memoryQueues);
 
             var quarantine = _quarantineFactory(context);
@@ -96,13 +94,11 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
 
         public void Configure(IComponentRegistry container)
         {
-
-            if (!container.IsRegistered(new TypedService(typeof(MemoryPartitionFactory))))
+            if (!container.IsRegistered(new TypedService(typeof(MemoryAccount))))
             {
-                var mpf = new MemoryPartitionFactory();
-                container.Register(mpf);
-                container.Register<IEngineProcess>(mpf);
-                container.Register<IQueueWriterFactory>(mpf);
+                var account = new MemoryAccount();
+                container.Register(account);
+                container.Register<IEngineProcess>(new MemorySchedulingProcess(account));
             }
             container.Register(BuildConsumingProcess);
         }

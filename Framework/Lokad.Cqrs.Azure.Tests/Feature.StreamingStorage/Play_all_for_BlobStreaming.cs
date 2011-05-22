@@ -123,7 +123,6 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
                 {
                     var account = AzureStorage.CreateConfigurationForDev();
                     WipeAzureAccount.Fast(s => s.StartsWith("test-"), account);
-                    cb.Azure(m => m.AddAzureAccount(account));
                     cb.Storage(m => m.StreamingIsInAzure(account));
                 });
             }

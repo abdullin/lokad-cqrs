@@ -12,6 +12,7 @@ using Autofac.Core;
 using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Core.Envelope;
+using Lokad.Cqrs.Core.Outbox;
 using Lokad.Cqrs.Core.Reactive;
 using Lokad.Cqrs.Core.Serialization;
 using Lokad.Cqrs.Core;
@@ -31,8 +32,9 @@ namespace Lokad.Cqrs.Build.Engine
         readonly MessageDirectoryModule _domain = new MessageDirectoryModule();
         readonly StorageModule _storage = new StorageModule();
 
+        readonly QueueWriterRegistry _writerRegistry = new QueueWriterRegistry();
 
-        public readonly List<IObserver<ISystemEvent>> Observers = new List<IObserver<ISystemEvent>>()
+        public readonly List<IObserver<ISystemEvent>> Observers = new List<IObserver<ISystemEvent>>
             {
                 new ImmediateTracingObserver()
             };
@@ -108,6 +110,7 @@ namespace Lokad.Cqrs.Build.Engine
             _builder.RegisterType<DispatcherProcess>();
             
             
+            
             foreach (var module in _moduleEnlistments)
             {
                 _builder.RegisterModule(module);
@@ -124,20 +127,21 @@ namespace Lokad.Cqrs.Build.Engine
             return host;
         }
 
-        void Configure(IComponentRegistry registry, ISystemObserver observer)
+        void Configure(IComponentRegistry container, ISystemObserver observer)
         {
-            registry.Register(observer);
-            registry.Register<IEnvelopeStreamer>(c =>
+            container.Register(observer);
+            container.Register<IEnvelopeStreamer>(c =>
                 {
                     var types = _dataSerialization.ToArray();
                     var dataSerializer = _dataSerializer(types);
                     return new EnvelopeStreamer(_envelopeSerializer, dataSerializer);
                 });
 
-            registry.Register(new MessageDuplicationManager());
+            container.Register(new MessageDuplicationManager());
+            container.Register(_writerRegistry);
 
-            _domain.Configure(registry, _dataSerialization);
-            _storage.Configure(registry);
+            _domain.Configure(container, _dataSerialization);
+            _storage.Configure(container);
         }
     }
 

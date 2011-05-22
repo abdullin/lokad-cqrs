@@ -16,14 +16,12 @@ namespace Lokad.Cqrs.Core.Outbox
     {
         readonly IQueueWriter _queue;
         readonly ISystemObserver _observer;
-        readonly string _queueName;
         readonly Func<string> _idGenerator;
 
-        public DefaultMessageSender(IQueueWriter queue, ISystemObserver observer, string queueName, Func<string> idGenerator)
+        public DefaultMessageSender(IQueueWriter queue, ISystemObserver observer, Func<string> idGenerator)
         {
             _queue = queue;
             _observer = observer;
-            _queueName = queueName;
             _idGenerator = idGenerator;
         }
 
@@ -68,7 +66,7 @@ namespace Lokad.Cqrs.Core.Outbox
             if (Transaction.Current == null)
             {
                 _queue.PutMessage(envelope);
-                _observer.Notify(new EnvelopeSent(_queueName, envelope.EnvelopeId, false,
+                _observer.Notify(new EnvelopeSent(_queue.Name, envelope.EnvelopeId, false,
                     envelope.Items.Select(x => x.MappedType.Name).ToArray()));
             }
             else
@@ -76,7 +74,7 @@ namespace Lokad.Cqrs.Core.Outbox
                 var action = new CommitActionEnlistment(() =>
                     {
                         _queue.PutMessage(envelope);
-                        _observer.Notify(new EnvelopeSent(_queueName, envelope.EnvelopeId, true,
+                        _observer.Notify(new EnvelopeSent(_queue.Name, envelope.EnvelopeId, true,
                             envelope.Items.Select(x => x.MappedType.Name).ToArray()));
                     });
                 Transaction.Current.EnlistVolatile(action, EnlistmentOptions.None);

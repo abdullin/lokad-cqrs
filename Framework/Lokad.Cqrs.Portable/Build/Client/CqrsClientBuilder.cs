@@ -7,6 +7,7 @@ using Lokad.Cqrs.Build.Engine;
 using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Core.Envelope;
+using Lokad.Cqrs.Core.Outbox;
 using Lokad.Cqrs.Core.Reactive;
 using Lokad.Cqrs.Core.Serialization;
 using Lokad.Cqrs.Core;
@@ -19,6 +20,8 @@ namespace Lokad.Cqrs.Build.Client
         readonly StorageModule _storageModule = new StorageModule();
 
         readonly List<IModule> _enlistments = new List<IModule>();
+
+        readonly QueueWriterRegistry _registry = new QueueWriterRegistry();
 
 
         public readonly List<IObserver<ISystemEvent>> Observers = new List<IObserver<ISystemEvent>>()
@@ -104,6 +107,7 @@ namespace Lokad.Cqrs.Build.Client
                     var serializer = _dataSerializer(_serializationList.ToArray());
                     return new EnvelopeStreamer(_envelopeSerializer, serializer);
                 });
+            reg.Register(_registry);
             _domain.Configure(reg, _serializationList);
             _storageModule.Configure(reg);
         }

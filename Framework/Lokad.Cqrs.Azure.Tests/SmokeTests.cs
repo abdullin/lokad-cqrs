@@ -28,10 +28,7 @@ namespace Lokad.Cqrs
         static CqrsEngineHost BuildHost()
         {
             var builder = new CqrsEngineBuilder();
-            builder.Azure(x =>
-                {
-                    x.AddAzureProcess("azure-dev", "process-vip");
-                });
+            builder.Azure(x => x.AddAzureProcess(AzureStorage.CreateConfigurationForDev(), "process-vip"));
             builder.Memory(x =>
                 {
                     x.AddMemoryProcess("process-all");

@@ -9,6 +9,7 @@ namespace Lokad.Cqrs.Core.Outbox
 {
     public interface IQueueWriterFactory
     {
-        bool TryGetWriteQueue(string endpoint, string queueName, out IQueueWriter writer);
+        string Endpoint { get; }
+        IQueueWriter GetWriteQueue(string queueName);
     }
 }

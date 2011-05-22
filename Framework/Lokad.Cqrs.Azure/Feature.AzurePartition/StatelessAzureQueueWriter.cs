@@ -13,6 +13,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 {
     public sealed class StatelessAzureQueueWriter : IQueueWriter
     {
+        public string Name { get; private set; }
         public void PutMessage(ImmutableEnvelope envelope)
         {
             var packed = PrepareCloudMessage(envelope);
@@ -39,11 +40,12 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             return new CloudQueueMessage(blob);
         }
 
-        public StatelessAzureQueueWriter(IEnvelopeStreamer streamer, CloudBlobContainer container, CloudQueue queue)
+        public StatelessAzureQueueWriter(IEnvelopeStreamer streamer, CloudBlobContainer container, CloudQueue queue, string name)
         {
             _streamer = streamer;
             _cloudBlob = container;
             _queue = queue;
+            Name = name;
         }
 
         public void Init()

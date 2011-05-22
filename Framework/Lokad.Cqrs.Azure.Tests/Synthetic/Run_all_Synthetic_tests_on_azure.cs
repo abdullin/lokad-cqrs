@@ -25,14 +25,12 @@ namespace Lokad.Cqrs
             WipeAzureAccount.Fast(s => s.StartsWith("test-"), dev);
             b.Azure(m =>
                 {
-                    m.AddAzureAccount(dev);
-                    m.AddAzureProcess("azure-dev", new[] {"test-incoming"}, c =>
+                    m.AddAzureProcess(dev, new[] {"test-incoming"}, c =>
                         {
                             c.QueueVisibility(1);
                             c.DispatchAsCommandBatch();
                         });
-                    m.AddAzureSender("azure-dev", "test-incoming", x => x.IdGeneratorForTests());
-                    
+                    m.AddAzureSender(dev, "test-incoming", x => x.IdGeneratorForTests());
                 });
             
         }

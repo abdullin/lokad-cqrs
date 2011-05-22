@@ -9,6 +9,8 @@ using System;
 using Autofac.Core;
 using Lokad.Cqrs.Core.Outbox;
 using Lokad.Cqrs.Feature.MemoryPartition;
+using Autofac;
+using Lokad.Cqrs.Core;
 
 namespace Lokad.Cqrs.Build.Engine
 {
@@ -17,7 +19,9 @@ namespace Lokad.Cqrs.Build.Engine
     /// </summary>
     public sealed class MemoryModule : HideObjectMembersFromIntelliSense, IModule
     {
+        
         Action<IComponentRegistry> _funqlets = registry => { };
+        
 
         public void AddMemoryProcess(string[] queues, Action<MemoryPartitionModule> config)
         {
@@ -37,7 +41,14 @@ namespace Lokad.Cqrs.Build.Engine
 
         public void Configure(IComponentRegistry componentRegistry)
         {
+            if (!componentRegistry.IsRegistered(new TypedService(typeof(MemoryAccount))))
+            {
+                var account = new MemoryAccount();
+                componentRegistry.Register(account);
+                componentRegistry.Register<IEngineProcess>(new MemorySchedulingProcess(account));
+            }
             _funqlets(componentRegistry);
+
         }
 
 
@@ -53,7 +64,7 @@ namespace Lokad.Cqrs.Build.Engine
 
         public void AddMemorySender(string queueName, Action<SendMessageModule> config)
         {
-            var module = new SendMessageModule("memory", queueName);
+            var module = new SendMessageModule((context, s) => new MemoryQueueWriterFactory(context.Resolve<MemoryAccount>()), "memory", queueName);
             config(module);
             _funqlets += module.Configure;
         }

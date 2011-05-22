@@ -18,13 +18,12 @@ namespace Lokad.Cqrs.Core.Dispatch
     ///</summary>
     public sealed class DispatchMessagesToRoute : ISingleThreadMessageDispatcher
     {
-        readonly IEnumerable<IQueueWriterFactory> _queueFactory;
+        readonly QueueWriterRegistry _registry;
         readonly Func<ImmutableEnvelope, string> _routerRule;
 
-        public DispatchMessagesToRoute(IEnumerable<IQueueWriterFactory> queueFactory, Func<ImmutableEnvelope,string> router)
+        public DispatchMessagesToRoute(QueueWriterRegistry registry, Func<ImmutableEnvelope,string> router)
         {
-            // static implementation for now
-            _queueFactory = queueFactory.ToArray();
+            _registry = registry;
             _routerRule = router;
         }
 
@@ -53,20 +52,14 @@ namespace Lokad.Cqrs.Core.Dispatch
                 queueName = items[1];
             }
 
-            int routed = 0;
-
-            foreach (var factory in _queueFactory)
+            IQueueWriterFactory factory;
+            if (_registry.TryGet(endpoint, out factory))
             {
-                IQueueWriter writer;
-                if (factory.TryGetWriteQueue(endpoint, queueName, out writer))
-                {
-                    writer.PutMessage(message);
-                    routed += 1;
-                }
+                factory.GetWriteQueue(queueName).PutMessage(message);
             }
-
-            if (routed == 0)
-                throw new InvalidOperationException(string.Format("Route '{0}' was not handled by any single dispatcher. Did you want to send to 'memory:null' or 'memory:{0}' instead?", route));
+            var s = string.Format("Route '{0}' was not handled by any single dispatcher. Did you want to send to 'memory:null' or 'memory:{0}' instead?",route);
+            throw new InvalidOperationException(s);
+            
         }
 
        public void Init()
