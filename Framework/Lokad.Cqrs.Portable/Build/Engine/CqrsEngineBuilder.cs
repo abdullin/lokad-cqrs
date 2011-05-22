@@ -138,7 +138,7 @@ namespace Lokad.Cqrs.Build.Engine
             _domain.Configure(reg, _dataSerialization);
             _storage.Configure(reg);
 
-            var types = _dataSerialization.GetAll();
+            var types = _dataSerialization.GetAndMakeReadOnly();
             var dataSerializer = _dataSerializer(types);
             var streamer = new EnvelopeStreamer(_envelopeSerializer, dataSerializer);
 

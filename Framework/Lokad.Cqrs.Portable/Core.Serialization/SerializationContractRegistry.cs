@@ -8,7 +8,7 @@ namespace Lokad.Cqrs.Core.Serialization
         readonly List<Type> _types = new List<Type>();
         bool _readonly;
         readonly object _lock = new object();
-        public Type[] GetAll()
+        public Type[] GetAndMakeReadOnly()
         {
             lock(_lock)
             {
@@ -23,7 +23,7 @@ namespace Lokad.Cqrs.Core.Serialization
             lock(_lock)
             {
                 if (_readonly)
-                    throw new InvalidOperationException("registry has already been read from. Revise the code");
+                    throw new InvalidOperationException("registry has already been read from. Make sure all regs are done before reading.");
             }
             _types.AddRange(types);
             

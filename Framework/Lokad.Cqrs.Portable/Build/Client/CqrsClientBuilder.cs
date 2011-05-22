@@ -106,7 +106,7 @@ namespace Lokad.Cqrs.Build.Client
             _domain.Configure(reg, _serializationList);
             _storageModule.Configure(reg);
 
-            var serializer = _dataSerializer(_serializationList.GetAll());
+            var serializer = _dataSerializer(_serializationList.GetAndMakeReadOnly());
             var streamer = new EnvelopeStreamer(_envelopeSerializer, serializer);
 
             
