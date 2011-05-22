@@ -5,6 +5,7 @@ using Autofac;
 using Autofac.Core;
 using Lokad.Cqrs.Build.Engine;
 using Lokad.Cqrs.Core.Directory;
+using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Core.Envelope;
 using Lokad.Cqrs.Core.Reactive;
 using Lokad.Cqrs.Core.Serialization;

@@ -48,9 +48,6 @@ namespace Lokad.Cqrs.Build.Engine
             _envelopeSerializer = serializer;
         }
 
-
-
-
         readonly List<IModule> _moduleEnlistments = new List<IModule>();
 
 
@@ -85,14 +82,11 @@ namespace Lokad.Cqrs.Build.Engine
             return this;
         }
 
-
-
         public CqrsEngineBuilder Memory(Action<MemoryModule> configure)
         {
-            
             var m = new MemoryModule();
             configure(m);
-            _builder.RegisterModule(m);
+            EnlistModule(m);
             return this;
         }
 
@@ -112,7 +106,7 @@ namespace Lokad.Cqrs.Build.Engine
             // nonconditional registrations
             // System presets
             _builder.RegisterType<DispatcherProcess>();
-            _builder.RegisterType<MessageDuplicationManager>().SingleInstance();
+            
             
             foreach (var module in _moduleEnlistments)
             {
@@ -140,8 +134,11 @@ namespace Lokad.Cqrs.Build.Engine
                     return new EnvelopeStreamer(_envelopeSerializer, dataSerializer);
                 });
 
+            registry.Register(new MessageDuplicationManager());
+
             _domain.Configure(registry, _dataSerialization);
             _storage.Configure(registry);
         }
     }
+
 }

@@ -21,7 +21,6 @@ namespace Lokad.Cqrs.Core.Dispatch
         readonly Func<Type, Type, MethodInfo> _hint;
         readonly IMethodContextManager _context;
 
-
         public AutofacDispatchStrategy(ILifetimeScope scope, Func<TransactionScope> scopeFactory, Func<Type, Type, MethodInfo> hint, IMethodContextManager context)
         {
             _scope = scope;

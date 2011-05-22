@@ -21,7 +21,7 @@ namespace Lokad.Cqrs.Core.Directory
     /// <summary>
     /// Module for building CQRS domains.
     /// </summary>
-    public class MessageDirectoryModule
+    public class MessageDirectoryModule : HideObjectMembersFromIntelliSense
     {
         readonly DomainAssemblyScanner _scanner = new DomainAssemblyScanner();
         IMethodContextManager _contextManager;
@@ -81,7 +81,7 @@ namespace Lokad.Cqrs.Core.Directory
             }
             
             var builder = new MessageDirectoryBuilder(mappings);
-            var cb = new ContainerBuilder();
+            
             var provider = _contextManager.GetContextProvider();
 
             var consumers = mappings
@@ -90,11 +90,12 @@ namespace Lokad.Cqrs.Core.Directory
                 .Distinct()
                 .ToArray();
 
+            var cb = new ContainerBuilder();
             foreach (var consumer in consumers)
             {
                 cb.RegisterType(consumer);
-                cb.RegisterInstance(provider).AsSelf();
             }
+            cb.RegisterInstance(provider).AsSelf();
             cb.Update(container);
             container.Register<IMessageDispatchStrategy>(c =>
             {
@@ -106,10 +107,5 @@ namespace Lokad.Cqrs.Core.Directory
             container.Register(builder);
             
         }
-    }
-
-    public sealed class AutofacDispatchFactory
-    {
-        ICollection<MessageMapping> _mappings;
     }
 }
