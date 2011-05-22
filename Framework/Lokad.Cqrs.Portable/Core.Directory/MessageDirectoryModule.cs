@@ -13,7 +13,6 @@ using Autofac;
 using Autofac.Core;
 using Lokad.Cqrs.Core.Directory.Default;
 using Lokad.Cqrs.Core.Dispatch;
-using Lokad.Cqrs.Core;
 using Lokad.Cqrs.Evil;
 
 namespace Lokad.Cqrs.Core.Directory
@@ -26,9 +25,7 @@ namespace Lokad.Cqrs.Core.Directory
         readonly DomainAssemblyScanner _scanner = new DomainAssemblyScanner();
         IMethodContextManager _contextManager;
         MethodInvokerHint _hint;
-        Action<IComponentRegistry> _actionReg;
-
-
+        
         
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageDirectoryModule"/> class.
@@ -45,7 +42,6 @@ namespace Lokad.Cqrs.Core.Directory
         {
             var instance = new MethodContextManager<TContext>(manager);
             _contextManager = instance;
-            _actionReg = c => c.Register<Func<TContext>>(instance.Get);
         }
 
 		public void HandlerSample<THandler>(Expression<Action<THandler>> action)
@@ -89,15 +85,16 @@ namespace Lokad.Cqrs.Core.Directory
             var messages = builder.ListMessagesToSerialize();
 
             var cb = new ContainerBuilder();
+            var provider = _contextManager.GetContextProvider();
             foreach (var consumer in builder.ListConsumersToActivate())
             {
                 cb.RegisterType(consumer);
+                cb.RegisterInstance(provider).AsSelf();
             }
             cb.Update(container);
-            _actionReg(container);
 
-
-
+            
+            
             container.Register<IMessageDispatchStrategy>(c =>
             {
                 var scope = c.Resolve<ILifetimeScope>();

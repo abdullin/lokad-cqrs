@@ -11,5 +11,6 @@ namespace Lokad.Cqrs.Core.Directory
     {
         void SetContext(ImmutableEnvelope envelope, ImmutableMessage message);
         void ClearContext();
+        object GetContextProvider();
     }
 }
