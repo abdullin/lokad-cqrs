@@ -5,7 +5,6 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 {
     public sealed class AtomicStorageSerializerWithDataContracts : IAtomicStorageSerializer
     {
-
         static class Cache<T>
         {
             public static readonly DataContractSerializer Serializer = new DataContractSerializer(typeof(T));

@@ -19,8 +19,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         readonly Func<Type, string> _nameForSingleton;
         readonly Func<Type, string> _folderForEntity;
         readonly Func<Type, object, string> _nameForEntity;
-        readonly IAtomicStorageSerializer _serializer = new AtomicStorageSerializerWithDataContracts();
-
+        readonly IAtomicStorageSerializer _serializer;
 
         public DefaultAtomicStorageStrategy(Type[] entityTypes, Type[] singletonTypes, string folderForSingleton,
             Func<Type, string> nameForSingleton, Func<Type, string> folderForEntity,

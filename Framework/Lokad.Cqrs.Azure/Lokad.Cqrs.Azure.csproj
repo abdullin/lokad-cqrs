@@ -59,6 +59,7 @@
     <Compile Include="Build\Engine\ExtendCqrsEngineBuilder.cs" />
     <Compile Include="Build\Client\ExtendCqrsClientBuilder.cs" />
     <Compile Include="AzureStorage.cs" />
+    <Compile Include="Feature.AtomicStorage\AtomicStorageSerializerWithProtoBuf.cs" />
     <Compile Include="Feature.AzurePartition\Inbox\AzureSchedulingProcess.cs" />
     <Compile Include="WipeAzureAccount.cs" />
     <Compile Include="Build\ExtendStorageModule.cs" />
