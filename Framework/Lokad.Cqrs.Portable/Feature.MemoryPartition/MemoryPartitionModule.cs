@@ -25,7 +25,6 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
         
         readonly MessageDirectoryFilter _filter = new MessageDirectoryFilter();
 
-        Func<IComponentContext, IMessageDispatchStrategy> _strategy;
         Func<IComponentContext, MessageActivationMap, IMessageDispatchStrategy, ISingleThreadMessageDispatcher> _dispatcher;
         Func<IComponentContext, IEnvelopeQuarantine> _quarantineFactory;
 
@@ -39,22 +38,11 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
         {
             _memoryQueues = memoryQueues;
 
-            DispatchStrategy(ctx => new AutofacDispatchStrategy(
-                ctx.Resolve<ILifetimeScope>(),
-                TransactionEvil.Factory(TransactionScopeOption.RequiresNew),
-                ctx.Resolve<MethodInvoker>()));
-
+            
             DispatchAsEvents();
 
             Quarantine(c => new MemoryQuarantine());
         }
-
-
-        public void DispatchStrategy(Func<IComponentContext, IMessageDispatchStrategy> factory)
-        {
-            _strategy = factory;
-        }
-
 
         public void DispatcherIs(Func<IComponentContext, MessageActivationMap, IMessageDispatchStrategy, ISingleThreadMessageDispatcher> factory)
         {
@@ -89,8 +77,7 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
             var builder = context.Resolve<MessageDirectoryBuilder>();
 
             var map = builder.BuildActivationMap(_filter.DoesPassFilter);
-
-            var strategy = _strategy(context);
+            var strategy = context.Resolve<IMessageDispatchStrategy>();
             var dispatcher = _dispatcher(context, map, strategy);
             dispatcher.Init();
 

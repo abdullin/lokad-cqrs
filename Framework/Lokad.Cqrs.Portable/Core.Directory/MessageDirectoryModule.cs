@@ -8,9 +8,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Transactions;
 using Autofac;
 using Autofac.Core;
 using Lokad.Cqrs.Core.Directory.Default;
+using Lokad.Cqrs.Core.Dispatch;
+using Lokad.Cqrs.Core;
+using Lokad.Cqrs.Evil;
 
 namespace Lokad.Cqrs.Core.Directory
 {
@@ -23,6 +27,7 @@ namespace Lokad.Cqrs.Core.Directory
         IMethodContextManager _contextManager;
         MethodInvokerHint _hint;
         Action<IComponentRegistry> _actionReg;
+
 
         
         /// <summary>
@@ -90,10 +95,18 @@ namespace Lokad.Cqrs.Core.Directory
             }
             cb.Update(container);
             _actionReg(container);
+
+
+
+            container.Register<IMessageDispatchStrategy>(c =>
+            {
+                var scope = c.Resolve<ILifetimeScope>();
+                var tx = TransactionEvil.Factory(TransactionScopeOption.RequiresNew);
+                return new AutofacDispatchStrategy(scope, tx, _hint.Lookup, _contextManager);
+            });
+
             container.Register(builder);
             container.Register<IKnowSerializationTypes>(new SerializationList(messages));
-            var invoker = new MethodInvoker(_hint.Lookup, _contextManager);
-            container.Register(invoker);
         }
     }
 }

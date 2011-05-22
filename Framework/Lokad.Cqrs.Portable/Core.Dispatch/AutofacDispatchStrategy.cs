@@ -6,9 +6,11 @@
 #endregion
 
 using System;
+using System.Reflection;
 using System.Transactions;
 using Autofac;
 using Lokad.Cqrs.Core.Directory;
+using Lokad.Cqrs.Evil;
 
 namespace Lokad.Cqrs.Core.Dispatch
 {
@@ -16,13 +18,16 @@ namespace Lokad.Cqrs.Core.Dispatch
     {
         readonly ILifetimeScope _scope;
         readonly Func<TransactionScope> _scopeFactory;
-        readonly MethodInvoker _invoker;
+        readonly Func<Type, Type, MethodInfo> _hint;
+        readonly IMethodContextManager _context;
 
-        public AutofacDispatchStrategy(ILifetimeScope scope, Func<TransactionScope> scopeFactory, MethodInvoker invoker)
+
+        public AutofacDispatchStrategy(ILifetimeScope scope, Func<TransactionScope> scopeFactory, Func<Type, Type, MethodInfo> hint, IMethodContextManager context)
         {
             _scope = scope;
             _scopeFactory = scopeFactory;
-            _invoker = invoker;
+            _hint = hint;
+            _context = context;
         }
 
         public IMessageDispatchScope BeginEnvelopeScope()
@@ -30,20 +35,22 @@ namespace Lokad.Cqrs.Core.Dispatch
             var outer = _scope.BeginLifetimeScope(DispatchLifetimeScopeTags.MessageEnvelopeScopeTag);
             var tx = _scopeFactory();
 
-            return new AutofacMessageDispatchScope(tx, outer, _invoker);
+            return new AutofacMessageDispatchScope(tx, outer, _hint,_context);
         }
 
         sealed class AutofacMessageDispatchScope : IMessageDispatchScope
         {
             readonly TransactionScope _tx;
             readonly ILifetimeScope _envelopeScope;
-            readonly MethodInvoker _invoker;
-
-            public AutofacMessageDispatchScope(TransactionScope tx, ILifetimeScope envelopeScope, MethodInvoker invoker)
+            readonly Func<Type, Type, MethodInfo> _hint;
+            readonly IMethodContextManager _context;
+            
+            public AutofacMessageDispatchScope(TransactionScope tx, ILifetimeScope envelopeScope, Func<Type, Type, MethodInfo> hint, IMethodContextManager context)
             {
                 _tx = tx;
                 _envelopeScope = envelopeScope;
-                _invoker = invoker;
+                _hint = hint;
+                _context = context;
             }
 
             public void Dispose()
@@ -56,10 +63,24 @@ namespace Lokad.Cqrs.Core.Dispatch
             {
                 using (var inner = _envelopeScope.BeginLifetimeScope(DispatchLifetimeScopeTags.MessageItemScopeTag))
                 {
-                    var resolve = inner.Resolve(consumerType);
-                    _invoker.InvokeConsume(resolve, message, envelop);
+                    var instance = inner.Resolve(consumerType);
+                    var consume = _hint(consumerType, message.MappedType);
+                    try
+                    {
+                        _context.SetContext(envelop, message);
+                        consume.Invoke(instance, new[] { message.Content });
+                    }
+                    catch (TargetInvocationException e)
+                    {
+                        throw InvocationUtil.Inner(e);
+                    }
+                    finally
+                    {
+                        _context.ClearContext();
+                    }
                 }
             }
+
 
             public void Complete()
             {

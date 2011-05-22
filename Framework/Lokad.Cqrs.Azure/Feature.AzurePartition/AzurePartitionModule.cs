@@ -32,17 +32,12 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 
         readonly string _accountName;
         
-        Func<IComponentContext, IMessageDispatchStrategy> _strategy;
+        
         Func<IComponentContext, MessageActivationMap, IMessageDispatchStrategy, ISingleThreadMessageDispatcher> _dispatcher;
 
 
         public AzurePartitionModule(string accountId, string[] queueNames)
         {
-            DispatchStrategy(ctx => new AutofacDispatchStrategy(
-                ctx.Resolve<ILifetimeScope>(), 
-                TransactionEvil.Factory(TransactionScopeOption.RequiresNew), 
-                ctx.Resolve<MethodInvoker>()));
-
             DispatchAsEvents();
             
             QueueVisibility(30000);
@@ -56,10 +51,6 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             DecayPolicy(TimeSpan.FromSeconds(2));
         }
 
-        public void DispatchStrategy(Func<IComponentContext, IMessageDispatchStrategy> factory)
-        {
-            _strategy = factory;
-        }
 
 
         public void DispatcherIs(Func<IComponentContext, MessageActivationMap, IMessageDispatchStrategy, ISingleThreadMessageDispatcher> factory)
@@ -124,7 +115,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 
             var map = builder.BuildActivationMap(_filter.DoesPassFilter);
 
-            var strategy = _strategy(context);
+            var strategy = context.Resolve<IMessageDispatchStrategy>();
             var dispatcher = _dispatcher(context, map, strategy);
             dispatcher.Init();
 

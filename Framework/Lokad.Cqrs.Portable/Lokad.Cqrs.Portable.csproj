@@ -86,7 +86,6 @@
     <Compile Include="Feature.AtomicStorage\MemoryAtomicStorageFactory.cs" />
     <Compile Include="Core.Directory\MessageActivationMap.cs" />
     <Compile Include="Core.Directory\MessageDirectoryFilter.cs" />
-    <Compile Include="Core.Directory\MethodInvoker.cs" />
     <Compile Include="Core.Directory\MethodInvokerHint.cs" />
     <Compile Include="Core.Dispatch\Events\EnvelopeQuarantined.cs" />
     <Compile Include="Core.Dispatch\MemoryQuarantine.cs" />
