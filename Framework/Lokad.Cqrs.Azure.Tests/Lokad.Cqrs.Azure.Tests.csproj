@@ -63,7 +63,6 @@
     <Compile Include="BasicClientConfigurationTests.cs" />
     <Compile Include="Feature.AtomicStorage\Given_Azure_Configuration.cs" />
     <Compile Include="Feature.AtomicStorage\When_DefaultAzureAtomicStorageStrategy_is_used.cs" />
-    <Compile Include="Feature.ListStorage\List_storage_fixture.cs" />
     <Compile Include="Performance_tests_with_one_thread.cs" />
     <Compile Include="Synthetic\Run_all_Synthetic_tests_on_azure.cs" />
     <Compile Include="Core.Serialization\ProtobufFixture.cs" />
