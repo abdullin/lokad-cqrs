@@ -25,40 +25,35 @@ namespace Lokad.Cqrs.Feature.ListStorage
         const string NextPartitionKeyToken = "NextPartitionKey";
 
         readonly CloudTableClient _tableStorage;
+        public readonly string TableName;
 
 
         /// <summary>IoC constructor.</summary>
-        public AzureListContainer(CloudTableClient tableStorage)
+        public AzureListContainer(CloudTableClient tableStorage, string tableName)
         {
             _tableStorage = tableStorage;
+            TableName = tableName;
         }
 
-        public bool CreateTable(string tableName)
+        public bool CreateTable()
         {
-            return _tableStorage.CreateTableIfNotExist(tableName);
+            return _tableStorage.CreateTableIfNotExist(TableName);
         }
 
-        public bool DeleteTable(string tableName)
+        public bool DeleteTable()
         {
-            return _tableStorage.DeleteTableIfExist(tableName);
+            return _tableStorage.DeleteTableIfExist(TableName);
         }
 
-        public IEnumerable<string> GetTables()
+ 
+        public IEnumerable<ListEntity> Get()
         {
-            return _tableStorage.ListTables();
-        }
-
-        public IEnumerable<ListEntity> Get(string tableName)
-        {
-            if (null == tableName) throw new ArgumentNullException("tableName");
-
             var context = _tableStorage.GetDataServiceContext();
-            return GetInternal(context, tableName, Optional<string>.Empty);
+            return GetInternal(context, Optional<string>.Empty);
         }
 
-        public IEnumerable<ListEntity> Get(string tableName, string partitionKey)
+        public IEnumerable<ListEntity> Get(string partitionKey)
         {
-            if (null == tableName) throw new ArgumentNullException("tableName");
             if (null == partitionKey) throw new ArgumentNullException("partitionKey");
             if (partitionKey.Contains("'"))
                 throw new ArgumentOutOfRangeException("partitionKey", "Incorrect char in partitionKey.");
@@ -66,12 +61,12 @@ namespace Lokad.Cqrs.Feature.ListStorage
             var filter = string.Format("(PartitionKey eq '{0}')", HttpUtility.UrlEncode(partitionKey));
 
             var context = _tableStorage.GetDataServiceContext();
-            return GetInternal(context, tableName, filter);
+            return GetInternal(context, filter);
         }
 
-        public IEnumerable<ListEntity> Get(string tableName, string partitionKey, string startRowKey, string endRowKey)
+        public IEnumerable<ListEntity> Get(string partitionKey, string startRowKey, string endRowKey)
         {
-            if (null == tableName) throw new ArgumentNullException("tableName");
+            if (null == TableName) throw new ArgumentNullException("tableName");
             if (null == partitionKey) throw new ArgumentNullException("partitionKey");
             if (partitionKey.Contains("'"))
                 throw new ArgumentOutOfRangeException("partitionKey", "Incorrect char.");
@@ -96,12 +91,11 @@ namespace Lokad.Cqrs.Feature.ListStorage
             }
 
             var context = _tableStorage.GetDataServiceContext();
-            return GetInternal(context, tableName, filter);
+            return GetInternal(context, filter);
         }
 
-        public IEnumerable<ListEntity> Get(string tableName, string partitionKey, IEnumerable<string> rowKeys)
+        public IEnumerable<ListEntity> Get(string partitionKey, IEnumerable<string> rowKeys)
         {
-            if (null == tableName) throw new ArgumentNullException("tableName");
             if (null == partitionKey) throw new ArgumentNullException("partitionKey");
             if (partitionKey.Contains("'")) throw new ArgumentOutOfRangeException("partitionKey", "Incorrect char.");
 
@@ -126,14 +120,14 @@ namespace Lokad.Cqrs.Feature.ListStorage
                 }
                 builder.Append(")");
 
-                foreach (var entity in GetInternal(context, tableName, builder.ToString()))
+                foreach (var entity in GetInternal(context, builder.ToString()))
                 {
                     yield return entity;
                 }
             }
         }
 
-        private IEnumerable<ListEntity> GetInternal(TableServiceContext context, string tableName, Optional<string> filter)
+        private IEnumerable<ListEntity> GetInternal(TableServiceContext context, Optional<string> filter)
         {
             string continuationRowKey = null;
             string continuationPartitionKey = null;
@@ -143,7 +137,7 @@ namespace Lokad.Cqrs.Feature.ListStorage
 
             do
             {
-                var query = context.CreateQuery<AzureListEntity>(tableName);
+                var query = context.CreateQuery<AzureListEntity>(TableName);
 
                 if (filter.HasValue)
                 {
@@ -205,15 +199,15 @@ namespace Lokad.Cqrs.Feature.ListStorage
             } while (null != continuationRowKey);
         }
 
-        public void Insert(string tableName, IEnumerable<ListEntity> entities)
+        public void Insert(IEnumerable<ListEntity> entities)
         {
             foreach (var g in entities.GroupBy(e => e.PartitionKey))
             {
-                InsertInternal(tableName, g);
+                InsertInternal(g);
             }
         }
 
-        void InsertInternal(string tableName, IEnumerable<ListEntity> entities)
+        void InsertInternal(IEnumerable<ListEntity> entities)
         {
             var context = _tableStorage.GetDataServiceContext();
             context.MergeOption = MergeOption.AppendOnly;
@@ -229,7 +223,7 @@ namespace Lokad.Cqrs.Feature.ListStorage
                 var cloudEntityOfFatEntity = new Dictionary<object, ListEntity>();
                 foreach (var fatEntity in slice)
                 {
-                    context.AddObject(tableName, fatEntity.Item1);
+                    context.AddObject(TableName, fatEntity.Item1);
                     cloudEntityOfFatEntity.Add(fatEntity.Item1, fatEntity.Item2);
                 }
 
@@ -250,7 +244,7 @@ namespace Lokad.Cqrs.Feature.ListStorage
                         {
                             try
                             {
-                                _tableStorage.CreateTableIfNotExist(tableName);
+                                _tableStorage.CreateTableIfNotExist(TableName);
                             }
                             // HACK: incorrect behavior of the StorageClient (2010-09)
                             // Fails to behave properly in multi-threaded situations
@@ -319,15 +313,15 @@ namespace Lokad.Cqrs.Feature.ListStorage
             }
         }
 
-        public void Update(string tableName, IEnumerable<ListEntity> entities, bool force)
+        public void Update(IEnumerable<ListEntity> entities, bool force)
         {
             foreach (var g in entities.GroupBy(e => e.PartitionKey))
             {
-                UpdateInternal(tableName, g, force);
+                UpdateInternal(g, force);
             }
         }
 
-        void UpdateInternal(string tableName, IEnumerable<ListEntity> entities, bool force)
+        void UpdateInternal(IEnumerable<ListEntity> entities, bool force)
         {
             var context = _tableStorage.GetDataServiceContext();
             context.MergeOption = MergeOption.AppendOnly;
@@ -344,7 +338,7 @@ namespace Lokad.Cqrs.Feature.ListStorage
                 foreach (var fatEntity in slice)
                 {
                     // entities should be updated in a single round-trip
-                    context.AttachTo(tableName, fatEntity.Item1, MapETag(fatEntity.Item2.ETag, force));
+                    context.AttachTo(TableName, fatEntity.Item1, MapETag(fatEntity.Item2.ETag, force));
                     context.UpdateObject(fatEntity.Item1);
                     cloudEntityOfFatEntity.Add(fatEntity.Item1, fatEntity.Item2);
                 }
@@ -370,7 +364,7 @@ namespace Lokad.Cqrs.Feature.ListStorage
                     {
                         try
                         {
-                            _tableStorage.CreateTableIfNotExist(tableName);
+                            _tableStorage.CreateTableIfNotExist(TableName);
                         }
                         // HACK: incorrect behavior of the StorageClient (2010-09)
                         // Fails to behave properly in multi-threaded situations
@@ -412,11 +406,11 @@ namespace Lokad.Cqrs.Feature.ListStorage
             }
         }
 
-        public void Upsert(string tableName, IEnumerable<ListEntity> entities)
+        public void Upsert(IEnumerable<ListEntity> entities)
         {
             foreach (var g in entities.GroupBy(e => e.PartitionKey))
             {
-                UpsertInternal(tableName, g);
+                UpsertInternal(g);
             }
         }
 
@@ -425,16 +419,16 @@ namespace Lokad.Cqrs.Feature.ListStorage
 
         /// <remarks>Upsert is making several storage calls to emulate the 
         /// missing semantic from the Table Storage.</remarks>
-        void UpsertInternal(string tableName, IEnumerable<ListEntity> entities)
+        void UpsertInternal(IEnumerable<ListEntity> entities)
         {
             // checking for entities that already exist
             var partitionKey = entities.First().PartitionKey;
             var existingKeys = new HashSet<string>(
-                Get(tableName, partitionKey, entities.Select(e => e.RowKey)).Select(e => e.RowKey));
+                Get(partitionKey, entities.Select(e => e.RowKey)).Select(e => e.RowKey));
 
             // inserting or updating depending on the presence of the keys
-            Insert(tableName, entities.Where(e => !existingKeys.Contains(e.RowKey)));
-            Update(tableName, entities.Where(e => existingKeys.Contains(e.RowKey)), true);
+            Insert(entities.Where(e => !existingKeys.Contains(e.RowKey)));
+            Update(entities.Where(e => existingKeys.Contains(e.RowKey)), true);
         }
 
         /// <summary>Slice entities according the payload limitation of
@@ -466,21 +460,20 @@ namespace Lokad.Cqrs.Feature.ListStorage
             }
         }
 
-        public void Delete(string tableName, string partitionKey, IEnumerable<string> rowKeys)
+        public void Delete(string partitionKey, IEnumerable<string> rowKeys)
         {
-            DeleteInternal(tableName, partitionKey, rowKeys.Select(k => Tuple.Create(k, "*")), true);
+            DeleteInternal(partitionKey, rowKeys.Select(k => Tuple.Create(k, "*")), true);
         }
 
-        public void Delete(string tableName, IEnumerable<ListEntity> entities, bool force)
+        public void Delete(IEnumerable<ListEntity> entities, bool force)
         {
             foreach (var g in entities.GroupBy(e => e.PartitionKey))
             {
-                DeleteInternal(tableName,
-                    g.Key, g.Select(e => Tuple.Create(e.RowKey, MapETag(e.ETag, force))), force);
+                DeleteInternal(g.Key, g.Select(e => Tuple.Create(e.RowKey, MapETag(e.ETag, force))), force);
             }
         }
 
-        void DeleteInternal(string tableName, string partitionKey, IEnumerable<Tuple<string, string>> rowKeysAndETags, bool force)
+        void DeleteInternal(string partitionKey, IEnumerable<Tuple<string, string>> rowKeysAndETags, bool force)
         {
             var context = _tableStorage.GetDataServiceContext();
 
@@ -505,7 +498,7 @@ namespace Lokad.Cqrs.Feature.ListStorage
                         RowKey = rowKeyAndETag.Item1
                     };
 
-                    context.AttachTo(tableName, mock, rowKeyAndETag.Item2);
+                    context.AttachTo(TableName, mock, rowKeyAndETag.Item2);
                     context.DeleteObject(mock);
 
                 }
@@ -541,7 +534,7 @@ namespace Lokad.Cqrs.Feature.ListStorage
                         throw;
                     }
 
-                    slice = Get(tableName, partitionKey, slice.Select(p => p.Item1))
+                    slice = Get(partitionKey, slice.Select(p => p.Item1))
                         .Select(e => Tuple.Create(e.RowKey, MapETag(e.ETag, force))).ToArray();
 
                     // entities with same name will be added again

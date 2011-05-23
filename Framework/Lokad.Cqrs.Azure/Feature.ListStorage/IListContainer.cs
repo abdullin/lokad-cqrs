@@ -4,23 +4,21 @@ namespace Lokad.Cqrs.Feature.ListStorage
 {
     public interface IListContainer
     {
-        bool CreateTable(string tableName);
-        bool DeleteTable(string tableName);
+        bool CreateTable();
+        bool DeleteTable();
 
-        IEnumerable<string> GetTables();
+        IEnumerable<ListEntity> Get();
+        IEnumerable<ListEntity> Get(string partitionKey);
+        IEnumerable<ListEntity> Get(string partitionKey, string startRowKey, string endRowKey);
+        IEnumerable<ListEntity> Get(string partitionKey, IEnumerable<string> rowKeys);
 
-        IEnumerable<ListEntity> Get(string tableName);
-        IEnumerable<ListEntity> Get(string tableName, string partitionKey);
-        IEnumerable<ListEntity> Get(string tableName, string partitionKey, string startRowKey, string endRowKey);
-        IEnumerable<ListEntity> Get(string tableName, string partitionKey, IEnumerable<string> rowKeys);
+        void Insert(IEnumerable<ListEntity> entities);
 
-        void Insert(string tableName, IEnumerable<ListEntity> entities);
+        void Update(IEnumerable<ListEntity> entities, bool force);
 
-        void Update(string tableName, IEnumerable<ListEntity> entities, bool force);
+        void Upsert(IEnumerable<ListEntity> entities);
 
-        void Upsert(string tableName, IEnumerable<ListEntity> entities);
-
-        void Delete(string tableName, string partitionKey, IEnumerable<string> rowKeys);
-        void Delete(string tableName, IEnumerable<ListEntity> entities, bool force);
+        void Delete(string partitionKey, IEnumerable<string> rowKeys);
+        void Delete(IEnumerable<ListEntity> entities, bool force);
     }
 }
