@@ -47,8 +47,10 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
+    <Reference Include="System.Data.Services.Client" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -61,6 +63,11 @@
     <Compile Include="AzureStorage.cs" />
     <Compile Include="Feature.AtomicStorage\AtomicStorageSerializerWithProtoBuf.cs" />
     <Compile Include="Feature.AzurePartition\Inbox\AzureSchedulingProcess.cs" />
+    <Compile Include="Feature.ListStorage\AzureListEntity.cs" />
+    <Compile Include="Feature.ListStorage\IListContainer.cs" />
+    <Compile Include="Feature.ListStorage\ListEntity.cs" />
+    <Compile Include="Feature.ListStorage\AzureListContainer.cs" />
+    <Compile Include="Feature.ListStorage\TableStoragePolicies.cs" />
     <Compile Include="WipeAzureAccount.cs" />
     <Compile Include="Build\ExtendStorageModule.cs" />
     <Compile Include="Build\ExtendSerializationModule.cs" />
