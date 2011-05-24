@@ -1,0 +1,18 @@
+This is not the folder you are looking for.
+
+Since Lokad SAS is a company is internally focused on efficient research 
+and development, we tend to produce a lot of prototypes and small utils 
+along the way.
+
+Normally this is a junk or some one-time experiments, but they get saved 
+with the related project, JIC. This tends to save time once in a while. 
+Storage is cheaper than time these days. 
+
+Prototypes is the folder for this stuff in Lokad.CQRS project.
+
+
+All the best,
+Rinat Abdullin
+
+
+
