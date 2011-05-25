@@ -6,52 +6,61 @@
 
 #endregion
 
-using Lokad;
+using System;
+using System.Linq;
+using System.Net;
+using System.Threading;
 using Lokad.Cqrs;
-using Microsoft.WindowsAzure.Diagnostics;
+using Lokad.Cqrs.Build.Engine;
+using Microsoft.WindowsAzure.ServiceRuntime;
 
 namespace Sample_01.Worker
 {
-	public class WorkerRole : CloudEngineRole
-	{
-		protected override ICloudEngineHost BuildHost()
-		{
-			// for more detail about this sample see:
-			// http://code.google.com/p/lokad-cqrs/wiki/GuidanceSeries
+    public class WorkerRole : RoleEntryPoint
+    {
+        CqrsEngineHost _host;
 
-			var builder = new CloudEngineBuilder();
-			builder.Serialization.UseDataContractSerializer();
-			builder.DomainIs(d =>
-				{
-					d.InCurrentAssembly();
-					d.WithDefaultInterfaces();
-				});
+        public override void Run()
+        {
+            _host.Start(_source.Token);
+            _source.Token.WaitHandle.WaitOne();
+        }
 
-			builder.AddMessageHandler(mc =>
-				{
-					mc.ListenToQueue("sample-01");
-					mc.WithSingleConsumer();
-				});
+        readonly CancellationTokenSource _source = new CancellationTokenSource();
 
-			builder.AddMessageClient(m => m.DefaultToQueue("sample-01"));
+        public override bool OnStart()
+        {
+            ServicePointManager.DefaultConnectionLimit = 48;
+            RoleEnvironment.Changing += RoleEnvironmentChanging;
 
-			return builder.Build();
-		}
+            _host = BuildBusWorker.Configure().Build();
 
-		public override bool OnStart()
-		{
-			DiagnosticMonitor.Start("DiagnosticsConnectionString");
-			// we send first ping message, when host starts
-			WhenEngineStarts += SendFirstMessage;
+            SendFirstMessage(_host);
 
-			return base.OnStart();
-		}
+            return base.OnStart();
+        }
 
-		static void SendFirstMessage(ICloudEngineHost host)
-		{
-			var sender = host.Resolve<IMessageClient>();
-			var game = Rand.String.NextWord();
-			sender.Send(new PingPongCommand(0, game));
-		}
-	}
+        public override void OnStop()
+        {
+            _source.Cancel();
+            base.OnStop();
+        }
+
+        static void RoleEnvironmentChanging(object sender, RoleEnvironmentChangingEventArgs e)
+        {
+            // If a configuration setting is changing
+            if (e.Changes.Any(change => change is RoleEnvironmentConfigurationSettingChange))
+            {
+                // Set e.Cancel to true to restart this role instance
+                e.Cancel = true;
+            }
+        }
+
+        static void SendFirstMessage(CqrsEngineHost host)
+        {
+            var sender = host.Resolve<IMessageSender>();
+            var game = new Random().Next().ToString();
+            sender.SendOne(new PingPongCommand(0, game));
+        }
+    }
 }
