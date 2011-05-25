@@ -1,4 +1,11 @@
-﻿using System;
+﻿#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
+
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
+using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -8,24 +15,24 @@ namespace Lokad.Cqrs.Core.Directory
     public sealed class MethodInvokerHint
     {
         public readonly Type ConsumerTypeDefinition;
-        public readonly Func<Type,Type,MethodInfo> Lookup;
+        public readonly Func<Type, Type, MethodInfo> Lookup;
         public readonly Type MessageInterface;
 
-        public MethodInvokerHint(Type consumerTypeDefinition, Type messageinterface, Func<Type, Type, MethodInfo> lookup)
+        MethodInvokerHint(Type consumerTypeDefinition, Type messageinterface, Func<Type, Type, MethodInfo> lookup)
         {
             ConsumerTypeDefinition = consumerTypeDefinition;
             Lookup = lookup;
-            
+
             MessageInterface = messageinterface;
         }
 
         public static MethodInvokerHint FromConsumerSample<THandler>(Expression<Action<THandler>> expression)
         {
             if (expression == null) throw new ArgumentNullException("expression");
-            if (false == typeof(THandler).IsGenericType)
+            if (false == typeof (THandler).IsGenericType)
                 throw new InvalidOperationException("Type should be a generic like 'IConsumeMessage<IMessage>'");
 
-            var arguments = typeof(THandler).GetGenericArguments();
+            var arguments = typeof (THandler).GetGenericArguments();
 
             if (arguments.Length != 1)
                 throw new InvalidOperationException("Expected one generic argument");
@@ -36,13 +43,13 @@ namespace Lokad.Cqrs.Core.Directory
             var messageInterface = arguments[0];
 
 
-            var interfaceTypedMethod = ((MethodCallExpression)expression.Body).Method;
+            var interfaceTypedMethod = ((MethodCallExpression) expression.Body).Method;
             var parameters = interfaceTypedMethod.GetParameters();
             if (parameters.Length != 1)
                 throw new InvalidOperationException("Expression should consume object like: 'i => i.Consume(null)'");
 
 
-            var declaringGenericInterface = typeof(THandler).GetGenericTypeDefinition();
+            var declaringGenericInterface = typeof (THandler).GetGenericTypeDefinition();
             var matches = declaringGenericInterface
                 .GetMethods()
                 .Where(mi => mi.Name == interfaceTypedMethod.Name)
@@ -52,7 +59,7 @@ namespace Lokad.Cqrs.Core.Directory
                         var length = mi.GetParameters().Length;
                         return length == parameters.Length;
                     })
-                    .ToArray();
+                .ToArray();
 
             if (matches.Length == 0)
             {
@@ -73,10 +80,9 @@ namespace Lokad.Cqrs.Core.Directory
                                 msg.Name));
                     }
                     return consume;
-
                 };
 
-            
+
             return new MethodInvokerHint(declaringGenericInterface, messageInterface, lookup);
         }
     }

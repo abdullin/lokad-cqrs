@@ -6,7 +6,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Transactions;
 using Autofac;
@@ -15,7 +15,8 @@ using Lokad.Cqrs.Core.Directory.Default;
 using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Core.Serialization;
 using Lokad.Cqrs.Evil;
-using System.Linq;
+
+// ReSharper disable UnusedMember.Global
 
 namespace Lokad.Cqrs.Core.Directory
 {
@@ -27,30 +28,45 @@ namespace Lokad.Cqrs.Core.Directory
         readonly DomainAssemblyScanner _scanner = new DomainAssemblyScanner();
         IMethodContextManager _contextManager;
         MethodInvokerHint _hint;
-        
-        
+
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageDirectoryModule"/> class.
         /// </summary>
         public MessageDirectoryModule()
         {
             HandlerSample<IConsume<IMessage>>(a => a.Consume(null));
-            ContextFactory((envelope, message) => new MessageContext(envelope.EnvelopeId, message.Index, envelope.CreatedOnUtc));
+            ContextFactory(
+                (envelope, message) => new MessageContext(envelope.EnvelopeId, message.Index, envelope.CreatedOnUtc));
         }
 
 
-        public void ContextFactory<TContext>(Func<ImmutableEnvelope,ImmutableMessage, TContext> manager)
-            where TContext : class 
+        /// <summary>
+        /// Allows to specify custom context factory to expose transport-level
+        /// information to message handlers via IoC. By default this is configured
+        /// as <see cref="Func{T}"/> returning <see cref="MessageContext"/>
+        /// </summary>
+        /// <typeparam name="TContext">The type of the context to return.</typeparam>
+        /// <param name="contextFactory">The context factory.</param>
+        public void ContextFactory<TContext>(Func<ImmutableEnvelope, ImmutableMessage, TContext> contextFactory)
+            where TContext : class
         {
-            var instance = new MethodContextManager<TContext>(manager);
+            if (contextFactory == null) throw new ArgumentNullException("contextFactory");
+            var instance = new MethodContextManager<TContext>(contextFactory);
             _contextManager = instance;
         }
 
-		public void HandlerSample<THandler>(Expression<Action<THandler>> action)
-		{
-		    if (action == null) throw new ArgumentNullException("action");
-		    _hint = MethodInvokerHint.FromConsumerSample(action);
-		}
+        /// <summary>
+        /// Specifies expression describing your interface lookup rules for handlers and messages.
+        /// Defaults to <code><![CDATA[HandlerSample<IConsume<IMessage>>(h => h.Consume(null))]]></code>
+        /// </summary>
+        /// <typeparam name="THandler">The base type of the handler.</typeparam>
+        /// <param name="handlerSampleExpression">The handler sample expression.</param>
+        public void HandlerSample<THandler>(Expression<Action<THandler>> handlerSampleExpression)
+        {
+            if (handlerSampleExpression == null) throw new ArgumentNullException("handlerSampleExpression");
+            _hint = MethodInvokerHint.FromConsumerSample(handlerSampleExpression);
+        }
 
 
         /// <summary>
@@ -77,9 +93,9 @@ namespace Lokad.Cqrs.Core.Directory
                 .Distinct();
 
             types.AddRange(messageTypes);
-            
+
             var builder = new MessageDirectoryBuilder(mappings);
-            
+
             var provider = _contextManager.GetContextProvider();
 
             var consumers = mappings
@@ -96,14 +112,13 @@ namespace Lokad.Cqrs.Core.Directory
             cb.RegisterInstance(provider).AsSelf();
             cb.Update(container);
             container.Register<IMessageDispatchStrategy>(c =>
-            {
-                var scope = c.Resolve<ILifetimeScope>();
-                var tx = TransactionEvil.Factory(TransactionScopeOption.RequiresNew);
-                return new AutofacDispatchStrategy(scope, tx, _hint.Lookup, _contextManager);
-            });
+                {
+                    var scope = c.Resolve<ILifetimeScope>();
+                    var tx = TransactionEvil.Factory(TransactionScopeOption.RequiresNew);
+                    return new AutofacDispatchStrategy(scope, tx, _hint.Lookup, _contextManager);
+                });
 
             container.Register(builder);
-            
         }
     }
 }
