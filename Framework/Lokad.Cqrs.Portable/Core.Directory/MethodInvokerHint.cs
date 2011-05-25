@@ -50,8 +50,8 @@ namespace Lokad.Cqrs.Core.Directory
 
 
             var declaringGenericInterface = typeof (THandler).GetGenericTypeDefinition();
-            var matches = declaringGenericInterface
-                .GetMethods()
+            var infos = declaringGenericInterface.GetMethods();
+            var matches = infos
                 .Where(mi => mi.Name == interfaceTypedMethod.Name)
                 .Where(mi => mi.ContainsGenericParameters)
                 .Where(mi =>

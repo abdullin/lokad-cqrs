@@ -10,6 +10,11 @@ using System.Threading;
 
 namespace Lokad.Cqrs.Core.Directory
 {
+    /// <summary>
+    /// Default implementation of the Lazy thread-safe context manager. It wires optional
+    /// handler context (derived from the message transport information) back to the handler.
+    /// </summary>
+    /// <typeparam name="TContext">The type of the context.</typeparam>
     public sealed class MethodContextManager<TContext> : IMethodContextManager
         where TContext : class
     {

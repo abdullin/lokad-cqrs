@@ -54,6 +54,7 @@
     <Reference Include="System.Transactions" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core.Directory\Method_Invoker_tests.cs" />
     <Compile Include="Documentation_sample.cs" />
     <Compile Include="Feature.AtomicStorage\Atomic_storage_scenarios.cs" />
     <Compile Include="Feature.AtomicStorage\Given_File_Configuration.cs" />
