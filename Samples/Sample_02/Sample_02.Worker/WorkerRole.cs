@@ -6,48 +6,53 @@
 
 #endregion
 
+using System;
+using System.Linq;
+using System.Net;
+using System.Threading;
 using Lokad.Cqrs;
+using Lokad.Cqrs.Build.Engine;
 using Microsoft.WindowsAzure.Diagnostics;
+using Microsoft.WindowsAzure.ServiceRuntime;
 
 namespace Sample_02.Worker
 {
-	public class WorkerRole : CloudEngineRole
-	{
-		protected override ICloudEngineHost BuildHost()
-		{
-			// for more detail about this sample see:
-			// http://code.google.com/p/lokad-cqrs/wiki/GuidanceSeries
+    public class WorkerRole : RoleEntryPoint
+    {
+        CqrsEngineHost _host;
 
-			var builder = new CloudEngineBuilder();
-			builder.Serialization.UseDataContractSerializer();
+        public override void Run()
+        {
+            _host.Start(_source.Token);
+            _source.Token.WaitHandle.WaitOne();
+        }
 
-			// this tells the server about the domain
-			builder.DomainIs(d =>
-				{
-					d.WithDefaultInterfaces();
-					d.InCurrentAssembly();
-				});
+        readonly CancellationTokenSource _source = new CancellationTokenSource();
 
-			// we'll handle all messages incoming to this queue
-			builder.AddMessageHandler(mc =>
-				{
-					mc.ListenToQueue("sample-02");
-					mc.WithMultipleConsumers();
-				});
+        public override bool OnStart()
+        {
+            ServicePointManager.DefaultConnectionLimit = 48;
+            RoleEnvironment.Changing += RoleEnvironmentChanging;
 
-			// create IMessageClient that will send to sample-02 by default
-			builder.AddMessageClient(m => m.DefaultToQueue("sample-02"));
+            _host = BuildBusWorker.Configure().Build();
 
-			// enable and auto-wire scheduled tasks feature
-			builder.AddScheduler(m => m.WithDefaultInterfaces().InCurrentAssembly());
+            return base.OnStart();
+        }
 
-			return builder.Build();
-		}
+        public override void OnStop()
+        {
+            _source.Cancel();
+            base.OnStop();
+        }
 
-		public override bool OnStart()
-		{
-			DiagnosticMonitor.Start("DiagnosticsConnectionString");
-			return base.OnStart();
-		}
-	}
+        static void RoleEnvironmentChanging(object sender, RoleEnvironmentChangingEventArgs e)
+        {
+            // If a configuration setting is changing
+            if (e.Changes.Any(change => change is RoleEnvironmentConfigurationSettingChange))
+            {
+                // Set e.Cancel to true to restart this role instance
+                e.Cancel = true;
+            }
+        }
+    }
 }

@@ -33,8 +33,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Lokad.Cqrs.AzureStarter.Core">
-      <HintPath>..\..\Library\Lokad.Cqrs.AzureStarter.Core.dll</HintPath>
+    <Reference Include="Autofac">
+      <HintPath>..\..\Library\Autofac.dll</HintPath>
+    </Reference>
+    <Reference Include="Lokad.Cqrs.Azure">
+      <HintPath>..\..\Library\Lokad.Cqrs.Azure.dll</HintPath>
+    </Reference>
+    <Reference Include="Lokad.Cqrs.Portable">
+      <HintPath>..\..\Library\Lokad.Cqrs.Portable.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.WindowsAzure.ServiceRuntime, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
       <SpecificVersion>False</SpecificVersion>
@@ -43,11 +49,17 @@
       <SpecificVersion>False</SpecificVersion>
       <Private>true</Private>
     </Reference>
+    <Reference Include="Microsoft.WindowsAzure.StorageClient, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="protobuf-net">
+      <HintPath>..\..\Library\protobuf-net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BuildBusWorker.cs" />
     <Compile Include="Domain.cs" />
+    <Compile Include="NameFor.cs" />
     <Compile Include="WorkerRole.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
