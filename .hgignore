@@ -24,3 +24,4 @@ glob:*.log
 glob:Resource/ILMerge/ILMerge*
 glob:Features/NHibernate/Build/
 glob:Framework/Build/
+glob:*.build.csdef
