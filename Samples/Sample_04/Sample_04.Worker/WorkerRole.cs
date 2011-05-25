@@ -7,103 +7,61 @@
 #endregion
 
 using System;
-using System.IO;
-using Lokad;
+using System.Linq;
+using System.Net;
+using System.Threading;
 using Lokad.Cqrs;
-using Microsoft.WindowsAzure.Diagnostics;
-using Newtonsoft.Json;
+using Lokad.Cqrs.Build.Engine;
+using Microsoft.WindowsAzure.ServiceRuntime;
 
 namespace Sample_04.Worker
 {
-	[UsedImplicitly]
-	public class WorkerRole : CloudEngineRole
-	{
-		protected override ICloudEngineHost BuildHost()
-		{
-			// for more detail about this sample see:
-			// http://code.google.com/p/lokad-cqrs/wiki/GuidanceSeries
+    public class WorkerRole : RoleEntryPoint
+    {
+        CqrsEngineHost _host;
 
-			var builder = new CloudEngineBuilder();
+        public override void Run()
+        {
+            _host.Start(_source.Token);
+            _source.Token.WaitHandle.WaitOne();
+        }
 
-			// let's use Protocol Buffers!
-			builder.Serialization.UseProtocolBuffers();
+        readonly CancellationTokenSource _source = new CancellationTokenSource();
 
-			// this tells the server about the domain
-			builder.DomainIs(d =>
-				{
-					d.InCurrentAssembly();
-					d.WithDefaultInterfaces();
-				});
+        public override bool OnStart()
+        {
+            ServicePointManager.DefaultConnectionLimit = 48;
+            RoleEnvironment.Changing += RoleEnvironmentChanging;
 
-			// we'll handle all messages incoming to this queue
-			builder.AddMessageHandler(mc =>
-				{
-					mc.ListenToQueue("sample-04");
-					mc.WithSingleConsumer();
-					// let's record failures to the specified blob 
-					// container using the pretty printer
-					mc.LogExceptionsToBlob(c =>
-						{
-							c.ContainerName = "sample-04-errors";
-							c.WithTextAppender(RenderAdditionalContent);
-						});
+            _host = BuildBusWorker.Configure().Build();
 
-					// set XmppRecipient in your config and enable this
-					// to send notifications to the specified Jabber
-					//
-					// mc.LogExceptionsToCommunicator(c => { c.ConfigKeyForRecipient = "XmppRecipient"; });
-				});
+            SendFirstMessage(_host);
 
+            return base.OnStart();
+        }
 
-			// using XMPP communicator. Make sure to put proper values in your config before enabling:
-			// XmppIdentity
-			// XmppPassword
-			// XmppNetworkHost (optional, talk.l.google.com for GTalk)
+        public override void OnStop()
+        {
+            _source.Cancel();
+            base.OnStop();
+        }
 
-			//builder.CommunicateWithXmpp(x =>
-			//    {
-			//        x.OnCertificateError((certificate, chain, errors) => true);
-			//        x.Resource = InstanceName;
-			//    });
+        static void RoleEnvironmentChanging(object sender, RoleEnvironmentChangingEventArgs e)
+        {
+            // If a configuration setting is changing
+            if (e.Changes.Any(change => change is RoleEnvironmentConfigurationSettingChange))
+            {
+                // Set e.Cancel to true to restart this role instance
+                e.Cancel = true;
+            }
+        }
 
+        private static void SendFirstMessage(CqrsEngineHost host)
+        {
+            var sender = host.Resolve<IMessageSender>();
+            var game = new Random().NextDouble().ToString();
+            sender.SendOne(new PingPongCommand(0, game));
+        }
+    }
 
-			// when we send message - default it to this queue as well
-			builder.AddMessageClient(m => m.DefaultToQueue("sample-04"));
-
-			return builder.Build();
-		}
-
-		static void RenderAdditionalContent(UnpackedMessage message, Exception exception, TextWriter builder)
-		{
-			builder.WriteLine("Content");
-			builder.WriteLine("=======");
-			builder.WriteLine(message.ContractType.Name);
-			try
-			{
-				// we'll use JSON serializer for printing messages nicely
-				var text = JsonConvert.SerializeObject(message.Content, Formatting.Indented);
-				builder.WriteLine(text);
-			}
-			catch (Exception ex)
-			{
-				builder.WriteLine(ex.ToString());
-			}
-		}
-
-		public override bool OnStart()
-		{
-			DiagnosticMonitor.Start("DiagnosticsConnectionString");
-			// we send first ping message, when host starts
-			WhenEngineStarts += SendFirstMessage;
-
-			return base.OnStart();
-		}
-
-		static void SendFirstMessage(ICloudEngineHost host)
-		{
-			var sender = host.Resolve<IMessageClient>();
-			var game = Rand.String.NextWord();
-			sender.Send(new PingPongCommand(0, game));
-		}
-	}
 }

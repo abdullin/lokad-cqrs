@@ -9,75 +9,79 @@
 using System;
 using System.Diagnostics;
 using System.Threading;
-using Lokad;
-using Lokad.Default;
-using ProtoBuf;
+using System.Runtime.Serialization;
+using Lokad.Cqrs;
+using Lokad.Cqrs.Core.Directory.Default;
 
 namespace Sample_04.Worker
 {
-	/// <summary>
-	/// That's the recommended way of defining messages:
-	/// 1. Immutable
-	/// 2. With Properties
-	/// 3. Private empty ctor for the ProtoBuf
-	/// 4. Public CTOR that sets the properties
-	/// </summary>
-	[ProtoContract]
-	public sealed class PingPongCommand : IMessage
-	{
-		[ProtoMember(1)]
-		public int Ball { get; private set; }
+    #region PingPongCommand
+    /// <summary>
+    /// That's the recommended way of defining messages:
+    /// 1. Immutable
+    /// 2. With Properties
+    /// 3. Private empty ctor for the ProtoBuf
+    /// 4. Public CTOR that sets the properties
+    /// </summary>
+    [DataContract]
+    public sealed class PingPongCommand : IMessage
+    {
+        [DataMember(Order = 1)]
+        public int Ball { get; private set; }
 
-		[ProtoMember(2)]
-		public string Game { get; private set; }
+        [DataMember(Order = 2)]
+        public string Game { get; private set; }
 
-		public PingPongCommand(int ball, string game)
-		{
-			Ball = ball;
-			Game = game;
-		}
+        public PingPongCommand()
+        {
+        }
 
-		public PingPongCommand Pong()
-		{
-			return new PingPongCommand(Ball + 1, Game);
-		}
+        public PingPongCommand(int ball, string game)
+        {
+            Ball = ball;
+            Game = game;
+        }
 
-		public PingPongCommand()
-		{
-		}
-	}
+        public PingPongCommand Pong()
+        {
+            return new PingPongCommand(Ball + 1, Game);
+        }
+    } 
+    #endregion
 
-	[UsedImplicitly]
-	public sealed class PingPongHandler : IConsume<PingPongCommand>
-	{
-		readonly IMessageClient _sender;
+    #region PingPongCommand consumer
+    public sealed class PingPongHandler : IConsume<PingPongCommand>
+    {
+        readonly IMessageSender _sender;
 
-		public PingPongHandler(IMessageClient sender)
-		{
-			_sender = sender;
-		}
+        public PingPongHandler(IMessageSender sender)
+        {
+            _sender = sender;
+        }
 
-		public void Consume(PingPongCommand message)
-		{
-			const string format = "Ping #{0} in game '{1}'.";
-			var title = string.Format(format, message.Ball, message.Game);
-			Trace.WriteLine(title);
+        public void Consume(PingPongCommand message)
+        {
+            const string format = "Ping #{0} in game '{1}'.";
+            var title = string.Format(format, message.Ball, message.Game);
+            Trace.WriteLine(title);
 
-			if (Rand.Next(6) == 1)
-			{
-				Trace.WriteLine("Missing!");
-				throw new BounceFailedException("Bouncing failed for: " + title);
-			}
-			Thread.Sleep(1000);
+            if (new Random().Next(6) == 1)
+            {
+                Trace.WriteLine("Missing!");
+                throw new BounceFailedException("Bouncing failed for: " + title);
+            }
+            Thread.Sleep(1000);
 
-			_sender.Send(message.Pong());
-		}
-	}
+            _sender.SendOne(message.Pong());
+        }
+    } 
+    #endregion
 
-	public class BounceFailedException : Exception
-	{
-		public BounceFailedException(string message) : base(message)
-		{
-		}
-	}
+    public class BounceFailedException : Exception
+    {
+        public BounceFailedException(string message)
+            : base(message)
+        {
+        }
+    }
 }

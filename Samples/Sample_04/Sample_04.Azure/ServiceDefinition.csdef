@@ -1,12 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ServiceDefinition name="Sample_04.Azure" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition">
-  <WorkerRole name="Sample_04.Worker">
+  <WorkerRole name="Sample_04.Worker" vmsize="ExtraSmall">
     <ConfigurationSettings>
       <Setting name="DiagnosticsConnectionString" />
-      <Setting name="XmppRecipient" />
-      <Setting name="XmppIdentity" />
-      <Setting name="XmppPassword" />
-      <Setting name="XmppNetworkHost" />
     </ConfigurationSettings>
   </WorkerRole>
 </ServiceDefinition>
