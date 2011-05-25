@@ -38,8 +38,8 @@ namespace Lokad.Cqrs.Core.Directory
 
             var interfaceTypedMethod = ((MethodCallExpression)expression.Body).Method;
             var parameters = interfaceTypedMethod.GetParameters();
-            if ((parameters.Length < 1) || (parameters.Length > 2)) //|| (parameters[0].ParameterType != typeof (string))
-                throw new InvalidOperationException("Expression should consume object like: 'i => i.Consume(null)' or 'i => i.Consume(null,null))'");
+            if (parameters.Length != 1)
+                throw new InvalidOperationException("Expression should consume object like: 'i => i.Consume(null)'");
 
 
             var declaringGenericInterface = typeof(THandler).GetGenericTypeDefinition();
