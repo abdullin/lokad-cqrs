@@ -31,7 +31,15 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 
         public void Initialize()
         {
-            _container.CreateIfNotExist();
+            if (_container.CreateIfNotExist())
+            {
+                // not required, but avoids Azure exceptions
+                using (var memory = new MemoryStream())
+                {
+                    Serializer.Serialize(memory, new ScheduleItem());
+                    _blob.UploadByteArray(memory.ToArray());
+                }
+            }
         }
 
         public void PutMessage(ImmutableEnvelope envelope)
