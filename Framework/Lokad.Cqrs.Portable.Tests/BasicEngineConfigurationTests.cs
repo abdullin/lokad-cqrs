@@ -13,7 +13,10 @@ using System.Runtime.Serialization;
 using System.Threading;
 using Lokad.Cqrs.Build.Engine;
 using Lokad.Cqrs.Core.Dispatch.Events;
+using Lokad.Cqrs.Core.Outbox;
+using Lokad.Cqrs.Feature.MemoryPartition;
 using NUnit.Framework;
+using Autofac;
 
 namespace Lokad.Cqrs
 {
@@ -87,6 +90,22 @@ namespace Lokad.Cqrs
                     m.AddMemoryRouter("in", me => "memory:do");
                     m.AddMemoryProcess("do");
                 }));
+        }
+
+        [Test]
+        public void WithSecondaryActivator()
+        {
+            TestConfiguration(x =>
+                {
+                    x.EnlistQueueWriterFactory(c => new MemoryQueueWriterFactory(c.Resolve<MemoryAccount>(), "custom"));
+                    x.Memory(m =>
+                        {
+                            m.AddMemorySender("in", module => module.IdGeneratorForTests());
+                            m.AddMemoryRouter("in", me => "custom:do");
+
+                            m.AddMemoryProcess("do");
+                        });
+                });
         }
 
         [Test]

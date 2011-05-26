@@ -53,13 +53,15 @@ namespace Lokad.Cqrs.Core.Dispatch
             }
 
             IQueueWriterFactory factory;
-            if (_registry.TryGet(endpoint, out factory))
+            if (!_registry.TryGet(endpoint, out factory))
             {
-                factory.GetWriteQueue(queueName).PutMessage(message);
+                var s = string.Format(
+                        "Route '{0}' was not handled by any single dispatcher. Did you want to send to 'memory:null' or 'memory:{0}' instead?",
+                        route);
+                throw new InvalidOperationException(s);
             }
-            var s = string.Format("Route '{0}' was not handled by any single dispatcher. Did you want to send to 'memory:null' or 'memory:{0}' instead?",route);
-            throw new InvalidOperationException(s);
-            
+            factory.GetWriteQueue(queueName).PutMessage(message);
+            return;
         }
 
        public void Init()

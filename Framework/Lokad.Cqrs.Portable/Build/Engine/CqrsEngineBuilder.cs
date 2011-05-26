@@ -33,7 +33,7 @@ namespace Lokad.Cqrs.Build.Engine
         readonly StorageModule _storage = new StorageModule();
 
 
-        readonly IList<Func<IComponentContext, QueueWriterActivator>> _activators = new List<Func<IComponentContext, QueueWriterActivator>>();
+        readonly IList<Func<IComponentContext, IQueueWriterFactory>> _activators = new List<Func<IComponentContext, IQueueWriterFactory>>();
 
         public readonly List<IObserver<ISystemEvent>> Observers = new List<IObserver<ISystemEvent>>
             {
@@ -51,7 +51,7 @@ namespace Lokad.Cqrs.Build.Engine
             _envelopeSerializer = serializer;
         }
 
-        public void EnlistQueueWriterActivator(Func<IComponentContext,QueueWriterActivator> activator)
+        public void EnlistQueueWriterFactory(Func<IComponentContext,IQueueWriterFactory> activator)
         {
             _activators.Add(activator);
         }
@@ -89,6 +89,8 @@ namespace Lokad.Cqrs.Build.Engine
             Observers.Add(observer);
             return this;
         }
+
+        
 
         public CqrsEngineBuilder Memory(Action<MemoryModule> configure)
         {
@@ -149,19 +151,22 @@ namespace Lokad.Cqrs.Build.Engine
             var streamer = new EnvelopeStreamer(_envelopeSerializer, dataSerializer);
 
             
-            reg.Register(c =>
-                {
-                    var r = new QueueWriterRegistry();
-                    foreach (var activator in _activators)
-                    {
-                        r.AddActivator(activator(c));
-                    }
-                    return r;
-                });
+            reg.Register(BuildRegistry);
             reg.Register(dataSerializer);
             reg.Register<IEnvelopeStreamer>(c => streamer);
             reg.Register(new MessageDuplicationManager());
             
+        }
+
+        QueueWriterRegistry BuildRegistry(IComponentContext c) {
+            var r = new QueueWriterRegistry();
+                    
+            foreach (var activator in _activators)
+            {
+                var factory = activator(c);
+                r.Add(factory);
+            }
+            return r;
         }
     }
 }
