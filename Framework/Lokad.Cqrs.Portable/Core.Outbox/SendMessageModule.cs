@@ -46,7 +46,8 @@ namespace Lokad.Cqrs.Core.Outbox
         {
             var observer = c.Resolve<ISystemObserver>();
             var registry = c.Resolve<QueueWriterRegistry>();
-            var factory = registry.GetOrAdd(_endpoint, s => _construct(c,s));
+            registry.AddActivator(new QueueWriterActivator(_endpoint, name => _construct(c,name)));
+            var factory = registry.Get(_endpoint);
             var queue = factory.GetWriteQueue(_queueName);
             return new DefaultMessageSender(queue, observer, _keyGenerator);
         }

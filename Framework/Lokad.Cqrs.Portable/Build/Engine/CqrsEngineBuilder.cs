@@ -32,7 +32,8 @@ namespace Lokad.Cqrs.Build.Engine
         readonly MessageDirectoryModule _domain = new MessageDirectoryModule();
         readonly StorageModule _storage = new StorageModule();
 
-        readonly QueueWriterRegistry _writerRegistry = new QueueWriterRegistry();
+
+        readonly IList<Func<IComponentContext, QueueWriterActivator>> _activators = new List<Func<IComponentContext, QueueWriterActivator>>();
 
         public readonly List<IObserver<ISystemEvent>> Observers = new List<IObserver<ISystemEvent>>
             {
@@ -48,6 +49,11 @@ namespace Lokad.Cqrs.Build.Engine
         public void RegisterEnvelopeSerializer(IEnvelopeSerializer serializer)
         {
             _envelopeSerializer = serializer;
+        }
+
+        public void EnlistQueueWriterActivator(Func<IComponentContext,QueueWriterActivator> activator)
+        {
+            _activators.Add(activator);
         }
 
         readonly List<IModule> _moduleEnlistments = new List<IModule>();
@@ -143,7 +149,15 @@ namespace Lokad.Cqrs.Build.Engine
             var streamer = new EnvelopeStreamer(_envelopeSerializer, dataSerializer);
 
             
-            reg.Register(_writerRegistry);
+            reg.Register(c =>
+                {
+                    var r = new QueueWriterRegistry();
+                    foreach (var activator in _activators)
+                    {
+                        r.AddActivator(activator(c));
+                    }
+                    return r;
+                });
             reg.Register(dataSerializer);
             reg.Register<IEnvelopeStreamer>(c => streamer);
             reg.Register(new MessageDuplicationManager());
