@@ -8,7 +8,7 @@ namespace Lokad.Cqrs.Build.Client
         {
             var module = new AzureClientModule();
             config(module);
-            @this.EnlistModule(module);
+            @this.Advanced.RegisterModule(module);
         }
     }
 }

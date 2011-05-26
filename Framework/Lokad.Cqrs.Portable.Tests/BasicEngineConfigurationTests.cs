@@ -60,8 +60,8 @@ namespace Lokad.Cqrs
         static void TestConfiguration(Action<CqrsEngineBuilder> config)
         {
             var events = new Subject<ISystemEvent>(Scheduler.TaskPool);
-            var builder = new CqrsEngineBuilder()
-                .Advanced.EnlistObserver(events);
+            var builder = new CqrsEngineBuilder();
+            builder.Advanced.RegisterObserver(events);
 
             config(builder);
 
@@ -97,7 +97,7 @@ namespace Lokad.Cqrs
         {
             TestConfiguration(x =>
                 {
-                    x.Advanced.EnlistQueueWriterFactory(c => new MemoryQueueWriterFactory(c.Resolve<MemoryAccount>(), "custom"));
+                    x.Advanced.RegisterQueueWriterFactory(c => new MemoryQueueWriterFactory(c.Resolve<MemoryAccount>(), "custom"));
                     x.Memory(m =>
                         {
                             m.AddMemorySender("in", module => module.IdGeneratorForTests());

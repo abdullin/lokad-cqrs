@@ -69,7 +69,7 @@ namespace Lokad.Cqrs
             var subj = new Subject<ISystemEvent>();
             
             builder.Advanced.Observers.Clear();
-            builder.Advanced.EnlistObserver(subj);
+            builder.Advanced.RegisterObserver(subj);
             int count = 0;
             subj
                 .OfType<EnvelopeAcked>()

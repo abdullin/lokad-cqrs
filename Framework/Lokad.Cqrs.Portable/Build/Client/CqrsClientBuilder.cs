@@ -1,20 +1,25 @@
-﻿using System;
+﻿#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
+
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using Autofac;
 using Autofac.Core;
 using Lokad.Cqrs.Build.Engine;
+using Lokad.Cqrs.Core;
 using Lokad.Cqrs.Core.Directory;
-using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Core.Envelope;
 using Lokad.Cqrs.Core.Outbox;
 using Lokad.Cqrs.Core.Reactive;
 using Lokad.Cqrs.Core.Serialization;
-using Lokad.Cqrs.Core;
 
 namespace Lokad.Cqrs.Build.Client
 {
-    public class CqrsClientBuilder : HideObjectMembersFromIntelliSense
+    public class CqrsClientBuilder : HideObjectMembersFromIntelliSense, IAdvancedClientBuilder
     {
         readonly MessageDirectoryModule _domain = new MessageDirectoryModule();
         readonly StorageModule _storageModule = new StorageModule();
@@ -24,43 +29,45 @@ namespace Lokad.Cqrs.Build.Client
         readonly QueueWriterRegistry _registry = new QueueWriterRegistry();
 
 
-        public readonly List<IObserver<ISystemEvent>> Observers = new List<IObserver<ISystemEvent>>()
+        readonly List<IObserver<ISystemEvent>> _observers = new List<IObserver<ISystemEvent>>()
             {
                 new ImmediateTracingObserver()
             };
 
+        IList<IObserver<ISystemEvent>> IAdvancedClientBuilder.Observers
+        {
+            get { return _observers; }
+        }
 
-        public void EnlistModule(IModule module)
+        void IAdvancedClientBuilder.RegisterModule(IModule module)
         {
             _enlistments.Add(module);
         }
 
-        public CqrsClientBuilder Observer(IObserver<ISystemEvent> observer)
+        CqrsClientBuilder IAdvancedClientBuilder.RegisterObserver(IObserver<ISystemEvent> observer)
         {
-            Observers.Add(observer);
+            _observers.Add(observer);
             return this;
         }
 
-
-     
 
         IEnvelopeSerializer _envelopeSerializer = new EnvelopeSerializerWithDataContracts();
         Func<Type[], IDataSerializer> _dataSerializer = types => new DataSerializerWithDataContracts(types);
 
 
-        public void RegisterDataSerializer(Func<Type[], IDataSerializer> serializer)
+        void IAdvancedClientBuilder.DataSerializer(Func<Type[], IDataSerializer> serializer)
         {
             _dataSerializer = serializer;
         }
 
-        public void RegisterEnvelopeSerializer(IEnvelopeSerializer serializer)
+        void IAdvancedClientBuilder.EnvelopeSerializer(IEnvelopeSerializer serializer)
         {
             _envelopeSerializer = serializer;
         }
 
         readonly ContainerBuilder _builder = new ContainerBuilder();
 
-        public CqrsClientBuilder Advanced(Action<ContainerBuilder> build)
+        public CqrsClientBuilder ConfigureContainer(Action<ContainerBuilder> build)
         {
             build(_builder);
             return this;
@@ -72,7 +79,7 @@ namespace Lokad.Cqrs.Build.Client
             return this;
         }
 
-        
+
         /// <summary>
         /// Configures the message domain for the instance of <see cref="CqrsEngineHost"/>.
         /// </summary>
@@ -94,7 +101,7 @@ namespace Lokad.Cqrs.Build.Client
             }
 
             var container = _builder.Build();
-            var system = new SystemObserver(Observers.ToArray());
+            var system = new SystemObserver(_observers.ToArray());
             Configure(container.ComponentRegistry, system);
             return new CqrsClient(container);
         }
@@ -109,10 +116,15 @@ namespace Lokad.Cqrs.Build.Client
             var serializer = _dataSerializer(_serializationList.GetAndMakeReadOnly());
             var streamer = new EnvelopeStreamer(_envelopeSerializer, serializer);
 
-            
+
             reg.Register(serializer);
             reg.Register<IEnvelopeStreamer>(c => streamer);
             reg.Register(_registry);
+        }
+
+        public IAdvancedClientBuilder Advanced
+        {
+            get { return this; }
         }
     }
 }

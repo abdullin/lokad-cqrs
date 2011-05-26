@@ -41,17 +41,17 @@ namespace Lokad.Cqrs.Build.Engine
             };
 
 
-        void IAdvancedEngineBuilder.RegisterDataSerializer(Func<Type[], IDataSerializer> serializer)
+        void IAdvancedEngineBuilder.CustomDataSerializer(Func<Type[], IDataSerializer> serializer)
         {
             _dataSerializer = serializer;
         }
 
-        void IAdvancedEngineBuilder.RegisterEnvelopeSerializer(IEnvelopeSerializer serializer)
+        void IAdvancedEngineBuilder.CustomEnvelopeSerializer(IEnvelopeSerializer serializer)
         {
             _envelopeSerializer = serializer;
         }
 
-        void IAdvancedEngineBuilder.EnlistQueueWriterFactory(Func<IComponentContext,IQueueWriterFactory> activator)
+        void IAdvancedEngineBuilder.RegisterQueueWriterFactory(Func<IComponentContext,IQueueWriterFactory> activator)
         {
             _activators.Add(activator);
         }
@@ -59,7 +59,7 @@ namespace Lokad.Cqrs.Build.Engine
         readonly List<IModule> _moduleEnlistments = new List<IModule>();
 
 
-        void IAdvancedEngineBuilder.EnlistModule(IModule module)
+        void IAdvancedEngineBuilder.RegisterModule(IModule module)
         {
             _moduleEnlistments.Add(module);
         }
@@ -78,16 +78,14 @@ namespace Lokad.Cqrs.Build.Engine
 
         readonly ContainerBuilder _builder = new ContainerBuilder();
 
-        CqrsEngineBuilder IAdvancedEngineBuilder.ConfigureContainer(Action<ContainerBuilder> build)
+        void IAdvancedEngineBuilder.ConfigureContainer(Action<ContainerBuilder> build)
         {
             build(_builder);
-            return this;
         }
 
-        CqrsEngineBuilder IAdvancedEngineBuilder.EnlistObserver(IObserver<ISystemEvent> observer)
+        void IAdvancedEngineBuilder.RegisterObserver(IObserver<ISystemEvent> observer)
         {
             _observers.Add(observer);
-            return this;
         }
 
         IList<IObserver<ISystemEvent>> IAdvancedEngineBuilder.Observers
@@ -100,7 +98,7 @@ namespace Lokad.Cqrs.Build.Engine
         {
             var m = new MemoryModule();
             configure(m);
-            Advanced.EnlistModule(m);
+            Advanced.RegisterModule(m);
             return this;
         }
 
@@ -177,16 +175,5 @@ namespace Lokad.Cqrs.Build.Engine
         {
             get { return this; }
         }
-    }
-
-    public interface IAdvancedEngineBuilder : IHideObjectMembersFromIntelliSense
-    {
-        void EnlistQueueWriterFactory(Func<IComponentContext,IQueueWriterFactory> activator);
-        void EnlistModule(IModule module);
-        CqrsEngineBuilder ConfigureContainer(Action<ContainerBuilder> build);
-        CqrsEngineBuilder EnlistObserver(IObserver<ISystemEvent> observer);
-        IList<IObserver<ISystemEvent>> Observers { get; }
-        void RegisterEnvelopeSerializer(IEnvelopeSerializer serializer);
-        void RegisterDataSerializer(Func<Type[], IDataSerializer> serializer);
     }
 }

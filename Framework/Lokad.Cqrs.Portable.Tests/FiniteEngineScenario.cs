@@ -95,8 +95,8 @@ namespace Lokad.Cqrs
         public void TestConfiguration(params Action<CqrsEngineBuilder>[] config)
         {
             var events = new Subject<ISystemEvent>(Scheduler.TaskPool);
-            var builder = new CqrsEngineBuilder()
-                .Advanced.EnlistObserver(events);
+            var builder = new CqrsEngineBuilder();
+            builder.Advanced.RegisterObserver(events);
 
             Configure(builder);
             foreach (var action in config)

@@ -4,12 +4,11 @@ namespace Lokad.Cqrs.Build.Engine
 {
     public static class ExtendCqrsEngineBuilder
     {
-        public static CqrsEngineBuilder Azure(this CqrsEngineBuilder @this, Action<AzureEngineModule> config)
+        public static void Azure(this CqrsEngineBuilder @this, Action<AzureEngineModule> config)
         {
             var module = new AzureEngineModule();
             config(module);
-            @this.Advanced.EnlistModule(module);
-            return @this;
+            @this.Advanced.RegisterModule(module);
         }
 
     }
