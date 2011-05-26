@@ -70,10 +70,9 @@ namespace Lokad.Cqrs.Build.Engine
         /// </summary>
         /// <param name="config">configuration syntax.</param>
         /// <returns>same builder for inline multiple configuration statements</returns>
-        public CqrsEngineBuilder Domain(Action<MessageDirectoryModule> config)
+        public void Domain(Action<MessageDirectoryModule> config)
         {
             config(_domain);
-            return this;
         }
 
         readonly ContainerBuilder _builder = new ContainerBuilder();
@@ -94,18 +93,16 @@ namespace Lokad.Cqrs.Build.Engine
         }
 
 
-        public CqrsEngineBuilder Memory(Action<MemoryModule> configure)
+        public void Memory(Action<MemoryModule> configure)
         {
             var m = new MemoryModule();
             configure(m);
             Advanced.RegisterModule(m);
-            return this;
         }
 
-        public CqrsEngineBuilder Storage(Action<StorageModule> configure)
+        public void Storage(Action<StorageModule> configure)
         {
             configure(_storage);
-            return this;
         }
 
 

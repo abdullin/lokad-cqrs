@@ -14,11 +14,35 @@ namespace Lokad.Cqrs.Build.Client
 {
     public interface IAdvancedClientBuilder : IHideObjectMembersFromIntelliSense
     {
+        /// <summary>
+        /// Registers custom container module
+        /// </summary>
+        /// <param name="module">The module to register.</param>
         void RegisterModule(IModule module);
-        CqrsClientBuilder RegisterObserver(IObserver<ISystemEvent> observer);
+        /// <summary>
+        /// Registers custom Reactive observer.
+        /// </summary>
+        /// <param name="observer">The observer.</param>
+        /// <returns></returns>
+        void RegisterObserver(IObserver<ISystemEvent> observer);
+        /// <summary>
+        /// Overrides custom data serializer with a provided factory
+        /// </summary>
+        /// <param name="serializer">The serializer factory (taking collection of message types as inputs).</param>
         void DataSerializer(Func<Type[], IDataSerializer> serializer);
+        /// <summary>
+        /// Overrides custom envelope serializer with a provided factory
+        /// </summary>
+        /// <param name="serializer">The serializer.</param>
         void EnvelopeSerializer(IEnvelopeSerializer serializer);
-        CqrsClientBuilder ConfigureContainer(Action<ContainerBuilder> build);
+        /// <summary>
+        /// Applies custom configuration to the container
+        /// </summary>
+        /// <param name="build">The build.</param>
+        void ConfigureContainer(Action<ContainerBuilder> build);
+        /// <summary>
+        /// Lists currect reactive observers
+        /// </summary>
         IList<IObserver<ISystemEvent>> Observers { get; }
     }
 }

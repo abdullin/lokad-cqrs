@@ -44,10 +44,9 @@ namespace Lokad.Cqrs.Build.Client
             _enlistments.Add(module);
         }
 
-        CqrsClientBuilder IAdvancedClientBuilder.RegisterObserver(IObserver<ISystemEvent> observer)
+        void IAdvancedClientBuilder.RegisterObserver(IObserver<ISystemEvent> observer)
         {
             _observers.Add(observer);
-            return this;
         }
 
 
@@ -67,16 +66,14 @@ namespace Lokad.Cqrs.Build.Client
 
         readonly ContainerBuilder _builder = new ContainerBuilder();
 
-        public CqrsClientBuilder ConfigureContainer(Action<ContainerBuilder> build)
+        void IAdvancedClientBuilder.ConfigureContainer(Action<ContainerBuilder> build)
         {
             build(_builder);
-            return this;
         }
 
-        public CqrsClientBuilder Storage(Action<StorageModule> configure)
+        public void Storage(Action<StorageModule> configure)
         {
             configure(_storageModule);
-            return this;
         }
 
 
@@ -85,10 +82,9 @@ namespace Lokad.Cqrs.Build.Client
         /// </summary>
         /// <param name="config">configuration syntax.</param>
         /// <returns>same builder for inline multiple configuration statements</returns>
-        public CqrsClientBuilder Domain(Action<MessageDirectoryModule> config)
+        public void Domain(Action<MessageDirectoryModule> config)
         {
             config(_domain);
-            return this;
         }
 
         readonly SerializationContractRegistry _serializationList = new SerializationContractRegistry();
