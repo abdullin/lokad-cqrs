@@ -54,7 +54,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AzureStorageRegistry.cs" />
     <Compile Include="Build\AzureStorageConfig.cs" />
     <Compile Include="Build\AzureClientModule.cs" />
     <Compile Include="Build\Engine\AzureEngineModule.cs" />

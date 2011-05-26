@@ -13,7 +13,6 @@ using Autofac.Core;
 using Lokad.Cqrs.Core.Outbox;
 using Lokad.Cqrs.Feature.AzurePartition;
 using Lokad.Cqrs.Feature.AzurePartition.Sender;
-using Lokad.Cqrs.Core;
 
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedMethodReturnValue.Global
@@ -29,8 +28,6 @@ namespace Lokad.Cqrs.Build.Engine
         static readonly Regex QueueName = new Regex("^[A-Za-z][A-Za-z0-9]{2,62}", RegexOptions.Compiled);
 
         Action<IComponentRegistry> _funqlets = registry => { };
-        
-        
 
         
         public void AddAzureSender(IAzureStorageConfig config, string queueName, Action<SendMessageModule> configure)
@@ -89,6 +86,7 @@ namespace Lokad.Cqrs.Build.Engine
         public void Configure(IComponentRegistry container)
         {
             _funqlets(container);
+            
         }
     }
 }

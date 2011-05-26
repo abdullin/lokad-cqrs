@@ -8,7 +8,8 @@
 using System;
 using System.Configuration;
 using Microsoft.WindowsAzure.ServiceRuntime;
-
+// ReSharper disable UnusedMember.Global
+// ReSharper disable MemberCanBePrivate.Global
 namespace Lokad.Cqrs
 {
     /// <summary>
@@ -33,12 +34,12 @@ namespace Lokad.Cqrs
             return false;
         }
 
-        static Lazy<bool> _hasCloudEnvironment = new Lazy<bool>(DetectCloudEnvironment, true);
+        static readonly Lazy<bool> HasCloudEnvironment = new Lazy<bool>(DetectCloudEnvironment, true);
 
         public static bool TryGetString(string key, out string result)
         {
             result = null;
-            if (_hasCloudEnvironment.Value)
+            if (HasCloudEnvironment.Value)
             {
                 try
                 {
