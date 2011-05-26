@@ -27,14 +27,14 @@ namespace Lokad.Cqrs.Build
         }
         public static void AutoDetectSerializer(this CqrsEngineBuilder self)
         {
-            self.RegisterDataSerializer(t => new DataSerializerWithAutoDetection(t));
-            self.RegisterEnvelopeSerializer(new EnvelopeSerializerWithProtoBuf());
+            self.Advanced.RegisterDataSerializer(t => new DataSerializerWithAutoDetection(t));
+            self.Advanced.RegisterEnvelopeSerializer(new EnvelopeSerializerWithProtoBuf());
         }
 
         public static void UseProtoBufSerialization(this CqrsEngineBuilder self)
         {
-            self.RegisterDataSerializer(t => new DataSerializerWithProtoBuf(t));
-            self.RegisterEnvelopeSerializer(new EnvelopeSerializerWithProtoBuf());
+            self.Advanced.RegisterDataSerializer(t => new DataSerializerWithProtoBuf(t));
+            self.Advanced.RegisterEnvelopeSerializer(new EnvelopeSerializerWithProtoBuf());
         }
     }
 }

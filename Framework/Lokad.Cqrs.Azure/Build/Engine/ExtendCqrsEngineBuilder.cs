@@ -8,7 +8,7 @@ namespace Lokad.Cqrs.Build.Engine
         {
             var module = new AzureEngineModule();
             config(module);
-            @this.EnlistModule(module);
+            @this.Advanced.EnlistModule(module);
             return @this;
         }
 

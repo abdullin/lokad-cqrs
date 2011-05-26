@@ -88,7 +88,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 
         protected override void Configure(CqrsEngineBuilder config)
         {
-            config.Advanced(cb => cb.RegisterGeneric(typeof (ViewUpdater<,>)));
+            config.Advanced.ConfigureContainer(cb => cb.RegisterGeneric(typeof (ViewUpdater<,>)));
             EnlistMessage(new Message());
         }
     }
