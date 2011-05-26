@@ -107,7 +107,6 @@
     <Compile Include="Core.Directory\MessageDirectoryBuilder.cs" />
     <Compile Include="Core.Directory\MessageActivationInfo.cs" />
     <Compile Include="Core.Directory\MessageMapping.cs" />
-    <Compile Include="Core.Directory\MessageReflectionUtil.cs" />
     <Compile Include="Core.Dispatch\DispatchCommandBatch.cs" />
     <Compile Include="Core.Dispatch\DispatcherProcess.cs" />
     <Compile Include="Core.Dispatch\DispatcherUtil.cs" />
