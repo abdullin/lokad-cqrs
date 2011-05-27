@@ -97,14 +97,26 @@ namespace Lokad.Cqrs.Build.Client
             }
 
             var container = _builder.Build();
-            var system = new SystemObserver(_observers.ToArray());
-            Configure(container.ComponentRegistry, system);
+            Configure(container.ComponentRegistry);
             return new CqrsClient(container);
         }
 
-        void Configure(IComponentRegistry reg, ISystemObserver observer)
+        void IAdvancedClientBuilder.UpdateContainer(IComponentRegistry registry)
         {
-            reg.Register(observer);
+            foreach (var module in _enlistments)
+            {
+                _builder.RegisterModule(module);
+            }
+            _builder.Update(registry);
+            Configure(registry);
+        }
+
+        
+
+        void Configure(IComponentRegistry reg)
+        {
+            var system = new SystemObserver(_observers.ToArray());
+            reg.Register(system);
             // domain should go before serialization
             _domain.Configure(reg, _serializationList);
             _storageModule.Configure(reg);

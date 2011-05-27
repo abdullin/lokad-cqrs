@@ -44,5 +44,12 @@ namespace Lokad.Cqrs.Build.Client
         /// Lists currect reactive observers
         /// </summary>
         IList<IObserver<ISystemEvent>> Observers { get; }
+
+        /// <summary>
+        /// Builds this client into the existing container.
+        /// If you have an instance of <see cref="IContainer"/>, pass it's <see cref="IComponentContext.ComponentRegistry"/> property.
+        /// </summary>
+        /// <param name="registry">The container.</param>
+        void UpdateContainer(IComponentRegistry registry);
     }
 }
