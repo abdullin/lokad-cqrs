@@ -57,6 +57,7 @@
     <Compile Include="Core.Reactive\ImmediateEventsObserver.cs" />
     <Compile Include="Core.Serialization\SerializationContractRegistry.cs" />
     <Compile Include="Core\FunqContainer.cs" />
+    <Compile Include="Evil\ThreadAffinity.cs" />
     <Compile Include="Evil\TransactionEvil.cs" />
     <Compile Include="Feature.AtomicStorage\AddOrUpdateHint.cs" />
     <Compile Include="Feature.AtomicStorage\AtomicStorageInitialized.cs" />
@@ -71,6 +72,7 @@
     <Compile Include="Feature.MemoryPartition\MemoryAccount.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryQueueWriterFactory.cs" />
     <Compile Include="Feature.MemoryPartition\MemorySchedulingProcess.cs" />
+    <Compile Include="Feature.EventStorage\FileMessageStore.cs" />
     <Compile Include="ImmutableAttribute.cs" />
     <Compile Include="MessageContext.cs" />
     <Compile Include="HideObjectMembersFromIntelliSense.cs" />
