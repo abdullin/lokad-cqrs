@@ -116,8 +116,6 @@ namespace Lokad.Cqrs.Build.Engine
             // System presets
             _builder.RegisterType<DispatcherProcess>();
             
-            
-            
             foreach (var module in _moduleEnlistments)
             {
                 _builder.RegisterModule(module);
@@ -126,7 +124,6 @@ namespace Lokad.Cqrs.Build.Engine
             var system = new SystemObserver(_observers.ToArray());
 
             var reg = container.ComponentRegistry;
-            
             
             Configure(reg, system);
 

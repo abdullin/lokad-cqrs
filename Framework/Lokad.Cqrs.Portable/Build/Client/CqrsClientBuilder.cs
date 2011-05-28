@@ -116,7 +116,7 @@ namespace Lokad.Cqrs.Build.Client
         void Configure(IComponentRegistry reg)
         {
             var system = new SystemObserver(_observers.ToArray());
-            reg.Register(system);
+            reg.Register<ISystemObserver>(system);
             // domain should go before serialization
             _domain.Configure(reg, _serializationList);
             _storageModule.Configure(reg);
