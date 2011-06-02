@@ -31,15 +31,33 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 
         public void Initialize()
         {
-            if (_container.CreateIfNotExist())
+            _container.CreateIfNotExist();
+            var exists = false;
+            try
             {
-                // not required, but avoids Azure exceptions
+                _blob.FetchAttributes();
+                exists = true;
+            }
+            catch (StorageClientException e)
+            {
+                switch (e.ErrorCode)
+                {
+                        case StorageErrorCode.BlobNotFound:
+                        case StorageErrorCode.ResourceNotFound:
+                        break;
+                    default:
+                        throw;
+                }
+            }
+            if (exists)
+            {
                 using (var memory = new MemoryStream())
                 {
                     Serializer.Serialize(memory, new ScheduleItem());
                     _blob.UploadByteArray(memory.ToArray());
                 }
             }
+            
         }
 
         public void PutMessage(ImmutableEnvelope envelope)
@@ -49,19 +67,12 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 
 
             ScheduleItem view;
-            try
-            {
-                // use cached etags with stateful strategy, if needed
+            // use cached etags with stateful strategy, if needed
 
-                var schedule = _blob.DownloadByteArray();
-                using (var mem = new MemoryStream(schedule))
-                {
-                    view = Serializer.Deserialize<ScheduleItem>(mem);
-                }
-            }
-            catch (StorageClientException ex)
+            var schedule = _blob.DownloadByteArray();
+            using (var mem = new MemoryStream(schedule))
             {
-                view = new ScheduleItem();
+                view = Serializer.Deserialize<ScheduleItem>(mem);
             }
             var id = "__scheduled-" + envelope.EnvelopeId + ".bin";
 
