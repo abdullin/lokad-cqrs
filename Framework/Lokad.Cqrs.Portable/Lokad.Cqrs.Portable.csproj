@@ -71,7 +71,9 @@
     <Compile Include="Feature.MemoryPartition\MemoryAccount.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryQueueWriterFactory.cs" />
     <Compile Include="Feature.MemoryPartition\MemorySchedulingProcess.cs" />
+    <Compile Include="FileStorage.cs" />
     <Compile Include="ImmutableAttribute.cs" />
+    <Compile Include="MemoryStorage.cs" />
     <Compile Include="MessageContext.cs" />
     <Compile Include="HideObjectMembersFromIntelliSense.cs" />
     <Compile Include="Build\Client\CqrsClient.cs" />

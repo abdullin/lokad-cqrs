@@ -1,8 +1,17 @@
-﻿using NUnit.Framework;
+﻿#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
+
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
+using System;
+using System.Runtime.Serialization;
+using NUnit.Framework;
 
 namespace Lokad.Cqrs.Feature.AtomicStorage
 {
-    [TestFixture]
+    [TestFixture, Explicit]
     public sealed class Syntax_verification
     {
         // ReSharper disable InconsistentNaming
@@ -10,8 +19,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
 
         sealed class Entity
         {
-            public void Do()
-            {}
+            public void Do() {}
         }
 
         void VerifyNonAtomic(NuclearStorage storage)
@@ -29,7 +37,6 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             storage.UpdateSingleton<Entity>(e => e.Do());
 
 
-
             //storage.UpdateOrAddEntity<Entity>(1, e => e.Do());
             //storage.TryDelete<Entity>(1);
 
@@ -37,6 +44,33 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             //storage.GetSingleton<Entity>();
             //storage.UpdateSingleton<Entity>(e => e.Do());
             //storage.TryDeleteSingleton<Entity>();
+        }
+
+        [DataContract]
+        public sealed class Customer : Define.AtomicEntity
+        {
+            [DataMember(Order = 1)] public string Name;
+            [DataMember(Order = 2)] public string Address;
+        }
+
+
+        [Test]
+        public void Sample()
+        {
+            NuclearStorage storage = null;
+            var customer = new Customer()
+                {
+                    Name = "My first customer",
+                    Address = "The address"
+                };
+            storage.AddEntity("cust-123", customer);
+            storage.UpdateEntity<Customer>("cust-123", c =>
+                {
+                    c.Address = "Customer Moved";
+                });
+            
+            var result = storage.GetEntity<Customer>("cust-123").Value;
+            Console.WriteLine("{0}: {1}", result.Name, result.Address);
         }
     }
 }
