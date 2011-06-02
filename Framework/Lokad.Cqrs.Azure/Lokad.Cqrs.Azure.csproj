@@ -62,6 +62,8 @@
     <Compile Include="AzureStorage.cs" />
     <Compile Include="Feature.AtomicStorage\AtomicStorageSerializerWithProtoBuf.cs" />
     <Compile Include="Feature.AzurePartition\Inbox\AzureSchedulingProcess.cs" />
+    <Compile Include="Feature.TapeStorage\SqlTapeReaderFactory.cs" />
+    <Compile Include="Feature.TapeStorage\SqlTapeWriterFactory.cs" />
     <Compile Include="WipeAzureAccount.cs" />
     <Compile Include="Build\ExtendStorageModule.cs" />
     <Compile Include="Build\ExtendSerializationModule.cs" />

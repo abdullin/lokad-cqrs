@@ -69,6 +69,8 @@
     <Compile Include="Feature.AtomicStorage\FileAtomicStorageFactory.cs" />
     <Compile Include="Feature.AtomicStorage\IAtomicStorageSerializer.cs" />
     <Compile Include="Feature.AtomicStorage\IAtomicStorageStrategy.cs" />
+    <Compile Include="Feature.TapeStorage\FileTapeReaderFactory.cs" />
+    <Compile Include="Feature.TapeStorage\FileTapeWriterFactory.cs" />
     <Compile Include="Feature.TapeStorage\ITapeReader.cs" />
     <Compile Include="Feature.TapeStorage\ITapeReaderFactory.cs" />
     <Compile Include="Feature.TapeStorage\ISingleThreadTapeWriter.cs" />
