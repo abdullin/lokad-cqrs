@@ -69,10 +69,14 @@
     <Compile Include="Feature.AtomicStorage\FileAtomicStorageFactory.cs" />
     <Compile Include="Feature.AtomicStorage\IAtomicStorageSerializer.cs" />
     <Compile Include="Feature.AtomicStorage\IAtomicStorageStrategy.cs" />
+    <Compile Include="Feature.TapeStorage\ITapeReader.cs" />
+    <Compile Include="Feature.TapeStorage\ITapeReaderFactory.cs" />
+    <Compile Include="Feature.TapeStorage\ISingleThreadTapeWriter.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryAccount.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryQueueWriterFactory.cs" />
     <Compile Include="Feature.MemoryPartition\MemorySchedulingProcess.cs" />
-    <Compile Include="Feature.EventStorage\FileMessageStore.cs" />
+    <Compile Include="Feature.TapeStorage\ISingleThreadTapeWriterFactory.cs" />
+    <Compile Include="Feature.TapeStorage\TapeRecord.cs" />
     <Compile Include="ImmutableAttribute.cs" />
     <Compile Include="MessageContext.cs" />
     <Compile Include="HideObjectMembersFromIntelliSense.cs" />
