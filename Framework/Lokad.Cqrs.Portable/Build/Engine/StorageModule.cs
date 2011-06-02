@@ -40,6 +40,11 @@ namespace Lokad.Cqrs.Build.Engine
             AtomicIs(new FileAtomicStorageFactory(folder, builder.Build()));
         }
 
+        public void AtomicIsInFiles(string folder)
+        {
+            AtomicIsInFiles(folder, builder => { });
+        }
+
 
         readonly List<IModule> _modules = new List<IModule>();
 
