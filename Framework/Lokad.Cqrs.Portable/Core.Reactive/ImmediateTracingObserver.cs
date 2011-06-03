@@ -5,9 +5,11 @@ namespace Lokad.Cqrs.Core.Reactive
 {
     public sealed class ImmediateTracingObserver : IObserver<ISystemEvent>, ISystemObserver
     {
+        readonly DateTime _started = DateTime.UtcNow;
         public void OnNext(ISystemEvent value)
         {
-            Trace.WriteLine(value);
+            var diff = (DateTime.UtcNow - _started).TotalMilliseconds;
+            Trace.WriteLine(string.Format("[{0:########}] {1}", diff, value));
             Trace.Flush();
         }
 

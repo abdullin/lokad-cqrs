@@ -9,5 +9,9 @@ namespace Lokad.Cqrs.Build.Engine.Events
 {
     public sealed class EngineInitialized : ISystemEvent
     {
+        public override string ToString()
+        {
+            return "Engine initialized";
+        }
     }
 }
