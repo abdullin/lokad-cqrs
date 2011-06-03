@@ -9,6 +9,7 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using Lokad.Cqrs.Build.Engine;
+using Lokad.Cqrs.Sample.Contracts;
 
 namespace Lokad.Cqrs.Sample
 {
@@ -20,14 +21,13 @@ namespace Lokad.Cqrs.Sample
 
 
             var builder = new CqrsEngineBuilder();
-            //builder.Storage(m => { m.AtomicIsInFiles("atomic"); });
+            builder.Storage(m => m.AtomicIsInMemory());
             builder.Memory(m =>
                 {
                     m.AddMemoryProcess("in");
                     m.AddMemorySender("in");
                 });
-
-
+          
             try
             {
                 RunTillStopped(builder);
@@ -45,6 +45,10 @@ namespace Lokad.Cqrs.Sample
             using (var engine = builder.Build())
             {
                 engine.Start(token.Token);
+
+                engine
+                    .Resolve<IMessageSender>()
+                    .SendOne(new InitializeSample());
 
                 Console.WriteLine("Press any key to stop.");
                 Console.ReadKey(true);

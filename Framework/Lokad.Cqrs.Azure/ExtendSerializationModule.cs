@@ -10,7 +10,7 @@ using Lokad.Cqrs.Build.Engine;
 using Lokad.Cqrs.Core.Envelope;
 using Lokad.Cqrs.Core.Serialization;
 
-namespace Lokad.Cqrs.Build
+namespace Lokad.Cqrs
 {
     public static class ExtendSerializationModule
     {

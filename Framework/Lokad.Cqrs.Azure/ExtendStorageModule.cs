@@ -3,7 +3,7 @@ using Lokad.Cqrs.Build.Engine;
 using Lokad.Cqrs.Feature.AtomicStorage;
 using Lokad.Cqrs.Feature.StreamingStorage;
 
-namespace Lokad.Cqrs.Build
+namespace Lokad.Cqrs
 {
     public static class ExtendStorageModule
     {

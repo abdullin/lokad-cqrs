@@ -63,8 +63,8 @@
     <Compile Include="Feature.AtomicStorage\AtomicStorageSerializerWithProtoBuf.cs" />
     <Compile Include="Feature.AzurePartition\Inbox\AzureSchedulingProcess.cs" />
     <Compile Include="WipeAzureAccount.cs" />
-    <Compile Include="Build\ExtendStorageModule.cs" />
-    <Compile Include="Build\ExtendSerializationModule.cs" />
+    <Compile Include="ExtendStorageModule.cs" />
+    <Compile Include="ExtendSerializationModule.cs" />
     <Compile Include="AzureSettingsProvider.cs" />
     <Compile Include="Build\Engine\CqrsEngineRole.cs" />
     <Compile Include="Core.Serialization\DataSerializerWithAutoDetection.cs" />
