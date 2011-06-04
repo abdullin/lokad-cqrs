@@ -14,6 +14,30 @@ namespace FarleyFile
         public interface Command : IMessage
         {
         }
+
+
+        public interface IFarleyHandler<TMessage> : IFarleyHandler
+        where TMessage : Farley.IMessage
+        {
+            void Consume(TMessage message);
+        }
+
+        public interface IFarleyHandler
+        {
+        }
+
+            public interface Handle<TCommand> : IFarleyHandler<TCommand>
+where TCommand : FarleyFile.Farley.Command
+    {
+    }
+
+    public interface Consume<TEvent> : IFarleyHandler<TEvent>
+where TEvent : FarleyFile.Farley.Event
+    {
+    }
+
+
+
     }
     
 

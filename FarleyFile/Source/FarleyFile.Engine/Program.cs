@@ -1,18 +1,19 @@
-﻿#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
+﻿#region Copyright (c) 2009-2011 LOKAD SAS. All rights reserved.
 
-// Copyright (c) Lokad 2010-2011, http://www.lokad.com
-// This code is released as Open Source under the terms of the New BSD Licence
+// You must not remove this notice, or any other, from this software.
+// This document is the property of LOKAD SAS and must not be disclosed.
 
 #endregion
 
 using System;
 using System.Diagnostics;
 using System.Threading;
-using FarleyFile;
+using FarleyFile.Engine.Design;
 using Lokad.Cqrs;
 using Lokad.Cqrs.Build.Engine;
+using MessageContext = Lokad.Cqrs.MessageContext;
 
-namespace Farley.Engine
+namespace FarleyFile.Engine
 {
     class Program
     {
@@ -20,14 +21,22 @@ namespace Farley.Engine
         {
             Trace.Listeners.Add(new ConsoleTraceListener());
 
-
             var builder = new CqrsEngineBuilder();
-            builder.Storage(m => m.AtomicIsInMemory());
-            builder.Memory(m =>
+
+            var config = AzureStorage.CreateConfigurationForDev();
+            builder.Domain(d => d.HandlerSample<Farley.IFarleyHandler<Farley.IMessage>>(m => m.Consume(null)));
+
+
+            builder.Storage(m => m.AtomicIsInAzure(config));
+            builder.Azure(m =>
                 {
-                    m.AddMemoryProcess("in");
-                    m.AddMemorySender("in");
+                    m.AddAzureRouter(config, "farley-inbox", i => i.Items[0].Content is Farley.Command ? "farley-commands" : "farley-events");
+                    m.AddAzureSender(config, "farley-inbox");
+                    m.AddAzureProcess(config, "farley-commands", x => x.DirectoryFilter(f => f.WhereMessagesAre<Farley.Command>()));
+                    m.AddAzureProcess(config, "farley-events", x => x.DirectoryFilter(f => f.WhereMessagesAre<Farley.Event>()));
                 });
+
+            
             try
             {
                 using (var token = new CancellationTokenSource())
@@ -40,7 +49,6 @@ namespace Farley.Engine
                         .SendOne(new InitializeSample());
 
 
-                
                     Console.WriteLine("Press any key to stop.");
                     Console.ReadKey(true);
 
@@ -58,7 +66,4 @@ namespace Farley.Engine
             }
         }
     }
-
-
-
 }

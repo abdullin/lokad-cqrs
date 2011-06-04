@@ -8,8 +8,8 @@
     <ProjectGuid>{8C0223C0-B921-454A-BA1C-246423B16AA2}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Farley.Engine</RootNamespace>
-    <AssemblyName>Farley.Engine</AssemblyName>
+    <RootNamespace>FarleyFile.Engine</RootNamespace>
+    <AssemblyName>FarleyFile.Engine</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -37,8 +37,15 @@
     <Reference Include="Autofac">
       <HintPath>..\..\Resources\Autofac.dll</HintPath>
     </Reference>
+    <Reference Include="Lokad.Cqrs.Azure">
+      <HintPath>..\..\Resources\Lokad.Cqrs.Azure.dll</HintPath>
+    </Reference>
     <Reference Include="Lokad.Cqrs.Portable">
       <HintPath>..\..\Resources\Lokad.Cqrs.Portable.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAzure.StorageClient, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Resources\Microsoft.WindowsAzure.StorageClient.dll</HintPath>
     </Reference>
     <Reference Include="ServiceStack.Text">
       <HintPath>..\..\Resources\ServiceStack.Text.dll</HintPath>
