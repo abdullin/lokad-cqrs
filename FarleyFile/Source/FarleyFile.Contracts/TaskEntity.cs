@@ -1,4 +1,4 @@
-﻿namespace Lokad.Cqrs.Sample.Contracts
+﻿namespace FarleyFile
 {
     public sealed class TaskEntity
     {

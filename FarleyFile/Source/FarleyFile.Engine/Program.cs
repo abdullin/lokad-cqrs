@@ -8,10 +8,11 @@
 using System;
 using System.Diagnostics;
 using System.Threading;
+using FarleyFile;
+using Lokad.Cqrs;
 using Lokad.Cqrs.Build.Engine;
-using Lokad.Cqrs.Sample.Contracts;
 
-namespace Lokad.Cqrs.Sample
+namespace Farley.Engine
 {
     class Program
     {
@@ -27,10 +28,28 @@ namespace Lokad.Cqrs.Sample
                     m.AddMemoryProcess("in");
                     m.AddMemorySender("in");
                 });
-          
             try
             {
-                RunTillStopped(builder);
+                using (var token = new CancellationTokenSource())
+                using (var engine = builder.Build())
+                {
+                    engine.Start(token.Token);
+
+                    engine
+                        .Resolve<IMessageSender>()
+                        .SendOne(new InitializeSample());
+
+
+                
+                    Console.WriteLine("Press any key to stop.");
+                    Console.ReadKey(true);
+
+                    token.Cancel();
+                    if (!token.Token.WaitHandle.WaitOne(5000))
+                    {
+                        Console.WriteLine("Terminating");
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -38,27 +57,8 @@ namespace Lokad.Cqrs.Sample
                 Console.ReadKey(true);
             }
         }
-
-        static void RunTillStopped(CqrsEngineBuilder builder)
-        {
-            using (var token = new CancellationTokenSource())
-            using (var engine = builder.Build())
-            {
-                engine.Start(token.Token);
-
-                engine
-                    .Resolve<IMessageSender>()
-                    .SendOne(new InitializeSample());
-
-                Console.WriteLine("Press any key to stop.");
-                Console.ReadKey(true);
-
-                token.Cancel();
-                if (!token.Token.WaitHandle.WaitOne(5000))
-                {
-                    Console.WriteLine("Terminating");
-                }
-            }
-        }
     }
+
+
+
 }

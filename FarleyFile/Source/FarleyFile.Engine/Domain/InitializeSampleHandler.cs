@@ -1,8 +1,10 @@
-﻿using Lokad.Cqrs.Sample.Contracts;
+﻿using Farley.Engine.Design;
+using FarleyFile;
+using Lokad.Cqrs;
 
-namespace Lokad.Cqrs.Sample.Domain
+namespace Farley.Engine.Domain
 {
-    public sealed class InitializeSampleHandler : Define.Handle<InitializeSample>
+    public sealed class InitializeSampleHandler : Handle<InitializeSample>
     {
         readonly IMessageSender _sender;
 

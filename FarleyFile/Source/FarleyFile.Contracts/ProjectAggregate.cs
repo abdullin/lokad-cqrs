@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Lokad.Cqrs.Sample.Contracts
+namespace FarleyFile
 {
     public sealed class ProjectAggregate
     {

@@ -1,9 +1,10 @@
-﻿using Lokad.Cqrs.Feature.AtomicStorage;
-using Lokad.Cqrs.Sample.Contracts;
+﻿using Farley.Engine.Design;
+using FarleyFile;
+using Lokad.Cqrs.Feature.AtomicStorage;
 
-namespace Lokad.Cqrs.Sample.Domain
+namespace Farley.Engine.Domain
 {
-    public sealed class AddTaskHandler : Define.Handle<AddTask>
+    public sealed class AddTaskHandler : Handle<AddTask>
     {
         readonly IAtomicSingletonWriter<ProjectAggregate> _project;
 
