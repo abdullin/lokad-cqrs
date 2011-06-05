@@ -57,8 +57,8 @@
     <Compile Include="Build\AzureStorageConfig.cs" />
     <Compile Include="Build\AzureClientModule.cs" />
     <Compile Include="Build\Engine\AzureEngineModule.cs" />
-    <Compile Include="Build\Engine\ExtendCqrsEngineBuilder.cs" />
-    <Compile Include="Build\Client\ExtendCqrsClientBuilder.cs" />
+    <Compile Include="ExtendCqrsEngineBuilder.cs" />
+    <Compile Include="ExtendCqrsClientBuilder.cs" />
     <Compile Include="AzureStorage.cs" />
     <Compile Include="Feature.AtomicStorage\AtomicStorageSerializerWithProtoBuf.cs" />
     <Compile Include="Feature.AzurePartition\Inbox\AzureSchedulingProcess.cs" />

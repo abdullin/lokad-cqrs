@@ -1,6 +1,8 @@
 ﻿using System;
+using Lokad.Cqrs.Build;
+using Lokad.Cqrs.Build.Client;
 
-namespace Lokad.Cqrs.Build.Client
+namespace Lokad.Cqrs
 {
     public static class ExtendCqrsClientBuilder
     {

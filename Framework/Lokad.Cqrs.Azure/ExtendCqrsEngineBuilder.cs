@@ -1,6 +1,7 @@
 ﻿using System;
+using Lokad.Cqrs.Build.Engine;
 
-namespace Lokad.Cqrs.Build.Engine
+namespace Lokad.Cqrs
 {
     public static class ExtendCqrsEngineBuilder
     {
