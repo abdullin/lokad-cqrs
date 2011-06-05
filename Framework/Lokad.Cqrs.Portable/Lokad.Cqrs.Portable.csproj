@@ -62,6 +62,7 @@
     <Compile Include="Feature.AtomicStorage\AddOrUpdateHint.cs" />
     <Compile Include="Feature.AtomicStorage\AtomicStorageInitialized.cs" />
     <Compile Include="Feature.AtomicStorage\AtomicStorageSerializerWithDataContracts.cs" />
+    <Compile Include="Feature.AtomicStorage\AtomicStorageSerializerWithDelegates.cs" />
     <Compile Include="Feature.AtomicStorage\DefaultAtomicStorageStrategy.cs" />
     <Compile Include="Feature.AtomicStorage\DefaultAtomicStorageStrategyBuilder.cs" />
     <Compile Include="Feature.AtomicStorage\FileAtomicEntityContainer.cs" />

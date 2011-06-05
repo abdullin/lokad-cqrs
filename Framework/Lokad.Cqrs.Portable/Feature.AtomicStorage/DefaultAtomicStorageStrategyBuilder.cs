@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -31,6 +32,8 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             (type, key) => (CleanName(type.Name) + "-" + Convert.ToString(key, CultureInfo.InvariantCulture).ToLowerInvariant()) + ".pb";
 
         IAtomicStorageSerializer _serializer = new AtomicStorageSerializerWithDataContracts();
+
+
 
         /// <summary>
         /// Provides custom folder for storing singletons.
@@ -88,9 +91,14 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             _folderForEntity = namingConvention;
         }
 
-        public void CustomStaticSerializer(IAtomicStorageSerializer serializer)
+        public void CustomSerializer(IAtomicStorageSerializer serializer)
         {
             _serializer = serializer;
+        }
+
+        public void CustomSerializer(Action<object, Type, Stream> serializer, Func<Type, Stream, object> deserializer)
+        {
+            _serializer = new AtomicStorageSerializerWithDelegates(serializer, deserializer);
         }
 
         /// <summary>
