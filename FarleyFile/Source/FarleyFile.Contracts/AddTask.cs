@@ -45,7 +45,7 @@ where TEvent : FarleyFile.Farley.Event
     [DataContract]
     public sealed class AddTask : Farley.Command
     {
-        [DataMember]
+        [DataMember(Order = 1)]
         public readonly string Name;
 
         public AddTask(string name)

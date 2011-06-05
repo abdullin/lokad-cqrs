@@ -13,8 +13,8 @@ namespace FarleyFile.Web.Controllers
 
         public ActionResult Index()
         {
-            return this.View();
+            var model = FarleyClient.GetUserDashboard();
+            return View(model);
         }
-
     }
 }

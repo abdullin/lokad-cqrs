@@ -1,8 +1,11 @@
-﻿using System.Diagnostics;
-
+﻿using System;
+using System.Diagnostics;
+using System.IO;
+using FarleyFile.Views;
 using Lokad.Cqrs;
 using Lokad.Cqrs.Build.Client;
 using Lokad.Cqrs.Feature.AtomicStorage;
+using ServiceStack.Text;
 
 
 namespace FarleyFile.Web
@@ -18,7 +21,6 @@ namespace FarleyFile.Web
 
         static CqrsClient Build()
         {
-            
             var data = AzureStorage.CreateConfigurationForDev();
             var builder = new CqrsClientBuilder();
             builder.Domain(d => d.HandlerSample<Farley.IFarleyHandler<Farley.IMessage>>(m => m.Consume(null)));
@@ -26,12 +28,13 @@ namespace FarleyFile.Web
             builder.Azure(c => c.AddAzureSender(data, "farley-publish"));
             builder.Storage(s =>
                 {
-                    s.AtomicIsInAzure(data);
+                    s.AtomicIsInAzure(data, b => b.CustomSerializer(JsonSerializer.SerializeToStream, JsonSerializer.DeserializeFromStream));
                     s.StreamingIsInAzure(data);
                 });
 
             return builder.Build();
         }
+
 
         internal static void InitIfNeeded()
         {
@@ -48,9 +51,13 @@ namespace FarleyFile.Web
                 .SendBatch(commands);
         }
 
-        public static NuclearStorage Storage
+        static readonly NuclearStorage Storage = GlobalSetup.BusInstance.Resolve<NuclearStorage>();
+
+        public static UserDashboardView GetUserDashboard()
         {
-            get { return GlobalSetup.BusInstance.Resolve<NuclearStorage>(); }
+            return Storage.GetSingletonOrNew<UserDashboardView>();
         }
+
+        
     }
 }

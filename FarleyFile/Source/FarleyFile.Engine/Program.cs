@@ -8,10 +8,11 @@
 using System;
 using System.Diagnostics;
 using System.Threading;
-using FarleyFile.Engine.Design;
 using Lokad.Cqrs;
+using Lokad.Cqrs.Build;
 using Lokad.Cqrs.Build.Engine;
-using MessageContext = Lokad.Cqrs.MessageContext;
+using ServiceStack.Text;
+
 
 namespace FarleyFile.Engine
 {
@@ -26,8 +27,8 @@ namespace FarleyFile.Engine
             var config = AzureStorage.CreateConfigurationForDev();
             builder.Domain(d => d.HandlerSample<Farley.IFarleyHandler<Farley.IMessage>>(m => m.Consume(null)));
 
-
-            builder.Storage(m => m.AtomicIsInAzure(config));
+            
+            builder.Storage(m => m.AtomicIsInAzure(config, b => b.CustomSerializer(JsonSerializer.SerializeToStream, JsonSerializer.DeserializeFromStream)));
             builder.Azure(m =>
                 {
                     m.AddAzureRouter(config, "farley-inbox", i => i.Items[0].Content is Farley.Command ? "farley-commands" : "farley-events");
