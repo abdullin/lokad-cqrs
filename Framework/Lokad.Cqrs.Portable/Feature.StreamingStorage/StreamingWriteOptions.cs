@@ -17,9 +17,5 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         /// We'll compress data if possible.
         /// </summary>
         CompressIfPossible = 0x01,
-        /// <summary>
-        /// Be default we are optimizing for small read operations. Use this as a hint
-        /// </summary>
-        OptimizeForLargeWrites = 0x02
     }
 }
