@@ -43,12 +43,23 @@ where TEvent : FarleyFile.Farley.Event
 
 
     [DataContract]
-    public sealed class AddTask : Farley.Command
+    public sealed class AddContact : Farley.Command
     {
         [DataMember(Order = 1)]
         public readonly string Name;
 
-        public AddTask(string name)
+        public AddContact(string name)
+        {
+            Name = name;
+        }
+    }
+    [DataContract]
+    public sealed class ContactAdded : Farley.Event
+    {
+        [DataMember(Order = 1)]
+        public readonly string Name;
+
+        public ContactAdded(string name)
         {
             Name = name;
         }

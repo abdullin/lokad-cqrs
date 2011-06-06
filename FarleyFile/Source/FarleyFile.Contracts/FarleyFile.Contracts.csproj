@@ -36,11 +36,9 @@
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AddTask.cs" />
+    <Compile Include="AddContact.cs" />
     <Compile Include="InitializeSample.cs" />
-    <Compile Include="ProjectAggregate.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TaskEntity.cs" />
     <Compile Include="Views\UserDashboardView.cs" />
   </ItemGroup>
   <ItemGroup />

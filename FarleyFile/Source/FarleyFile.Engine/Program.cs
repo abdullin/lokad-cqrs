@@ -28,7 +28,11 @@ namespace FarleyFile.Engine
             builder.Domain(d => d.HandlerSample<Farley.IFarleyHandler<Farley.IMessage>>(m => m.Consume(null)));
 
             
-            builder.Storage(m => m.AtomicIsInAzure(config, b => b.CustomSerializer(JsonSerializer.SerializeToStream, JsonSerializer.DeserializeFromStream)));
+            builder.Storage(m => m.AtomicIsInAzure(config, b =>
+                {
+                    b.CustomSerializer(JsonSerializer.SerializeToStream, JsonSerializer.DeserializeFromStream);
+                    b.WhereEntity(t => t.Name.EndsWith("View") && t.IsDefined(typeof(SerializableAttribute), false));
+                }));
             builder.Azure(m =>
                 {
                     m.AddAzureRouter(config, "farley-inbox", i => i.Items[0].Content is Farley.Command ? "farley-commands" : "farley-events");

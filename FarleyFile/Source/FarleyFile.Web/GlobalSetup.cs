@@ -28,7 +28,11 @@ namespace FarleyFile.Web
             builder.Azure(c => c.AddAzureSender(data, "farley-publish"));
             builder.Storage(s =>
                 {
-                    s.AtomicIsInAzure(data, b => b.CustomSerializer(JsonSerializer.SerializeToStream, JsonSerializer.DeserializeFromStream));
+                    s.AtomicIsInAzure(data, b =>
+                        {
+                            b.CustomSerializer(JsonSerializer.SerializeToStream, JsonSerializer.DeserializeFromStream);
+                            b.WhereEntity(t => t.Name.EndsWith("View") && t.IsDefined(typeof(SerializableAttribute),false));
+                        });
                     s.StreamingIsInAzure(data);
                 });
 
@@ -57,7 +61,5 @@ namespace FarleyFile.Web
         {
             return Storage.GetSingletonOrNew<UserDashboardView>();
         }
-
-        
     }
 }

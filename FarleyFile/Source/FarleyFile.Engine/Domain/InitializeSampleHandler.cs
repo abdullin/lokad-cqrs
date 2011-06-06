@@ -15,8 +15,8 @@ namespace FarleyFile.Engine.Domain
         {
             _sender.SendBatch(new object[]
                 {
-                    new AddTask("Read Lokad.CQRS Documentation"),
-                    new AddTask("Start the sample")
+                    new AddContact("Read Lokad.CQRS Documentation"),
+                    new AddContact("Start the sample")
                 });
         }
     }

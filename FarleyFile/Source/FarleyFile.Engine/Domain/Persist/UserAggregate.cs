@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 
-namespace FarleyFile
+namespace FarleyFile.Engine.Domain.Persist
 {
-    public sealed class ProjectAggregate
+    public sealed class UserAggregate
     {
-        IList<TaskEntity> Tasks = new List<TaskEntity>();
+        IList<ContactEntity> Tasks = new List<ContactEntity>();
 
         public void AddTask(string name)
         {
-            Tasks.Add(new TaskEntity()
+            Tasks.Add(new ContactEntity()
                 {
                     Name = name
                 });

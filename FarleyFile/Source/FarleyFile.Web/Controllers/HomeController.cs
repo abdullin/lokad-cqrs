@@ -16,5 +16,12 @@ namespace FarleyFile.Web.Controllers
             var model = FarleyClient.GetUserDashboard();
             return View(model);
         }
+
+
+        public ActionResult AddContact(string name)
+        {
+            FarleyClient.Send(new AddContact(name));
+            return Content("Cool");
+        }
     }
 }

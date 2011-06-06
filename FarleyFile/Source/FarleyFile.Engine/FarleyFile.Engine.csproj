@@ -55,8 +55,10 @@
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Domain\AddTaskHandler.cs" />
+    <Compile Include="Domain\AddContactHandler.cs" />
     <Compile Include="Domain\InitializeSampleHandler.cs" />
+    <Compile Include="Domain\Persist\ContactEntity.cs" />
+    <Compile Include="Domain\Persist\UserAggregate.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>
