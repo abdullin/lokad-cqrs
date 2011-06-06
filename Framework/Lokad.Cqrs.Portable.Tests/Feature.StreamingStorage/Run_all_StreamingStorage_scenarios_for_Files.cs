@@ -89,11 +89,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
             [Test]
             public void Test()
             {
-                new Engine_scenario_for_streaming_storage().TestConfiguration(cb =>
-                    {
-                        
-                        cb.Storage(m => m.StreamingIsInFiles(_path.FullName));
-                    });
+                new Engine_scenario_for_streaming_storage().TestConfiguration(cb => cb.Storage(m => m.StreamingIsInFiles(_path.FullName)));
             }
 
             [TestFixtureTearDown]
