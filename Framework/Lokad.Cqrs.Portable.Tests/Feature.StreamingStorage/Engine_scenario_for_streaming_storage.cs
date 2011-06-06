@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.Serialization;
+using System.Text;
 using Lokad.Cqrs.Build.Engine;
 using Lokad.Cqrs.Feature.AtomicStorage;
 using NUnit.Framework;
@@ -38,20 +39,27 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
                 {
                     var container = _root.GetContainer("test1");
                     container.Create();
-                    var data = new byte[42];
-                    container.GetItem("data").Write(s => s.Write(data, 0, data.Length));
+                    container.GetItem("data").Write(s =>
+                        {
+                            using (var writer = new StreamWriter(s,Encoding.UTF8))
+                            {
+                                writer.Write(new string('*',50000));
+                            }
+                        });
 
-                    _sender.SendOne(new Do(){Id = "test1"});
+                    _sender.SendOne(new Do {Id = "test1"});
                     return;
                 }
-
-                using (var mem = new MemoryStream())
-                {
-                    _root.GetContainer(message.Id).GetItem("data").ReadInto((props, stream) => stream.CopyTo(mem));
-
-                    Assert.AreEqual(42,mem.Position);
-                    _sender.SendOne(new Finish(), cb => cb.AddString("finish"));
-                }
+                string result = null;
+                _root.GetContainer(message.Id).GetItem("data").ReadInto((props, stream) =>
+                        {
+                            using (var reader = new StreamReader(stream, Encoding.UTF8))
+                            {
+                                result = reader.ReadToEnd();
+                            }
+                        });
+                Assert.AreEqual(new string('*', 50000), result);
+                _sender.SendOne(new Finish(), cb => cb.AddString("finish"));
             }
 
         }
