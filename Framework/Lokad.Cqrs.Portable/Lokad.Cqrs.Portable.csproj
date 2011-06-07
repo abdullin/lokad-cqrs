@@ -78,6 +78,8 @@
     <Compile Include="Feature.MemoryPartition\MemoryQueueWriterFactory.cs" />
     <Compile Include="Feature.MemoryPartition\MemorySchedulingProcess.cs" />
     <Compile Include="Feature.TapeStorage\ISingleThreadTapeWriterFactory.cs" />
+    <Compile Include="Feature.TapeStorage\SingleThreadFileTapeReader.cs" />
+    <Compile Include="Feature.TapeStorage\SingleThreadFileTapeWriter.cs" />
     <Compile Include="Feature.TapeStorage\TapeRecord.cs" />
     <Compile Include="ImmutableAttribute.cs" />
     <Compile Include="MessageContext.cs" />
