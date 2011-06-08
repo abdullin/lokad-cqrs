@@ -38,12 +38,8 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
             var blob = GetBlob();
             try
             {
-                // no retries and small timeout
-                using(var data = blob.OpenRead(new BlobRequestOptions
-                    {
-                        RetryPolicy = RetryPolicies.NoRetry(),
-                        Timeout = TimeSpan.FromSeconds(3)
-                    }))
+                // blob request options are cloned from the config
+                using(var data = blob.OpenRead())
                 {
                     view = _strategy.Deserialize<TView>(data);
                     return true;
