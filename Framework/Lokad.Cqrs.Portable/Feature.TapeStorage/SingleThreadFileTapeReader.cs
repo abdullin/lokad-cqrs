@@ -17,6 +17,9 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
         public IEnumerable<TapeRecord> ReadRecords(int index, int maxCount)
         {
+            if (index < 0)
+                throw new ArgumentOutOfRangeException("Must be more than or equal to zero.", "index");
+
             if (maxCount <= 0)
                 throw new ArgumentOutOfRangeException("Must be more than zero.", "maxCount");
 

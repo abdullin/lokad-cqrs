@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.IO;
 
 namespace Lokad.Cqrs.Feature.TapeStorage
@@ -21,6 +22,11 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
         public ISingleThreadTapeWriter GetOrCreateWriter(string name)
         {
+            if (name == null)
+                throw new ArgumentNullException("name");
+            if (string.IsNullOrWhiteSpace("name"))
+                throw new ArgumentException("Incorrect value.", "name");
+
             var writer = _writers.GetOrAdd(
                 name,
                 n => new SingleThreadFileTapeWriter(Path.Combine(_fullPath, name)));

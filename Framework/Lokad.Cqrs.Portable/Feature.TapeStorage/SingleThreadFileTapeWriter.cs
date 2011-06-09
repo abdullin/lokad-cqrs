@@ -22,6 +22,9 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         /// <param name="records"></param>
         public void SaveRecords(IEnumerable<byte[]> records)
         {
+            if (records == null)
+                throw new ArgumentNullException("records");
+
             if (!records.Any())
                 return;
 
