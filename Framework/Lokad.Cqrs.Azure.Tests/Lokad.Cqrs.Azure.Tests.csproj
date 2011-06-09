@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Lokad.Cqrs</RootNamespace>
-    <AssemblyName>Lokad.Cqrs.Tests</AssemblyName>
+    <AssemblyName>Lokad.Cqrs.Azure.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
