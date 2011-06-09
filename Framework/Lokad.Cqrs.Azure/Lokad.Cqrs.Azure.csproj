@@ -47,6 +47,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Data.Services.Client" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Transactions" />
@@ -62,6 +63,8 @@
     <Compile Include="AzureStorage.cs" />
     <Compile Include="Feature.AtomicStorage\AtomicStorageSerializerWithProtoBuf.cs" />
     <Compile Include="Feature.AzurePartition\Inbox\AzureSchedulingProcess.cs" />
+    <Compile Include="Feature.TapeStorage\SingleThreadSqlTapeReader.cs" />
+    <Compile Include="Feature.TapeStorage\SingleThreadSqlTapeWriter.cs" />
     <Compile Include="Feature.TapeStorage\SqlTapeReaderFactory.cs" />
     <Compile Include="Feature.TapeStorage\SqlTapeWriterFactory.cs" />
     <Compile Include="WipeAzureAccount.cs" />
