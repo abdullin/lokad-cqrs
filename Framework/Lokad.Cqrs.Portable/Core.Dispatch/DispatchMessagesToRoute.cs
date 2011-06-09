@@ -56,7 +56,7 @@ namespace Lokad.Cqrs.Core.Dispatch
             if (!_registry.TryGet(endpoint, out factory))
             {
                 var s = string.Format(
-                        "Route '{0}' was not handled by any single dispatcher. Did you want to send to 'memory:null' or 'memory:{0}' instead?",
+                        "Route '{0}' was not handled by any single dispatcher. Did you want to send to 'memory:null' or 'memory:{0}' instead? Please, read documentation on Routing Dispatcher.",
                         route);
                 throw new InvalidOperationException(s);
             }

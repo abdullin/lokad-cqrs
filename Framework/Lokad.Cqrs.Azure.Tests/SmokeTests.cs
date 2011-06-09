@@ -98,8 +98,14 @@ namespace Lokad.Cqrs
 
                 client.SendOne(new VipMessage {Word = "VIP1 Message"});
                 client.SendOne(new UsualMessage {Word = "Usual Large:" + new string(')', 9000)});
-                client.SendOne(new VipMessage {Word = "VIP Delayed Large :" + new string(')', 9000)},
-                    cb => cb.DelayBy(TimeSpan.FromSeconds(3)));
+
+
+                var vipMessage = new VipMessage
+                    {
+                        Word = "VIP Delayed Large :" + new string(')', 9000)
+                    };
+                client.SendOne(vipMessage, cb => cb.DelayBy(TimeSpan.FromSeconds(3)));
+
                 client.SendOne(new UsualMessage {Word = "Usual Delayed"}, cb => cb.DelayBy(TimeSpan.FromSeconds(2)));
 
                 //client.SendBatch(new VipMessage { Word = " VIP with usual "}, new UsualMessage() { Word = "Vip with usual"});
