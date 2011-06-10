@@ -6,16 +6,18 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 {
     public sealed class SqlTapeWriterFactory : ISingleThreadTapeWriterFactory
     {
-        public const string TableName = "Cqrs_Tape_Storage";
         public const string TableSchema = "dbo";
 
         readonly string _sqlConnectionString;
+        readonly string _tableName;
+
         readonly ConcurrentDictionary<string, ISingleThreadTapeWriter> _writers =
             new ConcurrentDictionary<string, ISingleThreadTapeWriter>();
 
-        public SqlTapeWriterFactory(string sqlConnectionString)
+        public SqlTapeWriterFactory(string sqlConnectionString, string tableName)
         {
             _sqlConnectionString = sqlConnectionString;
+            _tableName = tableName;
         }
 
         public void Init()
@@ -24,7 +26,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             {
                 conn.Open();
 
-                EnsureTableExists(conn, TableName);
+                EnsureTableExists(conn, _tableName);
             }
         }
 
@@ -37,7 +39,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
             var writer = _writers.GetOrAdd(
                 name,
-                n => new SingleThreadSqlTapeWriter(_sqlConnectionString, TableName, name));
+                n => new SingleThreadSqlTapeWriter(_sqlConnectionString, _tableName, name));
 
             return writer;
         }

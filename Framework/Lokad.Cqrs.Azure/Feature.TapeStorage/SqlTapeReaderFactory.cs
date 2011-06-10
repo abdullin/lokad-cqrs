@@ -5,10 +5,12 @@ namespace Lokad.Cqrs.Feature.TapeStorage
     public sealed class SqlTapeReaderFactory : ITapeReaderFactory
     {
         readonly string _sqlConnectionString;
+        readonly string _tableName;
 
-        public SqlTapeReaderFactory(string sqlConnectionString)
+        public SqlTapeReaderFactory(string sqlConnectionString, string tableName)
         {
             _sqlConnectionString = sqlConnectionString;
+            _tableName = tableName;
         }
 
         public ITapeReader GetReader(string name)
@@ -18,7 +20,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             if (string.IsNullOrWhiteSpace("name"))
                 throw new ArgumentException("Incorrect value.", "name");
 
-            return new SingleThreadSqlTapeReader(_sqlConnectionString, SqlTapeWriterFactory.TableName, name);
+            return new SingleThreadSqlTapeReader(_sqlConnectionString, _tableName, name);
         }
     }
 }

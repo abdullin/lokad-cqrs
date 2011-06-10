@@ -1,6 +1,6 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
+using Lokad.Cqrs.Properties;
 using NUnit.Framework;
 
 namespace Lokad.Cqrs.Feature.TapeStorage
@@ -11,17 +11,16 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         [Test]
         public void CanReadImmediatelyAfterWrite()
         {
-            // TODO Create test db
-
-            const string connectionString = @"Data Source=.\sqlexpress;Initial Catalog=testdb;Integrated Security=True";
+            var connectionString = Settings.Default.SqlConnectionString;
+            var tableName = Settings.Default.SqlTapeWriterTableName;
             const string streamName = "test";
 
-            var writerFactory = new SqlTapeWriterFactory(connectionString);
-            writerFactory.Init();
-
-            try
+            using (new TestDatabase(connectionString))
             {
-                var readerFactory = new SqlTapeReaderFactory(connectionString);
+                var writerFactory = new SqlTapeWriterFactory(connectionString, tableName);
+                writerFactory.Init();
+
+                var readerFactory = new SqlTapeReaderFactory(connectionString, tableName);
 
                 var writer = writerFactory.GetOrCreateWriter(streamName);
                 var reader = readerFactory.GetReader(streamName);
@@ -45,10 +44,6 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
                     ix++;
                 }
-            }
-            finally
-            {
-                // TODO Delete test db
             }
         }
     }
