@@ -5,10 +5,10 @@
     /// </summary>
     public sealed class TapeRecord
     {
-        public readonly int Index;
+        public readonly long Index;
         public readonly byte[] Data;
 
-        public TapeRecord(int index, byte[] data)
+        public TapeRecord(long index, byte[] data)
         {
             Index = index;
             Data = data;

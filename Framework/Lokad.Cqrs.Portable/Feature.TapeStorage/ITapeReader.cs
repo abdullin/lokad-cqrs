@@ -10,6 +10,6 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         /// <param name="index">The index to start reading from.</param>
         /// <param name="maxCount">The max count of records to load.</param>
         /// <returns>collection of taped blocks</returns>
-        IEnumerable<TapeRecord> ReadRecords(int index, int maxCount);
+        IEnumerable<TapeRecord> ReadRecords(long index, int maxCount);
     }
 }

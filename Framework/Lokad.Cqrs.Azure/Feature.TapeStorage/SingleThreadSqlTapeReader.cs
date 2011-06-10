@@ -17,16 +17,17 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             _name = name;
         }
 
-        public IEnumerable<TapeRecord> ReadRecords(int index, int maxCount)
+        public IEnumerable<TapeRecord> ReadRecords(long index, int maxCount)
         {
-            if (index < 0)
-                throw new ArgumentOutOfRangeException("Must be more than or equal to zero.", "index");
+            if (index <= 0)
+                throw new ArgumentOutOfRangeException("Must be more than zero.", "index");
 
             if (maxCount <= 0)
                 throw new ArgumentOutOfRangeException("Must be more than zero.", "maxCount");
 
-            if ((long) index + maxCount > (long) int.MaxValue + 1)
-                throw new ArgumentOutOfRangeException("maxCount", "Record index will exceed int.MaxValue.");
+            // index + maxCount - 1 > long.MaxValue, but transformed to avoid overflow
+            if (index - 1 > long.MaxValue - maxCount)
+                throw new ArgumentOutOfRangeException("maxCount", "Record index will exceed long.MaxValue.");
 
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -36,7 +37,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             }
         }
 
-        IEnumerable<TapeRecord> ReadRecords(SqlConnection connection, int begin, int end)
+        IEnumerable<TapeRecord> ReadRecords(SqlConnection connection, long begin, long end)
         {
             const string text = @"
 SELECT [Index], [Data]
@@ -57,12 +58,9 @@ ORDER BY [Index]";
                 while (reader.Read())
                 {
                     var index = (long) reader["Index"];
-                    if (index > int.MaxValue)
-                        throw new IndexOutOfRangeException("Index is more than int.MaxValue.");
-
                     var data = (byte[]) reader["Data"];
 
-                    records.Add(new TapeRecord((int) index, data));
+                    records.Add(new TapeRecord(index, data));
                 }
 
                 return records;

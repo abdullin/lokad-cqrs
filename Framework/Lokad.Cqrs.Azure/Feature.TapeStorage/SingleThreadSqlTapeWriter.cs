@@ -30,24 +30,23 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             {
                 connection.Open();
 
-                var index = GetLastIndex(connection) + 1;
+                var index = GetLastIndex(connection);
 
                 foreach (var record in records)
                 {
                     if (record.Length == 0)
                         throw new ArgumentException("Record must contain at least one byte.");
 
-                    if (index > int.MaxValue)
-                        throw new IndexOutOfRangeException("Index is more than int.MaxValue.");
-
-                        Append(connection, (int) index, record);
-
+                    if (index > long.MaxValue - 1)
+                        throw new IndexOutOfRangeException("Index is more than long.MaxValue.");
                     index++;
+
+                    Append(connection, index, record);
                 }
             }
         }
 
-        void Append(SqlConnection connection, int index, byte[] record)
+        void Append(SqlConnection connection, long index, byte[] record)
         {
             const string text = @"
 INSERT INTO [{0}].[{1}] ([Stream], [Index], [Data])
