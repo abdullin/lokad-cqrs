@@ -33,7 +33,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                         .ToArray())
                     .ToArray();
 
-                var ix = 0;
+                var ix = 1;
                 foreach (var record in records)
                 {
                     writer.SaveRecords(new[] {record});
