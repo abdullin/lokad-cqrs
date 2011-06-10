@@ -37,10 +37,17 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                 var dataStream = dataWriter.BaseStream;
                 var indexStream = indexWriter.BaseStream;
 
+                // Used only to enforce the rule that index must not be more than long.MaxValue
+                var index = indexStream.Position / sizeof(long);
+
                 foreach (var record in records)
                 {
                     if (record.Length == 0)
                         throw new ArgumentException("Record must contain at least one byte.");
+
+                    if (index > long.MaxValue - 1)
+                        throw new IndexOutOfRangeException("Index is more than long.MaxValue.");
+                    index++;
 
                     indexWriter.Write(dataStream.Position);
 
