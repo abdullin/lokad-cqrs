@@ -32,6 +32,10 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                 conn.Open();
                 using (var command = conn.CreateCommand())
                 {
+                    // Disconnect other users from database
+                    command.CommandText = "ALTER DATABASE " + databaseName + " SET SINGLE_USER WITH ROLLBACK IMMEDIATE";
+                    command.ExecuteNonQuery();
+
                     command.CommandText = "DROP DATABASE " + databaseName;
                     command.ExecuteNonQuery();
                 }
