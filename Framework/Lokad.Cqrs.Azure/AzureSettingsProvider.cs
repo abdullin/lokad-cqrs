@@ -17,9 +17,6 @@ namespace Lokad.Cqrs
     /// </summary>
     public sealed class AzureSettingsProvider
     {
-        //static readonly bool HasCloudEnvironment;
-
-
         static bool DetectCloudEnvironment()
         {
             try
@@ -36,6 +33,12 @@ namespace Lokad.Cqrs
 
         static readonly Lazy<bool> HasCloudEnvironment = new Lazy<bool>(DetectCloudEnvironment, true);
 
+        /// <summary>
+        /// Attempts to get the configuration string from cloud environment or app settings.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="result">The result.</param>
+        /// <returns><em>True</em> if configuration value is available, <em>False</em> otherwise</returns>
         public static bool TryGetString(string key, out string result)
         {
             result = null;
@@ -59,7 +62,14 @@ namespace Lokad.Cqrs
             return true;
         }
 
-        public static string GetString(string key)
+        /// <summary>
+        /// Attempts to get the configuration string from cloud environment or app settings. Throws the exception if not available.
+        /// </summary>
+        /// <param name="key">The key to look up.</param>
+        /// <returns>
+        /// configuration value
+        /// </returns>
+        public static string GetStringOrThrow(string key)
         {
             string result;
             if (!TryGetString(key, out result))
