@@ -12,7 +12,14 @@ namespace Lokad.Cqrs.Core.Dispatch
     /// </summary>
     public interface ISingleThreadMessageDispatcher
     {
+        /// <summary>
+        /// Dispatches the message.
+        /// </summary>
+        /// <param name="message">The message.</param>
         void DispatchMessage(ImmutableEnvelope message);
+        /// <summary>
+        /// Initializes this instance
+        /// </summary>
         void Init();
     }
 }
