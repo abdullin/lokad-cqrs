@@ -84,6 +84,15 @@ namespace Lokad.Cqrs.Feature.AzurePartition
                 };
         }
 
+        /// <summary>
+        /// Sets the custom decay policy used to throttle Azure queue checks, when there are no messages for some time.
+        /// </summary>
+        /// <param name="decayPolicy">The decay policy, which is function that returns time to sleep after Nth empty check.</param>
+        public void DecayPolicy(Func<uint ,TimeSpan> decayPolicy)
+        {
+            _decayPolicy = decayPolicy;
+        }
+
 
         public void DispatchAsEvents()
         {
