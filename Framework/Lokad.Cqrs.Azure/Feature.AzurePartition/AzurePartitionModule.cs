@@ -57,20 +57,30 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             _dispatcher = factory;
         }
 
+        /// <summary>
+        /// Allows to specify custom <see cref="IEnvelopeQuarantine"/> optionally resolving 
+        /// additional instances from the container
+        /// </summary>
+        /// <param name="factory">The factory method to specify custom <see cref="IEnvelopeQuarantine"/>.</param>
         public void Quarantine(Func<IComponentContext, IEnvelopeQuarantine> factory)
         {
             _quarantineFactory = factory;
         }
 
-        public void DecayPolicy(TimeSpan timeout)
+        /// <summary>
+        /// Sets the custom decay policy used to throttle Azure queue checks, when there are no messages for some time.
+        /// This overload eventually slows down requests till the max of <paramref name="maxInterval"/>
+        /// </summary>
+        /// <param name="maxInterval">The maximum interval to keep between checks, when there are no messages in the queue.</param>
+        public void DecayPolicy(TimeSpan maxInterval)
         {
             //var seconds = (Rand.Next(0, 1000) / 10000d).Seconds();
-            var seconds = timeout.TotalSeconds;
+            var seconds = maxInterval.TotalSeconds;
             _decayPolicy = l =>
                 {
                     if (l >= 31)
                     {
-                        return timeout;
+                        return maxInterval;
                     }
 
                     if (l == 0)
@@ -94,11 +104,19 @@ namespace Lokad.Cqrs.Feature.AzurePartition
         }
 
 
+        /// <summary>
+        /// Wires <see cref="DispatchOneEvent"/> implementation of <see cref="ISingleThreadMessageDispatcher"/> 
+        /// into this partition. It allows dispatching a single event to zero or more consumers.
+        /// </summary>
         public void DispatchAsEvents()
         {
             DispatcherIs((ctx, map, strategy) => new DispatchOneEvent(map, ctx.Resolve<ISystemObserver>(), strategy));
         }
-        
+
+        /// <summary>
+        /// Wires <see cref="DispatchCommandBatch"/> implementation of <see cref="ISingleThreadMessageDispatcher"/> 
+        /// into this partition. It allows dispatching multiple commands (in a single envelope) to one consumer each.
+        /// </summary>
         public void DispatchAsCommandBatch()
         {
             DispatcherIs((ctx, map, strategy) => new DispatchCommandBatch(map, strategy));
@@ -139,12 +157,22 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             return transport;
         }
 
+        /// <summary>
+        /// Specifies queue visibility timeout for Azure Queues.
+        /// </summary>
+        /// <param name="timeoutMilliseconds">The timeout milliseconds.</param>
+        /// <returns></returns>
         public AzurePartitionModule QueueVisibility(int timeoutMilliseconds)
         {
             _queueVisibilityTimeout = TimeSpan.FromMilliseconds(timeoutMilliseconds);
             return this;
         }
 
+        /// <summary>
+        /// Specifies queue visibility timeout for Azure Queues.
+        /// </summary>
+        /// <param name="timespan">The timespan.</param>
+        /// <returns></returns>
         public AzurePartitionModule QueueVisibility(TimeSpan timespan)
         {
             _queueVisibilityTimeout = timespan;
