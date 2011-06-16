@@ -31,7 +31,6 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 
         readonly IAzureStorageConfig _config;
 
-
         Func<IComponentContext, MessageActivationInfo[], IMessageDispatchStrategy, ISingleThreadMessageDispatcher> _dispatcher;
 
 
@@ -105,8 +104,9 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 
 
         /// <summary>
-        /// Wires <see cref="DispatchOneEvent"/> implementation of <see cref="ISingleThreadMessageDispatcher"/> 
-        /// into this partition. It allows dispatching a single event to zero or more consumers.
+        /// <para>Wires <see cref="DispatchOneEvent"/> implementation of <see cref="ISingleThreadMessageDispatcher"/> 
+        /// into this partition. It allows dispatching a single event to zero or more consumers.</para>
+        /// <para> Additional information is available in project docs.</para>
         /// </summary>
         public void DispatchAsEvents()
         {
@@ -114,8 +114,9 @@ namespace Lokad.Cqrs.Feature.AzurePartition
         }
 
         /// <summary>
-        /// Wires <see cref="DispatchCommandBatch"/> implementation of <see cref="ISingleThreadMessageDispatcher"/> 
-        /// into this partition. It allows dispatching multiple commands (in a single envelope) to one consumer each.
+        /// <para>Wires <see cref="DispatchCommandBatch"/> implementation of <see cref="ISingleThreadMessageDispatcher"/> 
+        /// into this partition. It allows dispatching multiple commands (in a single envelope) to one consumer each.</para>
+        /// <para> Additional information is available in project docs.</para>
         /// </summary>
         public void DispatchAsCommandBatch()
         {
@@ -128,10 +129,10 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 
         readonly MessageDirectoryFilter _filter = new MessageDirectoryFilter();
 
-        public AzurePartitionModule DirectoryFilter(Action<MessageDirectoryFilter> filter)
+        public void DirectoryFilter(Action<MessageDirectoryFilter> filter)
         {
             filter(_filter);
-            return this;
+            
         }
 
         IEngineProcess BuildConsumingProcess(IComponentContext context)
@@ -161,22 +162,18 @@ namespace Lokad.Cqrs.Feature.AzurePartition
         /// Specifies queue visibility timeout for Azure Queues.
         /// </summary>
         /// <param name="timeoutMilliseconds">The timeout milliseconds.</param>
-        /// <returns></returns>
-        public AzurePartitionModule QueueVisibility(int timeoutMilliseconds)
+        public void QueueVisibility(int timeoutMilliseconds)
         {
             _queueVisibilityTimeout = TimeSpan.FromMilliseconds(timeoutMilliseconds);
-            return this;
         }
 
         /// <summary>
         /// Specifies queue visibility timeout for Azure Queues.
         /// </summary>
         /// <param name="timespan">The timespan.</param>
-        /// <returns></returns>
-        public AzurePartitionModule QueueVisibility(TimeSpan timespan)
+        public void QueueVisibility(TimeSpan timespan)
         {
             _queueVisibilityTimeout = timespan;
-            return this;
         }
 
         public void Configure(IComponentRegistry container)
