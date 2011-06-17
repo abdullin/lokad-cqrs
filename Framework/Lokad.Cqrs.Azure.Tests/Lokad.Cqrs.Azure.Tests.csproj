@@ -63,6 +63,7 @@
     <Compile Include="BasicClientConfigurationTests.cs" />
     <Compile Include="Feature.AtomicStorage\Given_Azure_Configuration.cs" />
     <Compile Include="Feature.AtomicStorage\When_DefaultAzureAtomicStorageStrategy_is_used.cs" />
+    <Compile Include="Feature.TapeStorage\BlobTapeStorageTests.cs" />
     <Compile Include="Feature.TapeStorage\DatabaseHelper.cs" />
     <Compile Include="Feature.TapeStorage\SqlTapeStorageTests.cs" />
     <Compile Include="Performance_tests_with_one_thread.cs" />

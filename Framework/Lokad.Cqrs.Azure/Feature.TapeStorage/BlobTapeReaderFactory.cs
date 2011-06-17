@@ -22,7 +22,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         {
             var container = _cloudBlobClient.GetContainerReference(_containerName);
 
-            return new BlobTapeReader(container, _containerName);
+            return new BlobTapeReader(container, name);
         }
     }
 }

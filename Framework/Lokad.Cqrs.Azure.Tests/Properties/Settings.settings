@@ -12,5 +12,8 @@
     <Setting Name="SqlTapeWriterTableName" Type="System.String" Scope="Application">
       <Value Profile="(Default)">Cqrs_Tape_Storage</Value>
     </Setting>
+    <Setting Name="StorageConnectionString" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">UseDevelopmentStorage=true</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
