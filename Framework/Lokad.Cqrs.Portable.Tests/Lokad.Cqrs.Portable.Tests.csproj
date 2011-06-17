@@ -34,6 +34,7 @@
     <Reference Include="Autofac">
       <HintPath>..\Library\Autofac\Autofac.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="nunit.framework">
       <HintPath>..\Library\NUnit\nunit.framework.dll</HintPath>
     </Reference>
@@ -91,7 +92,22 @@
     <Compile Include="Given_MessageContext_Specified.cs" />
     <Compile Include="BasicEngineConfigurationTests.cs" />
     <Compile Include="Given_MessageContext_Omitted.cs" />
+    <Compile Include="Scenarios\SimpleES\AccountAggregateReader.cs" />
+    <Compile Include="Scenarios\SimpleES\AccountAggregateRepository.cs" />
+    <Compile Include="Scenarios\SimpleES\AccountAggregateWriter.cs" />
+    <Compile Include="Scenarios\SimpleES\Contracts\AccountCreated.cs" />
+    <Compile Include="Scenarios\SimpleES\AccountHandler.cs" />
+    <Compile Include="Scenarios\SimpleES\Contracts\AddLogin.cs" />
+    <Compile Include="Scenarios\SimpleES\Contracts\CreateAccount.cs" />
+    <Compile Include="Scenarios\SimpleES\Definitions\Define.cs" />
+    <Compile Include="Scenarios\SimpleES\Definitions\IAccountCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Scenarios\SimpleES\Definitions\IAccountEvent.cs" />
+    <Compile Include="Scenarios\SimpleES\InMemoryEventStreamer.cs" />
+    <Compile Include="Scenarios\SimpleES\Contracts\LoginAdded.cs" />
+    <Compile Include="Scenarios\SimpleES\Contracts\LoginIndex.cs" />
+    <Compile Include="Scenarios\SimpleES\RedirectToWhen.cs" />
+    <Compile Include="Scenarios\SimpleES\SimpleESTests.cs" />
     <Compile Include="Synthetic\Engine_scenario_for_permanent_failure.cs" />
     <Compile Include="Synthetic\Engine_scenario_for_transactional_commands.cs" />
     <Compile Include="Synthetic\Engine_scenario_for_transient_failure.cs" />
