@@ -29,6 +29,18 @@ namespace Lokad.Cqrs
         }
 
         /// <summary>
+        /// Creates the simplified nuclear storage wrapper around Atomic storage, using the default
+        /// storage configuration and atomic strategy.
+        /// </summary>
+        /// <returns>
+        /// new instance of the nuclear storage
+        /// </returns>
+         public static NuclearStorage CreateNuclear()
+        {
+            return CreateNuclear(new MemStore(), b => { });
+        }
+
+        /// <summary>
         /// Creates the simplified nuclear storage wrapper around Atomic storage.
         /// </summary>
         /// <param name="dictionary">The dictionary.</param>
