@@ -48,10 +48,18 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                         throw new IndexOutOfRangeException("Index is more than long.MaxValue.");
                     index++;
 
-                    indexWriter.Write(dataStream.Position);
+                    var buffer = new byte[sizeof(int) + record.Length];
+                    using (var bw = new BinaryWriter(new MemoryStream(buffer)))
+                    {
+                        bw.Write(record.Length);
+                        bw.Write(record);
+                    }
 
-                    dataWriter.Write(record.Length);
-                    dataWriter.Write(record);
+                    var offset = dataStream.Position;
+
+                    dataWriter.Write(buffer);
+
+                    indexWriter.Write(offset);
 
                     dataStream.Flush();
                     indexStream.Flush();
@@ -65,8 +73,8 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
         Writers CreateWriters()
         {
-            var dataBlob = _container.GetBlockBlobReference(_dataBlobName);
-            var indexBlob = _container.GetBlockBlobReference(_indexBlobName);
+            var dataBlob = _container.GetPageBlobReference(_dataBlobName);
+            var indexBlob = _container.GetPageBlobReference(_indexBlobName);
 
             var dataExists = dataBlob.Exists();
             var indexExists = indexBlob.Exists();
@@ -81,10 +89,10 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
             Writers writers;
 
-            var dataStream = dataBlob.OpenWrite();
+            var dataStream = dataBlob.OpenAppend();
             writers.DataWriter = new BinaryWriter(dataStream);
 
-            var indexStream = indexBlob.OpenWrite();
+            var indexStream = indexBlob.OpenAppend();
             writers.IndexWriter = new BinaryWriter(indexStream);
 
             return writers;

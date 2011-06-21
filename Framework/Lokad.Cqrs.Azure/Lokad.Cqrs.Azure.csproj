@@ -63,10 +63,12 @@
     <Compile Include="AzureStorage.cs" />
     <Compile Include="Feature.AtomicStorage\AtomicStorageSerializerWithProtoBuf.cs" />
     <Compile Include="Feature.AzurePartition\Inbox\AzureSchedulingProcess.cs" />
+    <Compile Include="Feature.TapeStorage\PageBlobReadStream.cs" />
     <Compile Include="Feature.TapeStorage\BlobExtensions.cs" />
     <Compile Include="Feature.TapeStorage\BlobTapeReaderFactory.cs" />
     <Compile Include="Feature.TapeStorage\BlobTapeWriterFactory.cs" />
     <Compile Include="Feature.TapeStorage\BlobTapeReader.cs" />
+    <Compile Include="Feature.TapeStorage\PageBlobAppendStream.cs" />
     <Compile Include="Feature.TapeStorage\SingleThreadBlobTapeWriter.cs" />
     <Compile Include="Feature.TapeStorage\SingleThreadSqlTapeReader.cs" />
     <Compile Include="Feature.TapeStorage\SingleThreadSqlTapeWriter.cs" />

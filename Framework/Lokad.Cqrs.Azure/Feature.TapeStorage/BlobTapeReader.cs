@@ -32,63 +32,134 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
             var readers = CreateReaders();
 
+            var readAheadInBytes = _container.ServiceClient.ReadAheadInBytes;
+            _container.ServiceClient.ReadAheadInBytes = 0;
             try
             {
                 var dataReader = readers.DataReader;
-                var indexReader = readers.IndexReader;
-                var dataStream = dataReader.BaseStream;
-                var indexStream = indexReader.BaseStream;
 
-                var indexOffset = (index - 1) * sizeof(long);
-                if (indexOffset >= indexStream.Length)
-                    yield break;
+                var range = GetReadRange(readers, index - 1, maxCount);
+                var dataOffset = range.Item1;
+                var dataSize = range.Item2;
+                var recordCount = range.Item3;
 
-                indexStream.Position = indexOffset;
-                dataStream.Position = indexReader.ReadInt64();
+                dataReader.BaseStream.Seek(dataOffset, SeekOrigin.Begin);
+                var recordsBuffer = dataReader.ReadBytes(dataSize);
 
-                var count = 0;
-                var recordIndex = index;
-                while (count < maxCount)
+                using (var br = new BinaryReader(new MemoryStream(recordsBuffer)))
                 {
-                    if (dataStream.Position == dataStream.Length)
-                        yield break;
+                    var recordIndex = index;
+                    var counter = 0;
 
-                    var recordSize = dataReader.ReadInt32();
-                    var data = dataReader.ReadBytes(recordSize);
-                    yield return new TapeRecord(recordIndex, data);
+                    var records = new List<TapeRecord>();
 
-                    count++;
-                    recordIndex++;
+                    while (counter < recordCount)
+                    {
+                        var recordSize = br.ReadInt32();
+                        var data = br.ReadBytes(recordSize);
+
+                        records.Add(new TapeRecord(recordIndex, data));
+
+                        counter++;
+                        recordIndex++;
+                    }
+
+                    return records;
                 }
             }
             finally
             {
+                _container.ServiceClient.ReadAheadInBytes = readAheadInBytes;
                 DisposeReaders(readers);
             }
         }
 
+        static Tuple<long,int,int> GetReadRange(Readers readers, long firstIndex, int maxCount)
+        {
+            const int indexRecordSize = sizeof(long);
+
+            var indexLength = readers.IndexReader.BaseStream.Length; // cache value to avoid many HTTP requests
+            var indexCount = indexLength / indexRecordSize;
+
+            if (firstIndex >= indexCount)
+                return Tuple.Create(0L, 0, 0);
+
+            var lastIndex = Math.Min(firstIndex + maxCount, indexCount);
+
+            var readLastOffsetFromData = false;
+            if (lastIndex == indexCount)
+            {
+                lastIndex--;
+                readLastOffsetFromData = true;
+            }
+
+            var bytesToReadFromIndex = (lastIndex - firstIndex + 1) * indexRecordSize;
+            if (bytesToReadFromIndex > int.MaxValue)
+                throw new NotSupportedException("Can not read more than int.MaxValue records.");
+
+            readers.IndexReader.BaseStream.Seek(firstIndex * indexRecordSize, SeekOrigin.Begin);
+
+            long firstOffset;
+            long lastOffset;
+
+            // Read first and last index in one request
+            // It's assumed that records will be read in small chunks
+            var indexes = readers.IndexReader.ReadBytes((int) bytesToReadFromIndex);
+            using (var br = new BinaryReader(new MemoryStream(indexes)))
+            {
+                firstOffset = br.ReadInt64();
+
+                if (lastIndex == firstIndex)
+                    lastOffset = firstOffset;
+                else
+                {
+                    br.BaseStream.Seek(-indexRecordSize, SeekOrigin.End);
+                    lastOffset = br.ReadInt64();
+                }
+            }
+
+            var recordCount = (int) (lastIndex - firstIndex);
+            long count;
+            if (!readLastOffsetFromData)
+            {
+                count = lastOffset - firstOffset;
+                if (count > int.MaxValue)
+                    throw new NotSupportedException("Can not read more than int.MaxValue bytes of data.");
+
+                return Tuple.Create(firstOffset, (int) count, recordCount);
+            }
+
+            readers.DataReader.BaseStream.Seek(lastOffset, SeekOrigin.Begin);
+            var recordSize = readers.DataReader.ReadInt16();
+
+            count = lastOffset + sizeof(int) + recordSize - firstOffset;
+            if (count > int.MaxValue)
+                throw new NotSupportedException("Can not read more than int.MaxValue bytes of data.");
+
+            return Tuple.Create(firstOffset, (int) count, recordCount + 1);
+        }
+
         Readers CreateReaders()
         {
-            var dataBlob = _container.GetBlockBlobReference(_dataBlobName);
-            var indexBlob = _container.GetBlockBlobReference(_indexBlobName);
+            var dataBlob = _container.GetPageBlobReference(_dataBlobName);
+            var indexBlob = _container.GetPageBlobReference(_indexBlobName);
 
             var dataExists = dataBlob.Exists();
             var indexExists = indexBlob.Exists();
 
-            if ((dataExists || indexExists) && (!dataExists || !indexExists))
-            {
-                if (!dataExists)
-                    throw new InvalidOperationException("Index blob found but no data blob.");
-
+            if (dataExists && !indexExists)
                 throw new InvalidOperationException("Data blob found but no index blob.");
-            }
+            if (!dataExists && indexExists)
+                throw new InvalidOperationException("Index blob found but no data blob.");
+            if (!dataExists && !indexExists)
+                throw new InvalidOperationException("Neither data nor index blob found.");
 
             Readers readers;
 
-            var dataStream = dataBlob.OpenRead();
+            var dataStream = dataBlob.OpenReadAppending();
             readers.DataReader = new BinaryReader(dataStream);
 
-            var indexStream = indexBlob.OpenRead();
+            var indexStream = indexBlob.OpenReadAppending();
             readers.IndexReader = new BinaryReader(indexStream);
 
             return readers;
