@@ -34,23 +34,52 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         public void CanReadImmediatelyAfterWrite()
         {
             var rand = new Random();
-            var recordsCount = 1;// rand.Next(1000) + 1;
-            var records = Enumerable.Range(1, recordsCount)
-                .Select(a => Enumerable.Range(1, rand.Next(1000) + 1)
-                    .Select(b => (byte)rand.Next(byte.MaxValue + 1))
+
+            var testsCount = rand.Next(50) + 1;
+
+            var recordSets = Enumerable.Range(1, testsCount)
+                .Select(c => Enumerable.Range(1, rand.Next(5) + 1)
+                    .Select(a => Enumerable.Range(1, rand.Next(1000) + 1)
+                        .Select(b => (byte)rand.Next(byte.MaxValue + 1))
+                        .ToArray())
                     .ToArray())
                 .ToArray();
 
             var ix = 1;
-            foreach (var record in records)
+            foreach (var records in recordSets)
             {
-                _writer.SaveRecords(new[] { record });
-                var read = _reader.ReadRecords(ix, 1).ToArray();
-                Assert.AreEqual(1, read.Length);
-                Assert.AreEqual(ix, read[0].Index);
-                Assert.AreEqual(record, read[0].Data);
+                _writer.SaveRecords(records);
 
-                ix++;
+                var offset = rand.Next(3);
+                var count = records.Length + rand.Next(5) - 2;
+                if (count < 1)
+                    count = 1;
+
+                while (offset + count > records.Length)
+                {
+                    if (rand.Next(2) == 0)
+                    {
+                        if (count > 1)
+                            count--;
+                    }
+                    else
+                    {
+                        if (offset > 0)
+                            offset--;
+                    }
+                }
+
+                var readRecords = _reader.ReadRecords(ix + offset, count).ToArray();
+
+                var mustReadRecords = Math.Min(count, records.Length);
+
+                Assert.AreEqual(mustReadRecords, readRecords.Length);
+                Assert.AreEqual(ix + offset, readRecords[0].Index);
+                var expectedRecords = records.Skip(offset).Take(mustReadRecords).ToArray();
+                var actualRecords = readRecords.Select(tr => tr.Data).ToArray();
+                Assert.AreEqual(expectedRecords, actualRecords);
+
+                ix += records.Length;
             }
         }
 
