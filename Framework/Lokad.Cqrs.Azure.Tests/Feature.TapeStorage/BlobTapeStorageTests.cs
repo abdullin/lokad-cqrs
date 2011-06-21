@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Lokad.Cqrs.Properties;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
@@ -24,6 +21,17 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
             var cloudStorageAccount = CloudStorageAccount.FromConfigurationSetting("StorageConnectionString");
             _cloudBlobClient = cloudStorageAccount.CreateCloudBlobClient();
+
+            try
+            {
+                _cloudBlobClient.GetContainerReference(ContainerName).FetchAttributes();
+                throw new InvalidOperationException("Container '" + ContainerName + "' already exists!");
+            }
+            catch (StorageClientException e)
+            {
+                if (e.ErrorCode != StorageErrorCode.ResourceNotFound)
+                    throw new InvalidOperationException("Container '" + ContainerName + "' already exists!");
+            }
 
             _writerFactory = new BlobTapeWriterFactory(_cloudBlobClient, ContainerName);
             _writerFactory.Init();
