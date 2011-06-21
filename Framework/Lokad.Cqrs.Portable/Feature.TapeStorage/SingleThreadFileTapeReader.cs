@@ -40,8 +40,8 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                 if (indexOffset >= indexStream.Length)
                     yield break;
 
-                indexStream.Position = indexOffset;
-                dataStream.Position = indexReader.ReadInt64();
+                indexStream.Seek(indexOffset, SeekOrigin.Begin);
+                dataStream.Seek(indexReader.ReadInt64(), SeekOrigin.Begin);
 
                 var count = 0;
                 var recordIndex = index;
