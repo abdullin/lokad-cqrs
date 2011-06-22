@@ -39,9 +39,9 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
                     if (index > long.MaxValue - 1)
                         throw new IndexOutOfRangeException("Index is more than long.MaxValue.");
+                    index++;
 
                     Append(connection, index, record);
-                    index+=1;
                 }
             }
         }
@@ -71,7 +71,7 @@ VALUES (@Stream, @Index, @Data)";
                 command.Parameters.AddWithValue("@Stream", _name);
 
                 var result = command.ExecuteScalar();
-                return result is DBNull ? 0 : (long) result;
+                return result is DBNull ? -1 : (long) result;
             }
         }
     }
