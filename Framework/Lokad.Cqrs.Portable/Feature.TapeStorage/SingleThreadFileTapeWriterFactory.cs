@@ -4,13 +4,13 @@ using System.IO;
 
 namespace Lokad.Cqrs.Feature.TapeStorage
 {
-    public sealed class FileTapeWriterFactory : ISingleThreadTapeWriterFactory
+    public sealed class SingleThreadFileTapeWriterFactory : ISingleThreadTapeWriterFactory
     {
         readonly string _fullPath;
         readonly ConcurrentDictionary<string, ISingleThreadTapeWriter> _writers =
             new ConcurrentDictionary<string, ISingleThreadTapeWriter>();
 
-        public FileTapeWriterFactory(string fullPath)
+        public SingleThreadFileTapeWriterFactory(string fullPath)
         {
             _fullPath = fullPath;
         }

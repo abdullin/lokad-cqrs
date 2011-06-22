@@ -7,7 +7,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
     public class FileTapeStorageTests : TapeStorageTests
     {
         string _path;
-        FileTapeWriterFactory _writerFactory;
+        SingleThreadFileTapeWriterFactory _writerFactory;
         ITapeReaderFactory _readerFactory;
 
         protected override void SetUp()
@@ -15,7 +15,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             _path = Path.GetTempFileName();
             File.Delete(_path);
 
-            _writerFactory = new FileTapeWriterFactory(_path);
+            _writerFactory = new SingleThreadFileTapeWriterFactory(_path);
             _writerFactory.Init();
 
             _readerFactory = new FileTapeReaderFactory(_path);

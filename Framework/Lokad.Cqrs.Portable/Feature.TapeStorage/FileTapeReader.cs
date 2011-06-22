@@ -4,12 +4,12 @@ using System.IO;
 
 namespace Lokad.Cqrs.Feature.TapeStorage
 {
-    public class SingleThreadFileTapeReader : ITapeReader
+    public class FileTapeReader : ITapeReader
     {
         readonly string _dataFileName;
         readonly string _indexFileName;
 
-        public SingleThreadFileTapeReader(string name)
+        public FileTapeReader(string name)
         {
             _dataFileName = Path.ChangeExtension(name, ".tmd");
             _indexFileName = Path.ChangeExtension(name, ".tmi");

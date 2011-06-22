@@ -20,7 +20,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             if (string.IsNullOrWhiteSpace("name"))
                 throw new ArgumentException("Incorrect value.", "name");
 
-            return new SingleThreadSqlTapeReader(_sqlConnectionString, _tableName, name);
+            return new SqlTapeReader(_sqlConnectionString, _tableName, name);
         }
     }
 }

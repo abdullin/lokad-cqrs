@@ -4,7 +4,7 @@ using System.Data.SqlClient;
 
 namespace Lokad.Cqrs.Feature.TapeStorage
 {
-    public sealed class SqlTapeWriterFactory : ISingleThreadTapeWriterFactory
+    public sealed class SingleThreadSqlTapeWriterFactory : ISingleThreadTapeWriterFactory
     {
         public const string TableSchema = "dbo";
 
@@ -14,7 +14,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         readonly ConcurrentDictionary<string, ISingleThreadTapeWriter> _writers =
             new ConcurrentDictionary<string, ISingleThreadTapeWriter>();
 
-        public SqlTapeWriterFactory(string sqlConnectionString, string tableName)
+        public SingleThreadSqlTapeWriterFactory(string sqlConnectionString, string tableName)
         {
             _sqlConnectionString = sqlConnectionString;
             _tableName = tableName;

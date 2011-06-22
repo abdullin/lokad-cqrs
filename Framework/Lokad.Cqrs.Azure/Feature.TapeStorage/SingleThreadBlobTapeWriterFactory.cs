@@ -5,14 +5,14 @@ using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs.Feature.TapeStorage
 {
-    public class BlobTapeWriterFactory : ISingleThreadTapeWriterFactory
+    public class SingleThreadBlobTapeWriterFactory : ISingleThreadTapeWriterFactory
     {
         readonly CloudBlobClient _cloudBlobClient;
         readonly string _containerName;
         readonly ConcurrentDictionary<string, ISingleThreadTapeWriter> _writers =
             new ConcurrentDictionary<string, ISingleThreadTapeWriter>();
 
-        public BlobTapeWriterFactory(CloudBlobClient cloudBlobClient, string containerName)
+        public SingleThreadBlobTapeWriterFactory(CloudBlobClient cloudBlobClient, string containerName)
         {
             if (containerName.Any(Char.IsUpper))
                 throw new ArgumentException("All letters in a container name must be lowercase.");

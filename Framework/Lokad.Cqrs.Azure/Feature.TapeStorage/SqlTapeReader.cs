@@ -4,13 +4,13 @@ using System.Data.SqlClient;
 
 namespace Lokad.Cqrs.Feature.TapeStorage
 {
-    public class SingleThreadSqlTapeReader : ITapeReader
+    public class SqlTapeReader : ITapeReader
     {
         readonly string _connectionString;
         readonly string _tableName;
         readonly string _name;
 
-        public SingleThreadSqlTapeReader(string connectionString, string tableName, string name)
+        public SqlTapeReader(string connectionString, string tableName, string name)
         {
             _connectionString = connectionString;
             _tableName = tableName;
@@ -46,7 +46,7 @@ FROM [{0}].[{1}]
 WHERE [Stream] = @Stream AND [Index] >= (@offset)
 ORDER BY [Index]";
 
-            using (var command = new SqlCommand(string.Format(text, SqlTapeWriterFactory.TableSchema, _tableName), connection))
+            using (var command = new SqlCommand(string.Format(text, SingleThreadSqlTapeWriterFactory.TableSchema, _tableName), connection))
             {
                 command.Parameters.AddWithValue("@Stream", _name);
                 command.Parameters.AddWithValue("@count", count);

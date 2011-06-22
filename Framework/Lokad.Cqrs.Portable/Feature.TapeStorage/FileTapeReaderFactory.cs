@@ -19,7 +19,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             if (string.IsNullOrWhiteSpace("name"))
                 throw new ArgumentException("Incorrect value.", "name");
 
-            var reader = new SingleThreadFileTapeReader(Path.Combine(_fullPath, name));
+            var reader = new FileTapeReader(Path.Combine(_fullPath, name));
 
             return reader;
         }
