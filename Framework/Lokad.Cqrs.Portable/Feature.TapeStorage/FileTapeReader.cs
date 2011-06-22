@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Lokad.Cqrs.Feature.TapeStorage
 {
@@ -26,6 +27,17 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             // index + maxCount - 1 > long.MaxValue, but transformed to avoid overflow
             if (offset > long.MaxValue - maxCount)
                 throw new ArgumentOutOfRangeException("maxCount", "Record index will exceed long.MaxValue.");
+
+            var dataExists = File.Exists(_dataFileName);
+            var indexExists = File.Exists(_indexFileName);
+
+            // we return empty result if writer didn't even start writing to the storage.
+            if (false == (dataExists && indexExists))
+                yield break;
+
+            if (!dataExists || !indexExists)
+                throw new InvalidOperationException("Data and index file should exist both. Probable corruption.");
+
 
             var readers = CreateReaders();
 
@@ -66,12 +78,6 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
         Readers CreateReaders()
         {
-            var dataExists = File.Exists(_dataFileName);
-            var indexExists = File.Exists(_indexFileName);
-
-            if (!dataExists || !indexExists)
-                throw new InvalidOperationException("Data or index file not found.");
-
             Readers readers;
 
             var data = new FileStream(_dataFileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
