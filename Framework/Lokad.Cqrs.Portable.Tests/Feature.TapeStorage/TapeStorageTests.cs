@@ -6,6 +6,8 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 {
     public abstract class TapeStorageTests
     {
+        // ReSharper disable InconsistentNaming
+
         ISingleThreadTapeWriter _writer;
         ITapeReader _reader;
 
@@ -81,6 +83,12 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
                 ix += records.Length;
             }
+        }
+
+        [Test]
+        public void Reading_empty_storage_returns_none()
+        {
+            CollectionAssert.IsEmpty(_reader.ReadRecords(0,10));
         }
 
         protected struct TestConfiguration
