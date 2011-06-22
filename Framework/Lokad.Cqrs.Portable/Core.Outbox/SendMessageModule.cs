@@ -6,9 +6,11 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using Autofac;
 using Autofac.Core;
+using System.Linq;
 
 namespace Lokad.Cqrs.Core.Outbox
 {
@@ -16,7 +18,10 @@ namespace Lokad.Cqrs.Core.Outbox
     {
         readonly Func<IComponentContext, string,IQueueWriterFactory> _construct;
         readonly string _endpoint;
-        readonly string _queueName;
+        
+
+        readonly HashSet<string> _queueNames = new HashSet<string>();
+
         Func<string> _keyGenerator = () => Guid.NewGuid().ToString().ToLowerInvariant();
 
 
@@ -24,12 +29,20 @@ namespace Lokad.Cqrs.Core.Outbox
         {
             _construct = construct;
             _endpoint = endpoint;
-            _queueName = queueName;
+            _queueNames.Add(queueName);
         }
 
         public void IdGenerator(Func<string> generator)
         {
             _keyGenerator = generator;
+        }
+
+        public void MoreRandomQueues(params string[] queueNames)
+        {
+            foreach (var name in queueNames)
+            {
+                _queueNames.Add(name);
+            }
         }
 
         public void IdGeneratorForTests()
@@ -48,8 +61,8 @@ namespace Lokad.Cqrs.Core.Outbox
             var registry = c.Resolve<QueueWriterRegistry>();
             
             var factory = registry.GetOrAdd(_endpoint, s => _construct(c, s));
-            var queue = factory.GetWriteQueue(_queueName);
-            return new DefaultMessageSender(queue, observer, _keyGenerator);
+            var queues = _queueNames.Select(factory.GetWriteQueue).ToArray();
+            return new DefaultMessageSender(queues, observer, _keyGenerator);
 
         }
 

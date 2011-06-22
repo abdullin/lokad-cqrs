@@ -14,15 +14,18 @@ namespace Lokad.Cqrs.Core.Outbox
 {
     sealed class DefaultMessageSender : IMessageSender
     {
-        readonly IQueueWriter _queue;
+        readonly IQueueWriter[] _queues;
         readonly ISystemObserver _observer;
         readonly Func<string> _idGenerator;
 
-        public DefaultMessageSender(IQueueWriter queue, ISystemObserver observer, Func<string> idGenerator)
+        public DefaultMessageSender(IQueueWriter[] queues, ISystemObserver observer, Func<string> idGenerator)
         {
-            _queue = queue;
+            _queues = queues;
             _observer = observer;
             _idGenerator = idGenerator;
+
+            if (queues.Length == 0)
+                throw new InvalidOperationException("There should be at least one queue");
         }
 
         public void SendOne(object content)
@@ -46,6 +49,8 @@ namespace Lokad.Cqrs.Core.Outbox
             InnerSendBatch(builder, content);
         }
 
+        
+        Random _random = new Random();
 
 
         void InnerSendBatch(Action<EnvelopeBuilder> configure, object[] messageItems) {
@@ -63,22 +68,32 @@ namespace Lokad.Cqrs.Core.Outbox
             configure(builder);
             var envelope = builder.Build();
 
+            var queue = GetOutboundQueue();
+
             if (Transaction.Current == null)
             {
-                _queue.PutMessage(envelope);
-                _observer.Notify(new EnvelopeSent(_queue.Name, envelope.EnvelopeId, false,
+                queue.PutMessage(envelope);
+                _observer.Notify(new EnvelopeSent(queue.Name, envelope.EnvelopeId, false,
                     envelope.Items.Select(x => x.MappedType.Name).ToArray()));
             }
             else
             {
                 var action = new CommitActionEnlistment(() =>
                     {
-                        _queue.PutMessage(envelope);
-                        _observer.Notify(new EnvelopeSent(_queue.Name, envelope.EnvelopeId, true,
+                        queue.PutMessage(envelope);
+                        _observer.Notify(new EnvelopeSent(queue.Name, envelope.EnvelopeId, true,
                             envelope.Items.Select(x => x.MappedType.Name).ToArray()));
                     });
                 Transaction.Current.EnlistVolatile(action, EnlistmentOptions.None);
             }
+        }
+
+        IQueueWriter GetOutboundQueue()
+        {
+            if (_queues.Length == 1)
+                return _queues[0];
+            var random = _random.Next(_queues.Length);
+            return _queues[random];
         }
     }
 }
