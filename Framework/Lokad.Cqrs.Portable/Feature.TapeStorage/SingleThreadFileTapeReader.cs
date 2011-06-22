@@ -18,10 +18,10 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         public IEnumerable<TapeRecord> ReadRecords(long offset, int maxCount)
         {
             if (offset< 0)
-                throw new ArgumentOutOfRangeException("Must be non-negative.", "offset");
+                throw new ArgumentOutOfRangeException("Offset can't be negative.", "offset");
 
             if (maxCount <= 0)
-                throw new ArgumentOutOfRangeException("Must be more than zero.", "maxCount");
+                throw new ArgumentOutOfRangeException("Count must be greater than zero.", "maxCount");
 
             // index + maxCount - 1 > long.MaxValue, but transformed to avoid overflow
             if (offset > long.MaxValue - maxCount)

@@ -18,16 +18,16 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             _indexBlobName = name + "-idx";
         }
 
-        public IEnumerable<TapeRecord> ReadRecords(long index, int maxCount)
+        public IEnumerable<TapeRecord> ReadRecords(long offset, int maxCount)
         {
-            if (index <= 0)
-                throw new ArgumentOutOfRangeException("Must be more than zero.", "index");
+            if (offset < 0)
+                throw new ArgumentOutOfRangeException("Offset can't be negative.", "offset");
 
             if (maxCount <= 0)
-                throw new ArgumentOutOfRangeException("Must be more than zero.", "maxCount");
+                throw new ArgumentOutOfRangeException("Count must be greater than zero.", "maxCount");
 
             // index + maxCount - 1 > long.MaxValue, but transformed to avoid overflow
-            if (index - 1 > long.MaxValue - maxCount)
+            if (offset > long.MaxValue - maxCount)
                 throw new ArgumentOutOfRangeException("maxCount", "Record index will exceed long.MaxValue.");
 
             var readers = CreateReaders();
@@ -38,7 +38,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             {
                 var dataReader = readers.DataReader;
 
-                var range = GetReadRange(readers, index - 1, maxCount);
+                var range = GetReadRange(readers, offset, maxCount);
                 var dataOffset = range.Item1;
                 var dataSize = range.Item2;
                 var recordCount = range.Item3;
@@ -48,7 +48,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
                 using (var br = new BinaryReader(new MemoryStream(recordsBuffer)))
                 {
-                    var recordIndex = index;
+                    var recordIndex = offset;
                     var counter = 0;
 
                     var records = new List<TapeRecord>();
