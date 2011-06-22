@@ -10,30 +10,37 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         SingleThreadFileTapeWriterFactory _writerFactory;
         ITapeReaderFactory _readerFactory;
 
-        protected override void SetUp()
+        protected override void PrepareEnvironment()
         {
             _path = Path.GetTempFileName();
             File.Delete(_path);
+        }
 
+        protected override Factories GetTapeStorageInterfaces()
+        {
             _writerFactory = new SingleThreadFileTapeWriterFactory(_path);
             _writerFactory.Initialize();
 
             _readerFactory = new FileTapeReaderFactory(_path);
+
+            const string name = "test";
+
+            return new Factories
+                {
+                    Writer = _writerFactory.GetOrCreateWriter(name),
+                    Reader = _readerFactory.GetReader(name)
+                };
         }
 
-        protected override void TearDown()
+        protected override void FreeResources()
+        {
+            _writerFactory = null;
+            _readerFactory = null;
+        }
+
+        protected override void CleanupEnvironment()
         {
             Directory.Delete(_path, true);
-        }
-
-        protected override TestConfiguration GetConfiguration()
-        {
-            return new TestConfiguration
-                {
-                    Name = "test",
-                    WriterFactory = _writerFactory,
-                    ReaderFactory = _readerFactory
-                };
         }
     }
 }

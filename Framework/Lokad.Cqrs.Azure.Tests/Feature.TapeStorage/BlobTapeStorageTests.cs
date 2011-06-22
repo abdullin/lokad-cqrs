@@ -10,21 +10,22 @@ namespace Lokad.Cqrs.Feature.TapeStorage
     public class BlobTapeStorageTests : TapeStorageTests
     {
         const string ContainerName = "blob-tape-test";
-        CloudBlobClient _cloudBlobClient;
+
+        CloudStorageAccount _cloudStorageAccount;
         ISingleThreadTapeWriterFactory _writerFactory;
         ITapeReaderFactory _readerFactory;
 
-        protected override void SetUp()
+        protected override void PrepareEnvironment()
         {
             CloudStorageAccount.SetConfigurationSettingPublisher(
                 (configName, configSetter) => configSetter((string) Settings.Default[configName]));
 
-            var cloudStorageAccount = CloudStorageAccount.FromConfigurationSetting("StorageConnectionString");
-            _cloudBlobClient = cloudStorageAccount.CreateCloudBlobClient();
+            _cloudStorageAccount = CloudStorageAccount.FromConfigurationSetting("StorageConnectionString");
+            var cloudBlobClient = _cloudStorageAccount.CreateCloudBlobClient();
 
             try
             {
-                _cloudBlobClient.GetContainerReference(ContainerName).FetchAttributes();
+                cloudBlobClient.GetContainerReference(ContainerName).FetchAttributes();
                 throw new InvalidOperationException("Container '" + ContainerName + "' already exists!");
             }
             catch (StorageClientException e)
@@ -32,28 +33,35 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                 if (e.ErrorCode != StorageErrorCode.ResourceNotFound)
                     throw new InvalidOperationException("Container '" + ContainerName + "' already exists!");
             }
+        }
 
-
-            var config = AzureStorage.CreateConfig(cloudStorageAccount);
+        protected override Factories GetTapeStorageInterfaces()
+        {
+            var config = AzureStorage.CreateConfig(_cloudStorageAccount);
             _writerFactory = new SingleThreadBlobTapeWriterFactory(config, ContainerName);
             _writerFactory.Initialize();
 
             _readerFactory = new BlobTapeReaderFactory(config, ContainerName);
-        }
 
-        protected override void TearDown()
-        {
-            _cloudBlobClient.GetContainerReference(ContainerName).Delete();
-        }
+            const string name = "test";
 
-        protected override TestConfiguration GetConfiguration()
-        {
-            return new TestConfiguration
+            return new Factories
             {
-                Name = "test",
-                WriterFactory = _writerFactory,
-                ReaderFactory = _readerFactory
+                Writer = _writerFactory.GetOrCreateWriter(name),
+                Reader = _readerFactory.GetReader(name)
             };
+        }
+
+        protected override void FreeResources()
+        {
+            _writerFactory = null;
+            _readerFactory = null;
+        }
+
+        protected override void CleanupEnvironment()
+        {
+            var cloudBlobClient = _cloudStorageAccount.CreateCloudBlobClient();
+            cloudBlobClient.GetContainerReference(ContainerName).Delete();
         }
     }
 }

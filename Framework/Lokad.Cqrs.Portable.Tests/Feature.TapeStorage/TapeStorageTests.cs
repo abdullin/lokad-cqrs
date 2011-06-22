@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using NUnit.Framework;
 
 namespace Lokad.Cqrs.Feature.TapeStorage
@@ -11,77 +10,48 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         ISingleThreadTapeWriter _writer;
         ITapeReader _reader;
 
+        readonly byte[][] _batch = new[]
+                {
+                    new byte[] {1, 2, 3, 4, 5},
+                    new byte[] {255, 254, 253, 252, 251},
+                    new byte[] {10, 20, 30, 40, 50},
+                    new byte[] {15, 25, 35, 45, 55},
+                };
+
         [SetUp]
         public void TestSetUp()
         {
-            SetUp();
+            PrepareEnvironment();
 
-            var configuration = GetConfiguration();
-            var name = configuration.Name;
-            _reader = configuration.ReaderFactory.GetReader(name);
-            _writer = configuration.WriterFactory.GetOrCreateWriter(name);
+            var configuration = GetTapeStorageInterfaces();
+            _reader = configuration.Reader;
+            _writer = configuration.Writer;
         }
 
         [TearDown]
         public void TestTearDown()
         {
-            TearDown();
+            FreeResources();
+            CleanupEnvironment();
         }
 
-        protected abstract void SetUp();
-        protected abstract void TearDown();
-        protected abstract TestConfiguration GetConfiguration();
+        protected abstract void PrepareEnvironment();
+        protected abstract Factories GetTapeStorageInterfaces();
+        protected abstract void FreeResources();
+        protected abstract void CleanupEnvironment();
 
         [Test]
-        public void CanReadImmediatelyAfterWrite()
+        public void Can_read_imediately_after_write()
         {
-            var rand = new Random();
-
-            var testsCount = rand.Next(50) + 1;
-
-            var recordSets = Enumerable.Range(1, testsCount)
-                .Select(c => Enumerable.Range(1, rand.Next(5) + 1)
-                    .Select(a => Enumerable.Range(1, rand.Next(1000) + 1)
-                        .Select(b => (byte)rand.Next(byte.MaxValue + 1))
-                        .ToArray())
-                    .ToArray())
-                .ToArray();
-
-            var ix = 1;
-            foreach (var records in recordSets)
+            foreach (var item in _batch.Select((r, i) => new { Index = i, Record = r}))
             {
-                _writer.SaveRecords(records);
+                _writer.SaveRecords(new[] {item.Record});
 
-                var offset = rand.Next(3);
-                var count = records.Length + rand.Next(5) - 2;
-                if (count < 1)
-                    count = 1;
+                var reading = _reader.ReadRecords(item.Index, 1).ToArray();
 
-                while (offset + count > records.Length)
-                {
-                    if (rand.Next(2) == 0)
-                    {
-                        if (count > 1)
-                            count--;
-                    }
-                    else
-                    {
-                        if (offset > 0)
-                            offset--;
-                    }
-                }
-
-                var readRecords = _reader.ReadRecords(ix + offset-1, count).ToArray();
-
-                var mustReadRecords = Math.Min(count, records.Length);
-
-                Assert.AreEqual(mustReadRecords, readRecords.Length, "Number of records mismatch");
-                Assert.AreEqual(ix + offset-1, readRecords[0].Index, "Index mismatch");
-                var expectedRecords = records.Skip(offset).Take(mustReadRecords).ToArray();
-                var actualRecords = readRecords.Select(tr => tr.Data).ToArray();
-                Assert.AreEqual(expectedRecords, actualRecords, "Data mismatch");
-
-                ix += records.Length;
+                Assert.AreEqual(1, reading.Length, "Number of records mismatch");
+                Assert.AreEqual(item.Index, reading[0].Index, "Index mismatch");
+                CollectionAssert.AreEqual(item.Record, reading[0].Data, "Data mismatch");
             }
         }
 
@@ -91,11 +61,64 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             CollectionAssert.IsEmpty(_reader.ReadRecords(0,10));
         }
 
-        protected struct TestConfiguration
+        [Test]
+        public void Reading_batch_by_one()
         {
-            public string Name;
-            public ISingleThreadTapeWriterFactory WriterFactory;
-            public ITapeReaderFactory ReaderFactory;
+            _writer.SaveRecords(_batch);
+
+            var readings = Enumerable
+                .Range(0, _batch.Length)
+                .Select(i => new { Index = i, Records = _reader.ReadRecords(i, 1).ToArray()});
+
+            foreach (var reading in readings)
+            {
+                Assert.AreEqual(reading.Index, reading.Records[0].Index, "Index mismatch");
+                CollectionAssert.AreEqual(_batch[reading.Index], reading.Records[0].Data, "Data mismatch");
+            }
+        }
+
+        [Test]
+        public void Reading_batch_at_once()
+        {
+            _writer.SaveRecords(_batch);
+
+            var readings = _reader.ReadRecords(0, _batch.Length).ToArray();
+
+            foreach (var reading in readings)
+            {
+                Assert.AreEqual(reading.Index, reading.Index, "Index mismatch");
+                CollectionAssert.AreEqual(_batch[reading.Index], reading.Data, "Data mismatch");
+            }
+        }
+
+        [Test]
+        public void Can_continue_after_recreation()
+        {
+            _writer.SaveRecords(_batch);
+
+            _reader = null;
+            _writer = null;
+            FreeResources();
+
+            var interfaces = GetTapeStorageInterfaces();
+            _writer = interfaces.Writer;
+            _reader = interfaces.Reader;
+
+            _writer.SaveRecords(new[] {_batch[0]});
+
+            var readings = _reader.ReadRecords(_batch.Length, 1).ToArray();
+            Assert.AreEqual(1, readings.Length);
+
+            var reading = readings[0];
+
+            Assert.AreEqual(_batch.Length, reading.Index, "Index mismatch");
+            CollectionAssert.AreEqual(_batch[0], reading.Data, "Data mismatch");
+        }
+
+        protected struct Factories
+        {
+            public ISingleThreadTapeWriter Writer;
+            public ITapeReader Reader;
         }
     }
 }

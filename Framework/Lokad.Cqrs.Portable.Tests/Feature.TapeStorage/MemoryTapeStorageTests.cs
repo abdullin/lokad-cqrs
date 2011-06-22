@@ -10,31 +10,36 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         // ReSharper disable InconsistentNaming
 
         readonly ConcurrentDictionary<string, List<byte[]>> _storage = new ConcurrentDictionary<string, List<byte[]>>();
+        MemoryTapeReaderFactory _readerFactory;
+        SingleThreadMemoryTapeWriterFactory _writerFactory;
 
-        protected override void SetUp()
+        protected override void PrepareEnvironment()
+        {
+        }
+
+        protected override Factories GetTapeStorageInterfaces()
+        {
+            _readerFactory = new MemoryTapeReaderFactory(_storage);
+            _writerFactory = new SingleThreadMemoryTapeWriterFactory(_storage);
+
+            const string name = "Memory";
+
+            return new Factories
+            {
+                Writer = _writerFactory.GetOrCreateWriter(name),
+                Reader = _readerFactory.GetReader(name)
+            };
+        }
+
+        protected override void FreeResources()
+        {
+            _readerFactory = null;
+            _writerFactory = null;
+        }
+
+        protected override void CleanupEnvironment()
         {
             _storage.Clear();
         }
-
-        protected override void TearDown()
-        {
-            
-        }
-
-        
-
-        protected override TestConfiguration GetConfiguration()
-        {
-            
-            return new TestConfiguration()
-                {
-                    Name = "Memory",
-                    ReaderFactory = new MemoryTapeReaderFactory(_storage),
-                    WriterFactory = new SingleThreadMemoryTapeWriterFactory(_storage)
-
-                };
-        }
-
-
     }
 }
