@@ -72,6 +72,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
             foreach (var reading in readings)
             {
+                Assert.AreEqual(1, reading.Records.Length, "Number of records mismatch");
                 Assert.AreEqual(reading.Index, reading.Records[0].Index, "Index mismatch");
                 CollectionAssert.AreEqual(_batch[reading.Index], reading.Records[0].Data, "Data mismatch");
             }
@@ -84,9 +85,12 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
             var readings = _reader.ReadRecords(0, _batch.Length).ToArray();
 
+            Assert.AreEqual(_batch.Length, readings.Length, "Number of records mismatch");
+
+            var index = 0;
             foreach (var reading in readings)
             {
-                Assert.AreEqual(reading.Index, reading.Index, "Index mismatch");
+                Assert.AreEqual(index++, reading.Index, "Index mismatch");
                 CollectionAssert.AreEqual(_batch[reading.Index], reading.Data, "Data mismatch");
             }
         }
@@ -107,12 +111,38 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             _writer.SaveRecords(new[] {_batch[0]});
 
             var readings = _reader.ReadRecords(_batch.Length, 1).ToArray();
-            Assert.AreEqual(1, readings.Length);
 
+            Assert.AreEqual(1, readings.Length, "Number of records mismatch");
             var reading = readings[0];
-
             Assert.AreEqual(_batch.Length, reading.Index, "Index mismatch");
             CollectionAssert.AreEqual(_batch[0], reading.Data, "Data mismatch");
+        }
+
+        [Test]
+        public void Reading_ahead_storage_returns_none()
+        {
+            _writer.SaveRecords(_batch);
+
+            var readings = _reader.ReadRecords(_batch.Length, 1).ToArray();
+
+            Assert.AreEqual(0, readings.Length, "Number of records mismatch");
+        }
+
+        [Test]
+        public void Reading_ahead_returns_only_written()
+        {
+            _writer.SaveRecords(_batch);
+
+            var readings = _reader.ReadRecords(_batch.Length - 2, _batch.Length).ToArray();
+
+            Assert.AreEqual(2, readings.Length, "Number of records mismatch");
+
+            var index = _batch.Length - 2;
+            foreach (var reading in readings)
+            {
+                Assert.AreEqual(index++, reading.Index, "Index mismatch");
+                CollectionAssert.AreEqual(_batch[reading.Index], reading.Data, "Data mismatch");
+            }
         }
 
         protected struct Factories
