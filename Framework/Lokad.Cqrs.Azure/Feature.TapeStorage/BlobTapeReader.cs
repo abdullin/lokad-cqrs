@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs.Feature.TapeStorage
@@ -30,7 +31,20 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             if (offset > long.MaxValue - maxCount)
                 throw new ArgumentOutOfRangeException("maxCount", "Record index will exceed long.MaxValue.");
 
-            var readers = CreateReaders();
+            var dataBlob = _container.GetPageBlobReference(_dataBlobName);
+            var indexBlob = _container.GetPageBlobReference(_indexBlobName);
+
+            var dataExists = dataBlob.Exists();
+            var indexExists = indexBlob.Exists();
+
+            // we return empty result if writer didn't even start writing to the storage.
+            if (!dataExists && !indexExists)
+                return Enumerable.Empty<TapeRecord>();
+
+            if (!dataExists || !indexExists)
+                throw new InvalidOperationException("Data and index blob should exist both. Probable corruption.");
+
+            var readers = CreateReaders(dataBlob, indexBlob);
 
             var readAheadInBytes = _container.ServiceClient.ReadAheadInBytes;
             _container.ServiceClient.ReadAheadInBytes = 0;
@@ -139,21 +153,8 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             return Tuple.Create(firstOffset, (int) count, recordCount + 1);
         }
 
-        Readers CreateReaders()
+        static Readers CreateReaders(CloudPageBlob dataBlob, CloudPageBlob indexBlob)
         {
-            var dataBlob = _container.GetPageBlobReference(_dataBlobName);
-            var indexBlob = _container.GetPageBlobReference(_indexBlobName);
-
-            var dataExists = dataBlob.Exists();
-            var indexExists = indexBlob.Exists();
-
-            if (dataExists && !indexExists)
-                throw new InvalidOperationException("Data blob found but no index blob.");
-            if (!dataExists && indexExists)
-                throw new InvalidOperationException("Index blob found but no data blob.");
-            if (!dataExists && !indexExists)
-                throw new InvalidOperationException("Neither data nor index blob found.");
-
             Readers readers;
 
             var dataStream = dataBlob.OpenReadAppending();
