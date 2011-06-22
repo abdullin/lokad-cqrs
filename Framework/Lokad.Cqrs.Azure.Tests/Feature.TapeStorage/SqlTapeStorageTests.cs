@@ -17,7 +17,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             DatabaseHelper.CreateDatabase(connectionString);
 
             _writerFactory = new SingleThreadSqlTapeWriterFactory(connectionString, tableName);
-            _writerFactory.Init();
+            _writerFactory.Initialize();
 
             _readerFactory = new SqlTapeReaderFactory(connectionString, tableName);
         }

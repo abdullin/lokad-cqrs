@@ -15,7 +15,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             _fullPath = fullPath;
         }
 
-        public void Init()
+        public void Initialize()
         {
             Directory.CreateDirectory(_fullPath);
         }

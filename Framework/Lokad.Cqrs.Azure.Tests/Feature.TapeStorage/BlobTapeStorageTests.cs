@@ -36,7 +36,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
             var config = AzureStorage.CreateConfig(cloudStorageAccount);
             _writerFactory = new SingleThreadBlobTapeWriterFactory(config, ContainerName);
-            _writerFactory.Init();
+            _writerFactory.Initialize();
 
             _readerFactory = new BlobTapeReaderFactory(config, ContainerName);
         }

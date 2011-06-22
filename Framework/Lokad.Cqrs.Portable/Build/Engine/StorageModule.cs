@@ -6,6 +6,7 @@ using Autofac;
 using Autofac.Core;
 using Lokad.Cqrs.Feature.AtomicStorage;
 using Lokad.Cqrs.Feature.StreamingStorage;
+using Lokad.Cqrs.Feature.TapeStorage;
 
 namespace Lokad.Cqrs.Build.Engine
 {
@@ -14,6 +15,10 @@ namespace Lokad.Cqrs.Build.Engine
         IAtomicStorageFactory _atomicStorageFactory;
         IStreamingRoot _streamingRoot;
 
+        ITapeReaderFactory _tapeReader;
+        ISingleThreadTapeWriterFactory _tapeWriter;
+
+        
         public void AtomicIs(IAtomicStorageFactory factory)
         {
             _atomicStorageFactory = factory;
@@ -38,6 +43,26 @@ namespace Lokad.Cqrs.Build.Engine
             var builder = new DefaultAtomicStorageStrategyBuilder();
             configure(builder);
             AtomicIs(new FileAtomicStorageFactory(folder, builder.Build()));
+        }
+        public void TapeIs(ISingleThreadTapeWriterFactory writer, ITapeReaderFactory reader)
+        {
+            _tapeWriter = writer;
+            _tapeReader = reader;
+        }
+
+        public void TapeIsInMemory()
+        {
+            var storage = new ConcurrentDictionary<string, List<byte[]>>();
+            var reader = new MemoryTapeReaderFactory(storage);
+            var writer = new SingleThreadMemoryTapeWriterFactory(storage);
+            TapeIs(writer, reader);
+        }
+
+        public void TapeIsInFiles(string fullPath)
+        {
+            var reader = new FileTapeReaderFactory(fullPath);
+            var writer = new SingleThreadFileTapeWriterFactory(fullPath);
+            TapeIs(writer, reader);
         }
 
 
@@ -72,6 +97,10 @@ namespace Lokad.Cqrs.Build.Engine
             {
                 StreamingIsInFiles(Directory.GetCurrentDirectory());
             }
+            if (_tapeReader == null)
+            {
+                TapeIsInMemory();
+            }
 
             var core = new AtomicRegistrationCore(_atomicStorageFactory);
             var source = new AtomicRegistrationSource(core);
@@ -83,6 +112,11 @@ namespace Lokad.Cqrs.Build.Engine
                 .As<IEngineProcess>().SingleInstance();
 
             builder.RegisterInstance(_streamingRoot);
+
+            builder.RegisterInstance(_tapeReader);
+            builder.RegisterInstance(_tapeWriter);
+            builder.RegisterInstance(new TapeStorageInitilization(new[] {_tapeWriter})).As<IEngineProcess>();
+
             builder.Update(componentRegistry);
         }
     }

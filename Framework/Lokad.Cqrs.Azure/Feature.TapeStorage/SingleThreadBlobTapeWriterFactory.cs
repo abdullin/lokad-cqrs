@@ -21,7 +21,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             _containerName = containerName;
         }
 
-        public void Init()
+        public void Initialize()
         {
             var container = _cloudBlobClient.GetContainerReference(_containerName);
             container.CreateIfNotExist();

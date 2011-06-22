@@ -16,7 +16,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             File.Delete(_path);
 
             _writerFactory = new SingleThreadFileTapeWriterFactory(_path);
-            _writerFactory.Init();
+            _writerFactory.Initialize();
 
             _readerFactory = new FileTapeReaderFactory(_path);
         }

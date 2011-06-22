@@ -20,7 +20,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             _tableName = tableName;
         }
 
-        public void Init()
+        public void Initialize()
         {
             using (var conn = new SqlConnection(_sqlConnectionString))
             {

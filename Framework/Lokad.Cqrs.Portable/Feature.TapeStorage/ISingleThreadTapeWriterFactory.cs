@@ -6,7 +6,7 @@
         /// <summary>
         /// Initializes this factory, if needed.
         /// </summary>
-        void Init();
+        void Initialize();
         ISingleThreadTapeWriter GetOrCreateWriter(string name);
         //void TryDeleteWriter(string name);
     }

@@ -11,7 +11,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             _storage = storage;
         }
 
-        public void Init()
+        public void Initialize()
         {
         }
 
