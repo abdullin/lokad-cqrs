@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Linq;
 using Microsoft.WindowsAzure.StorageClient;
 
@@ -9,12 +10,13 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         readonly CloudBlobClient _cloudBlobClient;
         readonly string _containerName;
 
-        public BlobTapeReaderFactory(CloudBlobClient cloudBlobClient, string containerName)
+        public BlobTapeReaderFactory(IAzureStorageConfig config, string containerName)
         {
             if (containerName.Any(Char.IsUpper))
                 throw new ArgumentException("All letters in a container name must be lowercase.");
 
-            _cloudBlobClient = cloudBlobClient;
+            _cloudBlobClient = config.CreateBlobClient();
+            
             _containerName = containerName;
         }
 

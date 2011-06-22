@@ -33,10 +33,12 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                     throw new InvalidOperationException("Container '" + ContainerName + "' already exists!");
             }
 
-            _writerFactory = new SingleThreadBlobTapeWriterFactory(_cloudBlobClient, ContainerName);
+
+            var config = AzureStorage.CreateConfig(cloudStorageAccount);
+            _writerFactory = new SingleThreadBlobTapeWriterFactory(config, ContainerName);
             _writerFactory.Init();
 
-            _readerFactory = new BlobTapeReaderFactory(_cloudBlobClient, ContainerName);
+            _readerFactory = new BlobTapeReaderFactory(config, ContainerName);
         }
 
         protected override void TearDown()

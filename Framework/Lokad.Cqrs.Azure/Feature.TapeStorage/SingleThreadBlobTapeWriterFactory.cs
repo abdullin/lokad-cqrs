@@ -12,12 +12,12 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         readonly ConcurrentDictionary<string, ISingleThreadTapeWriter> _writers =
             new ConcurrentDictionary<string, ISingleThreadTapeWriter>();
 
-        public SingleThreadBlobTapeWriterFactory(CloudBlobClient cloudBlobClient, string containerName)
+        public SingleThreadBlobTapeWriterFactory(IAzureStorageConfig config, string containerName)
         {
             if (containerName.Any(Char.IsUpper))
                 throw new ArgumentException("All letters in a container name must be lowercase.");
 
-            _cloudBlobClient = cloudBlobClient;
+            _cloudBlobClient = config.CreateBlobClient();
             _containerName = containerName;
         }
 
