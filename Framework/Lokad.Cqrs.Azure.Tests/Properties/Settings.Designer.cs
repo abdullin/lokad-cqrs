@@ -26,7 +26,8 @@ namespace Lokad.Cqrs.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=.\\sqlexpress;Initial Catalog=testdb;Integrated Security=True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=.\\sqlexpress;Initial Catalog=testdb;Integrated Security=True;Pooling=" +
+            "false")]
         public string SqlConnectionString {
             get {
                 return ((string)(this["SqlConnectionString"]));
