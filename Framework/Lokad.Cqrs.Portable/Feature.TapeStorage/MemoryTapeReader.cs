@@ -14,11 +14,13 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
         public IEnumerable<TapeRecord> ReadRecords(long index, int maxCount)
         {
-            return _getSnapshot()
+            var snapshot = _getSnapshot();
+            var tapeRecords = snapshot
                 .Select((b,i) => new TapeRecord(i+1, b))
-                .Where(tr => index>=tr.Index)
+                .Skip((int)index-1)
                 .Take(maxCount)
                 .ToArray();
+            return tapeRecords;
         }
     }
 }
