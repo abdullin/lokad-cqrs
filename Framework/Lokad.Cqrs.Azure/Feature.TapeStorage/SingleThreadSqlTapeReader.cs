@@ -17,39 +17,40 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             _name = name;
         }
 
-        public IEnumerable<TapeRecord> ReadRecords(long index, int maxCount)
+        public IEnumerable<TapeRecord> ReadRecords(long offset, int maxCount)
         {
-            if (index <= 0)
-                throw new ArgumentOutOfRangeException("Must be more than zero.", "index");
+            if (offset < 0)
+                throw new ArgumentOutOfRangeException("Must be non-negative.", "offset");
 
             if (maxCount <= 0)
                 throw new ArgumentOutOfRangeException("Must be more than zero.", "maxCount");
 
+
             // index + maxCount - 1 > long.MaxValue, but transformed to avoid overflow
-            if (index - 1 > long.MaxValue - maxCount)
+            if (offset > long.MaxValue - maxCount)
                 throw new ArgumentOutOfRangeException("maxCount", "Record index will exceed long.MaxValue.");
 
             using (var connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
 
-                return ReadRecords(connection, index, index + maxCount);
+                return ReadRecords(connection, offset, maxCount);
             }
         }
 
-        IEnumerable<TapeRecord> ReadRecords(SqlConnection connection, long begin, long end)
+        IEnumerable<TapeRecord> ReadRecords(SqlConnection connection, long offset, int count)
         {
             const string text = @"
-SELECT [Index], [Data]
+SELECT TOP(@count) [Index], [Data]
 FROM [{0}].[{1}]
-WHERE [Stream] = @Stream AND [Index] >= @Begin AND [Index] < @End
+WHERE [Stream] = @Stream AND [Index] >= (@offset)
 ORDER BY [Index]";
 
             using (var command = new SqlCommand(string.Format(text, SqlTapeWriterFactory.TableSchema, _tableName), connection))
             {
                 command.Parameters.AddWithValue("@Stream", _name);
-                command.Parameters.AddWithValue("@Begin", begin);
-                command.Parameters.AddWithValue("@End", end);
+                command.Parameters.AddWithValue("@count", count);
+                command.Parameters.AddWithValue("@offset", offset);
 
                 var reader = command.ExecuteReader();
 

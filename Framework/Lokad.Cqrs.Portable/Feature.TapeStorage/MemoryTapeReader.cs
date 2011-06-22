@@ -12,12 +12,12 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             _getSnapshot = getSnapshot;
         }
 
-        public IEnumerable<TapeRecord> ReadRecords(long index, int maxCount)
+        public IEnumerable<TapeRecord> ReadRecords(long offset, int maxCount)
         {
             var snapshot = _getSnapshot();
             var tapeRecords = snapshot
-                .Select((b,i) => new TapeRecord(i+1, b))
-                .Skip((int)index-1)
+                .Select((b,i) => new TapeRecord(i, b))
+                .Skip((int)offset)
                 .Take(maxCount)
                 .ToArray();
             return tapeRecords;

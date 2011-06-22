@@ -69,12 +69,12 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                     }
                 }
 
-                var readRecords = _reader.ReadRecords(ix + offset, count).ToArray();
+                var readRecords = _reader.ReadRecords(ix + offset-1, count).ToArray();
 
                 var mustReadRecords = Math.Min(count, records.Length);
 
                 Assert.AreEqual(mustReadRecords, readRecords.Length, "Number of records mismatch");
-                Assert.AreEqual(ix + offset, readRecords[0].Index, "Index mismatch");
+                Assert.AreEqual(ix + offset-1, readRecords[0].Index, "Index mismatch");
                 var expectedRecords = records.Skip(offset).Take(mustReadRecords).ToArray();
                 var actualRecords = readRecords.Select(tr => tr.Data).ToArray();
                 Assert.AreEqual(expectedRecords, actualRecords, "Data mismatch");

@@ -39,9 +39,9 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
                     if (index > long.MaxValue - 1)
                         throw new IndexOutOfRangeException("Index is more than long.MaxValue.");
-                    index++;
 
                     Append(connection, index, record);
+                    index+=1;
                 }
             }
         }

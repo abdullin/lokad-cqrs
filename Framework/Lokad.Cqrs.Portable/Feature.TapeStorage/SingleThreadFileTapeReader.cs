@@ -15,16 +15,16 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             _indexFileName = Path.ChangeExtension(name, ".tmi");
         }
 
-        public IEnumerable<TapeRecord> ReadRecords(long index, int maxCount)
+        public IEnumerable<TapeRecord> ReadRecords(long offset, int maxCount)
         {
-            if (index <= 0)
-                throw new ArgumentOutOfRangeException("Must be more than zero.", "index");
+            if (offset< 0)
+                throw new ArgumentOutOfRangeException("Must be non-negative.", "offset");
 
             if (maxCount <= 0)
                 throw new ArgumentOutOfRangeException("Must be more than zero.", "maxCount");
 
             // index + maxCount - 1 > long.MaxValue, but transformed to avoid overflow
-            if (index - 1 > long.MaxValue - maxCount)
+            if (offset > long.MaxValue - maxCount)
                 throw new ArgumentOutOfRangeException("maxCount", "Record index will exceed long.MaxValue.");
 
             var readers = CreateReaders();
@@ -36,7 +36,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                 var dataStream = dataReader.BaseStream;
                 var indexStream = indexReader.BaseStream;
 
-                var indexOffset = (index - 1) * sizeof(long);
+                var indexOffset = (offset) * sizeof(long);
                 if (indexOffset >= indexStream.Length)
                     yield break;
 
@@ -44,7 +44,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                 dataStream.Seek(indexReader.ReadInt64(), SeekOrigin.Begin);
 
                 var count = 0;
-                var recordIndex = index;
+                var recordIndex = offset;
                 while (count < maxCount)
                 {
                     if (dataStream.Position == dataStream.Length)
