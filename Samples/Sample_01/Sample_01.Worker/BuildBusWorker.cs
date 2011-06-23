@@ -1,10 +1,13 @@
-﻿using System;
-using Autofac;
+﻿#region (c) 2010-2011 Lokad. New BSD License
+
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
 using Lokad.Cqrs;
-using Lokad.Cqrs.Build;
 using Lokad.Cqrs.Build.Engine;
 using Lokad.Cqrs.Core.Directory.Default;
-using Lokad.Cqrs.Core.Outbox;
 using Microsoft.WindowsAzure;
 
 namespace Sample_01.Worker
@@ -21,7 +24,6 @@ namespace Sample_01.Worker
             builder.UseProtoBufSerialization();
             builder.Domain(d => d.HandlerSample<IConsume<IMessage>>(m => m.Consume(null)));
 
-            // TODO
             var connection = AzureSettingsProvider.GetStringOrThrow("StorageConnectionString");
             var storageConfig = AzureStorage.CreateConfig(CloudStorageAccount.Parse(connection), c =>
             {
@@ -31,9 +33,9 @@ namespace Sample_01.Worker
 
             builder.Azure(m =>
                 {
-                    m.AddAzureSender(storageConfig, NameFor.Queue);
+                    m.AddAzureSender(storageConfig, "sample - 01");
  
-                    m.AddAzureProcess(storageConfig, NameFor.Queue, x =>
+                    m.AddAzureProcess(storageConfig, "sample-01", x =>
                     {
                         x.DirectoryFilter(f => f.WhereMessagesAre<IMessage>());
                         x.DispatchAsCommandBatch();

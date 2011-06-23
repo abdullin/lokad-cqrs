@@ -87,8 +87,6 @@
   <ItemGroup>
     <Compile Include="BuildBusWorker.cs" />
     <Compile Include="Domain.cs" />
-    <Compile Include="MessageDispatcher.cs" />
-    <Compile Include="NameFor.cs" />
     <Compile Include="WorkerRole.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

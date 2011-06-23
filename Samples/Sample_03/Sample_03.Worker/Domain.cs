@@ -18,6 +18,7 @@ using NHibernate.Linq;
 
 namespace Sample_03.Worker
 {
+    #region Task
     public sealed class CreateAccountFromTimeToTime : IEngineProcess
     {
         readonly ISessionFactory _sessionFactory;
@@ -60,10 +61,10 @@ namespace Sample_03.Worker
         }
 
         public void Dispose()
-        {}
+        { }
 
         public void Initialize()
-        {}
+        { }
 
         public Task Start(CancellationToken token)
         {
@@ -90,7 +91,8 @@ namespace Sample_03.Worker
                 }
             });
         }
-    }
+    } 
+    #endregion
 
     [DataContract]
     public sealed class AddSomeBonusMessage : IMessage
