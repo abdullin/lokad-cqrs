@@ -58,8 +58,16 @@ namespace Lokad.Cqrs.Core.Envelope
                         var error = string.Format("Failed to find contract name for {0}", item.MappedType);
                         throw new InvalidOperationException(error);
                     }
+                    // normal serializers have a nasty habbit of closing the stream after they are done
+                    // we can suppress that or use a wrapper now instead
+                    using (var itemStream = new MemoryStream())
+                    {
+                        _dataSerializer.Serialize(item.Content, itemStream);
+                        var bytes = itemStream.ToArray();
+                        content.Write(bytes, 0, bytes.Length);
+                    }
 
-                    _dataSerializer.Serialize(item.Content, content);
+                    
                     int size = (int) content.Position - position;
                     var attribContracts = EnvelopeConvert.ItemAttributesToContract(item.GetAllAttributes());
                     itemContracts[i] = new MessageContract(name, size, position, attribContracts);
