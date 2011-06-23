@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Linq;
 
 namespace Lokad.Cqrs.Feature.TapeStorage
 {
@@ -30,24 +31,34 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             if (offset > long.MaxValue - maxCount)
                 throw new ArgumentOutOfRangeException("maxCount", "Record index will exceed long.MaxValue.");
 
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-
-                return ReadRecords(connection, offset, maxCount);
-            }
+            return Execute(c => ReadRecords(c, offset, maxCount), Enumerable.Empty<TapeRecord>());
         }
 
         public long Count
         {
-            get
-            {
-                using (var connection = new SqlConnection(_connectionString))
-                {
-                    connection.Open();
+            get { return Execute(GetCount, 0); }
+        }
 
-                    return GetCount(connection);
-                }
+        T Execute<T>(Func<SqlConnection, T> func, T defaultValue)
+        {
+            SqlConnection connection;
+            try
+            {
+                connection = new SqlConnection(_connectionString);
+                connection.Open();
+            }
+            catch (SqlException)
+            {
+                return defaultValue;
+            }
+
+            try
+            {
+                return func(connection);
+            }
+            finally
+            {
+                connection.Dispose();
             }
         }
 

@@ -40,7 +40,8 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
         protected override void CleanupEnvironment()
         {
-            Directory.Delete(_path, true);
+            if (Directory.Exists(_path))
+                Directory.Delete(_path, true);
         }
     }
 }

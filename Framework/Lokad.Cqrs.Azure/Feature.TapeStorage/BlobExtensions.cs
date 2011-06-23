@@ -23,6 +23,22 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             }
         }
 
+        public static bool Exists(this CloudBlobContainer blob)
+        {
+            try
+            {
+                blob.FetchAttributes();
+                return true;
+            }
+            catch (StorageClientException e)
+            {
+                if (e.ErrorCode == StorageErrorCode.ResourceNotFound)
+                    return false;
+
+                throw;
+            }
+        }
+
         public static void SetLength(this CloudPageBlob blob, long newLength, int timeout = 10000)
         {
             var credentials = blob.ServiceClient.Credentials;

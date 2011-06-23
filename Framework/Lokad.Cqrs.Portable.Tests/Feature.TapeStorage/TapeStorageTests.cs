@@ -60,6 +60,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         [Test]
         public void Reading_empty_storage_returns_none()
         {
+            CleanupEnvironment();
             CollectionAssert.IsEmpty(_reader.ReadRecords(0, 10));
             Assert.AreEqual(0, _reader.Count);
         }
