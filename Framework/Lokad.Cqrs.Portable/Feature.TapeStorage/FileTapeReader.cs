@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace Lokad.Cqrs.Feature.TapeStorage
 {
@@ -28,18 +27,9 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             if (offset > long.MaxValue - maxCount)
                 throw new ArgumentOutOfRangeException("maxCount", "Record index will exceed long.MaxValue.");
 
-            var dataExists = File.Exists(_dataFileName);
-            var indexExists = File.Exists(_indexFileName);
-
-            // we return empty result if writer didn't even start writing to the storage.
-            if (false == (dataExists && indexExists))
+            Readers readers;
+            if (!CheckGetReaders(out readers))
                 yield break;
-
-            if (!dataExists || !indexExists)
-                throw new InvalidOperationException("Data and index file should exist both. Probable corruption.");
-
-
-            var readers = CreateReaders();
 
             try
             {
@@ -76,6 +66,44 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             }
         }
 
+        bool CheckGetReaders(out Readers readers)
+        {
+            var dataExists = File.Exists(_dataFileName);
+            var indexExists = File.Exists(_indexFileName);
+
+            // we return empty result if writer didn't even start writing to the storage.
+            if (!(dataExists && indexExists))
+            {
+                readers = default(Readers); 
+                return false;
+            }
+
+            if (!dataExists || !indexExists)
+                throw new InvalidOperationException("Data and index file should exist both. Probable corruption.");
+
+            readers = CreateReaders();
+            return true;
+        }
+
+        public long Count
+        {
+            get
+            {
+                Readers readers;
+                if (!CheckGetReaders(out readers))
+                    return 0;
+
+                try
+                {
+                    return readers.IndexReader.BaseStream.Length / sizeof(long);
+                }
+                finally
+                {
+                    DisposeReaders(readers);
+                }
+            }
+        }
+
         Readers CreateReaders()
         {
             Readers readers;
@@ -89,10 +117,10 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             return readers;
         }
 
-        static void DisposeReaders(Readers writers)
+        static void DisposeReaders(Readers readers)
         {
-            writers.DataReader.Dispose(); // will dispose BaseStream too
-            writers.IndexReader.Dispose(); // will dispose BaseStream too
+            readers.DataReader.Dispose(); // will dispose BaseStream too
+            readers.IndexReader.Dispose(); // will dispose BaseStream too
         }
 
         struct Readers

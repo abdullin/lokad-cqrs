@@ -22,5 +22,10 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                 .ToArray();
             return tapeRecords;
         }
+
+        public long Count
+        {
+            get { return _getSnapshot().Length; }
+        }
     }
 }

@@ -11,5 +11,10 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         /// <param name="maxCount">The max number of records to load.</param>
         /// <returns>collection of taped blocks</returns>
         IEnumerable<TapeRecord> ReadRecords(long offset, int maxCount);
+
+        /// <summary>
+        /// Returns current count of records.
+        /// </summary>
+        long Count { get; }
     }
 }

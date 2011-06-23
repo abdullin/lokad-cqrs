@@ -38,6 +38,19 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             }
         }
 
+        public long Count
+        {
+            get
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+
+                    return GetCount(connection);
+                }
+            }
+        }
+
         IEnumerable<TapeRecord> ReadRecords(SqlConnection connection, long offset, int count)
         {
             const string text = @"
@@ -65,6 +78,23 @@ ORDER BY [Index]";
                 }
 
                 return records;
+            }
+        }
+
+        long GetCount(SqlConnection connection)
+        {
+            const string text = "SELECT Max([Index]) FROM [{0}].[{1}] WHERE [Stream] = @Stream";
+
+            using (var command = new SqlCommand(string.Format(text, SingleThreadSqlTapeWriterFactory.TableSchema, _tableName), connection))
+            {
+                command.Parameters.AddWithValue("@Stream", _name);
+
+                var result = command.ExecuteScalar();
+                var maxIndex = result is DBNull ? -1 : (long)result;
+
+                if (maxIndex == long.MaxValue)
+                    throw new OverflowException("Count is more than long.MaxValue");
+                return maxIndex + 1;
             }
         }
     }
