@@ -22,7 +22,7 @@ namespace Sample_01.Worker
             builder.Domain(d => d.HandlerSample<IConsume<IMessage>>(m => m.Consume(null)));
 
             // TODO
-            var connection = AzureSettingsProvider.GetString("StorageConnectionString");
+            var connection = AzureSettingsProvider.GetStringOrThrow("StorageConnectionString");
             var storageConfig = AzureStorage.CreateConfig(CloudStorageAccount.Parse(connection), c =>
             {
                 c.ConfigureBlobClient(x => x.ReadAheadInBytes = 0x200000L);
