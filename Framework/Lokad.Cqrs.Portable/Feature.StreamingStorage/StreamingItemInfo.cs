@@ -14,7 +14,6 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
 {
     public sealed class StreamingItemInfo
     {
-        public DateTime LastModifiedUtc { get; private set; }
         public string ETag { get; private set; }
 
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
@@ -29,7 +28,6 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         public StreamingItemInfo(
             //string name,
             //string fullPath,
-            DateTime lastModifiedUtc,
             string eTag,
             NameValueCollection metadata,
             IDictionary<string, string> properties)
@@ -37,7 +35,6 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
             //Name = name;
             //FullPath = fullPath;
 
-            LastModifiedUtc = lastModifiedUtc;
             ETag = eTag;
             Metadata = metadata;
             Properties = properties;

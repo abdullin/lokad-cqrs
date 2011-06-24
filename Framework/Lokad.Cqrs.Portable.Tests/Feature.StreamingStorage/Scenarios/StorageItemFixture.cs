@@ -101,9 +101,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage.Scenarios
                 }, condition);
 
             Assert.AreEqual(g, actual);
-
-
-            Assert.AreNotEqual(DateTime.MinValue, streamingItemInfo.LastModifiedUtc, "Valid date should be present");
+            
             Assert.That(streamingItemInfo.ETag, Is.Not.Empty);
 
             set = true;

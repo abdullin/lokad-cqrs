@@ -40,7 +40,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
             properties["Length"] = props.Length.ToString();
             properties["Uri"] = blob.Uri.ToString();
 
-            return new StreamingItemInfo(props.LastModifiedUtc, props.ETag, meta, properties);
+            return new StreamingItemInfo(props.ETag, meta, properties);
         }
 
         static void ReadAndVerifyHash(Stream stream, Action<Stream> reader, string hash)

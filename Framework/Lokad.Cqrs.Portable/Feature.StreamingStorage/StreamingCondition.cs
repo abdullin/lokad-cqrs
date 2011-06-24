@@ -15,7 +15,6 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
     {
         public static StreamingCondition None = default(StreamingCondition);
         readonly string _etag;
-        readonly DateTime? _lastModifiedUtc;
 
         public StreamingCondition(StreamingConditionType type, string eTag) : this()
         {
@@ -27,25 +26,11 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
             _etag = eTag;
         }
 
-        public StreamingCondition(StreamingConditionType type, DateTime lastModifiedUtc)
-            : this()
-        {
-            if (type == StreamingConditionType.None) throw new ArgumentException("type");
-
-            Type = type;
-            _lastModifiedUtc = lastModifiedUtc;
-        }
-
         public StreamingConditionType Type { get; private set; }
 
         public Optional<string> ETag
         {
             get { return _etag ?? Optional<string>.Empty; }
-        }
-
-        public Optional<DateTime> LastModifiedUtc
-        {
-            get { return _lastModifiedUtc ?? Optional<DateTime>.Empty; }
         }
 
 
@@ -58,17 +43,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         {
             return new StreamingCondition(StreamingConditionType.IfMatch, tag);
         }
-
-        public static StreamingCondition IfModifiedSince(DateTime lastModifiedUtc)
-        {
-            return new StreamingCondition(StreamingConditionType.IfModifiedSince, lastModifiedUtc);
-        }
-
-        public static StreamingCondition IfUnmodifiedSince(DateTime lastModifiedUtc)
-        {
-            return new StreamingCondition(StreamingConditionType.IfUnmodifiedSince, lastModifiedUtc);
-        }
-
+       
         public static StreamingCondition IfNoneMatch(string tag)
         {
             return new StreamingCondition(StreamingConditionType.IfNoneMatch, tag);
@@ -80,9 +55,6 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
             {
                 case StreamingConditionType.None:
                     return "None";
-                case StreamingConditionType.IfModifiedSince:
-                case StreamingConditionType.IfUnmodifiedSince:
-                    return string.Format(CultureInfo.InvariantCulture, "{0} '{1}'", Type, _lastModifiedUtc);
                 case StreamingConditionType.IfMatch:
                 case StreamingConditionType.IfNoneMatch:
                     return string.Format(CultureInfo.InvariantCulture, "{0} '{1}'", Type, _etag);
@@ -99,17 +71,11 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
                 case StreamingConditionType.None:
                     // ???
                     return true;
-                case StreamingConditionType.IfUnmodifiedSince:
-                    var j = LastModifiedUtc.Value;
-                    return !info.Any(i => i.LastModifiedUtc > j);
                 case StreamingConditionType.IfMatch:
                     if (_etag == "*")
                         return info.Any();
                     var value = ETag.Value;
                     return info.Any(s => s.ETag == value);
-                case StreamingConditionType.IfModifiedSince:
-                    var k = LastModifiedUtc.Value;
-                    return info.Any(i => i.LastModifiedUtc > k);
                 case StreamingConditionType.IfNoneMatch:
                     if (_etag == "*")
                         return !info.Any();

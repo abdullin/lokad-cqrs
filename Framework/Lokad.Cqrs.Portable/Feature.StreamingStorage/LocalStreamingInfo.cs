@@ -11,12 +11,10 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
 {
     public sealed class LocalStreamingInfo
     {
-        public readonly DateTime LastModifiedUtc;
         public readonly string ETag;
 
-        public LocalStreamingInfo(DateTime lastModifiedUtc, string eTag)
+        public LocalStreamingInfo(string eTag)
         {
-            LastModifiedUtc = lastModifiedUtc;
             ETag = eTag;
         }
     }

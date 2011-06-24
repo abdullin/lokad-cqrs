@@ -41,7 +41,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
         {
             var info = GetUnconditionalInfo();
             return info
-                .Convert(s => new LocalStreamingInfo(s.LastModifiedUtc, s.ETag))
+                .Convert(s => new LocalStreamingInfo(s.ETag))
                 .Convert(s => condition.Satisfy(s), () => condition.Satisfy());
         }
 
@@ -143,7 +143,7 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
             var lastWriteTimeUtc = _file.LastWriteTimeUtc;
             var tag = string.Format("{0}-{1}", lastWriteTimeUtc.Ticks, _file.Length);
 
-            return new StreamingItemInfo(lastWriteTimeUtc, tag, new NameValueCollection(0),
+            return new StreamingItemInfo(tag, new NameValueCollection(0),
                 new Dictionary<string, string>(0));
         }
 

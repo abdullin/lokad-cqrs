@@ -246,15 +246,9 @@ namespace Lokad.Cqrs.Feature.StreamingStorage
             {
                 case StreamingConditionType.None:
                     return AccessCondition.None;
-                case StreamingConditionType.IfUnmodifiedSince:
-                    var d1 = ExposeException(condition.LastModifiedUtc, "'LastModifiedUtc' should be present.");
-                    return AccessCondition.IfNotModifiedSince(d1);
                 case StreamingConditionType.IfMatch:
                     var x = ExposeException(condition.ETag, "'ETag' should be present");
                     return AccessCondition.IfMatch(x);
-                case StreamingConditionType.IfModifiedSince:
-                    var utc = ExposeException(condition.LastModifiedUtc, "'LastModifiedUtc' should be present.");
-                    return AccessCondition.IfModifiedSince(utc);
                 case StreamingConditionType.IfNoneMatch:
                     var etag = ExposeException(condition.ETag, "'ETag' should be present");
                     return AccessCondition.IfNoneMatch(etag);
