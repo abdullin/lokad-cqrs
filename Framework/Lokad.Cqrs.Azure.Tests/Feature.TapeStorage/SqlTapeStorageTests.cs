@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.SqlClient;
 using Lokad.Cqrs.Properties;
 using NUnit.Framework;
 
@@ -66,7 +67,11 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         {
             var connectionString = Settings.Default.SqlConnectionString;
 
-            DatabaseHelper.DeleteDatabase(connectionString);
+            try
+            {
+                DatabaseHelper.DeleteDatabase(connectionString);
+            }
+            catch (SqlException) {}
         }
     }
 }

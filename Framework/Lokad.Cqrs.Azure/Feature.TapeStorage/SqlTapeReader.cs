@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Linq;
 
 namespace Lokad.Cqrs.Feature.TapeStorage
 {
@@ -30,11 +31,34 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             if (offset > long.MaxValue - maxCount)
                 throw new ArgumentOutOfRangeException("maxCount", "Record index will exceed long.MaxValue.");
 
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
+            return Execute(c => ReadRecords(c, offset, maxCount), Enumerable.Empty<TapeRecord>());
+        }
 
-                return ReadRecords(connection, offset, maxCount);
+        public long Count
+        {
+            get { return Execute(GetCount, 0); }
+        }
+
+        T Execute<T>(Func<SqlConnection, T> func, T defaultValue)
+        {
+            SqlConnection connection;
+            try
+            {
+                connection = new SqlConnection(_connectionString);
+                connection.Open();
+            }
+            catch (SqlException)
+            {
+                return defaultValue;
+            }
+
+            try
+            {
+                return func(connection);
+            }
+            finally
+            {
+                connection.Dispose();
             }
         }
 
@@ -65,6 +89,23 @@ ORDER BY [Index]";
                 }
 
                 return records;
+            }
+        }
+
+        long GetCount(SqlConnection connection)
+        {
+            const string text = "SELECT Max([Index]) FROM [{0}].[{1}] WHERE [Stream] = @Stream";
+
+            using (var command = new SqlCommand(string.Format(text, SingleThreadSqlTapeWriterFactory.TableSchema, _tableName), connection))
+            {
+                command.Parameters.AddWithValue("@Stream", _name);
+
+                var result = command.ExecuteScalar();
+                var maxIndex = result is DBNull ? -1 : (long)result;
+
+                if (maxIndex == long.MaxValue)
+                    throw new OverflowException("Count is more than long.MaxValue");
+                return maxIndex + 1;
             }
         }
     }

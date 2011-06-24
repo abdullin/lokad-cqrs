@@ -1,4 +1,11 @@
-﻿using System;
+﻿#region (c) 2010-2011 Lokad. New BSD License
+
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
+using System;
 using System.Diagnostics;
 using System.Text;
 using Lokad.Cqrs.Core.Dispatch;
@@ -14,7 +21,7 @@ namespace Sample_04.Worker
 
         public SampleQuarantine(IStreamingRoot streamingRoot)
         {
-            streamingRoot.GetContainer(NameFor.ErrorsQueue).Create();
+            streamingRoot.GetContainer("sample-04-errors").Create();
         }
 
         public bool TryToQuarantine(EnvelopeTransportContext context, Exception ex)

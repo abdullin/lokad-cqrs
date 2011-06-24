@@ -5,25 +5,27 @@
 
 #endregion
 
+using System;
+using System.Diagnostics;
+using System.Linq;
 using Autofac;
 using Lokad.Cqrs;
 using Lokad.Cqrs.Build.Engine;
 using Lokad.Cqrs.Core.Directory.Default;
-using Lokad.Cqrs.Feature.StreamingStorage;
 using Microsoft.WindowsAzure;
 
-namespace Sample_04.Worker
+namespace Sample_03.Worker
 {
     public static class BuildBusWorker
     {
         public static CqrsEngineBuilder Configure()
         {
             var builder = new CqrsEngineBuilder();
-            
-            builder.UseProtoBufSerialization();
+
             builder.Domain(d => d.HandlerSample<IConsume<IMessage>>(m => m.Consume(null)));
 
             var connection = AzureSettingsProvider.GetStringOrThrow("DiagnosticsConnectionString");
+
             var storageConfig = AzureStorage.CreateConfig(CloudStorageAccount.Parse(connection), c =>
             {
                 c.ConfigureBlobClient(x => x.ReadAheadInBytes = 0x200000L);
@@ -32,18 +34,42 @@ namespace Sample_04.Worker
 
             builder.Azure(m =>
                 {
-                    m.AddAzureSender(storageConfig, "sample-04");
+                    m.AddAzureSender(storageConfig, "sample-03");
 
-                    m.AddAzureProcess(storageConfig, "sample-04", x =>
+                    m.AddAzureProcess(storageConfig, "sample-03", x =>
                     {
                         x.DirectoryFilter(f => f.WhereMessagesAre<IMessage>());
-                        x.Quarantine(c => new SampleQuarantine(c.Resolve<IStreamingRoot>()));
                         x.DispatchAsCommandBatch();
                     });
+                });
+
+            builder.Advanced.ConfigureContainer(cb =>
+                {
+                    var config = ConfigureNHibernate.Build("MyDbFile");
+
+                    cb.RegisterModule(new NHibernateModule(config));
+
+                    WireTasks(cb);
                 });
 
             return builder;
         }
 
+        static void WireTasks(ContainerBuilder cb)
+        {
+            var happens = AppDomain.CurrentDomain
+                .GetAssemblies()
+                .Where(a => (a.FullName ?? "").Contains("Sample"))
+                .SelectMany(t => t.GetExportedTypes())
+                .Where(t => !t.IsAbstract)
+                .Where(t => (typeof(IEngineProcess)).IsAssignableFrom(t))
+                .ToArray();
+
+            Trace.WriteLine(string.Format("Discovered {0} tasks", happens.Length));
+            foreach (var happen in happens)
+            {
+                cb.RegisterType(happen).As<IEngineProcess>();
+            }
+        }
     }
 }

@@ -75,7 +75,6 @@
   <ItemGroup>
     <Compile Include="BuildBusWorker.cs" />
     <Compile Include="Domain.cs" />
-    <Compile Include="NameFor.cs" />
     <Compile Include="SampleQuarantine.cs">
       <SubType>Code</SubType>
     </Compile>

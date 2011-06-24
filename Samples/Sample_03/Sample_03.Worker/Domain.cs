@@ -1,8 +1,7 @@
-﻿#region Copyright (c) 2010 Lokad. New BSD License
+﻿#region (c) 2010-2011 Lokad. New BSD License
 
-// Copyright (c) Lokad 2010 SAS 
-// Company: http://www.lokad.com
-// This code is released as Open Source under the terms of the New BSD licence
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
 
 #endregion
 
@@ -10,134 +9,177 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
-using Lokad;
-using Lokad.Default;
+using System.Threading;
+using System.Threading.Tasks;
+using Lokad.Cqrs;
+using Lokad.Cqrs.Core.Directory.Default;
 using NHibernate;
 using NHibernate.Linq;
 
 namespace Sample_03.Worker
 {
-	public sealed class CreateAccountFromTimeToTime : IScheduledTask
-	{
-		readonly ISession _session;
-		readonly IMessageClient _client;
+    #region Task
+    public sealed class CreateAccountFromTimeToTime : IEngineProcess
+    {
+        readonly ISessionFactory _sessionFactory;
+        readonly IMessageSender _client;
 
-		public CreateAccountFromTimeToTime(ISession session, IMessageClient client)
-		{
-			_session = session;
-			_client = client;
-		}
+        public CreateAccountFromTimeToTime(ISessionFactory sessionFactory, IMessageSender client)
+        {
+            _sessionFactory = sessionFactory;
+            _client = client;
+        }
 
-		public TimeSpan Execute()
-		{
-			// create new account
-			var account = new AccountEntity();
-			_session.Save(account);
+        private TimeSpan ExecuteTask()
+        {
+            using (var session = _sessionFactory.OpenSession())
+            using (var tx = session.BeginTransaction())
+            {
+                // create new account
+                var account = new AccountEntity();
+                session.Save(account);
 
-			// add initial balance of 0 to account
-			var balanceEntity = new BalanceEntity
-				{
-					Change = 0,
-					Total = 0,
-					Name = "New balance",
-					Account = account
-				};
+                // add initial balance of 0 to account
+                var balanceEntity = new BalanceEntity
+                    {
+                        Change = 0,
+                        Total = 0,
+                        Name = "New balance",
+                        Account = account
+                    };
 
-			_session.Save(balanceEntity);
+                session.Save(balanceEntity);
 
-			Trace.WriteLine("Created account " + account.Id.ToReadable());
-			_client.Send(new AddSomeBonusMessage(account.Id));
-			// sleep till the next run
-			return 10.Seconds();
-		}
-	}
+                Trace.WriteLine("Created account " + account.Id.ToReadable());
+                _client.SendOne(new AddSomeBonusMessage(account.Id));
 
-	[DataContract]
-	public sealed class AddSomeBonusMessage : IMessage
-	{
-		[DataMember]
-		public Guid AccountId { get; private set; }
+                tx.Commit();
 
-		public AddSomeBonusMessage(Guid accountId)
-		{
-			AccountId = accountId;
-		}
+                // sleep till the next run
+                return TimeSpan.FromSeconds(10);
+            }
+        }
 
-		public override string ToString()
-		{
-			// helper for better trace logs
-			return string.Format("AddSomeBonus to " + AccountId.ToReadable());
-		}
-	}
+        public void Dispose()
+        { }
 
-	public sealed class AddSomeBonusHandler : IConsume<AddSomeBonusMessage>
-	{
-		readonly ISession _session;
-		readonly IMessageClient _client;
+        public void Initialize()
+        { }
 
-		public AddSomeBonusHandler(ISession session, IMessageClient client)
-		{
-			_session = session;
-			_client = client;
-		}
+        public Task Start(CancellationToken token)
+        {
+            return Task.Factory.StartNew(() =>
+            {
+                while (!token.IsCancellationRequested)
+                {
+                    try
+                    {
+                        var wait = ExecuteTask();
+                        if (wait == TimeSpan.MaxValue)
+                        {
+                            // quit task
+                            return;
+                        }
+                        token.WaitHandle.WaitOne(wait);
 
-		public void Consume(AddSomeBonusMessage message)
-		{
-			// just to keep sample trace logs readable
-			// in a nice way
-			SystemUtil.Sleep(1.Seconds());
+                    }
+                    catch (Exception ex)
+                    {
+                        Trace.WriteLine(ex.ToString());
+                        token.WaitHandle.WaitOne(TimeSpan.FromMinutes(5));
+                    }
+                }
+            });
+        }
+    } 
+    #endregion
 
-			// we are using LINQ for NHibernate here
-			var balance = _session
-				.Linq<BalanceEntity>()
-				.Where(e => e.Account.Id == message.AccountId)
-				.OrderByDescending(e => e.Id)
-				.Take(1)
-				.FirstOrDefault();
+    [DataContract]
+    public sealed class AddSomeBonusMessage : IMessage
+    {
+        [DataMember]
+        public Guid AccountId { get; private set; }
 
-			if (balance == null)
-			{
-				// we've got message in queue from the previous run of 
-				// this sample app. ignore it,
-				Trace.WriteLine("Account no longer exists. Ignore it");
-				return;
-			}
+        public AddSomeBonusMessage(Guid accountId)
+        {
+            AccountId = accountId;
+        }
 
-			if (balance.Total > 50)
-			{
-				Trace.WriteLine(string.Format(
-					"ENOUGH. Account {0} has too much money: {1}",
-					message.AccountId.ToReadable(),
-					balance.Total));
-				return;
-			}
+        public override string ToString()
+        {
+            // helper for better trace logs
+            return string.Format("AddSomeBonus to " + AccountId.ToReadable());
+        }
+    }
 
-			var total = balance.Total + 10;
-			var bonus = new BalanceEntity
-				{
-					Account = balance.Account,
-					Change = 10,
-					Name = "Bonus",
-					Total = total
-				};
+    public sealed class AddSomeBonusHandler : IConsume<AddSomeBonusMessage>
+    {
+        readonly ISession _session;
+        readonly IMessageSender _client;
 
-			_session.Save(bonus);
+        public AddSomeBonusHandler(ISession session, IMessageSender client)
+        {
+            _session = session;
+            _client = client;
+        }
 
-			Trace.WriteLine(string.Format(
-				"Account {0} - adding {1} bonus with new total {2}",
-				message.AccountId.ToReadable(), 10, total));
-			_client.Send(new AddSomeBonusMessage(message.AccountId));
+        public void Consume(AddSomeBonusMessage message)
+        {
+            // just to keep sample trace logs readable
+            // in a nice way
+            Thread.Sleep(TimeSpan.FromSeconds(1));
 
-			// here's the interesting part.
-			// If we throw exception here, then:
-			// Nothing will be changed in the database
-			// and messages will NOT be sent (volatile transactions).
+            // we are using LINQ for NHibernate here
+            var balance = _session
+                .Linq<BalanceEntity>()
+                .Where(e => e.Account.Id == message.AccountId)
+                .OrderByDescending(e => e.Id)
+                .Take(1)
+                .FirstOrDefault();
 
-			// this applies to the entire code block
+            if (balance == null)
+            {
+                // we've got message in queue from the previous run of 
+                // this sample app. ignore it,
+                Trace.WriteLine("Account no longer exists. Ignore it");
+                return;
+            }
 
-			// after the message is processed, NHibernate transaction will
-			// be completed and session - flushed
-			// same with the message transactions
-		}
-	}
+            if (balance.Total > 50)
+            {
+                Trace.WriteLine(string.Format(
+                    "ENOUGH. Account {0} has too much money: {1}",
+                    message.AccountId.ToReadable(),
+                    balance.Total));
+                return;
+            }
+
+            var total = balance.Total + 10;
+            var bonus = new BalanceEntity
+                {
+                    Account = balance.Account,
+                    Change = 10,
+                    Name = "Bonus",
+                    Total = total
+                };
+
+            _session.Save(bonus);
+
+            Trace.WriteLine(string.Format(
+                "Account {0} - adding {1} bonus with new total {2}",
+                message.AccountId.ToReadable(), 10, total));
+            _client.SendOne(new AddSomeBonusMessage(message.AccountId));
+
+            // here's the interesting part.
+            // If we throw exception here, then:
+            // Nothing will be changed in the database
+            // and messages will NOT be sent (volatile transactions).
+
+            // this applies to the entire code block
+
+            // after the message is processed, NHibernate transaction will
+            // be completed and session - flushed
+            // same with the message transactions
+        }
+    }
 }

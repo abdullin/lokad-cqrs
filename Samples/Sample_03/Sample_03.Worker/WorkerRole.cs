@@ -1,81 +1,55 @@
-﻿#region Copyright (c) 2010 Lokad. New BSD License
+﻿#region (c) 2010-2011 Lokad. New BSD License
 
-// Copyright (c) Lokad 2010 SAS 
-// Company: http://www.lokad.com
-// This code is released as Open Source under the terms of the New BSD licence
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
 
 #endregion
 
-using FluentNHibernate.Automapping;
-using FluentNHibernate.Cfg;
-using FluentNHibernate.Cfg.Db;
-using Lokad.Cqrs;
-using Microsoft.WindowsAzure.Diagnostics;
-using NHibernate.Cfg;
-using NHibernate.Tool.hbm2ddl;
+using System.Linq;
+using System.Net;
+using System.Threading;
+using Lokad.Cqrs.Build.Engine;
+using Microsoft.WindowsAzure.ServiceRuntime;
 
 namespace Sample_03.Worker
 {
-	public class WorkerRole : CloudEngineRole
-	{
-		protected override ICloudEngineHost BuildHost()
-		{
-			// for more detail about this sample see:
-			// http://code.google.com/p/lokad-cqrs/wiki/GuidanceSeries
 
-			// Important: this project is to be run on x64 by default (with SQLite)
-			// if you are running it locally on x86 bit machine, go to /Samples/Library 
-			// and replace System.Data.SQLite.DLL with  System.Data.SQLite.x86.DLL from the same folder.
+    public class WorkerRole : RoleEntryPoint
+    {
+        CqrsEngineHost _host;
 
+        public override void Run()
+        {
+            _host.Start(_source.Token);
+            _source.Token.WaitHandle.WaitOne();
+        }
 
-			var builder = new CloudEngineBuilder();
-			builder.Serialization.UseDataContractSerializer();
+        readonly CancellationTokenSource _source = new CancellationTokenSource();
 
-			// this tells the server about the domain
-			builder.DomainIs(d =>
-				{
-					d.WithDefaultInterfaces();
-					d.InCurrentAssembly();
-				});
+        public override bool OnStart()
+        {
+            ServicePointManager.DefaultConnectionLimit = 48;
+            RoleEnvironment.Changing += RoleEnvironmentChanging;
 
-			// we'll handle all messages incoming to this queue
-			builder.AddMessageHandler(mc =>
-				{
-					mc.ListenToQueue("sample-03");
-					mc.WithMultipleConsumers();
-				});
+            _host = BuildBusWorker.Configure().Build();
 
-			builder.WithNHibernate(m => m.WithConfiguration("MyDbFile", BuildNHibernateConfig));
+            return base.OnStart();
+        }
 
-			builder.AddMessageClient(m => m.DefaultToQueue("sample-03"));
+        public override void OnStop()
+        {
+            _source.Cancel();
+            base.OnStop();
+        }
 
-			builder.AddScheduler(m => m.WithDefaultInterfaces().InCurrentAssembly());
-
-			return builder.Build();
-		}
-
-		static Configuration BuildNHibernateConfig(string fileName)
-		{
-			// your automapping setup here
-			var autoMap = AutoMap
-				.AssemblyOf<AccountEntity>(type => type.Name.EndsWith("Entity"));
-
-			// we use SQLite database that is kept in file and recreated on startup
-			// and is created on start-up
-			return Fluently.Configure()
-				// use SQLite file
-				.Database(SQLiteConfiguration.Standard.UsingFile(fileName))
-				// Generate automappings
-				.Mappings(m => m.AutoMappings.Add(autoMap))
-				// regenerate database on startup
-				.ExposeConfiguration(cfg => new SchemaExport(cfg).Execute(false, true, false))
-				.BuildConfiguration();
-		}
-
-		public override bool OnStart()
-		{
-			DiagnosticMonitor.Start("DiagnosticsConnectionString");
-			return base.OnStart();
-		}
-	}
+        static void RoleEnvironmentChanging(object sender, RoleEnvironmentChangingEventArgs e)
+        {
+            // If a configuration setting is changing
+            if (e.Changes.Any(change => change is RoleEnvironmentConfigurationSettingChange))
+            {
+                // Set e.Cancel to true to restart this role instance
+                e.Cancel = true;
+            }
+        }
+    }
 }

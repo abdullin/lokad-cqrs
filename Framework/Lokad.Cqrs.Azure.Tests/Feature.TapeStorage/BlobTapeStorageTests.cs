@@ -61,7 +61,10 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         protected override void CleanupEnvironment()
         {
             var cloudBlobClient = _cloudStorageAccount.CreateCloudBlobClient();
-            cloudBlobClient.GetContainerReference(ContainerName).Delete();
+            var container = cloudBlobClient.GetContainerReference(ContainerName);
+
+            if (container.Exists())
+                container.Delete();
         }
     }
 }
