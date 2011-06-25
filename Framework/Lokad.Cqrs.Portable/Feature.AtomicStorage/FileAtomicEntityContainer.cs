@@ -60,7 +60,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                         {
                             file.CopyTo(mem);
                             mem.Seek(0, SeekOrigin.Begin);
-                            var entity = _strategy.Deserialize<TEntity>(file);
+                            var entity = _strategy.Deserialize<TEntity>(mem);
                             result = update(entity);
                         }
                     }
