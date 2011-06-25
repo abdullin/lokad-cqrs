@@ -51,8 +51,14 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                     }
                     else
                     {
-                        var entity = _strategy.Deserialize<TEntity>(file);
-                        result = update(entity);
+                        // just because some serializers have a nasty habbit of closing the stream
+                        using (var mem = new MemoryStream())
+                        {
+                            file.CopyTo(mem);
+                            mem.Seek(0, SeekOrigin.Begin);
+                            var entity = _strategy.Deserialize<TEntity>(file);
+                            result = update(entity);
+                        }
                     }
                     file.Seek(0, SeekOrigin.Begin);
                     // some serializers have nasty habbit of closing the

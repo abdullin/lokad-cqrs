@@ -56,8 +56,13 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                     }
                     else
                     {
-                        var entity = _strategy.Deserialize<TEntity>(file);
-                        result = update(entity);
+                        using (var mem = new MemoryStream())
+                        {
+                            file.CopyTo(mem);
+                            mem.Seek(0, SeekOrigin.Begin);
+                            var entity = _strategy.Deserialize<TEntity>(file);
+                            result = update(entity);
+                        }
                     }
 
                     file.Seek(0, SeekOrigin.Begin);
