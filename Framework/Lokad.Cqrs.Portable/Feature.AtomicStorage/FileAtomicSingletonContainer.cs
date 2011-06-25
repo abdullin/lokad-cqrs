@@ -60,13 +60,14 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                             result = update(entity);
                         }
                     }
-                    file.Seek(0, SeekOrigin.Begin);
                     // some serializers have nasty habbit of closing the
                     // underling stream
                     using (var mem = new MemoryStream())
                     {
                         _strategy.Serialize(result, mem);
-                        var data = mem.GetBuffer();
+                        var data = mem.ToArray();
+
+                        file.Seek(0, SeekOrigin.Begin);
                         file.Write(data, 0, data.Length);
                         // truncate this file
                         file.SetLength(data.Length);
