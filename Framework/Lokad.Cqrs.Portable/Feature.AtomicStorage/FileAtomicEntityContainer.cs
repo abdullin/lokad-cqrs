@@ -61,9 +61,17 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
                     }
 
                     file.Seek(0, SeekOrigin.Begin);
-                    _strategy.Serialize(result, file);
-                    // truncate this file
-                    file.SetLength(file.Position);
+                    // some serializers have nasty habbit of closing the
+                    // underling stream
+                    using (var mem = new MemoryStream())
+                    {
+                        _strategy.Serialize(result, mem);
+                        var data = mem.GetBuffer();
+                        file.Write(data, 0, data.Length);
+                        // truncate this file
+                        file.SetLength(data.Length);
+                    }
+                    
                     return result;
                 }
             }
