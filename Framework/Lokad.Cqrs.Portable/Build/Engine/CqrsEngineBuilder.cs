@@ -100,6 +100,13 @@ namespace Lokad.Cqrs.Build.Engine
             Advanced.RegisterModule(m);
         }
 
+        public void File(Action<FileModule> configure)
+        {
+            var m = new FileModule();
+            configure(m);
+            Advanced.RegisterModule(m);
+        }
+
         public void Storage(Action<StorageModule> configure)
         {
             configure(_storage);

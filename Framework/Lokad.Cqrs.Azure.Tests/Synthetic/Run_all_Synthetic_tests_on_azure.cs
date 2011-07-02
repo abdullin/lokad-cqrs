@@ -15,10 +15,10 @@ using NUnit.Framework;
 namespace Lokad.Cqrs
 {
     [TestFixture]
-    public sealed class Run_all_Synthetic_tests_on_azure
+    public sealed class Run_all_Synthetic_tests_on_azure : All_synthetic_scenarios
     {
 
-        static void CurrentConfig(CqrsEngineBuilder b)
+        protected override void CurrentConfig(CqrsEngineBuilder b)
         {
             var dev = AzureStorage.CreateConfigurationForDev();
             
@@ -32,29 +32,6 @@ namespace Lokad.Cqrs
                         });
                     m.AddAzureSender(dev, "test-incoming", x => x.IdGeneratorForTests());
                 });
-            
         }
-
-        [Test]
-        public void Transient_failures_are_retried()
-        {
-            new Engine_scenario_for_transient_failure()
-            .TestConfiguration(CurrentConfig);
-        }
-
-        [Test]
-        public void Permanent_failure_is_quarantined()
-        {
-            new Engine_scenario_for_permanent_failure()
-                .TestConfiguration(CurrentConfig);
-        }
-
-        [Test]
-        public void Command_batches_work_with_transaction()
-        {
-            new Engine_scenario_for_transactional_commands()
-            .TestConfiguration(CurrentConfig);
-        }
-        
     }
 }

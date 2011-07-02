@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="Build\Client\IAdvancedClientBuilder.cs" />
     <Compile Include="Build\Engine\AtomicRegistrationSource.cs" />
+    <Compile Include="Build\Engine\FileModule.cs" />
     <Compile Include="Build\Engine\IAdvancedEngineBuilder.cs" />
     <Compile Include="Core.Directory\IMethodContextManager.cs" />
     <Compile Include="Core.Directory\MethodContextManager.cs" />
@@ -72,6 +73,10 @@
     <Compile Include="Feature.AtomicStorage\FileAtomicStorageFactory.cs" />
     <Compile Include="Feature.AtomicStorage\IAtomicStorageSerializer.cs" />
     <Compile Include="Feature.AtomicStorage\IAtomicStorageStrategy.cs" />
+    <Compile Include="Feature.FilePartition\FilePartitionInbox.cs" />
+    <Compile Include="Feature.FilePartition\FileQueueWriter.cs" />
+    <Compile Include="Feature.FilePartition\FileQueueWriterFactory.cs" />
+    <Compile Include="Feature.FilePartition\FilePartitionModule.cs" />
     <Compile Include="Feature.TapeStorage\TapeStorageInitilization.cs" />
     <Compile Include="Feature.TapeStorage\FileTapeReaderFactory.cs" />
     <Compile Include="Feature.TapeStorage\SingleThreadFileTapeWriterFactory.cs" />
@@ -206,9 +211,7 @@
     <Compile Include="Core.Serialization\DataSerializerWithDataContracts.cs" />
     <Compile Include="Core.Serialization\DataContractUtil.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Feature.FilePartition\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

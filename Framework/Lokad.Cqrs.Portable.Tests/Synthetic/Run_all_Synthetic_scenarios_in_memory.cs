@@ -4,11 +4,11 @@ using NUnit.Framework;
 namespace Lokad.Cqrs.Synthetic
 {
     [TestFixture]
-    public sealed class Run_all_Synthetic_scenarios_in_memory
+    public sealed class Run_all_Synthetic_scenarios_in_memory : All_synthetic_scenarios
     {
         // ReSharper disable InconsistentNaming
 
-        static void CurrentConfig(CqrsEngineBuilder config)
+        protected override void CurrentConfig(CqrsEngineBuilder config)
         {
             config.Memory(m =>
             {
@@ -17,25 +17,6 @@ namespace Lokad.Cqrs.Synthetic
             });
         }
 
-        [Test]
-        public void Transient_failures_are_retried()
-        {
-            new Engine_scenario_for_transient_failure()
-            .TestConfiguration(CurrentConfig);
-        }
-
-        [Test]
-        public void Permanent_failure_is_quarantined()
-        {
-            new Engine_scenario_for_permanent_failure()
-                .TestConfiguration(CurrentConfig);
-        }
-
-        [Test]
-        public void Command_batches_work_with_transaction()
-        {
-            new Engine_scenario_for_transactional_commands()
-            .TestConfiguration(CurrentConfig);
-        }
+   
     }
 }
