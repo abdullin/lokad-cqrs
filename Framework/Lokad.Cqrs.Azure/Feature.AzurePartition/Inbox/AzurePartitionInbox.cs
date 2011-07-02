@@ -18,13 +18,11 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
     public sealed class AzurePartitionInbox : IPartitionInbox
     {
         readonly StatelessAzureQueueReader[] _readers;
-        readonly StatelessAzureFutureList[] _futures;
 
-        public AzurePartitionInbox(StatelessAzureQueueReader[] readers, StatelessAzureFutureList[] futures,
+        public AzurePartitionInbox(StatelessAzureQueueReader[] readers,
             Func<uint, TimeSpan> waiter)
         {
             _readers = readers;
-            _futures = futures;
             _waiter = waiter;
         }
 
@@ -33,10 +31,6 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
             foreach (var queue in _readers)
             {
                 queue.Initialize();
-            }
-            foreach (var future in _futures)
-            {
-                future.Initialize();
             }
         }
 
@@ -65,7 +59,6 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
                 for (var i = 0; i < _readers.Length; i++)
                 {
                     var queue = _readers[i];
-                    var future = _futures[i];
 
                     var message = queue.TryGetMessage();
                     switch (message.State)
@@ -76,10 +69,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
                             // future message
                             if (message.Envelope.Unpacked.DeliverOnUtc > DateTime.UtcNow)
                             {
-                                // save
-                                future.PutMessage(message.Envelope.Unpacked);
-                                queue.AckMessage(message.Envelope);
-                                break;
+                                throw new InvalidOperationException("Future message delivery has been disabled in the code");
                             }
                             context = message.Envelope;
                             return true;

@@ -61,7 +61,6 @@
     <Compile Include="ExtendCqrsClientBuilder.cs" />
     <Compile Include="AzureStorage.cs" />
     <Compile Include="Feature.AtomicStorage\AtomicStorageSerializerWithProtoBuf.cs" />
-    <Compile Include="Feature.AzurePartition\Inbox\AzureSchedulingProcess.cs" />
     <Compile Include="Feature.TapeStorage\PageBlobReadStream.cs" />
     <Compile Include="Feature.TapeStorage\BlobExtensions.cs" />
     <Compile Include="Feature.TapeStorage\BlobTapeReaderFactory.cs" />
@@ -86,8 +85,6 @@
     <Compile Include="Feature.AtomicStorage\AzureAtomicSingletonWriter.cs" />
     <Compile Include="Feature.AtomicStorage\AzureAtomicStorageFactory.cs" />
     <Compile Include="Build\AzureStorageConfigurationBuilder.cs" />
-    <Compile Include="Feature.AzurePartition\Inbox\StatelessAzureScheduler.cs" />
-    <Compile Include="Feature.AzurePartition\StatelessAzureFutureList.cs" />
     <Compile Include="Feature.AzurePartition\Inbox\AzurePartitionInbox.cs" />
     <Compile Include="Feature.AzurePartition\Inbox\AzurePartitionFactory.cs" />
     <Compile Include="Feature.AzurePartition\StatelessAzureQueueReader.cs" />

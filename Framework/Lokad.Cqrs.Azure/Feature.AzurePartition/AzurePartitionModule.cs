@@ -147,9 +147,8 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             dispatcher.Init();
 
             var streamer = context.Resolve<IEnvelopeStreamer>();
-
-            var scheduling = context.Resolve<AzureSchedulingProcess>();
-            var factory = new AzurePartitionFactory(streamer, log, _config, _queueVisibilityTimeout, scheduling, _decayPolicy);
+            
+            var factory = new AzurePartitionFactory(streamer, log, _config, _queueVisibilityTimeout, _decayPolicy);
             
             var notifier = factory.GetNotifier(_queueNames.ToArray());
             var quarantine = _quarantineFactory(context);
@@ -179,13 +178,6 @@ namespace Lokad.Cqrs.Feature.AzurePartition
         public void Configure(IComponentRegistry container)
         {
             container.Register(BuildConsumingProcess);
-
-            if (!container.IsRegistered(new TypedService(typeof(AzureSchedulingProcess))))
-            {
-                var process = new AzureSchedulingProcess();
-                container.Register(ctx => process);
-                container.Register<IEngineProcess>(process);
-            }
         }
     }
 }

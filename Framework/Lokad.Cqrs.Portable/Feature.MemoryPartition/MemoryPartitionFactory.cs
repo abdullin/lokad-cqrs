@@ -26,11 +26,7 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
                 .Select(n => _account.Delivery.GetOrAdd(n, s => new BlockingCollection<ImmutableEnvelope>()))
                 .ToArray();
 
-            var pending = queueNames
-                .Select(n => _account.Pending.GetOrAdd(n, s => new MemoryFutureList()))
-                .ToArray();
-
-            return new MemoryPartitionInbox(queues, queueNames, pending);
+            return new MemoryPartitionInbox(queues, queueNames);
         }
     }
 }

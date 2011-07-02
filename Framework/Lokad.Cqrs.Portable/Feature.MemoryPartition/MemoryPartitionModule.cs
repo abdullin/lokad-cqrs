@@ -98,7 +98,6 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
             {
                 var account = new MemoryAccount();
                 container.Register(account);
-                container.Register<IEngineProcess>(new MemorySchedulingProcess(account));
             }
             container.Register(BuildConsumingProcess);
         }

@@ -45,7 +45,6 @@ namespace Lokad.Cqrs.Build.Engine
             {
                 var account = new MemoryAccount();
                 componentRegistry.Register(account);
-                componentRegistry.Register<IEngineProcess>(new MemorySchedulingProcess(account));
             }
             _funqlets(componentRegistry);
 

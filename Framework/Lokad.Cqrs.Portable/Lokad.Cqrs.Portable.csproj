@@ -80,7 +80,6 @@
     <Compile Include="Feature.TapeStorage\ISingleThreadTapeWriter.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryAccount.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryQueueWriterFactory.cs" />
-    <Compile Include="Feature.MemoryPartition\MemorySchedulingProcess.cs" />
     <Compile Include="FileStorage.cs" />
     <Compile Include="Feature.TapeStorage\ISingleThreadTapeWriterFactory.cs" />
     <Compile Include="Feature.TapeStorage\MemoryTapeReader.cs" />
@@ -168,7 +167,6 @@
     <Compile Include="Feature.AtomicStorage\IAtomicSingletonReader.cs" />
     <Compile Include="Feature.AtomicStorage\IAtomicSingletonWriter.cs" />
     <Compile Include="Core.Reactive\SystemObserver.cs" />
-    <Compile Include="Feature.MemoryPartition\MemoryFutureList.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryPartitionFactory.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryPartitionInbox.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryPartitionModule.cs" />

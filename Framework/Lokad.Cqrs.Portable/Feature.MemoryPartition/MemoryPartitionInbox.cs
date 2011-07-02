@@ -16,14 +16,11 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
     {
         readonly BlockingCollection<ImmutableEnvelope>[] _queues;
         readonly string[] _names;
-        readonly MemoryFutureList[] _future;
 
-        public MemoryPartitionInbox(BlockingCollection<ImmutableEnvelope>[] queues, string[] names,
-            MemoryFutureList[] future)
+        public MemoryPartitionInbox(BlockingCollection<ImmutableEnvelope>[] queues, string[] names)
         {
             _queues = queues;
             _names = names;
-            _future = future;
         }
 
         public void Init()
@@ -50,8 +47,7 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
                     if (envelope.DeliverOnUtc > DateTime.UtcNow)
                     {
                         // future message
-                        _future[result].PutMessage(envelope);
-                        continue;
+                        throw new InvalidOperationException("Message scheduling has been disabled in the code");
                     }
                     context = new EnvelopeTransportContext(result, envelope, _names[result]);
                     return true;
