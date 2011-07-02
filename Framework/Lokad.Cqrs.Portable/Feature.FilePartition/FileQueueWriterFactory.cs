@@ -5,15 +5,15 @@ namespace Lokad.Cqrs.Feature.FilePartition
 {
     public sealed class FileQueueWriterFactory : IQueueWriterFactory
     {
-        readonly DirectoryInfo _account;
+        readonly FileStorageConfig _account;
         readonly IEnvelopeStreamer _streamer;
         readonly string _endpoint;
 
-        public FileQueueWriterFactory(DirectoryInfo account, IEnvelopeStreamer streamer, string endpoint = "file")
+        public FileQueueWriterFactory(FileStorageConfig account, IEnvelopeStreamer streamer)
         {
             _account = account;
             _streamer = streamer;
-            _endpoint = endpoint;
+            _endpoint = _account.AccountName;
         }
 
         public string Endpoint
@@ -23,9 +23,13 @@ namespace Lokad.Cqrs.Feature.FilePartition
 
         public IQueueWriter GetWriteQueue(string queueName)
         {
-            var full = Path.Combine(_account.FullName, queueName);
+            var full = Path.Combine(_account.Folder.FullName, queueName);
+            if (!Directory.Exists(full))
+            {
+                Directory.CreateDirectory(full);
+            }
             return
-                new FileQueueWriter(new DirectoryInfo(full),queueName, _streamer);
+                new FileQueueWriter(new DirectoryInfo(full), queueName, _streamer);
         }
     }
 }

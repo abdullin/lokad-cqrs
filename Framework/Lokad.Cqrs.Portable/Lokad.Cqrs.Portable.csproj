@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="Build\Client\IAdvancedClientBuilder.cs" />
     <Compile Include="Build\Engine\AtomicRegistrationSource.cs" />
+    <Compile Include="Build\Client\FileClientModule.cs" />
     <Compile Include="Build\Engine\FileModule.cs" />
     <Compile Include="Build\Engine\IAdvancedEngineBuilder.cs" />
     <Compile Include="Core.Directory\IMethodContextManager.cs" />
@@ -94,6 +95,7 @@
     <Compile Include="Feature.TapeStorage\SingleThreadFileTapeWriter.cs" />
     <Compile Include="Feature.TapeStorage\SingleThreadMemoryTapeWriter.cs" />
     <Compile Include="Feature.TapeStorage\TapeRecord.cs" />
+    <Compile Include="FileStorageConfig.cs" />
     <Compile Include="ImmutableAttribute.cs" />
     <Compile Include="MemoryStorage.cs" />
     <Compile Include="MessageContext.cs" />

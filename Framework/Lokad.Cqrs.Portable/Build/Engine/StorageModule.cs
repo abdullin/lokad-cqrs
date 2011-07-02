@@ -125,5 +125,4 @@ namespace Lokad.Cqrs.Build.Engine
             builder.Update(componentRegistry);
         }
     }
-
 }

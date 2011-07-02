@@ -16,10 +16,11 @@ namespace Lokad.Cqrs.Synthetic
             {
                 dir.Delete(true);
             }
+            var store = FileStorage.CreateConfig(bus, "file");
             config.File(m =>
                 {
-                    m.AddFileProcess(dir,"do", x => x.DispatchAsCommandBatch());
-                    m.AddFileSender(dir, "do", cb => cb.IdGeneratorForTests());
+                    m.AddFileProcess(store,"do", x => x.DispatchAsCommandBatch());
+                    m.AddFileSender(store, "do", cb => cb.IdGeneratorForTests());
                 });
         }
     }

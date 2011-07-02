@@ -134,5 +134,12 @@ namespace Lokad.Cqrs.Build.Client
         {
             get { return this; }
         }
+
+        public void File(Action<FileClientModule> config)
+        {
+            var module = new FileClientModule();
+            config(module);
+            _builder.RegisterModule(module);
+        }
     }
 }

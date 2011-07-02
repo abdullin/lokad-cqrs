@@ -21,7 +21,7 @@ namespace Lokad.Cqrs.Feature.FilePartition
 {
     public sealed class FilePartitionModule : HideObjectMembersFromIntelliSense
     {
-        readonly DirectoryInfo _fullPath;
+        readonly FileStorageConfig _fullPath;
         readonly string[] _fileQueues;
 
         
@@ -36,7 +36,7 @@ namespace Lokad.Cqrs.Feature.FilePartition
             return this;
         }
 
-        public FilePartitionModule(DirectoryInfo fullPath, string[] fileQueues)
+        public FilePartitionModule(FileStorageConfig fullPath, string[] fileQueues)
         {
             _fullPath = fullPath;
             _fileQueues = fileQueues;
@@ -86,7 +86,7 @@ namespace Lokad.Cqrs.Feature.FilePartition
 
 
             var queues = _fileQueues
-                .Select(n => Path.Combine(_fullPath.FullName, n))
+                .Select(n => Path.Combine(_fullPath.Folder.FullName, n))
                 .Select(f => new DirectoryInfo(f))
                 .ToArray();
             var inbox = new FilePartitionInbox(queues, _fileQueues, streamer, u => TimeSpan.FromMilliseconds(200));

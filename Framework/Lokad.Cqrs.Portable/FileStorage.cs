@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Lokad.Cqrs.Feature.AtomicStorage;
 using Lokad.Cqrs.Feature.StreamingStorage;
 
@@ -51,6 +52,13 @@ namespace Lokad.Cqrs
             var container = new FileStreamingContainer(storageFolder);
             container.Create();
             return container;
+        }
+
+        
+        public static FileStorageConfig CreateConfig(string fullPath, string name)
+        {
+            var folder = new DirectoryInfo(fullPath);
+            return new FileStorageConfig(folder, name);
         }
     }
 }
