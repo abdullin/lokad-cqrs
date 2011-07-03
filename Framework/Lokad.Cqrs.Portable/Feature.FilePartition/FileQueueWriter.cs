@@ -5,7 +5,10 @@
 
 #endregion
 
+using System;
 using System.IO;
+using System.Security.Cryptography;
+using System.Threading;
 using Lokad.Cqrs.Core.Outbox;
 
 namespace Lokad.Cqrs.Feature.FilePartition
@@ -17,6 +20,8 @@ namespace Lokad.Cqrs.Feature.FilePartition
 
         public string Name { get; private set; }
 
+ 
+
         public FileQueueWriter(DirectoryInfo folder, string name, IEnvelopeStreamer streamer)
         {
             _folder = folder;
@@ -26,7 +31,7 @@ namespace Lokad.Cqrs.Feature.FilePartition
 
         public void PutMessage(ImmutableEnvelope envelope)
         {
-            var fileName = string.Format("{0:yyyy-MM-dd-HH-mm-ss-ffff}-{1}", envelope.CreatedOnUtc, envelope.EnvelopeId);
+            var fileName = string.Format("{0:yyyy-MM-dd-HH-mm-ss-ffff}-{1}", envelope.CreatedOnUtc, Guid.NewGuid());
             var full = Path.Combine(_folder.FullName, fileName);
             var data = _streamer.SaveEnvelopeData(envelope);
             File.WriteAllBytes(full, data);
