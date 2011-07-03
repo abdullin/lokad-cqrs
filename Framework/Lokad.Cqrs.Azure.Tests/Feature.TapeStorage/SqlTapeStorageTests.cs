@@ -8,8 +8,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
     [TestFixture]
     public class SqlTapeStorageTests : TapeStorageTests
     {
-        ISingleThreadTapeWriterFactory _writerFactory;
-        ITapeReaderFactory _readerFactory;
+        ITapeStorageFactory _storageFactory;
 
         protected override void PrepareEnvironment()
         {
@@ -23,7 +22,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             var connectionString = Settings.Default.SqlConnectionString;
             var tableName = Settings.Default.SqlTapeWriterTableName;
 
-            _writerFactory = new SingleThreadSqlTapeWriterFactory(connectionString, tableName);
+            _storageFactory = new SqlTapeStorageFactory(connectionString, tableName);
 
             var count = 0;
             while (true)
@@ -32,7 +31,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
                 try
                 {
-                    _writerFactory.Initialize();
+                    _storageFactory.Initialize();
                     break;
                 }
                 catch (Exception)
@@ -47,20 +46,19 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                 }
             }
 
-            _readerFactory = new SqlTapeReaderFactory(connectionString, tableName);
+            
 
             const string name = "test";
             return new Factories
                 {
-                    Writer = _writerFactory.GetOrCreateWriter(name),
-                    Reader = _readerFactory.GetReader(name)
+                    Writer = _storageFactory.GetOrCreateWriter(name),
+                    Reader = _storageFactory.GetReader(name)
                 };
         }
 
         protected override void FreeResources()
         {
-            _writerFactory = null;
-            _readerFactory = null;
+            _storageFactory = null;
         }
 
         protected override void CleanupEnvironment()

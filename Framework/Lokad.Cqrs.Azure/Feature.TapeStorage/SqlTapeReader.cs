@@ -70,7 +70,7 @@ FROM [{0}].[{1}]
 WHERE [Stream] = @Stream AND [Index] >= (@offset)
 ORDER BY [Index]";
 
-            using (var command = new SqlCommand(string.Format(text, SingleThreadSqlTapeWriterFactory.TableSchema, _tableName), connection))
+            using (var command = new SqlCommand(string.Format(text, SqlTapeStorageFactory.TableSchema, _tableName), connection))
             {
                 command.Parameters.AddWithValue("@Stream", _name);
                 command.Parameters.AddWithValue("@count", count);
@@ -96,7 +96,7 @@ ORDER BY [Index]";
         {
             const string text = "SELECT Max([Index]) FROM [{0}].[{1}] WHERE [Stream] = @Stream";
 
-            using (var command = new SqlCommand(string.Format(text, SingleThreadSqlTapeWriterFactory.TableSchema, _tableName), connection))
+            using (var command = new SqlCommand(string.Format(text, SqlTapeStorageFactory.TableSchema, _tableName), connection))
             {
                 command.Parameters.AddWithValue("@Stream", _name);
 

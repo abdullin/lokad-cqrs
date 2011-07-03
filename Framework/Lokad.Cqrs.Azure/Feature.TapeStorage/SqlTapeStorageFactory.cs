@@ -4,21 +4,31 @@ using System.Data.SqlClient;
 
 namespace Lokad.Cqrs.Feature.TapeStorage
 {
-    public sealed class SingleThreadSqlTapeWriterFactory : ISingleThreadTapeWriterFactory
+    public sealed class SqlTapeStorageFactory : ITapeStorageFactory
     {
-        public const string TableSchema = "dbo";
-
         readonly string _sqlConnectionString;
         readonly string _tableName;
-
         readonly ConcurrentDictionary<string, ISingleThreadTapeWriter> _writers =
             new ConcurrentDictionary<string, ISingleThreadTapeWriter>();
 
-        public SingleThreadSqlTapeWriterFactory(string sqlConnectionString, string tableName)
+        public const string TableSchema = "dbo";
+
+        public SqlTapeStorageFactory(string sqlConnectionString, string tableName)
         {
             _sqlConnectionString = sqlConnectionString;
             _tableName = tableName;
         }
+
+        public ITapeReader GetReader(string name)
+        {
+            if (name == null)
+                throw new ArgumentNullException("name");
+            if (String.IsNullOrWhiteSpace("name"))
+                throw new ArgumentException("Incorrect value.", "name");
+
+            return new SqlTapeReader(_sqlConnectionString, _tableName, name);
+        }
+
 
         public void Initialize()
         {
@@ -34,7 +44,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         {
             if (name == null)
                 throw new ArgumentNullException("name");
-            if (string.IsNullOrWhiteSpace("name"))
+            if (String.IsNullOrWhiteSpace("name"))
                 throw new ArgumentException("Incorrect value.", "name");
 
             var writer = _writers.GetOrAdd(
@@ -59,7 +69,7 @@ BEGIN
         PRIMARY KEY CLUSTERED ([Stream], [Index])
     )
 END";
-            using (var cmd = new SqlCommand(string.Format(cmdText, TableSchema, tableName), conn))
+            using (var cmd = new SqlCommand(String.Format(cmdText, TableSchema, tableName), conn))
             {
                 cmd.Parameters.AddWithValue("@Schema", TableSchema);
                 cmd.Parameters.AddWithValue("@Catalog", conn.Database);

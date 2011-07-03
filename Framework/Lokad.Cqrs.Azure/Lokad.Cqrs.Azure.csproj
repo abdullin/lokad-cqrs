@@ -63,15 +63,13 @@
     <Compile Include="Feature.AtomicStorage\AtomicStorageSerializerWithProtoBuf.cs" />
     <Compile Include="Feature.TapeStorage\PageBlobReadStream.cs" />
     <Compile Include="Feature.TapeStorage\BlobExtensions.cs" />
-    <Compile Include="Feature.TapeStorage\BlobTapeReaderFactory.cs" />
-    <Compile Include="Feature.TapeStorage\SingleThreadBlobTapeWriterFactory.cs" />
+    <Compile Include="Feature.TapeStorage\BlobTapeStorageFactory.cs" />
     <Compile Include="Feature.TapeStorage\BlobTapeReader.cs" />
     <Compile Include="Feature.TapeStorage\PageBlobAppendStream.cs" />
     <Compile Include="Feature.TapeStorage\SingleThreadBlobTapeWriter.cs" />
     <Compile Include="Feature.TapeStorage\SqlTapeReader.cs" />
     <Compile Include="Feature.TapeStorage\SingleThreadSqlTapeWriter.cs" />
-    <Compile Include="Feature.TapeStorage\SqlTapeReaderFactory.cs" />
-    <Compile Include="Feature.TapeStorage\SingleThreadSqlTapeWriterFactory.cs" />
+    <Compile Include="Feature.TapeStorage\SqlTapeStorageFactory.cs" />
     <Compile Include="WipeAzureAccount.cs" />
     <Compile Include="ExtendStorageModule.cs" />
     <Compile Include="ExtendSerializationModule.cs" />

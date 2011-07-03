@@ -12,8 +12,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         const string ContainerName = "blob-tape-test";
 
         CloudStorageAccount _cloudStorageAccount;
-        ISingleThreadTapeWriterFactory _writerFactory;
-        ITapeReaderFactory _readerFactory;
+        ITapeStorageFactory _storageFactory;
 
         protected override void PrepareEnvironment()
         {
@@ -38,24 +37,22 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         protected override Factories GetTapeStorageInterfaces()
         {
             var config = AzureStorage.CreateConfig(_cloudStorageAccount);
-            _writerFactory = new SingleThreadBlobTapeWriterFactory(config, ContainerName);
-            _writerFactory.Initialize();
-
-            _readerFactory = new BlobTapeReaderFactory(config, ContainerName);
+            _storageFactory = new BlobTapeStorageFactory(config, ContainerName);
+            _storageFactory.Initialize();
 
             const string name = "test";
 
             return new Factories
             {
-                Writer = _writerFactory.GetOrCreateWriter(name),
-                Reader = _readerFactory.GetReader(name)
+                Writer = _storageFactory.GetOrCreateWriter(name),
+                Reader = _storageFactory.GetReader(name)
             };
         }
 
         protected override void FreeResources()
         {
-            _writerFactory = null;
-            _readerFactory = null;
+            _storageFactory = null;
+            _storageFactory = null;
         }
 
         protected override void CleanupEnvironment()

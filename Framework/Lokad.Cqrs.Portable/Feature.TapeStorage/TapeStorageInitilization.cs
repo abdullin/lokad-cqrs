@@ -6,8 +6,8 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 {
     public sealed class TapeStorageInitilization : IEngineProcess
     {
-        readonly IEnumerable<ISingleThreadTapeWriterFactory> _storage;
-        public TapeStorageInitilization(IEnumerable<ISingleThreadTapeWriterFactory> storage)
+        readonly IEnumerable<ITapeStorageFactory> _storage;
+        public TapeStorageInitilization(IEnumerable<ITapeStorageFactory> storage)
         {
             _storage = storage;
         }

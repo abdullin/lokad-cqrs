@@ -15,8 +15,7 @@ namespace Lokad.Cqrs.Build.Engine
         IAtomicStorageFactory _atomicStorageFactory;
         IStreamingRoot _streamingRoot;
 
-        ITapeReaderFactory _tapeReader;
-        ISingleThreadTapeWriterFactory _tapeWriter;
+        ITapeStorageFactory _tapeStorage;
 
         
         public void AtomicIs(IAtomicStorageFactory factory)
@@ -44,25 +43,22 @@ namespace Lokad.Cqrs.Build.Engine
             configure(builder);
             AtomicIs(new FileAtomicStorageFactory(folder, builder.Build()));
         }
-        public void TapeIs(ISingleThreadTapeWriterFactory writer, ITapeReaderFactory reader)
+        public void TapeIs(ITapeStorageFactory storage)
         {
-            _tapeWriter = writer;
-            _tapeReader = reader;
+            _tapeStorage = storage;
         }
 
         public void TapeIsInMemory()
         {
             var storage = new ConcurrentDictionary<string, List<byte[]>>();
-            var reader = new MemoryTapeReaderFactory(storage);
-            var writer = new SingleThreadMemoryTapeWriterFactory(storage);
-            TapeIs(writer, reader);
+            var factory = new MemoryTapeStorageFactory(storage);
+            TapeIs(factory);
         }
 
         public void TapeIsInFiles(string fullPath)
         {
-            var reader = new FileTapeReaderFactory(fullPath);
-            var writer = new SingleThreadFileTapeWriterFactory(fullPath);
-            TapeIs(writer, reader);
+            var factory = new FileTapeStorageFactory(fullPath);
+            TapeIs(factory);
         }
 
         public void AtomicIsInFiles(string folder)
@@ -102,7 +98,7 @@ namespace Lokad.Cqrs.Build.Engine
             {
                 StreamingIsInFiles(Directory.GetCurrentDirectory());
             }
-            if (_tapeReader == null)
+            if (_tapeStorage == null)
             {
                 TapeIsInMemory();
             }
@@ -118,9 +114,8 @@ namespace Lokad.Cqrs.Build.Engine
 
             builder.RegisterInstance(_streamingRoot);
 
-            builder.RegisterInstance(_tapeReader);
-            builder.RegisterInstance(_tapeWriter);
-            builder.RegisterInstance(new TapeStorageInitilization(new[] {_tapeWriter})).As<IEngineProcess>();
+            builder.RegisterInstance(_tapeStorage);
+            builder.RegisterInstance(new TapeStorageInitilization(new[] {_tapeStorage})).As<IEngineProcess>();
 
             builder.Update(componentRegistry);
         }

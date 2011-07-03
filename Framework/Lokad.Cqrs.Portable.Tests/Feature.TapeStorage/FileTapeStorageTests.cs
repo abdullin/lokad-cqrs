@@ -7,8 +7,8 @@ namespace Lokad.Cqrs.Feature.TapeStorage
     public class FileTapeStorageTests : TapeStorageTests
     {
         string _path;
-        SingleThreadFileTapeWriterFactory _writerFactory;
-        ITapeReaderFactory _readerFactory;
+        
+        ITapeStorageFactory _storageFactory;
 
         protected override void PrepareEnvironment()
         {
@@ -18,24 +18,21 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
         protected override Factories GetTapeStorageInterfaces()
         {
-            _writerFactory = new SingleThreadFileTapeWriterFactory(_path);
-            _writerFactory.Initialize();
-
-            _readerFactory = new FileTapeReaderFactory(_path);
+            _storageFactory = new FileTapeStorageFactory(_path);
+            _storageFactory.Initialize();
 
             const string name = "test";
 
             return new Factories
                 {
-                    Writer = _writerFactory.GetOrCreateWriter(name),
-                    Reader = _readerFactory.GetReader(name)
+                    Writer = _storageFactory.GetOrCreateWriter(name),
+                    Reader = _storageFactory.GetReader(name)
                 };
         }
 
         protected override void FreeResources()
         {
-            _writerFactory = null;
-            _readerFactory = null;
+            _storageFactory = null;
         }
 
         protected override void CleanupEnvironment()

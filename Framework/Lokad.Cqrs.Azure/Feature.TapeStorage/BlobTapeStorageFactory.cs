@@ -1,24 +1,34 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Configuration;
 using System.Linq;
 using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs.Feature.TapeStorage
 {
-    public class SingleThreadBlobTapeWriterFactory : ISingleThreadTapeWriterFactory
+    public class BlobTapeStorageFactory : ITapeStorageFactory
     {
         readonly CloudBlobClient _cloudBlobClient;
         readonly string _containerName;
+
         readonly ConcurrentDictionary<string, ISingleThreadTapeWriter> _writers =
             new ConcurrentDictionary<string, ISingleThreadTapeWriter>();
 
-        public SingleThreadBlobTapeWriterFactory(IAzureStorageConfig config, string containerName)
+        public BlobTapeStorageFactory(IAzureStorageConfig config, string containerName)
         {
             if (containerName.Any(Char.IsUpper))
                 throw new ArgumentException("All letters in a container name must be lowercase.");
 
             _cloudBlobClient = config.CreateBlobClient();
+            
             _containerName = containerName;
+        }
+
+        public ITapeReader GetReader(string name)
+        {
+            var container = _cloudBlobClient.GetContainerReference(_containerName);
+
+            return new BlobTapeReader(container, name);
         }
 
         public void Initialize()
