@@ -13,8 +13,10 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         IEnumerable<TapeRecord> ReadRecords(long offset, int maxCount);
 
         /// <summary>
-        /// Returns current count of records.
+        /// Returns current storage version
         /// </summary>
-        long Count { get; }
+        /// <returns></returns>
+        long GetVersion();
+
     }
 }

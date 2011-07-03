@@ -66,6 +66,22 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             }
         }
 
+        public long GetVersion()
+        {
+            Readers readers;
+            if (!CheckGetReaders(out readers))
+                return 0;
+
+            try
+            {
+                return readers.IndexReader.BaseStream.Length / sizeof(long);
+            }
+            finally
+            {
+                DisposeReaders(readers);
+            }
+        }
+
         bool CheckGetReaders(out Readers readers)
         {
             var dataExists = File.Exists(_dataFileName);
@@ -85,24 +101,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             return true;
         }
 
-        public long Count
-        {
-            get
-            {
-                Readers readers;
-                if (!CheckGetReaders(out readers))
-                    return 0;
-
-                try
-                {
-                    return readers.IndexReader.BaseStream.Length / sizeof(long);
-                }
-                finally
-                {
-                    DisposeReaders(readers);
-                }
-            }
-        }
+        
 
         Readers CreateReaders()
         {

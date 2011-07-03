@@ -34,9 +34,9 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             return Execute(c => ReadRecords(c, offset, maxCount), Enumerable.Empty<TapeRecord>());
         }
 
-        public long Count
+        public long GetVersion()
         {
-            get { return Execute(GetCount, 0); }
+            return Execute(GetCount, 0);
         }
 
         T Execute<T>(Func<SqlConnection, T> func, T defaultValue)

@@ -88,27 +88,26 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             }
         }
 
-        public long Count
+        public long GetVersion()
         {
-            get
+            var indexBlob = _container.GetPageBlobReference(_indexBlobName);
+
+            if (!indexBlob.Exists())
+                return 0;
+
+            var dataBlob = _container.GetPageBlobReference(_dataBlobName);
+            var readers = CreateReaders(dataBlob, indexBlob);
+            try
             {
-                var indexBlob = _container.GetPageBlobReference(_indexBlobName);
-
-                if (!indexBlob.Exists())
-                    return 0;
-
-                var dataBlob = _container.GetPageBlobReference(_dataBlobName);
-                var readers = CreateReaders(dataBlob, indexBlob);
-                try
-                {
-                    return readers.IndexReader.BaseStream.Length / sizeof(long);
-                }
-                finally
-                {
-                    DisposeReaders(readers);
-                }
+                return readers.IndexReader.BaseStream.Length / sizeof(long);
+            }
+            finally
+            {
+                DisposeReaders(readers);
             }
         }
+
+        
 
         static Tuple<long,int,int> GetReadRange(Readers readers, long firstIndex, int maxCount)
         {

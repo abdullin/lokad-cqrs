@@ -53,7 +53,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                 Assert.AreEqual(item.Index, reading[0].Index, "Index mismatch");
                 CollectionAssert.AreEqual(item.Record, reading[0].Data, "Data mismatch");
 
-                Assert.AreEqual(item.Index + 1, _reader.Count);
+                Assert.AreEqual(item.Index + 1, _reader.GetVersion());
             }
         }
 
@@ -62,7 +62,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         {
             CleanupEnvironment();
             CollectionAssert.IsEmpty(_reader.ReadRecords(0, 10));
-            Assert.AreEqual(0, _reader.Count);
+            Assert.AreEqual(0, _reader.GetVersion());
         }
 
         [Test]
