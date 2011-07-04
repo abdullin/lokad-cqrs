@@ -34,7 +34,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             return Execute(c => ReadRecords(c, offset, maxCount), Enumerable.Empty<TapeRecord>());
         }
 
-        public long GetCurrentCount()
+        public long GetCurrentVersion()
         {
             return Execute(GetCount, 0);
         }
@@ -62,7 +62,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             }
         }
 
-        public bool AppendRecords(ICollection<byte[]> records, TapeAppendCondition condition)
+        public bool TryAppendRecords(ICollection<byte[]> records, TapeAppendCondition condition)
         {
             if (records == null)
                 throw new ArgumentNullException("records");

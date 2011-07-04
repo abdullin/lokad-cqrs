@@ -37,7 +37,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
              * */
         }
 
-        public bool AppendRecords(ICollection<byte[]> records, TapeAppendCondition condition)
+        public bool TryAppendRecords(ICollection<byte[]> records, TapeAppendCondition condition)
         {
             if (records.Count == 0)
                 return false;
@@ -76,7 +76,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             return tapeRecords;
         }
 
-        public long GetCurrentCount()
+        public long GetCurrentVersion()
         {
             List<byte[]> list;
             if(_storage.TryGetValue(_name, out list))

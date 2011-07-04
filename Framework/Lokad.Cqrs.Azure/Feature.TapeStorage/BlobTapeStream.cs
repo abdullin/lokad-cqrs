@@ -88,7 +88,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             }
         }
 
-        public long GetCurrentCount()
+        public long GetCurrentVersion()
         {
             var indexBlob = _container.GetPageBlobReference(_indexBlobName);
 
@@ -199,7 +199,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             internal BinaryReader IndexReader;
         }
 
-        public bool AppendRecords(ICollection<byte[]> records, TapeAppendCondition condition)
+        public bool TryAppendRecords(ICollection<byte[]> records, TapeAppendCondition condition)
         {
             if (records == null)
                 throw new ArgumentNullException("records");

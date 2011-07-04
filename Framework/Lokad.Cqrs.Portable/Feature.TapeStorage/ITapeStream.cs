@@ -18,14 +18,14 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         /// Returns current storage version
         /// </summary>
         /// <returns></returns>
-        long GetCurrentCount();
+        long GetCurrentVersion();
 
         /// <summary>
         /// Saves the specified records
         /// </summary>
         /// <param name="records">The records to save.</param>
         /// <param name="appendCondition">The append condition.</param>
-        bool AppendRecords(ICollection<byte[]> records, TapeAppendCondition appendCondition = default(TapeAppendCondition));
+        bool TryAppendRecords(ICollection<byte[]> records, TapeAppendCondition appendCondition = default(TapeAppendCondition));
     }
 
     public struct TapeAppendCondition
@@ -33,10 +33,15 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         public readonly long Index;
         public readonly bool IsSpecified;
 
-        public TapeAppendCondition(long index) 
+        TapeAppendCondition(long index) 
         {
             Index = index;
             IsSpecified = true;
+        }
+
+        public static TapeAppendCondition VersionIs(long count)
+        {
+            return new TapeAppendCondition(count);
         }
 
         public static readonly TapeAppendCondition None = default(TapeAppendCondition);

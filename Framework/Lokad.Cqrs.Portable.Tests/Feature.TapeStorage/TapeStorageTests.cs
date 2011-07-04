@@ -21,7 +21,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         public void TestSetUp()
         {
             PrepareEnvironment();
-
+            CleanupEnvironment();
             _stream = GetTapeStorageInterfaces();
         }
 
@@ -42,7 +42,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         {
             foreach (var item in _batch.Select((r, i) => new { Index = i, Record = r}))
             {
-                _stream.AppendRecords(new[] {item.Record});
+                _stream.TryAppendRecords(new[] {item.Record});
 
                 var reading = _stream.ReadRecords(item.Index, 1).ToArray();
 
@@ -50,7 +50,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                 Assert.AreEqual(item.Index, reading[0].Index, "Index mismatch");
                 CollectionAssert.AreEqual(item.Record, reading[0].Data, "Data mismatch");
 
-                Assert.AreEqual(item.Index + 1, _stream.GetCurrentCount());
+                Assert.AreEqual(item.Index + 1, _stream.GetCurrentVersion());
             }
         }
 
@@ -59,13 +59,13 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         {
             CleanupEnvironment();
             CollectionAssert.IsEmpty(_stream.ReadRecords(0, 10));
-            Assert.AreEqual(0, _stream.GetCurrentCount());
+            Assert.AreEqual(0, _stream.GetCurrentVersion());
         }
 
         [Test]
         public void Reading_batch_by_one()
         {
-            _stream.AppendRecords(_batch);
+            _stream.TryAppendRecords(_batch);
 
             var readings = Enumerable
                 .Range(0, _batch.Length)
@@ -82,7 +82,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         [Test]
         public void Reading_batch_at_once()
         {
-            _stream.AppendRecords(_batch);
+            _stream.TryAppendRecords(_batch);
 
             var readings = _stream.ReadRecords(0, _batch.Length).ToArray();
 
@@ -99,14 +99,13 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         [Test]
         public void Can_continue_after_recreation()
         {
-            _stream.AppendRecords(_batch);
-
+            _stream.TryAppendRecords(_batch);
             _stream = null;
             FreeResources();
 
             _stream = GetTapeStorageInterfaces();
 
-            _stream.AppendRecords(new[] {_batch[0]});
+            _stream.TryAppendRecords(new[] {_batch[0]});
 
             var readings = _stream.ReadRecords(_batch.Length, 1).ToArray();
 
@@ -119,7 +118,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         [Test]
         public void Reading_ahead_storage_returns_none()
         {
-            _stream.AppendRecords(_batch);
+            _stream.TryAppendRecords(_batch);
 
             var readings = _stream.ReadRecords(_batch.Length, 1).ToArray();
 
@@ -129,7 +128,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         [Test]
         public void Reading_ahead_returns_only_written()
         {
-            _stream.AppendRecords(_batch);
+            _stream.TryAppendRecords(_batch);
 
             var readings = _stream.ReadRecords(_batch.Length - 2, _batch.Length).ToArray();
 
@@ -143,6 +142,47 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             }
         }
 
-        
+        [Test]
+        public void Specified_condition_is_verified_for_empty_storage()
+        {
+            var previousVersion = _stream.GetCurrentVersion();
+            var result = _stream.TryAppendRecords(_batch, TapeAppendCondition.VersionIs(1));
+            Assert.IsFalse(result, "Appending records should fail");
+            var currentVersion = _stream.GetCurrentVersion();
+            Assert.AreEqual(previousVersion, currentVersion, "Version should not change");
+        }
+
+        [Test]
+        public void Specified_condition_is_verified_for_non_empty_storage()
+        {
+            _stream.TryAppendRecords(_batch);
+            var previousVersion = _stream.GetCurrentVersion();
+            var result = _stream.TryAppendRecords(_batch, TapeAppendCondition.VersionIs(0));
+            Assert.IsFalse(result, "Appending records should fail");
+            var currentVersion = _stream.GetCurrentVersion();
+            Assert.AreEqual(previousVersion, currentVersion, "Version should not change");
+        }
+
+        [Test]
+        public void Specified_condition_is_matched_for_empty_storage()
+        {
+            var version = _stream.GetCurrentVersion();
+            var success = _stream.TryAppendRecords(_batch, TapeAppendCondition.VersionIs(version));
+            Assert.IsTrue(success, "Appending records should succeed");
+            var currentVersion = _stream.GetCurrentVersion();
+            Assert.AreNotEqual(version, currentVersion, "Version should change");
+        }
+
+        [Test]
+        public void Specified_condition_is_matched_for_non_empty_storage()
+        {
+            _stream.TryAppendRecords(_batch);
+
+            var before = _stream.GetCurrentVersion();
+            var success = _stream.TryAppendRecords(_batch, TapeAppendCondition.VersionIs(before));
+            Assert.IsTrue(success, "Appending records should succeed");
+            var currentVersion = _stream.GetCurrentVersion();
+            Assert.AreNotEqual(before, currentVersion, "Version should change");
+        }
     }
 }

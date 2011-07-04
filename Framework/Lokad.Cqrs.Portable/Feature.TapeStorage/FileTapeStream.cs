@@ -67,7 +67,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             }
         }
 
-        public long GetCurrentCount()
+        public long GetCurrentVersion()
         {
             Readers readers;
             if (!CheckGetReaders(out readers))
@@ -133,7 +133,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         /// For now it opens files for every call.
         /// </summary>
         /// <param name="records"></param>
-        public bool AppendRecords(ICollection<byte[]> records, TapeAppendCondition condition)
+        public bool TryAppendRecords(ICollection<byte[]> records, TapeAppendCondition condition)
         {
             if (records == null)
                 throw new ArgumentNullException("records");
