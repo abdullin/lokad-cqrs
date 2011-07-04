@@ -55,7 +55,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                         });
                 return true;
             }
-            catch (TapeAppendException)
+            catch (TapeAppendConditionException)
             {
                 return false;
             }

@@ -78,6 +78,8 @@
     <Compile Include="Feature.FilePartition\FileQueueWriter.cs" />
     <Compile Include="Feature.FilePartition\FileQueueWriterFactory.cs" />
     <Compile Include="Feature.FilePartition\FilePartitionModule.cs" />
+    <Compile Include="Feature.TapeStorage\TapeAppendCondition.cs" />
+    <Compile Include="Feature.TapeStorage\TapeAppendConditionException.cs" />
     <Compile Include="Feature.TapeStorage\TapeStorageInitilization.cs" />
     <Compile Include="Feature.TapeStorage\FileTapeStorageFactory.cs" />
     <Compile Include="Feature.TapeStorage\ITapeStream.cs" />
