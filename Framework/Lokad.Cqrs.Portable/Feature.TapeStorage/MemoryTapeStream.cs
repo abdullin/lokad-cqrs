@@ -37,20 +37,21 @@ namespace Lokad.Cqrs.Feature.TapeStorage
              * */
         }
 
-        public bool TryAppendRecords(ICollection<byte[]> records, TapeAppendCondition condition)
+        public bool TryAppend(byte[] data, TapeAppendCondition condition)
         {
-            if (records.Count == 0)
-                return false;
             try
             {
                 _storage.AddOrUpdate(_name, s =>
                     {
                         condition.Enforce(0);
-                        return records.ToList();
+                        return new List<byte[]>()
+                            {
+                                data
+                            };
                     }, (s, list) =>
                         {
                             condition.Enforce(list.Count);
-                            list.AddRange(records);
+                            list.Add(data);
                             return list;
                         });
                 return true;

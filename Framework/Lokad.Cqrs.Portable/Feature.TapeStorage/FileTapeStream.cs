@@ -1,7 +1,13 @@
-﻿using System;
+﻿#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
+
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace Lokad.Cqrs.Feature.TapeStorage
 {
@@ -18,7 +24,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
         public IEnumerable<TapeRecord> ReadRecords(long offset, int maxCount)
         {
-            if (offset< 0)
+            if (offset < 0)
                 throw new ArgumentOutOfRangeException("Offset can't be negative.", "offset");
 
             if (maxCount <= 0)
@@ -91,7 +97,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             // we return empty result if writer didn't even start writing to the storage.
             if (!(dataExists && indexExists))
             {
-                readers = default(Readers); 
+                readers = default(Readers);
                 return false;
             }
 
@@ -102,14 +108,13 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             return true;
         }
 
-        
 
         Readers CreateReaders()
         {
             Readers readers;
 
             var data = new FileStream(_dataFileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            readers.DataReader= new BinaryReader(data);
+            readers.DataReader = new BinaryReader(data);
 
             var index = new FileStream(_indexFileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             readers.IndexReader = new BinaryReader(index);
@@ -132,14 +137,16 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         /// <summary>
         /// For now it opens files for every call.
         /// </summary>
-        /// <param name="records"></param>
-        public bool TryAppendRecords(ICollection<byte[]> records, TapeAppendCondition condition)
+        /// <param name="data">The data.</param>
+        /// <param name="condition">The condition.</param>
+        /// <returns></returns>
+        public bool TryAppend(byte[] data, TapeAppendCondition condition)
         {
-            if (records == null)
+            if (data == null)
                 throw new ArgumentNullException("records");
 
-            if (!records.Any())
-                return false;
+            if (data.Length == 0)
+                throw new ArgumentException("Record must contain at least one byte.");
 
             var writers = CreateWriters();
 
@@ -156,23 +163,17 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                 if (!condition.Satisfy(index))
                     return false;
 
-                foreach (var record in records)
-                {
-                    if (record.Length == 0)
-                        throw new ArgumentException("Record must contain at least one byte.");
+                if (index > long.MaxValue - 1)
+                    throw new IndexOutOfRangeException("Index is more than long.MaxValue.");
 
-                    if (index > long.MaxValue - 1)
-                        throw new IndexOutOfRangeException("Index is more than long.MaxValue.");
-                    index++;
 
-                    indexWriter.Write(dataStream.Position);
+                indexWriter.Write(dataStream.Position);
 
-                    dataWriter.Write(record.Length);
-                    dataWriter.Write(record);
+                dataWriter.Write(data.Length);
+                dataWriter.Write(data);
 
-                    dataStream.Flush();
-                    indexStream.Flush();
-                }
+                dataStream.Flush();
+                indexStream.Flush();
 
                 return true;
             }

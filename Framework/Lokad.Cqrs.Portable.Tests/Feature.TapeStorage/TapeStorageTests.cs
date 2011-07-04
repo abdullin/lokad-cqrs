@@ -41,7 +41,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         {
             foreach (var item in _batch.Select((r, i) => new { Index = i, Record = r}))
             {
-                _stream.TryAppendRecords(new[] {item.Record});
+                _stream.TryAppend(item.Record);
 
                 var reading = _stream.ReadRecords(item.Index, 1).ToArray();
 
@@ -64,7 +64,10 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         [Test]
         public void Reading_batch_by_one()
         {
-            _stream.TryAppendRecords(_batch);
+            foreach (var b in _batch)
+            {
+                _stream.TryAppend(b);
+            }
 
             var readings = Enumerable
                 .Range(0, _batch.Length)
@@ -81,7 +84,10 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         [Test]
         public void Reading_batch_at_once()
         {
-            _stream.TryAppendRecords(_batch);
+            foreach (var b in _batch)
+            {
+                _stream.TryAppend(b);
+            }
 
             var readings = _stream.ReadRecords(0, _batch.Length).ToArray();
 
@@ -98,13 +104,16 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         [Test]
         public void Can_continue_after_recreation()
         {
-            _stream.TryAppendRecords(_batch);
+            foreach (var b in _batch)
+            {
+                _stream.TryAppend(b);
+            }
             _stream = null;
             FreeResources();
 
             _stream = InitializeAndGetTapeStorage();
 
-            _stream.TryAppendRecords(new[] {_batch[0]});
+            _stream.TryAppend(_batch[0]);
 
             var readings = _stream.ReadRecords(_batch.Length, 1).ToArray();
 
@@ -117,7 +126,10 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         [Test]
         public void Reading_ahead_storage_returns_none()
         {
-            _stream.TryAppendRecords(_batch);
+            foreach (var b in _batch)
+            {
+                _stream.TryAppend(b);
+            }
 
             var readings = _stream.ReadRecords(_batch.Length, 1).ToArray();
 
@@ -127,7 +139,10 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         [Test]
         public void Reading_ahead_returns_only_written()
         {
-            _stream.TryAppendRecords(_batch);
+            foreach (var b in _batch)
+            {
+                _stream.TryAppend(b);
+            }
 
             var readings = _stream.ReadRecords(_batch.Length - 2, _batch.Length).ToArray();
 
@@ -145,7 +160,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         public void Specified_condition_is_verified_for_empty_storage()
         {
             var previousVersion = _stream.GetCurrentVersion();
-            var result = _stream.TryAppendRecords(_batch, TapeAppendCondition.VersionIs(1));
+            var result = _stream.TryAppend(_batch[0], TapeAppendCondition.VersionIs(1));
             Assert.IsFalse(result, "Appending records should fail");
             var currentVersion = _stream.GetCurrentVersion();
             Assert.AreEqual(previousVersion, currentVersion, "Version should not change");
@@ -154,9 +169,9 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         [Test]
         public void Specified_condition_is_verified_for_non_empty_storage()
         {
-            _stream.TryAppendRecords(_batch);
+            _stream.TryAppend(_batch[0]);
             var previousVersion = _stream.GetCurrentVersion();
-            var result = _stream.TryAppendRecords(_batch, TapeAppendCondition.VersionIs(0));
+            var result = _stream.TryAppend(_batch[1], TapeAppendCondition.VersionIs(0));
             Assert.IsFalse(result, "Appending records should fail");
             var currentVersion = _stream.GetCurrentVersion();
             Assert.AreEqual(previousVersion, currentVersion, "Version should not change");
@@ -166,7 +181,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         public void Specified_condition_is_matched_for_empty_storage()
         {
             var version = _stream.GetCurrentVersion();
-            var success = _stream.TryAppendRecords(_batch, TapeAppendCondition.VersionIs(version));
+            var success = _stream.TryAppend(_batch[0], TapeAppendCondition.VersionIs(version));
             Assert.IsTrue(success, "Appending records should succeed");
             var currentVersion = _stream.GetCurrentVersion();
             Assert.AreNotEqual(version, currentVersion, "Version should change");
@@ -175,10 +190,10 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         [Test]
         public void Specified_condition_is_matched_for_non_empty_storage()
         {
-            _stream.TryAppendRecords(_batch);
+            _stream.TryAppend(_batch[0]);
 
             var before = _stream.GetCurrentVersion();
-            var success = _stream.TryAppendRecords(_batch, TapeAppendCondition.VersionIs(before));
+            var success = _stream.TryAppend(_batch[1], TapeAppendCondition.VersionIs(before));
             Assert.IsTrue(success, "Appending records should succeed");
             var currentVersion = _stream.GetCurrentVersion();
             Assert.AreNotEqual(before, currentVersion, "Version should change");

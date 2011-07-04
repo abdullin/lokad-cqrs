@@ -62,13 +62,13 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             }
         }
 
-        public bool TryAppendRecords(ICollection<byte[]> records, TapeAppendCondition condition)
+        public bool TryAppend(byte[] data, TapeAppendCondition condition)
         {
-            if (records == null)
+            if (data == null)
                 throw new ArgumentNullException("records");
 
-            if (!records.Any())
-                return false;
+            if (data.Length == 0)
+                throw new ArgumentException("Record must contain at least one byte.");
 
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -79,17 +79,14 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                 if (!condition.Satisfy(index + 1))
                     return false;
 
-                foreach (var record in records)
-                {
-                    if (record.Length == 0)
-                        throw new ArgumentException("Record must contain at least one byte.");
+                
 
-                    if (index > long.MaxValue - 1)
-                        throw new IndexOutOfRangeException("Index is more than long.MaxValue.");
-                    index++;
+                if (index > long.MaxValue - 1)
+                    throw new IndexOutOfRangeException("Index is more than long.MaxValue.");
+                index++;
 
-                    Append(connection, index, record);
-                }
+                Append(connection, index, data);
+
             }
             return true;
         }

@@ -19,10 +19,11 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         long GetCurrentVersion();
 
         /// <summary>
-        /// Saves the specified records
+        /// Tries the append.
         /// </summary>
-        /// <param name="records">The records to save.</param>
+        /// <param name="buffer">The buffer.</param>
         /// <param name="appendCondition">The append condition.</param>
-        bool TryAppendRecords(ICollection<byte[]> records, TapeAppendCondition appendCondition = default(TapeAppendCondition));
+        /// <returns></returns>
+        bool TryAppend(byte[] buffer, TapeAppendCondition appendCondition = default(TapeAppendCondition));
     }
 }

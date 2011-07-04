@@ -199,13 +199,14 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             internal BinaryReader IndexReader;
         }
 
-        public bool TryAppendRecords(ICollection<byte[]> records, TapeAppendCondition condition)
+        public bool TryAppend(byte[] data, TapeAppendCondition condition)
         {
-            if (records == null)
+            if (data == null)
                 throw new ArgumentNullException("records");
 
-            if (!records.Any())
-                return false;
+            if (data.Length == 0)
+                throw new ArgumentException("Record must contain at least one byte.");
+
 
             var writers = CreateWriters();
 
@@ -222,31 +223,24 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                 if (!condition.Satisfy(index))
                     return false;
 
-                foreach (var record in records)
+                if (index > long.MaxValue - 1)
+                    throw new IndexOutOfRangeException("Index is more than long.MaxValue.");
+
+                var buffer = new byte[sizeof(int) + data.Length];
+                using (var bw = new BinaryWriter(new MemoryStream(buffer)))
                 {
-                    if (record.Length == 0)
-                        throw new ArgumentException("Record must contain at least one byte.");
-
-                    if (index > long.MaxValue - 1)
-                        throw new IndexOutOfRangeException("Index is more than long.MaxValue.");
-                    index++;
-
-                    var buffer = new byte[sizeof(int) + record.Length];
-                    using (var bw = new BinaryWriter(new MemoryStream(buffer)))
-                    {
-                        bw.Write(record.Length);
-                        bw.Write(record);
-                    }
-
-                    var offset = dataStream.Position;
-
-                    dataWriter.Write(buffer);
-
-                    indexWriter.Write(offset);
-
-                    dataStream.Flush();
-                    indexStream.Flush();
+                    bw.Write(data.Length);
+                    bw.Write(data);
                 }
+
+                var offset = dataStream.Position;
+
+                dataWriter.Write(buffer);
+
+                indexWriter.Write(offset);
+
+                dataStream.Flush();
+                indexStream.Flush();
                 return true;
             }
             finally
