@@ -145,6 +145,10 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             get
             {
                 _blob.FetchAttributes();
+
+                if (_blob.Attributes.Properties.Length == 0)
+                    return 0;
+
                 var pageIndex = (_blob.Attributes.Properties.Length / PageBlobAppendStream.PageSize) - 1;
 
                 _reader.BaseStream.Seek(pageIndex * PageBlobAppendStream.PageSize, SeekOrigin.Begin);
