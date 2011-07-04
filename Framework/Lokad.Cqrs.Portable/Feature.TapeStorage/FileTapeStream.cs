@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -25,7 +26,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
     {
         readonly FileInfo _data;
         readonly SHA1Managed _managed = new SHA1Managed();
-
+        
 
         public FileTapeStream(string name)
         {
@@ -47,47 +48,52 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             if (!_data.Exists)
                 yield break;
 
-            byte[] hash = new byte[20];
-            // non-optimized by indexes for now.
             using (var file = _data.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
-            using (var reader = new BinaryReader(file))
             {
                 for (int i = 0; i < offset; i++)
                 {
                     if (file.Position == file.Length)
                         yield break;
 
-                    file.Seek(Start.Length, SeekOrigin.Current);
-                    var dataLength = reader.ReadInt32();
-                    var skip = dataLength + 4 + 8 + 20 + End.Length;
+                    file.Seek(ReadableHeaderStart.Length, SeekOrigin.Current);
+                    var dataLength = ReadReadableInt64(file);
+                    var skip = dataLength + 16 + 16 + 28 + ReadableFooterEnd.Length + ReadableHeaderEnd.Length + ReadableFooterStart.Length;
                     file.Seek(skip, SeekOrigin.Current);
                 }
                 for (int i = 0; i < maxCount; i++)
                 {
                     if (file.Position == file.Length)
                         yield break;
+                    ReadAndVerifySignature(file, ReadableHeaderStart, "Start");
+                    
+                    var dataLength = ReadReadableInt64(file);
 
-                    VerifySignature(file, Start, "Start");
-                    var dataLengt = reader.ReadInt32();
-                    var data = new byte[dataLengt];
-                    file.Read(data, 0, dataLengt);
-                    reader.ReadInt32();//length
-                    var version = reader.ReadInt64();//version
-                    file.Read(hash, 0, hash.Length);
+                    ReadAndVerifySignature(file, ReadableHeaderEnd, "Header-End");
+                    var data = new byte[dataLength];
+                    file.Read(data, 0, (int)dataLength);
+                    ReadAndVerifySignature(file, ReadableFooterStart, "Footer-Start");
+
+                    ReadReadableInt64(file);//length verified
+                    var version = ReadReadableInt64(file);//version
+                    var hash = ReadReadableHash(file);
                     var computed = _managed.ComputeHash(data);
                     if (!VerifyHash(computed, hash))
                     {
                         throw new InvalidOperationException("Hash corrupted");
                     }
-                    VerifySignature(file, End, "End");
+                    ReadAndVerifySignature(file, ReadableFooterEnd, "End");
                     yield return new TapeRecord(version-1, data);
                 }
                 
             }
         }
 
-        static readonly byte[] Start = Encoding.UTF8.GetBytes("[start](4D5E3FC3-C1782BB1B0BB)\r\n");
-        static readonly byte[] End = Encoding.UTF8.GetBytes("\r\n[end](748E-4456-B110)");
+        static readonly byte[] ReadableHeaderStart = Encoding.UTF8.GetBytes("[tape-header ");
+        static readonly byte[] ReadableHeaderEnd = Encoding.UTF8.GetBytes("]\r\n");
+
+        static readonly byte[] ReadableFooterStart = Encoding.UTF8.GetBytes("\r\n[tape-hashed ");
+        static readonly byte[] ReadableFooterEnd = Encoding.UTF8.GetBytes("]");
+        
 
         public long GetCurrentVersion()
         {
@@ -128,13 +134,16 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                 }
                 using (var writer = new BinaryWriter(file))
                 {
-                    writer.Write(Start);
-                    writer.Write(data.Length);
+                    writer.Write(ReadableHeaderStart);
+                    WriteReadableInt64(file, data.Length);
+                    writer.Write(ReadableHeaderEnd);
+                    
                     writer.Write(data);
-                    writer.Write(data.Length);
-                    writer.Write(version + 1);
-                    writer.Write(_managed.ComputeHash(data));
-                    writer.Write(End);
+                    writer.Write(ReadableFooterStart);
+                    WriteReadableInt64(file, data.Length);
+                    WriteReadableInt64(file, version+1);
+                    WriteReadableHash(file, _managed.ComputeHash(data));
+                    writer.Write(ReadableFooterEnd);
                 }
                 return true;
             }
@@ -149,18 +158,46 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             }
             else
             {
-                int seekBack = End.Length + 20 + 8;
+                int seekBack = ReadableFooterEnd.Length + 28 + 16;
                 file.Seek(-seekBack, SeekOrigin.Current);
-                var versionBuffer = new byte[8];
-                file.Read(versionBuffer, 0, 8);
-                version = BitConverter.ToInt64(versionBuffer, 0);
-                file.Seek(20, SeekOrigin.Current);
-                VerifySignature(file, End, "End");
+                version = ReadReadableInt64(file);
+                file.Seek(28, SeekOrigin.Current);
+                ReadAndVerifySignature(file, ReadableFooterEnd, "End");
             }
             return version;
         }
+        
 
-        static void VerifySignature(Stream source, byte[] target, string name)
+        
+        static void WriteReadableInt64(Stream stream, long value)
+        {
+            // long is 8 bytes ==> 16 bytes or readable unicode.
+            var buffer = Encoding.UTF8.GetBytes(value.ToString("x16"));
+            stream.Write(buffer, 0, 16);
+        }
+
+        static long ReadReadableInt64(Stream stream)
+        {
+            var buffer = new byte[16];
+            stream.Read(buffer, 0, 16);
+            var s = Encoding.UTF8.GetString(buffer);
+            return long.Parse(s, NumberStyles.HexNumber);
+        }
+        static void WriteReadableHash(Stream stream, byte[] hash)
+        {
+            // hash is 20 bytes, which is encoded into 28 bytes of readable unicode
+            var buffer = Encoding.UTF8.GetBytes(Convert.ToBase64String(hash));
+            stream.Write(buffer,0,28);
+        }
+        static byte[] ReadReadableHash(Stream stream)
+        {
+            var buffer = new byte[28];
+            stream.Read(buffer, 0, buffer.Length);
+            var hash = Convert.FromBase64String(Encoding.UTF8.GetString(buffer));
+            return hash;
+        }
+
+        static void ReadAndVerifySignature(Stream source, byte[] target, string name)
         {
             for (int i = 0; i < target.Length; i++)
             {

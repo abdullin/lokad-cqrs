@@ -7,7 +7,9 @@ namespace Lokad.Cqrs.Feature.TapeStorage
     {
         // ReSharper disable InconsistentNaming
 
-        ITapeStream _stream;
+        protected ITapeStream _stream { get; private set; }
+
+        
 
         readonly byte[][] _batch = new[]
                 {
