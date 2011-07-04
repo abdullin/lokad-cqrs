@@ -19,16 +19,16 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             _indexBlobName = name + "-idx";
         }
 
-        public IEnumerable<TapeRecord> ReadRecords(long version, int maxCount)
+        public IEnumerable<TapeRecord> ReadRecords(long offset, int maxCount)
         {
-            if (version < 0)
+            if (offset < 0)
                 throw new ArgumentOutOfRangeException("Offset can't be negative.", "offset");
 
             if (maxCount <= 0)
                 throw new ArgumentOutOfRangeException("Count must be greater than zero.", "maxCount");
 
             // index + maxCount - 1 > long.MaxValue, but transformed to avoid overflow
-            if (version > long.MaxValue - maxCount)
+            if (offset > long.MaxValue - maxCount)
                 throw new ArgumentOutOfRangeException("maxCount", "Record index will exceed long.MaxValue.");
 
             var dataBlob = _container.GetPageBlobReference(_dataBlobName);
@@ -52,7 +52,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             {
                 var dataReader = readers.DataReader;
 
-                var range = GetReadRange(readers, version, maxCount);
+                var range = GetReadRange(readers, offset, maxCount);
                 var dataOffset = range.Item1;
                 var dataSize = range.Item2;
                 var recordCount = range.Item3;
@@ -62,7 +62,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
                 using (var br = new BinaryReader(new MemoryStream(recordsBuffer)))
                 {
-                    var recordIndex = version;
+                    var recordIndex = offset;
                     var counter = 0;
 
                     var records = new List<TapeRecord>();
@@ -88,7 +88,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             }
         }
 
-        public long GetCurrentVersion()
+        public long GetCurrentCount()
         {
             var indexBlob = _container.GetPageBlobReference(_indexBlobName);
 
@@ -199,13 +199,13 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             internal BinaryReader IndexReader;
         }
 
-        public void AppendRecords(ICollection<byte[]> records)
+        public bool AppendRecords(ICollection<byte[]> records, TapeAppendCondition condition)
         {
             if (records == null)
                 throw new ArgumentNullException("records");
 
             if (!records.Any())
-                return;
+                return false;
 
             var writers = CreateWriters();
 
@@ -218,6 +218,9 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
                 // Used only to enforce the rule that index must not be more than long.MaxValue
                 var index = indexStream.Position / sizeof(long);
+
+                if (!condition.Satisfy(index))
+                    return false;
 
                 foreach (var record in records)
                 {
@@ -244,6 +247,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                     dataStream.Flush();
                     indexStream.Flush();
                 }
+                return true;
             }
             finally
             {

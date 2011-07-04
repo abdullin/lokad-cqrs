@@ -18,9 +18,9 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             _name = name;
         }
 
-        public IEnumerable<TapeRecord> ReadRecords(long version, int maxCount)
+        public IEnumerable<TapeRecord> ReadRecords(long offset, int maxCount)
         {
-            if (version < 0)
+            if (offset < 0)
                 throw new ArgumentOutOfRangeException("Must be non-negative.", "offset");
 
             if (maxCount <= 0)
@@ -28,13 +28,13 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
 
             // index + maxCount - 1 > long.MaxValue, but transformed to avoid overflow
-            if (version > long.MaxValue - maxCount)
+            if (offset > long.MaxValue - maxCount)
                 throw new ArgumentOutOfRangeException("maxCount", "Record index will exceed long.MaxValue.");
 
-            return Execute(c => ReadRecords(c, version, maxCount), Enumerable.Empty<TapeRecord>());
+            return Execute(c => ReadRecords(c, offset, maxCount), Enumerable.Empty<TapeRecord>());
         }
 
-        public long GetCurrentVersion()
+        public long GetCurrentCount()
         {
             return Execute(GetCount, 0);
         }
@@ -62,19 +62,22 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             }
         }
 
-        public void AppendRecords(ICollection<byte[]> records)
+        public bool AppendRecords(ICollection<byte[]> records, TapeAppendCondition condition)
         {
             if (records == null)
                 throw new ArgumentNullException("records");
 
             if (!records.Any())
-                return;
+                return false;
 
             using (var connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
 
                 var index = GetLastIndex(connection);
+
+                if (!condition.Satisfy(index + 1))
+                    return false;
 
                 foreach (var record in records)
                 {
@@ -88,6 +91,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                     Append(connection, index, record);
                 }
             }
+            return true;
         }
 
         void Append(SqlConnection connection, long index, byte[] record)

@@ -16,16 +16,16 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             _indexFileName = Path.ChangeExtension(name, ".tmi");
         }
 
-        public IEnumerable<TapeRecord> ReadRecords(long version, int maxCount)
+        public IEnumerable<TapeRecord> ReadRecords(long offset, int maxCount)
         {
-            if (version< 0)
+            if (offset< 0)
                 throw new ArgumentOutOfRangeException("Offset can't be negative.", "offset");
 
             if (maxCount <= 0)
                 throw new ArgumentOutOfRangeException("Count must be greater than zero.", "maxCount");
 
             // index + maxCount - 1 > long.MaxValue, but transformed to avoid overflow
-            if (version > long.MaxValue - maxCount)
+            if (offset > long.MaxValue - maxCount)
                 throw new ArgumentOutOfRangeException("maxCount", "Record index will exceed long.MaxValue.");
 
             Readers readers;
@@ -39,7 +39,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                 var dataStream = dataReader.BaseStream;
                 var indexStream = indexReader.BaseStream;
 
-                var indexOffset = (version) * sizeof(long);
+                var indexOffset = (offset) * sizeof(long);
                 if (indexOffset >= indexStream.Length)
                     yield break;
 
@@ -47,7 +47,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                 dataStream.Seek(indexReader.ReadInt64(), SeekOrigin.Begin);
 
                 var count = 0;
-                var recordIndex = version;
+                var recordIndex = offset;
                 while (count < maxCount)
                 {
                     if (dataStream.Position == dataStream.Length)
@@ -67,7 +67,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             }
         }
 
-        public long GetCurrentVersion()
+        public long GetCurrentCount()
         {
             Readers readers;
             if (!CheckGetReaders(out readers))
@@ -133,13 +133,13 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         /// For now it opens files for every call.
         /// </summary>
         /// <param name="records"></param>
-        public void AppendRecords(ICollection<byte[]> records)
+        public bool AppendRecords(ICollection<byte[]> records, TapeAppendCondition condition)
         {
             if (records == null)
                 throw new ArgumentNullException("records");
 
             if (!records.Any())
-                return;
+                return false;
 
             var writers = CreateWriters();
 
@@ -152,6 +152,9 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
                 // Used only to enforce the rule that index must not be more than long.MaxValue
                 var index = indexStream.Position / sizeof(long);
+
+                if (!condition.Satisfy(index))
+                    return false;
 
                 foreach (var record in records)
                 {
@@ -170,6 +173,8 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                     dataStream.Flush();
                     indexStream.Flush();
                 }
+
+                return true;
             }
             finally
             {
