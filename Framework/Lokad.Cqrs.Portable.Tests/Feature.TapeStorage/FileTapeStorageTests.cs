@@ -63,7 +63,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                 var category = char.GetUnicodeCategory(c);
                 Assert.IsTrue(char.IsWhiteSpace(c)|| char.IsControl(c)|| char.IsLetterOrDigit(c) || char.IsPunctuation(c) || category == UnicodeCategory.MathSymbol, "String comes garbled at '{0}' ({1})", c, category);
             }
-            Console.WriteLine(readAllText);
+            //Console.WriteLine(readAllText);
         }
     }
 }
