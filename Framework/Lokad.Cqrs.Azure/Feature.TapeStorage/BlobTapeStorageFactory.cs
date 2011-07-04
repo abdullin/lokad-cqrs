@@ -11,8 +11,8 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         readonly CloudBlobClient _cloudBlobClient;
         readonly string _containerName;
 
-        readonly ConcurrentDictionary<string, ISingleThreadTapeWriter> _writers =
-            new ConcurrentDictionary<string, ISingleThreadTapeWriter>();
+        readonly ConcurrentDictionary<string, ITapeStream> _writers =
+            new ConcurrentDictionary<string, ITapeStream>();
 
         public BlobTapeStorageFactory(IAzureStorageConfig config, string containerName)
         {
@@ -24,33 +24,26 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             _containerName = containerName;
         }
 
-        public ITapeReader GetReader(string name)
-        {
-            var container = _cloudBlobClient.GetContainerReference(_containerName);
-
-            return new BlobTapeReader(container, name);
-        }
-
-        public void Initialize()
-        {
-            var container = _cloudBlobClient.GetContainerReference(_containerName);
-            container.CreateIfNotExist();
-        }
-
-        public ISingleThreadTapeWriter GetOrCreateWriter(string name)
+        public ITapeStream GetOrCreateStream(string name)
         {
             if (name == null)
                 throw new ArgumentNullException("name");
             if (string.IsNullOrWhiteSpace("name"))
                 throw new ArgumentException("Incorrect value.", "name");
 
-            var container = _cloudBlobClient.GetContainerReference(_containerName);
-
-            var writer = _writers.GetOrAdd(
+            return _writers.GetOrAdd(
                 name,
-                new SingleThreadBlobTapeWriter(container, name));
+                s =>
+                    {
+                        var container = _cloudBlobClient.GetContainerReference(_containerName);
+                        return new BlobTapeStream(container, name);
+                    });
+        }
 
-            return writer;
+        public void InitializeForWriting()
+        {
+            var container = _cloudBlobClient.GetContainerReference(_containerName);
+            container.CreateIfNotExist();
         }
     }
 }

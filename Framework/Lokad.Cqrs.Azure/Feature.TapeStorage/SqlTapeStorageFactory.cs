@@ -8,8 +8,8 @@ namespace Lokad.Cqrs.Feature.TapeStorage
     {
         readonly string _sqlConnectionString;
         readonly string _tableName;
-        readonly ConcurrentDictionary<string, ISingleThreadTapeWriter> _writers =
-            new ConcurrentDictionary<string, ISingleThreadTapeWriter>();
+        readonly ConcurrentDictionary<string, ITapeStream> _writers =
+            new ConcurrentDictionary<string, ITapeStream>();
 
         public const string TableSchema = "dbo";
 
@@ -19,18 +19,22 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             _tableName = tableName;
         }
 
-        public ITapeReader GetReader(string name)
+        public ITapeStream GetOrCreateStream(string name)
         {
             if (name == null)
                 throw new ArgumentNullException("name");
             if (String.IsNullOrWhiteSpace("name"))
                 throw new ArgumentException("Incorrect value.", "name");
 
-            return new SqlTapeReader(_sqlConnectionString, _tableName, name);
+            var writer = _writers.GetOrAdd(
+                name,
+                n => new SqlTapeStream(_sqlConnectionString, _tableName, name));
+
+            return writer;
         }
 
 
-        public void Initialize()
+        public void InitializeForWriting()
         {
             using (var conn = new SqlConnection(_sqlConnectionString))
             {
@@ -40,19 +44,6 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             }
         }
 
-        public ISingleThreadTapeWriter GetOrCreateWriter(string name)
-        {
-            if (name == null)
-                throw new ArgumentNullException("name");
-            if (String.IsNullOrWhiteSpace("name"))
-                throw new ArgumentException("Incorrect value.", "name");
-
-            var writer = _writers.GetOrAdd(
-                name,
-                n => new SingleThreadSqlTapeWriter(_sqlConnectionString, _tableName, name));
-
-            return writer;
-        }
 
         static void EnsureTableExists(SqlConnection conn, string tableName)
         {

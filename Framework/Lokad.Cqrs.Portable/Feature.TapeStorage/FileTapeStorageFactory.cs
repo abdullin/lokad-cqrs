@@ -7,8 +7,8 @@ namespace Lokad.Cqrs.Feature.TapeStorage
     public sealed class FileTapeStorageFactory : ITapeStorageFactory 
     {
         readonly string _fullPath;
-        readonly ConcurrentDictionary<string, ISingleThreadTapeWriter> _writers =
-    new ConcurrentDictionary<string, ISingleThreadTapeWriter>();
+        readonly ConcurrentDictionary<string, ITapeStream> _writers =
+    new ConcurrentDictionary<string, ITapeStream>();
 
 
         public FileTapeStorageFactory(string fullPath)
@@ -16,24 +16,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             _fullPath = fullPath;
         }
 
-        public ITapeReader GetReader(string name)
-        {
-            if (name == null)
-                throw new ArgumentNullException("name");
-            if (string.IsNullOrWhiteSpace("name"))
-                throw new ArgumentException("Incorrect value.", "name");
-
-            var reader = new FileTapeReader(Path.Combine(_fullPath, name));
-
-            return reader;
-        }
-
-        public void Initialize()
-        {
-            Directory.CreateDirectory(_fullPath);
-        }
-
-        public ISingleThreadTapeWriter GetOrCreateWriter(string name)
+        public ITapeStream GetOrCreateStream(string name)
         {
             if (name == null)
                 throw new ArgumentNullException("name");
@@ -42,10 +25,14 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
             var writer = _writers.GetOrAdd(
                 name,
-                n => new SingleThreadFileTapeWriter(Path.Combine(_fullPath, name)));
+                n => new FileTapeStream(Path.Combine(_fullPath, name)));
 
             return writer;
         }
 
+        public void InitializeForWriting()
+        {
+            Directory.CreateDirectory(_fullPath);
+        }
     }
 }

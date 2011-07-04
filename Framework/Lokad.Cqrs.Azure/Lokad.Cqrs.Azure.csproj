@@ -64,11 +64,9 @@
     <Compile Include="Feature.TapeStorage\PageBlobReadStream.cs" />
     <Compile Include="Feature.TapeStorage\BlobExtensions.cs" />
     <Compile Include="Feature.TapeStorage\BlobTapeStorageFactory.cs" />
-    <Compile Include="Feature.TapeStorage\BlobTapeReader.cs" />
+    <Compile Include="Feature.TapeStorage\BlobTapeStream.cs" />
     <Compile Include="Feature.TapeStorage\PageBlobAppendStream.cs" />
-    <Compile Include="Feature.TapeStorage\SingleThreadBlobTapeWriter.cs" />
-    <Compile Include="Feature.TapeStorage\SqlTapeReader.cs" />
-    <Compile Include="Feature.TapeStorage\SingleThreadSqlTapeWriter.cs" />
+    <Compile Include="Feature.TapeStorage\SqlTapeStream.cs" />
     <Compile Include="Feature.TapeStorage\SqlTapeStorageFactory.cs" />
     <Compile Include="WipeAzureAccount.cs" />
     <Compile Include="ExtendStorageModule.cs" />

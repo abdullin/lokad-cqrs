@@ -21,7 +21,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         {
             foreach (var factory in _storage)
             {
-                factory.Initialize();
+                factory.InitializeForWriting();
             }
         }
 

@@ -2,7 +2,7 @@
 
 namespace Lokad.Cqrs.Feature.TapeStorage
 {
-    public interface ITapeReader
+    public interface ITapeStream
     {
         /// <summary>
         /// Reads up to <see cref="maxCount"/> records with <see cref="offset"/>.
@@ -17,6 +17,12 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         /// </summary>
         /// <returns></returns>
         long GetVersion();
+
+        /// <summary>
+        /// Saves the specified records
+        /// </summary>
+        /// <param name="records">The records to save.</param>
+        void SaveRecords(IEnumerable<byte[]> records);
 
     }
 }

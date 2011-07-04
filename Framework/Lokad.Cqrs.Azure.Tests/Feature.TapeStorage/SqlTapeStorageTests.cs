@@ -17,7 +17,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             DatabaseHelper.CreateDatabase(connectionString);
         }
 
-        protected override Factories GetTapeStorageInterfaces()
+        protected override ITapeStream GetTapeStorageInterfaces()
         {
             var connectionString = Settings.Default.SqlConnectionString;
             var tableName = Settings.Default.SqlTapeWriterTableName;
@@ -31,7 +31,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
                 try
                 {
-                    _storageFactory.Initialize();
+                    _storageFactory.InitializeForWriting();
                     break;
                 }
                 catch (Exception)
@@ -49,11 +49,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             
 
             const string name = "test";
-            return new Factories
-                {
-                    Writer = _storageFactory.GetOrCreateWriter(name),
-                    Reader = _storageFactory.GetReader(name)
-                };
+            return _storageFactory.GetOrCreateStream(name);
         }
 
         protected override void FreeResources()

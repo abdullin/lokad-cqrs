@@ -6,13 +6,13 @@ using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs.Feature.TapeStorage
 {
-    public class BlobTapeReader : ITapeReader
+    public class BlobTapeStream : ITapeStream
     {
         readonly CloudBlobContainer _container;
         readonly string _dataBlobName;
         readonly string _indexBlobName;
 
-        public BlobTapeReader(CloudBlobContainer container, string name)
+        public BlobTapeStream(CloudBlobContainer container, string name)
         {
             _container = container;
             _dataBlobName = name;
@@ -197,6 +197,97 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         {
             internal BinaryReader DataReader;
             internal BinaryReader IndexReader;
+        }
+
+        public void SaveRecords(IEnumerable<byte[]> records)
+        {
+            if (records == null)
+                throw new ArgumentNullException("records");
+
+            if (!records.Any())
+                return;
+
+            var writers = CreateWriters();
+
+            try
+            {
+                var dataWriter = writers.DataWriter;
+                var indexWriter = writers.IndexWriter;
+                var dataStream = dataWriter.BaseStream;
+                var indexStream = indexWriter.BaseStream;
+
+                // Used only to enforce the rule that index must not be more than long.MaxValue
+                var index = indexStream.Position / sizeof(long);
+
+                foreach (var record in records)
+                {
+                    if (record.Length == 0)
+                        throw new ArgumentException("Record must contain at least one byte.");
+
+                    if (index > long.MaxValue - 1)
+                        throw new IndexOutOfRangeException("Index is more than long.MaxValue.");
+                    index++;
+
+                    var buffer = new byte[sizeof(int) + record.Length];
+                    using (var bw = new BinaryWriter(new MemoryStream(buffer)))
+                    {
+                        bw.Write(record.Length);
+                        bw.Write(record);
+                    }
+
+                    var offset = dataStream.Position;
+
+                    dataWriter.Write(buffer);
+
+                    indexWriter.Write(offset);
+
+                    dataStream.Flush();
+                    indexStream.Flush();
+                }
+            }
+            finally
+            {
+                DisposeWriters(writers);
+            }
+        }
+
+        Writers CreateWriters()
+        {
+            var dataBlob = _container.GetPageBlobReference(_dataBlobName);
+            var indexBlob = _container.GetPageBlobReference(_indexBlobName);
+
+            var dataExists = dataBlob.Exists();
+            var indexExists = indexBlob.Exists();
+
+            if ((dataExists || indexExists) && (!dataExists || !indexExists))
+            {
+                if (!dataExists)
+                    throw new InvalidOperationException("Index blob found but no data blob.");
+
+                throw new InvalidOperationException("Data blob found but no index blob.");
+            }
+
+            Writers writers;
+
+            var dataStream = dataBlob.OpenAppend();
+            writers.DataWriter = new BinaryWriter(dataStream);
+
+            var indexStream = indexBlob.OpenAppend();
+            writers.IndexWriter = new BinaryWriter(indexStream);
+
+            return writers;
+        }
+
+        static void DisposeWriters(Writers writers)
+        {
+            writers.DataWriter.Dispose(); // will dispose BaseStream too
+            writers.IndexWriter.Dispose(); // will dispose BaseStream too
+        }
+
+        struct Writers
+        {
+            internal BinaryWriter DataWriter;
+            internal BinaryWriter IndexWriter;
         }
     }
 }

@@ -4,12 +4,20 @@ using System.Linq;
 
 namespace Lokad.Cqrs.Feature.TapeStorage
 {
-    public sealed class MemoryTapeReader : ITapeReader
+    public sealed class MemoryTapeStream : ITapeStream
     {
         readonly Func<byte[][]> _getSnapshot;
-        public MemoryTapeReader(Func<byte[][]> getSnapshot)
+        readonly Action<IEnumerable<byte[]>> _writer;
+
+        public MemoryTapeStream(Func<byte[][]> getSnapshot, Action<IEnumerable<byte[]>> writer)
         {
             _getSnapshot = getSnapshot;
+            _writer = writer;
+        }
+
+        public void SaveRecords(IEnumerable<byte[]> records)
+        {
+            _writer(records);
         }
 
         public IEnumerable<TapeRecord> ReadRecords(long offset, int maxCount)

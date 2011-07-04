@@ -34,19 +34,15 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             }
         }
 
-        protected override Factories GetTapeStorageInterfaces()
+        protected override ITapeStream GetTapeStorageInterfaces()
         {
             var config = AzureStorage.CreateConfig(_cloudStorageAccount);
             _storageFactory = new BlobTapeStorageFactory(config, ContainerName);
-            _storageFactory.Initialize();
+            _storageFactory.InitializeForWriting();
 
             const string name = "test";
 
-            return new Factories
-            {
-                Writer = _storageFactory.GetOrCreateWriter(name),
-                Reader = _storageFactory.GetReader(name)
-            };
+            return _storageFactory.GetOrCreateStream(name);
         }
 
         protected override void FreeResources()

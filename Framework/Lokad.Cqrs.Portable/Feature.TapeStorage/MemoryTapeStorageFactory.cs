@@ -13,25 +13,12 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             _storage = storage;
         }
 
-        public void Initialize()
+        public void InitializeForWriting()
         {
         }
-
-        public ISingleThreadTapeWriter GetOrCreateWriter(string name)
+        public ITapeStream GetOrCreateStream(string name)
         {
-            return new SingleThreadMemoryTapeWriter(blocks =>
-                _storage.AddOrUpdate(name, s => new List<byte[]>(blocks),
-                    (s1, list) =>
-                    {
-                        list.AddRange(blocks);
-                        return list;
-                    }));
-        }
-
-
-        public ITapeReader GetReader(string name)
-        {
-            return new MemoryTapeReader(() =>
+            return new MemoryTapeStream(() =>
                 {
                     List<byte[]> list;
                     if (_storage.TryGetValue(name, out list))
@@ -39,7 +26,13 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                         return list.ToArray();
                     }
                     return new byte[0][];
-                });
+                }, blocks =>
+                _storage.AddOrUpdate(name, s => new List<byte[]>(blocks),
+                    (s1, list) =>
+                    {
+                        list.AddRange(blocks);
+                        return list;
+                    }));
         }
     }
 }

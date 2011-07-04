@@ -2,9 +2,7 @@
 {
     public interface ITapeStorageFactory
     {
-        ITapeReader GetReader(string name);
-
-        void Initialize();
-        ISingleThreadTapeWriter GetOrCreateWriter(string name);
+        ITapeStream GetOrCreateStream(string name);
+        void InitializeForWriting();
     }
 }

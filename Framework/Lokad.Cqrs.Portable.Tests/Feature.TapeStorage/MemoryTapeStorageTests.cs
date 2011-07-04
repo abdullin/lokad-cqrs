@@ -16,18 +16,13 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         {
         }
 
-        protected override Factories GetTapeStorageInterfaces()
+        protected override ITapeStream GetTapeStorageInterfaces()
         {
             _storageFactory = new MemoryTapeStorageFactory(_storage);
             
 
             const string name = "Memory";
-
-            return new Factories
-            {
-                Writer = _storageFactory.GetOrCreateWriter(name),
-                Reader = _storageFactory.GetReader(name)
-            };
+            return _storageFactory.GetOrCreateStream(name);
         }
 
         protected override void FreeResources()
