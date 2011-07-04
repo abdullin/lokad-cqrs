@@ -88,11 +88,11 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             }
         }
 
-        static readonly byte[] ReadableHeaderStart = Encoding.UTF8.GetBytes("[tape-header ");
-        static readonly byte[] ReadableHeaderEnd = Encoding.UTF8.GetBytes("]\r\n");
+        static readonly byte[] ReadableHeaderStart = Encoding.UTF8.GetBytes("/* header ");
+        static readonly byte[] ReadableHeaderEnd = Encoding.UTF8.GetBytes(" */\r\n");
 
-        static readonly byte[] ReadableFooterStart = Encoding.UTF8.GetBytes("\r\n[tape-hashed ");
-        static readonly byte[] ReadableFooterEnd = Encoding.UTF8.GetBytes("]");
+        static readonly byte[] ReadableFooterStart = Encoding.UTF8.GetBytes("\r\n/* footer ");
+        static readonly byte[] ReadableFooterEnd = Encoding.UTF8.GetBytes(" */\r\n");
         
 
         public long GetCurrentVersion()
