@@ -34,7 +34,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             }
         }
 
-        protected override ITapeStream GetTapeStorageInterfaces()
+        protected override ITapeStream InitializeAndGetTapeStorage()
         {
             var config = AzureStorage.CreateConfig(_cloudStorageAccount);
             _storageFactory = new BlobTapeStorageFactory(config, ContainerName);
@@ -51,7 +51,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             _storageFactory = null;
         }
 
-        protected override void CleanupEnvironment()
+        protected override void TearDownEnvironment()
         {
             var cloudBlobClient = _cloudStorageAccount.CreateCloudBlobClient();
             var container = cloudBlobClient.GetContainerReference(ContainerName);

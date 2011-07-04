@@ -16,7 +16,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         {
         }
 
-        protected override ITapeStream GetTapeStorageInterfaces()
+        protected override ITapeStream InitializeAndGetTapeStorage()
         {
             _storageFactory = new MemoryTapeStorageFactory(_storage);
             
@@ -30,7 +30,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             _storageFactory = null;
         }
 
-        protected override void CleanupEnvironment()
+        protected override void TearDownEnvironment()
         {
             _storage.Clear();
         }

@@ -17,7 +17,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             DatabaseHelper.CreateDatabase(connectionString);
         }
 
-        protected override ITapeStream GetTapeStorageInterfaces()
+        protected override ITapeStream InitializeAndGetTapeStorage()
         {
             var connectionString = Settings.Default.SqlConnectionString;
             var tableName = Settings.Default.SqlTapeWriterTableName;
@@ -57,7 +57,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             _storageFactory = null;
         }
 
-        protected override void CleanupEnvironment()
+        protected override void TearDownEnvironment()
         {
             var connectionString = Settings.Default.SqlConnectionString;
 

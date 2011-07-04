@@ -21,21 +21,20 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         public void TestSetUp()
         {
             PrepareEnvironment();
-            CleanupEnvironment();
-            _stream = GetTapeStorageInterfaces();
+            _stream = InitializeAndGetTapeStorage();
         }
 
         [TearDown]
         public void TestTearDown()
         {
             FreeResources();
-            CleanupEnvironment();
+            TearDownEnvironment();
         }
 
         protected abstract void PrepareEnvironment();
-        protected abstract ITapeStream GetTapeStorageInterfaces();
+        protected abstract ITapeStream InitializeAndGetTapeStorage();
         protected abstract void FreeResources();
-        protected abstract void CleanupEnvironment();
+        protected abstract void TearDownEnvironment();
 
         [Test]
         public void Can_read_imediately_after_write()
@@ -57,7 +56,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         [Test]
         public void Reading_empty_storage_returns_none()
         {
-            CleanupEnvironment();
+            TearDownEnvironment();
             CollectionAssert.IsEmpty(_stream.ReadRecords(0, 10));
             Assert.AreEqual(0, _stream.GetCurrentVersion());
         }
@@ -103,7 +102,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             _stream = null;
             FreeResources();
 
-            _stream = GetTapeStorageInterfaces();
+            _stream = InitializeAndGetTapeStorage();
 
             _stream.TryAppendRecords(new[] {_batch[0]});
 

@@ -16,7 +16,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             File.Delete(_path);
         }
 
-        protected override ITapeStream GetTapeStorageInterfaces()
+        protected override ITapeStream InitializeAndGetTapeStorage()
         {
             _storageFactory = new FileTapeStorageFactory(_path);
             _storageFactory.InitializeForWriting();
@@ -30,7 +30,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             _storageFactory = null;
         }
 
-        protected override void CleanupEnvironment()
+        protected override void TearDownEnvironment()
         {
             if (Directory.Exists(_path))
                 Directory.Delete(_path, true);
