@@ -8,18 +8,28 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Lokad.Cqrs.Feature.TapeStorage
 {
+    /// <summary>
+    /// <para>Persists records in a tape stream, using SHA1 hashing and "magic" number sequences
+    /// to detect corruption and offer partial recovery.</para>
+    /// <para>System information is written in such a way, that if data is unicode human-readable, 
+    /// then the file will be human-readable as well.</para>
+    /// </summary>
+    /// <remarks>
+    /// </remarks>
     public class FileTapeStream : ITapeStream
     {
-        readonly string _dataFileName;
-        readonly string _indexFileName;
+        readonly FileInfo _data;
+        readonly SHA1Managed _managed = new SHA1Managed();
+
 
         public FileTapeStream(string name)
         {
-            _dataFileName = Path.ChangeExtension(name, ".tmd");
-            _indexFileName = Path.ChangeExtension(name, ".tmi");
+            _data = new FileInfo(name);
         }
 
         public IEnumerable<TapeRecord> ReadRecords(long offset, int maxCount)
@@ -34,112 +44,72 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             if (offset > long.MaxValue - maxCount)
                 throw new ArgumentOutOfRangeException("maxCount", "Record index will exceed long.MaxValue.");
 
-            Readers readers;
-            if (!CheckGetReaders(out readers))
+            if (!_data.Exists)
                 yield break;
 
-            try
+            byte[] hash = new byte[20];
+            // non-optimized by indexes for now.
+            using (var file = _data.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (var reader = new BinaryReader(file))
             {
-                var dataReader = readers.DataReader;
-                var indexReader = readers.IndexReader;
-                var dataStream = dataReader.BaseStream;
-                var indexStream = indexReader.BaseStream;
-
-                var indexOffset = (offset) * sizeof(long);
-                if (indexOffset >= indexStream.Length)
-                    yield break;
-
-                indexStream.Seek(indexOffset, SeekOrigin.Begin);
-                dataStream.Seek(indexReader.ReadInt64(), SeekOrigin.Begin);
-
-                var count = 0;
-                var recordIndex = offset;
-                while (count < maxCount)
+                for (int i = 0; i < offset; i++)
                 {
-                    if (dataStream.Position == dataStream.Length)
+                    if (file.Position == file.Length)
                         yield break;
 
-                    var recordSize = dataReader.ReadInt32();
-                    var data = dataReader.ReadBytes(recordSize);
-                    yield return new TapeRecord(recordIndex, data);
-
-                    count++;
-                    recordIndex++;
+                    file.Seek(Start.Length, SeekOrigin.Current);
+                    var dataLength = reader.ReadInt32();
+                    var skip = dataLength + 4 + 8 + 20 + End.Length;
+                    file.Seek(skip, SeekOrigin.Current);
                 }
-            }
-            finally
-            {
-                DisposeReaders(readers);
+                for (int i = 0; i < maxCount; i++)
+                {
+                    if (file.Position == file.Length)
+                        yield break;
+
+                    VerifySignature(file, Start, "Start");
+                    var dataLengt = reader.ReadInt32();
+                    var data = new byte[dataLengt];
+                    file.Read(data, 0, dataLengt);
+                    reader.ReadInt32();//length
+                    var version = reader.ReadInt64();//version
+                    file.Read(hash, 0, hash.Length);
+                    var computed = _managed.ComputeHash(data);
+                    if (!VerifyHash(computed, hash))
+                    {
+                        throw new InvalidOperationException("Hash corrupted");
+                    }
+                    VerifySignature(file, End, "End");
+                    yield return new TapeRecord(version-1, data);
+                }
+                
             }
         }
+
+        static readonly byte[] Start = Encoding.UTF8.GetBytes("[start](4D5E3FC3-C1782BB1B0BB)\r\n");
+        static readonly byte[] End = Encoding.UTF8.GetBytes("\r\n[end](748E-4456-B110)");
 
         public long GetCurrentVersion()
         {
-            Readers readers;
-            if (!CheckGetReaders(out readers))
-                return 0;
-
             try
             {
-                return readers.IndexReader.BaseStream.Length / sizeof(long);
+                using (var s = _data.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
+                {
+                    // seek end
+                    s.Seek(0, SeekOrigin.End);
+                    return ReadVersionFromTheEnd(s);
+                }
             }
-            finally
+            catch (FileNotFoundException)
             {
-                DisposeReaders(readers);
+                return 0;
             }
-        }
-
-        bool CheckGetReaders(out Readers readers)
-        {
-            var dataExists = File.Exists(_dataFileName);
-            var indexExists = File.Exists(_indexFileName);
-
-            // we return empty result if writer didn't even start writing to the storage.
-            if (!(dataExists && indexExists))
+            catch (DirectoryNotFoundException)
             {
-                readers = default(Readers);
-                return false;
+                return 0;
             }
-
-            if (!dataExists || !indexExists)
-                throw new InvalidOperationException("Data and index file should exist both. Probable corruption.");
-
-            readers = CreateReaders();
-            return true;
         }
-
-
-        Readers CreateReaders()
-        {
-            Readers readers;
-
-            var data = new FileStream(_dataFileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            readers.DataReader = new BinaryReader(data);
-
-            var index = new FileStream(_indexFileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            readers.IndexReader = new BinaryReader(index);
-
-            return readers;
-        }
-
-        static void DisposeReaders(Readers readers)
-        {
-            readers.DataReader.Dispose(); // will dispose BaseStream too
-            readers.IndexReader.Dispose(); // will dispose BaseStream too
-        }
-
-        struct Readers
-        {
-            internal BinaryReader DataReader;
-            internal BinaryReader IndexReader;
-        }
-
-        /// <summary>
-        /// For now it opens files for every call.
-        /// </summary>
-        /// <param name="data">The data.</param>
-        /// <param name="condition">The condition.</param>
-        /// <returns></returns>
+        
         public bool TryAppend(byte[] data, TapeAppendCondition condition)
         {
             if (data == null)
@@ -147,76 +117,74 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
             if (data.Length == 0)
                 throw new ArgumentException("Record must contain at least one byte.");
-
-            var writers = CreateWriters();
-
-            try
+            using (var file = _data.Open(FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read))
             {
-                var dataWriter = writers.DataWriter;
-                var indexWriter = writers.IndexWriter;
-                var dataStream = dataWriter.BaseStream;
-                var indexStream = indexWriter.BaseStream;
-
-                // Used only to enforce the rule that index must not be more than long.MaxValue
-                var index = indexStream.Position / sizeof(long);
-
-                if (!condition.Satisfy(index))
+                file.Seek(0, SeekOrigin.End);
+                // we need to know version first.
+                var version = ReadVersionFromTheEnd(file);
+                if (!condition.Satisfy(version))
+                {
                     return false;
-
-                if (index > long.MaxValue - 1)
-                    throw new IndexOutOfRangeException("Index is more than long.MaxValue.");
-
-
-                indexWriter.Write(dataStream.Position);
-
-                dataWriter.Write(data.Length);
-                dataWriter.Write(data);
-
-                dataStream.Flush();
-                indexStream.Flush();
-
+                }
+                using (var writer = new BinaryWriter(file))
+                {
+                    writer.Write(Start);
+                    writer.Write(data.Length);
+                    writer.Write(data);
+                    writer.Write(data.Length);
+                    writer.Write(version + 1);
+                    writer.Write(_managed.ComputeHash(data));
+                    writer.Write(End);
+                }
                 return true;
             }
-            finally
+        }
+
+        static long ReadVersionFromTheEnd(Stream file)
+        {
+            long version;
+            if (file.Position == 0)
             {
-                DisposeWriters(writers);
+                version = 0;
+            }
+            else
+            {
+                int seekBack = End.Length + 20 + 8;
+                file.Seek(-seekBack, SeekOrigin.Current);
+                var versionBuffer = new byte[8];
+                file.Read(versionBuffer, 0, 8);
+                version = BitConverter.ToInt64(versionBuffer, 0);
+                file.Seek(20, SeekOrigin.Current);
+                VerifySignature(file, End, "End");
+            }
+            return version;
+        }
+
+        static void VerifySignature(Stream source, byte[] target, string name)
+        {
+            for (int i = 0; i < target.Length; i++)
+            {
+                var readByte = source.ReadByte();
+                if (readByte == -1)
+                    throw new InvalidOperationException(string.Format("Expected byte[{0}] of signature '{1}', but found EOL", i, name));
+                if (readByte != target[i])
+                {
+                    throw new InvalidOperationException("Signature failed: " + name);
+                }
             }
         }
 
-        Writers CreateWriters()
+        static bool VerifyHash(byte[] source, byte[] expected)
         {
-            var dataExists = File.Exists(_dataFileName);
-            var indexExists = File.Exists(_indexFileName);
-
-            if ((dataExists || indexExists) && (!dataExists || !indexExists))
+            if (source.Length != expected.Length)
+                return false;
+            for (int i = 0; i < source.Length; i++)
             {
-                if (!dataExists)
-                    throw new InvalidOperationException("Index file found but no data file.");
-
-                throw new InvalidOperationException("Data file found but no index file.");
+                if (source[i] != expected[i])
+                    return false;
             }
+            return true;
 
-            Writers writers;
-
-            var dataStream = new FileStream(_dataFileName, FileMode.Append, FileAccess.Write, FileShare.Read);
-            writers.DataWriter = new BinaryWriter(dataStream);
-
-            var indexStream = new FileStream(_indexFileName, FileMode.Append, FileAccess.Write, FileShare.Read);
-            writers.IndexWriter = new BinaryWriter(indexStream);
-
-            return writers;
-        }
-
-        static void DisposeWriters(Writers writers)
-        {
-            writers.DataWriter.Dispose(); // will dispose BaseStream too
-            writers.IndexWriter.Dispose(); // will dispose BaseStream too
-        }
-
-        struct Writers
-        {
-            internal BinaryWriter DataWriter;
-            internal BinaryWriter IndexWriter;
         }
     }
 }
