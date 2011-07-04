@@ -67,7 +67,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             }
         }
 
-        public long GetVersion()
+        public long GetCurrentVersion()
         {
             Readers readers;
             if (!CheckGetReaders(out readers))

@@ -34,7 +34,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             return Execute(c => ReadRecords(c, version, maxCount), Enumerable.Empty<TapeRecord>());
         }
 
-        public long GetVersion()
+        public long GetCurrentVersion()
         {
             return Execute(GetCount, 0);
         }

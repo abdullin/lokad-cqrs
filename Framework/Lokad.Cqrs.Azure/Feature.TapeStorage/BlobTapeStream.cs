@@ -88,7 +88,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             }
         }
 
-        public long GetVersion()
+        public long GetCurrentVersion()
         {
             var indexBlob = _container.GetPageBlobReference(_indexBlobName);
 

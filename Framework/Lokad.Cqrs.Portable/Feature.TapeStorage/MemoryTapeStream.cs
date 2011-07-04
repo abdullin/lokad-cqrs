@@ -31,7 +31,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             return tapeRecords;
         }
 
-        public long GetVersion()
+        public long GetCurrentVersion()
         {
             return _getSnapshot().Length;
         }

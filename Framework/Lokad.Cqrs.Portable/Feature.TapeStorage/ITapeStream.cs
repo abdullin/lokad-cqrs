@@ -16,7 +16,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         /// Returns current storage version
         /// </summary>
         /// <returns></returns>
-        long GetVersion();
+        long GetCurrentVersion();
 
         /// <summary>
         /// Saves the specified records
