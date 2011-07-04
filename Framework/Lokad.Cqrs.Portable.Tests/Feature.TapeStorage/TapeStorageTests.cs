@@ -42,7 +42,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         {
             foreach (var item in _batch.Select((r, i) => new { Index = i, Record = r}))
             {
-                _stream.SaveRecords(new[] {item.Record});
+                _stream.AppendRecords(new[] {item.Record});
 
                 var reading = _stream.ReadRecords(item.Index, 1).ToArray();
 
@@ -65,7 +65,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         [Test]
         public void Reading_batch_by_one()
         {
-            _stream.SaveRecords(_batch);
+            _stream.AppendRecords(_batch);
 
             var readings = Enumerable
                 .Range(0, _batch.Length)
@@ -82,7 +82,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         [Test]
         public void Reading_batch_at_once()
         {
-            _stream.SaveRecords(_batch);
+            _stream.AppendRecords(_batch);
 
             var readings = _stream.ReadRecords(0, _batch.Length).ToArray();
 
@@ -99,14 +99,14 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         [Test]
         public void Can_continue_after_recreation()
         {
-            _stream.SaveRecords(_batch);
+            _stream.AppendRecords(_batch);
 
             _stream = null;
             FreeResources();
 
             _stream = GetTapeStorageInterfaces();
 
-            _stream.SaveRecords(new[] {_batch[0]});
+            _stream.AppendRecords(new[] {_batch[0]});
 
             var readings = _stream.ReadRecords(_batch.Length, 1).ToArray();
 
@@ -119,7 +119,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         [Test]
         public void Reading_ahead_storage_returns_none()
         {
-            _stream.SaveRecords(_batch);
+            _stream.AppendRecords(_batch);
 
             var readings = _stream.ReadRecords(_batch.Length, 1).ToArray();
 
@@ -129,7 +129,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         [Test]
         public void Reading_ahead_returns_only_written()
         {
-            _stream.SaveRecords(_batch);
+            _stream.AppendRecords(_batch);
 
             var readings = _stream.ReadRecords(_batch.Length - 2, _batch.Length).ToArray();
 

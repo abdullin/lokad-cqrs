@@ -19,16 +19,16 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             _indexBlobName = name + "-idx";
         }
 
-        public IEnumerable<TapeRecord> ReadRecords(long offset, int maxCount)
+        public IEnumerable<TapeRecord> ReadRecords(long version, int maxCount)
         {
-            if (offset < 0)
+            if (version < 0)
                 throw new ArgumentOutOfRangeException("Offset can't be negative.", "offset");
 
             if (maxCount <= 0)
                 throw new ArgumentOutOfRangeException("Count must be greater than zero.", "maxCount");
 
             // index + maxCount - 1 > long.MaxValue, but transformed to avoid overflow
-            if (offset > long.MaxValue - maxCount)
+            if (version > long.MaxValue - maxCount)
                 throw new ArgumentOutOfRangeException("maxCount", "Record index will exceed long.MaxValue.");
 
             var dataBlob = _container.GetPageBlobReference(_dataBlobName);
@@ -52,7 +52,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             {
                 var dataReader = readers.DataReader;
 
-                var range = GetReadRange(readers, offset, maxCount);
+                var range = GetReadRange(readers, version, maxCount);
                 var dataOffset = range.Item1;
                 var dataSize = range.Item2;
                 var recordCount = range.Item3;
@@ -62,7 +62,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
                 using (var br = new BinaryReader(new MemoryStream(recordsBuffer)))
                 {
-                    var recordIndex = offset;
+                    var recordIndex = version;
                     var counter = 0;
 
                     var records = new List<TapeRecord>();
@@ -199,7 +199,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             internal BinaryReader IndexReader;
         }
 
-        public void SaveRecords(IEnumerable<byte[]> records)
+        public void AppendRecords(ICollection<byte[]> records)
         {
             if (records == null)
                 throw new ArgumentNullException("records");

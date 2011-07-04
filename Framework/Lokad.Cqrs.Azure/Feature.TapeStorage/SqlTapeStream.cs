@@ -18,9 +18,9 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             _name = name;
         }
 
-        public IEnumerable<TapeRecord> ReadRecords(long offset, int maxCount)
+        public IEnumerable<TapeRecord> ReadRecords(long version, int maxCount)
         {
-            if (offset < 0)
+            if (version < 0)
                 throw new ArgumentOutOfRangeException("Must be non-negative.", "offset");
 
             if (maxCount <= 0)
@@ -28,10 +28,10 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
 
             // index + maxCount - 1 > long.MaxValue, but transformed to avoid overflow
-            if (offset > long.MaxValue - maxCount)
+            if (version > long.MaxValue - maxCount)
                 throw new ArgumentOutOfRangeException("maxCount", "Record index will exceed long.MaxValue.");
 
-            return Execute(c => ReadRecords(c, offset, maxCount), Enumerable.Empty<TapeRecord>());
+            return Execute(c => ReadRecords(c, version, maxCount), Enumerable.Empty<TapeRecord>());
         }
 
         public long GetVersion()
@@ -62,7 +62,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             }
         }
 
-        public void SaveRecords(IEnumerable<byte[]> records)
+        public void AppendRecords(ICollection<byte[]> records)
         {
             if (records == null)
                 throw new ArgumentNullException("records");

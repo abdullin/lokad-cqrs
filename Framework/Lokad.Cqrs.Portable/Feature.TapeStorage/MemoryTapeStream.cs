@@ -15,17 +15,17 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             _writer = writer;
         }
 
-        public void SaveRecords(IEnumerable<byte[]> records)
+        public void AppendRecords(ICollection<byte[]> records)
         {
             _writer(records);
         }
 
-        public IEnumerable<TapeRecord> ReadRecords(long offset, int maxCount)
+        public IEnumerable<TapeRecord> ReadRecords(long version, int maxCount)
         {
             var snapshot = _getSnapshot();
             var tapeRecords = snapshot
                 .Select((b,i) => new TapeRecord(i, b))
-                .Skip((int)offset)
+                .Skip((int)version)
                 .Take(maxCount)
                 .ToArray();
             return tapeRecords;

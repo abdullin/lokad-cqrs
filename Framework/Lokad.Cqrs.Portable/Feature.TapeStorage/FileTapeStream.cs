@@ -16,16 +16,16 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             _indexFileName = Path.ChangeExtension(name, ".tmi");
         }
 
-        public IEnumerable<TapeRecord> ReadRecords(long offset, int maxCount)
+        public IEnumerable<TapeRecord> ReadRecords(long version, int maxCount)
         {
-            if (offset< 0)
+            if (version< 0)
                 throw new ArgumentOutOfRangeException("Offset can't be negative.", "offset");
 
             if (maxCount <= 0)
                 throw new ArgumentOutOfRangeException("Count must be greater than zero.", "maxCount");
 
             // index + maxCount - 1 > long.MaxValue, but transformed to avoid overflow
-            if (offset > long.MaxValue - maxCount)
+            if (version > long.MaxValue - maxCount)
                 throw new ArgumentOutOfRangeException("maxCount", "Record index will exceed long.MaxValue.");
 
             Readers readers;
@@ -39,7 +39,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                 var dataStream = dataReader.BaseStream;
                 var indexStream = indexReader.BaseStream;
 
-                var indexOffset = (offset) * sizeof(long);
+                var indexOffset = (version) * sizeof(long);
                 if (indexOffset >= indexStream.Length)
                     yield break;
 
@@ -47,7 +47,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                 dataStream.Seek(indexReader.ReadInt64(), SeekOrigin.Begin);
 
                 var count = 0;
-                var recordIndex = offset;
+                var recordIndex = version;
                 while (count < maxCount)
                 {
                     if (dataStream.Position == dataStream.Length)
@@ -133,7 +133,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         /// For now it opens files for every call.
         /// </summary>
         /// <param name="records"></param>
-        public void SaveRecords(IEnumerable<byte[]> records)
+        public void AppendRecords(ICollection<byte[]> records)
         {
             if (records == null)
                 throw new ArgumentNullException("records");
