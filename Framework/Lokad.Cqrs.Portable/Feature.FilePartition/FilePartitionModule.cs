@@ -68,7 +68,7 @@ namespace Lokad.Cqrs.Feature.FilePartition
             DispatchAsEvents();
 
             Quarantine(c => new MemoryQuarantine());
-            DecayPolicy(TimeSpan.FromMilliseconds(150));
+            DecayPolicy(TimeSpan.FromMilliseconds(100));
         }
 
         public void DispatcherIs(
