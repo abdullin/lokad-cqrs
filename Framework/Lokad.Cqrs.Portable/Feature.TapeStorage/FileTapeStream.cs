@@ -132,26 +132,48 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                 {
                     return false;
                 }
+                var versionToWrite = version + 1;
                 using (var writer = new BinaryWriter(file))
                 {
-                    writer.Write(ReadableHeaderStart);
-                    WriteReadableInt64(file, data.Length);
-                    writer.Write(ReadableHeaderEnd);
-                    
-                    writer.Write(data);
-                    writer.Write(ReadableFooterStart);
-                    WriteReadableInt64(file, data.Length);
-                    WriteReadableInt64(file, version+1);
-                    WriteReadableHash(file, _managed.ComputeHash(data));
-                    writer.Write(ReadableFooterEnd);
+                    WriteBlockInner(writer, data, versionToWrite);
                 }
                 return true;
             }
         }
 
+        void WriteBlockInner(BinaryWriter writer, byte[] data, long versionToWrite)
+        {
+            var file = writer.BaseStream;
+            writer.Write(ReadableHeaderStart);
+            WriteReadableInt64(file, data.Length);
+            writer.Write(ReadableHeaderEnd);
+            
+            writer.Write(data);
+            writer.Write(ReadableFooterStart);
+            WriteReadableInt64(file, data.Length);
+            WriteReadableInt64(file, versionToWrite);
+            WriteReadableHash(file, _managed.ComputeHash(data));
+            writer.Write(ReadableFooterEnd);
+        }
+
         public void AppendNonAtomic(IEnumerable<TapeRecord> records)
         {
-            throw new NotImplementedException();
+            if (records == null)
+                throw new ArgumentNullException("records");
+
+            using (var file = _data.Open(FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read))
+            {
+                file.Seek(0, SeekOrigin.End);
+                
+                using (var writer = new BinaryWriter(file))
+                {
+                    foreach (var record in records)
+                    {
+                        var versionToWrite = record.Index+1;
+                        WriteBlockInner(writer, record.Data, versionToWrite);
+                    }
+                }
+            }
         }
 
         static long ReadVersionFromTheEnd(Stream file)
