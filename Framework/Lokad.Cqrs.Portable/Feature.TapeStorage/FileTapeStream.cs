@@ -54,7 +54,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             {
                 // file could've been created since the last check
                 _data.Refresh();
-                if (_data.Exists)
+                if (!_data.Exists)
                 {
                     yield break;
                 }
