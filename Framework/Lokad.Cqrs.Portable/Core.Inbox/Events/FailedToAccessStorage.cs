@@ -21,5 +21,9 @@ namespace Lokad.Cqrs.Core.Inbox.Events
             QueueName = queueName;
             MessageId = messageId;
         }
+        public override string ToString()
+        {
+            return string.Format("Failed to read '{0}' from '{1}': {2}", MessageId, QueueName, Exception.Message);
+        }
     }
 }
