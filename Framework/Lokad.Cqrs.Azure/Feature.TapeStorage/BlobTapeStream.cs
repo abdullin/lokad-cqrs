@@ -126,15 +126,16 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             if (!records.Any())
                 return;
 
+            var recordsArray = records.Select(r => r.Data).ToArray();
+
             Write(w =>
             {
-                foreach (var record in records)
-                {
-                    if (record.Data.Length == 0)
-                        throw new ArgumentException("Record must contain at least one byte.");
+                var version = w.IndexWriter.BaseStream.Position / sizeof(long);
 
-                    TryAppendInternal(w, record.Data, TapeAppendCondition.None);
-                }
+                if (version > long.MaxValue - recordsArray.Length)
+                    throw new IndexOutOfRangeException("Version is more than long.MaxValue.");
+
+                Append(w, recordsArray);
 
                 return true;
             });
@@ -253,20 +254,35 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             if (version > long.MaxValue - 1)
                 throw new IndexOutOfRangeException("Version is more than long.MaxValue.");
 
-            var dataBuffer = new byte[sizeof(int) + buffer.Length];
-            using (var bw = new BinaryWriter(new MemoryStream(dataBuffer)))
-            {
-                bw.Write(buffer.Length);
-                bw.Write(buffer);
-            }
-
-            var offset = writers.DataWriter.BaseStream.Position;
-
-            writers.DataWriter.Write(dataBuffer);
-
-            writers.IndexWriter.Write(offset);
+            Append(writers, new[] {buffer});
 
             return true;
+        }
+
+        static void Append(Writers writers, ICollection<byte[]> buffers)
+        {
+            if (buffers.Any(buffer => buffer.Length == 0))
+                throw new ArgumentException("Record must contain at least one byte.");
+
+            var dataBuffer = new byte[sizeof(int) * buffers.Count + buffers.Sum(b => b.Length)];
+            var indexBuffer = new byte[sizeof(long) * buffers.Count];
+
+            var offset = writers.DataWriter.BaseStream.Position;
+            using (var dbw = new BinaryWriter(new MemoryStream(dataBuffer)))
+            using (var ibw = new BinaryWriter(new MemoryStream(indexBuffer)))
+            {
+                foreach (var buffer in buffers)
+                {
+                    dbw.Write(buffer.Length);
+                    dbw.Write(buffer);
+
+                    ibw.Write(offset);
+                    offset += sizeof(int) + buffer.Length;
+                }
+            }
+
+            writers.DataWriter.Write(dataBuffer);
+            writers.IndexWriter.Write(indexBuffer);
         }
 
         Writers CreateWriters()
