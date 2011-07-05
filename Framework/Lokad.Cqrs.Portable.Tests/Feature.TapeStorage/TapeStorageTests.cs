@@ -73,7 +73,10 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         [Test]
         public void Reading_batch_by_one()
         {
-            _stream.AppendNonAtomic(_batch.Select((d, i) => new TapeRecord(i + 1, d)));
+            foreach (var b in _batch)
+            {
+                _stream.TryAppend(b);
+            }
 
             var readings = Enumerable
                 .Range(1, _batch.Length)
@@ -90,7 +93,10 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         [Test]
         public void Reading_batch_at_once()
         {
-            _stream.AppendNonAtomic(_batch.Select((d, i) => new TapeRecord(i + 1, d)));
+            foreach (var b in _batch)
+            {
+                _stream.TryAppend(b);
+            }
 
             var readings = _stream.ReadRecords(1, _batch.Length).ToArray();
 
@@ -107,7 +113,10 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         [Test]
         public void Can_continue_after_recreation()
         {
-            _stream.AppendNonAtomic(_batch.Select((d, i) => new TapeRecord(i + 1, d)));
+            foreach (var b in _batch)
+            {
+                _stream.TryAppend(b);
+            }
 
             _stream = null;
             FreeResources();
@@ -128,7 +137,10 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         [Test]
         public void Reading_ahead_storage_returns_none()
         {
-            _stream.AppendNonAtomic(_batch.Select((d, i) => new TapeRecord(i + 1, d)));
+            foreach (var b in _batch)
+            {
+                _stream.TryAppend(b);
+            }
 
             var version = _batch.Length + 1;
             var readings = _stream.ReadRecords(version, 1).ToArray();
@@ -139,7 +151,10 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         [Test]
         public void Reading_ahead_returns_only_written()
         {
-            _stream.AppendNonAtomic(_batch.Select((d, i) => new TapeRecord(i + 1, d)));
+            foreach (var b in _batch)
+            {
+                _stream.TryAppend(b);
+            }
 
             var version = _batch.Length - 1;
             var readings = _stream.ReadRecords(version, _batch.Length).ToArray();

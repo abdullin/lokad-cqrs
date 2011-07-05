@@ -43,27 +43,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             }
         }
 
-        public void AppendNonAtomic(IEnumerable<TapeRecord> records)
-        {
-            TapeStreamUtil.CheckArgsForAppentNonAtomic(records);
-
-            if (!records.Any())
-                return;
-
-            var number = 0;
-            foreach (var record in records)
-            {
-                if (record.Data.Length == 0)
-                    throw new ArgumentException("Record must contain at least one byte.");
-
-                var result = TryAppend(record.Data, TapeAppendCondition.VersionIs(record.Version - 1));
-
-                if (!result)
-                    throw new InvalidOperationException(string.Format("Version mismatch. {0} records were saved successfully.", number));
-
-                number++;
-            }
-        }
+        
 
         public IEnumerable<TapeRecord> ReadRecords(long version, int maxCount)
         {
