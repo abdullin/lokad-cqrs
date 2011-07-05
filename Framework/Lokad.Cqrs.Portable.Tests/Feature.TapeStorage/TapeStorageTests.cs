@@ -239,5 +239,11 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             var tapeRecords = _stream.ReadRecords(0, 1).ToArray();
             CollectionAssert.IsEmpty(tapeRecords);
         }
+
+        [Test, ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void Trying_to_read_negative_version_is_not_allowed()
+        {
+            _stream.ReadRecords(-1, 1).ToList();
+        }
     }
 }
