@@ -9,8 +9,6 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
         protected ITapeStream _stream { get; private set; }
 
-        
-
         readonly byte[][] _batch = new[]
                 {
                     new byte[] {1, 2, 3, 4, 5},

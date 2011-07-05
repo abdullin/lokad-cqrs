@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -24,9 +25,13 @@ namespace Lokad.Cqrs.Feature.TapeStorage
     /// </remarks>
     public class FileTapeStream : ITapeStream
     {
+        static readonly byte[] ReadableHeaderStart = Encoding.UTF8.GetBytes("/* header ");
+        static readonly byte[] ReadableHeaderEnd = Encoding.UTF8.GetBytes(" */\r\n");
+        static readonly byte[] ReadableFooterStart = Encoding.UTF8.GetBytes("\r\n/* footer ");
+        static readonly byte[] ReadableFooterEnd = Encoding.UTF8.GetBytes(" */\r\n");
+
         readonly FileInfo _data;
         readonly SHA1Managed _managed = new SHA1Managed();
-        
 
         public FileTapeStream(string name)
         {
@@ -50,6 +55,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
             using (var file = OpenForRead())
             {
+                // seek to requested version
                 for (int i = 0; i < offset; i++)
                 {
                     if (file.Position == file.Length)
@@ -60,10 +66,12 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                     var skip = dataLength + 16 + 16 + 28 + ReadableFooterEnd.Length + ReadableHeaderEnd.Length + ReadableFooterStart.Length;
                     file.Seek(skip, SeekOrigin.Current);
                 }
+
                 for (int i = 0; i < maxCount; i++)
                 {
                     if (file.Position == file.Length)
                         yield break;
+
                     ReadAndVerifySignature(file, ReadableHeaderStart, "Start");
                     
                     var dataLength = ReadReadableInt64(file);
@@ -75,25 +83,19 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
                     ReadReadableInt64(file);//length verified
                     var version = ReadReadableInt64(file);//version
+
                     var hash = ReadReadableHash(file);
                     var computed = _managed.ComputeHash(data);
-                    if (!VerifyHash(computed, hash))
-                    {
+                    if (!computed.SequenceEqual(hash))
                         throw new InvalidOperationException("Hash corrupted");
-                    }
+
                     ReadAndVerifySignature(file, ReadableFooterEnd, "End");
+
                     yield return new TapeRecord(version-1, data);
                 }
                 
             }
         }
-
-        static readonly byte[] ReadableHeaderStart = Encoding.UTF8.GetBytes("/* header ");
-        static readonly byte[] ReadableHeaderEnd = Encoding.UTF8.GetBytes(" */\r\n");
-
-        static readonly byte[] ReadableFooterStart = Encoding.UTF8.GetBytes("\r\n/* footer ");
-        static readonly byte[] ReadableFooterEnd = Encoding.UTF8.GetBytes(" */\r\n");
-        
 
         public long GetCurrentVersion()
         {
@@ -115,7 +117,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                 return 0;
             }
         }
-        
+
         public bool TryAppend(byte[] data, TapeAppendCondition condition)
         {
             if (data == null)
@@ -126,18 +128,19 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
             using (var file = OpenForWrite())
             {
-                file.Seek(0, SeekOrigin.End);
                 // we need to know version first.
+                file.Seek(0, SeekOrigin.End);
                 var version = ReadVersionFromTheEnd(file);
+
                 if (!condition.Satisfy(version))
-                {
                     return false;
-                }
+
                 var versionToWrite = version + 1;
                 using (var writer = new BinaryWriter(file))
                 {
                     WriteBlockInner(writer, data, versionToWrite);
                 }
+
                 return true;
             }
         }
@@ -189,23 +192,19 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
         static long ReadVersionFromTheEnd(Stream file)
         {
-            long version;
             if (file.Position == 0)
-            {
-                version = 0;
-            }
-            else
-            {
-                int seekBack = ReadableFooterEnd.Length + 28 + 16;
-                file.Seek(-seekBack, SeekOrigin.Current);
-                version = ReadReadableInt64(file);
-                file.Seek(28, SeekOrigin.Current);
-                ReadAndVerifySignature(file, ReadableFooterEnd, "End");
-            }
+                return 0;
+
+            var seekBack = ReadableFooterEnd.Length + 28 + 16;
+            file.Seek(-seekBack, SeekOrigin.Current);
+
+            var version = ReadReadableInt64(file);
+
+            file.Seek(28, SeekOrigin.Current);
+            ReadAndVerifySignature(file, ReadableFooterEnd, "End");
+
             return version;
         }
-        
-
         
         static void WriteReadableInt64(Stream stream, long value)
         {
@@ -221,12 +220,14 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             var s = Encoding.UTF8.GetString(buffer);
             return long.Parse(s, NumberStyles.HexNumber);
         }
+
         static void WriteReadableHash(Stream stream, byte[] hash)
         {
             // hash is 20 bytes, which is encoded into 28 bytes of readable unicode
             var buffer = Encoding.UTF8.GetBytes(Convert.ToBase64String(hash));
             stream.Write(buffer,0,28);
         }
+        
         static byte[] ReadReadableHash(Stream stream)
         {
             var buffer = new byte[28];
@@ -247,19 +248,6 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                     throw new InvalidOperationException("Signature failed: " + name);
                 }
             }
-        }
-
-        static bool VerifyHash(byte[] source, byte[] expected)
-        {
-            if (source.Length != expected.Length)
-                return false;
-            for (int i = 0; i < source.Length; i++)
-            {
-                if (source[i] != expected[i])
-                    return false;
-            }
-            return true;
-
         }
     }
 }
