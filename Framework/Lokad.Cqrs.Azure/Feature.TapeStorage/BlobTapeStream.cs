@@ -249,7 +249,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             }
         }
 
-        public void AppendNonAtomic(IEnumerable<TapeRecord> records)
+        public void AppendNonAtomic(IEnumerable<byte[]> records)
         {
             throw new NotImplementedException();
         }

@@ -91,11 +91,6 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             return true;
         }
 
-        public void AppendNonAtomic(IEnumerable<TapeRecord> records)
-        {
-            throw new NotImplementedException();
-        }
-
         void Append(SqlConnection connection, long index, byte[] record)
         {
             const string text = @"
