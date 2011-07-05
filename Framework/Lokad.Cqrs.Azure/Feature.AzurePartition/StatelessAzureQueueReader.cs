@@ -7,8 +7,7 @@
 
 using System;
 using Lokad.Cqrs.Core.Inbox;
-using Lokad.Cqrs.Core.Transport;
-using Lokad.Cqrs.Feature.AzurePartition.Events;
+using Lokad.Cqrs.Core.Inbox.Events;
 using Microsoft.WindowsAzure.StorageClient;
 
 namespace Lokad.Cqrs.Feature.AzurePartition
@@ -85,8 +84,6 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             catch (Exception ex)
             {
                 _observer.Notify(new EnvelopeDeserializationFailed(ex, _queue.Name, message.Id));
-
-
                 // new poison details
                 _posionQueue.Value.AddMessage(message);
                 _queue.DeleteMessage(message);
@@ -119,11 +116,6 @@ namespace Lokad.Cqrs.Feature.AzurePartition
         {
             if (envelope == null) throw new ArgumentNullException("message");
             _queue.DeleteMessage((CloudQueueMessage) envelope.TransportMessage);
-        }
-
-        public void TryNotifyNack(EnvelopeTransportContext context)
-        {
-            // we don't do anything. Azure queues have visibility
         }
     }
 }

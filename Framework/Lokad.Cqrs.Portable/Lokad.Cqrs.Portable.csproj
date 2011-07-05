@@ -56,11 +56,17 @@
     <Compile Include="Core.Dispatch\IMessageDispatchScope.cs" />
     <Compile Include="Core.Dispatch\IMessageDispatchStrategy.cs" />
     <Compile Include="Core.Envelope\EnvelopePrinter.cs" />
+    <Compile Include="Core.Inbox\Events\EnvelopeDeserializationFailed.cs" />
+    <Compile Include="Core.Inbox\Events\FailedToAccessStorage.cs" />
+    <Compile Include="Core.Inbox\Events\FailedToReadMessage.cs" />
+    <Compile Include="Core.Inbox\GetEnvelopeResult.cs" />
+    <Compile Include="Core.Inbox\GetEnvelopeResultState.cs" />
     <Compile Include="Core.Outbox\QueueWriterRegistry.cs" />
     <Compile Include="Core.Reactive\ImmediateConsoleObserver.cs" />
     <Compile Include="Core.Reactive\ImmediateEventsObserver.cs" />
     <Compile Include="Core.Serialization\SerializationContractRegistry.cs" />
     <Compile Include="Core\FunqContainer.cs" />
+    <Compile Include="Evil\DecayEvil.cs" />
     <Compile Include="Evil\ThreadAffinity.cs" />
     <Compile Include="Evil\TransactionEvil.cs" />
     <Compile Include="Feature.AtomicStorage\AddOrUpdateHint.cs" />
@@ -78,6 +84,7 @@
     <Compile Include="Feature.FilePartition\FileQueueWriter.cs" />
     <Compile Include="Feature.FilePartition\FileQueueWriterFactory.cs" />
     <Compile Include="Feature.FilePartition\FilePartitionModule.cs" />
+    <Compile Include="Feature.FilePartition\StatelessFileQueueReader.cs" />
     <Compile Include="Feature.TapeStorage\TapeAppendCondition.cs" />
     <Compile Include="Feature.TapeStorage\TapeAppendConditionException.cs" />
     <Compile Include="Feature.TapeStorage\TapeStorageInitilization.cs" />

@@ -5,7 +5,7 @@
 
 #endregion
 
-namespace Lokad.Cqrs.Core.Transport
+namespace Lokad.Cqrs.Core.Inbox
 {
     public enum GetEnvelopeResultState
     {

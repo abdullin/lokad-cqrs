@@ -13,6 +13,7 @@ using Autofac.Core;
 using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Core.Outbox;
+using Lokad.Cqrs.Evil;
 using Lokad.Cqrs.Feature.AzurePartition.Inbox;
 using Lokad.Cqrs.Core;
 
@@ -68,29 +69,12 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 
         /// <summary>
         /// Sets the custom decay policy used to throttle Azure queue checks, when there are no messages for some time.
-        /// This overload eventually slows down requests till the max of <paramref name="maxInterval"/>
+        /// This overload eventually slows down requests till the max of <paramref name="maxInterval"/>.
         /// </summary>
         /// <param name="maxInterval">The maximum interval to keep between checks, when there are no messages in the queue.</param>
         public void DecayPolicy(TimeSpan maxInterval)
         {
-            //var seconds = (Rand.Next(0, 1000) / 10000d).Seconds();
-            var seconds = maxInterval.TotalSeconds;
-            _decayPolicy = l =>
-                {
-                    if (l >= 31)
-                    {
-                        return maxInterval;
-                    }
-
-                    if (l == 0)
-                    {
-                        l += 1;
-                    }
-
-                    var foo = Math.Pow(2, (l - 1)/5.0)/64d*seconds;
-
-                    return TimeSpan.FromSeconds(foo);
-                };
+            _decayPolicy = DecayEvil.BuildExponentialDecay(maxInterval);
         }
 
         /// <summary>

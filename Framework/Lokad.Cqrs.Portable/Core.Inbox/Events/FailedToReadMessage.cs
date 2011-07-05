@@ -7,7 +7,7 @@
 
 using System;
 
-namespace Lokad.Cqrs.Feature.AzurePartition.Events
+namespace Lokad.Cqrs.Core.Inbox.Events
 {
     public sealed class FailedToReadMessage : ISystemEvent
     {

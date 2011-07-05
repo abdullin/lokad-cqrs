@@ -6,9 +6,8 @@
 #endregion
 
 using System;
-using Lokad.Cqrs.Core.Inbox;
 
-namespace Lokad.Cqrs.Core.Transport
+namespace Lokad.Cqrs.Core.Inbox
 {
     public sealed class GetEnvelopeResult
     {

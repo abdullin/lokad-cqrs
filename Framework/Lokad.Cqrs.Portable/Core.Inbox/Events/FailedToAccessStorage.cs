@@ -7,15 +7,15 @@
 
 using System;
 
-namespace Lokad.Cqrs.Feature.AzurePartition.Events
+namespace Lokad.Cqrs.Core.Inbox.Events
 {
-    public sealed class EnvelopeDeserializationFailed : ISystemEvent
+    public sealed class FailedToAccessStorage : ISystemEvent
     {
         public Exception Exception { get; private set; }
         public string QueueName { get; private set; }
         public string MessageId { get; private set; }
 
-        public EnvelopeDeserializationFailed(Exception exception, string queueName, string messageId)
+        public FailedToAccessStorage(Exception exception, string queueName, string messageId)
         {
             Exception = exception;
             QueueName = queueName;

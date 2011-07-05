@@ -6,16 +6,16 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Transactions;
+using System.Linq;
+using System.Threading;
 using Autofac;
 using Autofac.Core;
+using Lokad.Cqrs.Core;
 using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Core.Outbox;
-using Lokad.Cqrs.Core;
-using System.Linq;
+using Lokad.Cqrs.Evil;
 
 namespace Lokad.Cqrs.Feature.FilePartition
 {
@@ -23,11 +23,14 @@ namespace Lokad.Cqrs.Feature.FilePartition
     {
         readonly FileStorageConfig _fullPath;
         readonly string[] _fileQueues;
+        Func<uint, TimeSpan> _decayPolicy;
 
-        
+
         readonly MessageDirectoryFilter _filter = new MessageDirectoryFilter();
 
-        Func<IComponentContext, MessageActivationInfo[], IMessageDispatchStrategy, ISingleThreadMessageDispatcher> _dispatcher;
+        Func<IComponentContext, MessageActivationInfo[], IMessageDispatchStrategy, ISingleThreadMessageDispatcher>
+            _dispatcher;
+
         Func<IComponentContext, IEnvelopeQuarantine> _quarantineFactory;
 
         public FilePartitionModule WhereFilter(Action<MessageDirectoryFilter> filter)
@@ -35,6 +38,26 @@ namespace Lokad.Cqrs.Feature.FilePartition
             filter(_filter);
             return this;
         }
+
+        /// <summary>
+        /// Sets the custom decay policy used to throttle File checks, when there are no messages for some time.
+        /// This overload eventually slows down requests till the max of <paramref name="maxInterval"/>.
+        /// </summary>
+        /// <param name="maxInterval">The maximum interval to keep between checks, when there are no messages in the queue.</param>
+        public void DecayPolicy(TimeSpan maxInterval)
+        {
+            _decayPolicy = DecayEvil.BuildExponentialDecay(maxInterval);
+        }
+
+        /// <summary>
+        /// Sets the custom decay policy used to throttle file queue checks, when there are no messages for some time.
+        /// </summary>
+        /// <param name="decayPolicy">The decay policy, which is function that returns time to sleep after Nth empty check.</param>
+        public void DecayPolicy(Func<uint, TimeSpan> decayPolicy)
+        {
+            _decayPolicy = decayPolicy;
+        }
+
 
         public FilePartitionModule(FileStorageConfig fullPath, string[] fileQueues)
         {
@@ -45,9 +68,12 @@ namespace Lokad.Cqrs.Feature.FilePartition
             DispatchAsEvents();
 
             Quarantine(c => new MemoryQuarantine());
+            DecayPolicy(TimeSpan.FromMilliseconds(150));
         }
 
-        public void DispatcherIs(Func<IComponentContext, MessageActivationInfo[], IMessageDispatchStrategy, ISingleThreadMessageDispatcher> factory)
+        public void DispatcherIs(
+            Func<IComponentContext, MessageActivationInfo[], IMessageDispatchStrategy, ISingleThreadMessageDispatcher>
+                factory)
         {
             _dispatcher = factory;
         }
@@ -67,6 +93,7 @@ namespace Lokad.Cqrs.Feature.FilePartition
         {
             DispatcherIs((ctx, map, strategy) => new DispatchCommandBatch(map, strategy));
         }
+
         public void DispatchToRoute(Func<ImmutableEnvelope, string> route)
         {
             DispatcherIs((ctx, map, strategy) => new DispatchMessagesToRoute(ctx.Resolve<QueueWriterRegistry>(), route));
@@ -87,14 +114,21 @@ namespace Lokad.Cqrs.Feature.FilePartition
 
             var queues = _fileQueues
                 .Select(n => Path.Combine(_fullPath.Folder.FullName, n))
-                .Select(f => new DirectoryInfo(f))
+                .Select(n => new DirectoryInfo(n))
+                .Select(f => new StatelessFileQueueReader(streamer, log, new Lazy<DirectoryInfo>(() =>
+                    {
+                        var poison = Path.Combine(f.FullName, "poison");
+                        var di = new DirectoryInfo(poison);
+                        di.Create();
+                        return di;
+                    }, LazyThreadSafetyMode.ExecutionAndPublication), f, f.Name))
                 .ToArray();
-            var inbox = new FilePartitionInbox(queues, _fileQueues, streamer, u => TimeSpan.FromMilliseconds(200));
+            var inbox = new FilePartitionInbox(queues, _decayPolicy);
             var quarantine = _quarantineFactory(context);
             var manager = context.Resolve<MessageDuplicationManager>();
             var transport = new DispatcherProcess(log, dispatcher, inbox, quarantine, manager);
 
-           
+
             return transport;
         }
 

@@ -84,11 +84,6 @@
     <Compile Include="Feature.AzurePartition\Inbox\AzurePartitionInbox.cs" />
     <Compile Include="Feature.AzurePartition\Inbox\AzurePartitionFactory.cs" />
     <Compile Include="Feature.AzurePartition\StatelessAzureQueueReader.cs" />
-    <Compile Include="Feature.AzurePartition\Events\FailedToAccessStorage.cs" />
-    <Compile Include="Feature.AzurePartition\Events\EnvelopeDeserializationFailed.cs" />
-    <Compile Include="Feature.AzurePartition\Events\FailedToReadMessage.cs" />
-    <Compile Include="Core.Transport\GetEnvelopeResult.cs" />
-    <Compile Include="Core.Transport\GetEnvelopeResultState.cs" />
     <Compile Include="Feature.AzurePartition\AzurePartitionModule.cs" />
     <Compile Include="IAzureStorageConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -103,7 +98,9 @@
     <Compile Include="Core.Serialization\DataSerializerWithProtoBuf.cs" />
     <Compile Include="Core.Serialization\ProtoBufUtil.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Feature.AzurePartition\Events\" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Lokad.Cqrs.Portable\Lokad.Cqrs.Portable.csproj">
       <Project>{4E2E749C-4D6F-4EF8-8E9D-96D467306997}</Project>

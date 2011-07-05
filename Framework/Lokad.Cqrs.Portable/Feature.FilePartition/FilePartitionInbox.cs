@@ -9,80 +9,72 @@ namespace Lokad.Cqrs.Feature.FilePartition
 {
     public sealed class FilePartitionInbox : IPartitionInbox
     {
-        readonly DirectoryInfo[] _queues;
-        readonly string[] _names;
-        readonly IEnvelopeStreamer _serializer;
-
-        public FilePartitionInbox(DirectoryInfo[] queues, string[] names, IEnvelopeStreamer serializer, Func<uint, TimeSpan> waiter)
-        {
-            _queues = queues;
-            _names = names;
-            _serializer = serializer;
-            _waiter = waiter;
-        }
-
+        readonly StatelessFileQueueReader[] _readers;
         readonly Func<uint, TimeSpan> _waiter;
         uint _emptyCycles;
 
+        public FilePartitionInbox(StatelessFileQueueReader[] readers, Func<uint, TimeSpan> waiter)
+        {
+            _readers = readers;
+            _waiter = waiter;
+        }
+
+
         public void Init()
         {
-            foreach (var info in _queues)
+            foreach (var info in _readers)
             {
-                if (!info.Exists)
-                {
-                    info.Create();
-                }
+                info.Initialize();
             }
         }
 
         public void AckMessage(EnvelopeTransportContext envelope)
         {
-            var file = (FileInfo) envelope.TransportMessage;
-            file.Delete();
+            foreach (var queue in _readers)
+            {
+                if (queue.Name == envelope.QueueName)
+                {
+                    queue.AckMessage(envelope);
+                }
+            }
         }
 
         public bool TakeMessage(CancellationToken token, out EnvelopeTransportContext context)
         {
             while (!token.IsCancellationRequested)
             {
-                // if incoming message is delayed and in future -> push it to the timer queue.
-                // timer will be responsible for publishing back.
-
-                
-
-                try
+                for (var i = 0; i < _readers.Length; i++)
                 {
+                    var queue = _readers[i];
 
-                    var fileInfo = _queues.SelectMany((q,i) => q.EnumerateFiles().Select(f => new{f,i})).FirstOrDefault();
+                    var message = queue.TryGetMessage();
+                    switch (message.State)
+                    {
+                        case GetEnvelopeResultState.Success:
 
-                    if (null == fileInfo)
-                    {
-                        _emptyCycles += 1;
-                    }
-                    else
-                    {
-                        using (var stream= fileInfo.f.OpenRead())
-                        using (var mem = new MemoryStream())
-                        {
-                            stream.CopyTo(mem);
-                            var envelope = _serializer.ReadAsEnvelopeData(mem.ToArray());
-                            if (envelope.DeliverOnUtc > DateTime.UtcNow)
+                            _emptyCycles = 0;
+                            // future message
+                            if (message.Envelope.Unpacked.DeliverOnUtc > DateTime.UtcNow)
                             {
-                                // future message
-                                throw new InvalidOperationException("Message scheduling has been disabled in the code");
+                                throw new InvalidOperationException("Future message delivery has been disabled in the code");
                             }
-                            context = new EnvelopeTransportContext(fileInfo.f, envelope, _names[fileInfo.i]);
+                            context = message.Envelope;
                             return true;
-                        }
+                        case GetEnvelopeResultState.Empty:
+                            _emptyCycles += 1;
+                            break;
+                        case GetEnvelopeResultState.Exception:
+                            // access problem, fall back a bit
+                            break;
+                        case GetEnvelopeResultState.Retry:
+                            // this could be the poison
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
                     }
+                    var waiting = _waiter(_emptyCycles);
+                    token.WaitHandle.WaitOne(waiting);
                 }
-                catch(Exception ex)
-                {
-                    
-                }
-                var waiting = _waiter(_emptyCycles);
-                token.WaitHandle.WaitOne(waiting);
-
             }
             context = null;
             return false;

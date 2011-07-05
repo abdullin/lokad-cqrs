@@ -8,7 +8,6 @@
 using System;
 using System.Threading;
 using Lokad.Cqrs.Core.Inbox;
-using Lokad.Cqrs.Core.Transport;
 
 namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
 {
@@ -18,6 +17,8 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
     public sealed class AzurePartitionInbox : IPartitionInbox
     {
         readonly StatelessAzureQueueReader[] _readers;
+        readonly Func<uint, TimeSpan> _waiter;
+        uint _emptyCycles;
 
         public AzurePartitionInbox(StatelessAzureQueueReader[] readers,
             Func<uint, TimeSpan> waiter)
@@ -48,9 +49,6 @@ namespace Lokad.Cqrs.Feature.AzurePartition.Inbox
         public void TryNotifyNack(EnvelopeTransportContext context)
         {
         }
-
-        readonly Func<uint, TimeSpan> _waiter;
-        uint _emptyCycles;
 
         public bool TakeMessage(CancellationToken token, out EnvelopeTransportContext context)
         {
