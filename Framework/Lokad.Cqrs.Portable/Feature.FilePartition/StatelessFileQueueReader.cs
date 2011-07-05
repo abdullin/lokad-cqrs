@@ -55,7 +55,12 @@ namespace Lokad.Cqrs.Feature.FilePartition
             }
             catch (IOException ex)
             {
-                _observer.Notify(new FailedToAccessStorage(ex, _queue.Name, message.Name));
+                // this is probably sharing violation, no need to 
+                // scare people.
+                if (!IsSharingViolation(ex))
+                {
+                    _observer.Notify(new FailedToAccessStorage(ex, _queue.Name, message.Name));
+                }
                 return GetEnvelopeResult.Retry;
             }
             catch (Exception ex)
@@ -66,6 +71,16 @@ namespace Lokad.Cqrs.Feature.FilePartition
                 message.MoveTo(poisonFile);
                 return GetEnvelopeResult.Retry;
             }
+        }
+
+        static bool IsSharingViolation(IOException ex)
+        {
+            // http://stackoverflow.com/questions/425956/how-do-i-determine-if-an-ioexception-is-thrown-because-of-a-sharing-violation
+            // don't ask...
+            int hResult = System.Runtime.InteropServices.Marshal.GetHRForException(ex);
+            const int sharingViolation = 32;
+            if ((hResult & 0xFFFF) == sharingViolation) return true;
+            return false;
         }
 
         EnvelopeTransportContext DownloadPackage(FileInfo message)
