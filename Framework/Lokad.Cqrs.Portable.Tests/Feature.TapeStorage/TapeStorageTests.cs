@@ -232,5 +232,12 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         {
             _stream.TryAppend(new byte[0]);
         }
+
+        [Test]
+        public void Reading_empty_storage_from_the_beginning_works()
+        {
+            var tapeRecords = _stream.ReadRecords(0, 1).ToArray();
+            CollectionAssert.IsEmpty(tapeRecords);
+        }
     }
 }
