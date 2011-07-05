@@ -21,7 +21,15 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
         public IEnumerable<TapeRecord> ReadRecords(long version, int maxCount)
         {
-            TapeStreamUtil.CheckArgsForReadRecords(version, maxCount);
+            if (version <= 0)
+                throw new ArgumentOutOfRangeException("version", "Must be more than zero.");
+
+            if (maxCount <= 0)
+                throw new ArgumentOutOfRangeException("maxCount", "Must be more than zero.");
+
+            // version + maxCount > long.MaxValue, but transformed to avoid overflow
+            if (version > long.MaxValue - maxCount)
+                throw new ArgumentOutOfRangeException("maxCount", "Record index will exceed long.MaxValue.");
 
             var dataBlob = _container.GetPageBlobReference(_dataBlobName);
             var indexBlob = _container.GetPageBlobReference(_indexBlobName);
@@ -101,14 +109,19 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
         public bool TryAppend(byte[] buffer, TapeAppendCondition condition)
         {
-            TapeStreamUtil.CheckArgsForTryAppend(buffer);
+            if (buffer == null)
+                throw new ArgumentNullException("buffer");
+
+            if (buffer.Length == 0)
+                throw new ArgumentException("Buffer must contain at least one byte.");
 
             return Write(w => TryAppendInternal(w, buffer, condition));
         }
 
         public void AppendNonAtomic(IEnumerable<TapeRecord> records)
         {
-            TapeStreamUtil.CheckArgsForAppentNonAtomic(records);
+            if (records == null)
+                throw new ArgumentNullException("records");
 
             if (!records.Any())
                 return;
