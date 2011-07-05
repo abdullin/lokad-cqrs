@@ -14,44 +14,25 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         {
             _storage = storage;
             _name = name;
-
-
-            /*
-             * 
-             * 
-             * () =>
-                {
-                    List<byte[]> list;
-                    if (_storage.TryGetValue(name, out list))
-                    {
-                        return list.ToArray();
-                    }
-                    return new byte[0][];
-                }, blocks =>
-                _storage.AddOrUpdate(name, s => new List<byte[]>(blocks),
-                    (s1, list) =>
-                    {
-                        list.AddRange(blocks);
-                        return list;
-                    })
-             * */
         }
 
-        public bool TryAppend(byte[] data, TapeAppendCondition condition)
+        public bool TryAppend(byte[] buffer, TapeAppendCondition condition)
         {
+            TapeStreamUtil.CheckArgsForTryAppend(buffer);
+
             try
             {
                 _storage.AddOrUpdate(_name, s =>
                     {
                         condition.Enforce(0);
-                        return new List<byte[]>()
+                        return new List<byte[]>
                             {
-                                data
+                                buffer
                             };
                     }, (s, list) =>
                         {
                             condition.Enforce(list.Count);
-                            list.Add(data);
+                            list.Add(buffer);
                             return list;
                         });
                 return true;
@@ -64,31 +45,50 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
         public void AppendNonAtomic(IEnumerable<TapeRecord> records)
         {
-            throw new NotImplementedException();
+            TapeStreamUtil.CheckArgsForAppentNonAtomic(records);
+
+            if (!records.Any())
+                return;
+
+            var number = 0;
+            foreach (var record in records)
+            {
+                if (record.Data.Length == 0)
+                    throw new ArgumentException("Record must contain at least one byte.");
+
+                var result = TryAppend(record.Data, TapeAppendCondition.VersionIs(record.Version - 1));
+
+                if (!result)
+                    throw new InvalidOperationException(string.Format("Version mismatch. {0} records were saved successfully.", number));
+
+                number++;
+            }
         }
 
-        public IEnumerable<TapeRecord> ReadRecords(long offset, int maxCount)
+        public IEnumerable<TapeRecord> ReadRecords(long version, int maxCount)
         {
+            TapeStreamUtil.CheckArgsForReadRecords(version, maxCount);
+
             List<byte[]> list;
             if (!_storage.TryGetValue(_name, out list))
-            {
                 return Enumerable.Empty<TapeRecord>();
-            }
+
             var tapeRecords = list
-                .Select((b,i) => new TapeRecord(i, b))
-                .Skip((int)offset)
+                .Skip((int)version - 1)
+                .Select((b, i) => new TapeRecord(i + version, b))
                 .Take(maxCount)
                 .ToArray();
+
             return tapeRecords;
         }
 
         public long GetCurrentVersion()
         {
             List<byte[]> list;
+
             if(_storage.TryGetValue(_name, out list))
-            {
                 return list.Count;
-            }
+
             return 0;
         }
     }

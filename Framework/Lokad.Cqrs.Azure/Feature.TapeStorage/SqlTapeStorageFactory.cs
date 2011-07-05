@@ -55,9 +55,9 @@ IF (NOT EXISTS (
 BEGIN
     CREATE TABLE [{0}].[{1}] (
         [Stream] [nvarchar] (512) NOT NULL,
-        [Index] [bigint] NOT NULL,
+        [Version] [bigint] NOT NULL,
         [Data] [varbinary] (max) NOT NULL
-        PRIMARY KEY CLUSTERED ([Stream], [Index])
+        PRIMARY KEY CLUSTERED ([Stream], [Version])
     )
 END";
             using (var cmd = new SqlCommand(String.Format(cmdText, TableSchema, tableName), conn))

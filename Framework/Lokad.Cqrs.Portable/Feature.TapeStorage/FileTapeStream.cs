@@ -38,17 +38,9 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             _data = new FileInfo(name);
         }
 
-        public IEnumerable<TapeRecord> ReadRecords(long offset, int maxCount)
+        public IEnumerable<TapeRecord> ReadRecords(long version, int maxCount)
         {
-            if (offset < 0)
-                throw new ArgumentOutOfRangeException("Offset can't be negative.", "offset");
-
-            if (maxCount <= 0)
-                throw new ArgumentOutOfRangeException("Count must be greater than zero.", "maxCount");
-
-            // index + maxCount - 1 > long.MaxValue, but transformed to avoid overflow
-            if (offset > long.MaxValue - maxCount)
-                throw new ArgumentOutOfRangeException("maxCount", "Record index will exceed long.MaxValue.");
+            TapeStreamUtil.CheckArgsForReadRecords(version, maxCount);
 
             if (!_data.Exists)
                 yield break;
@@ -56,7 +48,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             using (var file = OpenForRead())
             {
                 // seek to requested version
-                for (int i = 0; i < offset; i++)
+                for (int i = 1; i < version; i++)
                 {
                     if (file.Position == file.Length)
                         yield break;
@@ -82,7 +74,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                     ReadAndVerifySignature(file, ReadableFooterStart, "Footer-Start");
 
                     ReadReadableInt64(file);//length verified
-                    var version = ReadReadableInt64(file);//version
+                    var recVersion = ReadReadableInt64(file);//version
 
                     var hash = ReadReadableHash(file);
                     var computed = _managed.ComputeHash(data);
@@ -91,7 +83,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
                     ReadAndVerifySignature(file, ReadableFooterEnd, "End");
 
-                    yield return new TapeRecord(version-1, data);
+                    yield return new TapeRecord(recVersion, data);
                 }
                 
             }
@@ -118,13 +110,9 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             }
         }
 
-        public bool TryAppend(byte[] data, TapeAppendCondition condition)
+        public bool TryAppend(byte[] buffer, TapeAppendCondition condition)
         {
-            if (data == null)
-                throw new ArgumentNullException("records");
-
-            if (data.Length == 0)
-                throw new ArgumentException("Record must contain at least one byte.");
+            TapeStreamUtil.CheckArgsForTryAppend(buffer);
 
             using (var file = OpenForWrite())
             {
@@ -138,7 +126,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                 var versionToWrite = version + 1;
                 using (var writer = new BinaryWriter(file))
                 {
-                    WriteBlockInner(writer, data, versionToWrite);
+                    WriteBlockInner(writer, buffer, versionToWrite);
                 }
 
                 return true;
@@ -147,8 +135,10 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
         public void AppendNonAtomic(IEnumerable<TapeRecord> records)
         {
-            if (records == null)
-                throw new ArgumentNullException("records");
+            TapeStreamUtil.CheckArgsForAppentNonAtomic(records);
+
+            if (!records.Any())
+                return;
 
             using (var file = OpenForWrite())
             {
@@ -158,7 +148,10 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                 {
                     foreach (var record in records)
                     {
-                        var versionToWrite = record.Index+1;
+                        if (record.Data.Length == 0)
+                            throw new ArgumentException("Record must contain at least one byte.");
+
+                        var versionToWrite = record.Version;
                         WriteBlockInner(writer, record.Data, versionToWrite);
                     }
                 }

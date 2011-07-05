@@ -19,17 +19,9 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             _indexBlobName = name + "-idx";
         }
 
-        public IEnumerable<TapeRecord> ReadRecords(long offset, int maxCount)
+        public IEnumerable<TapeRecord> ReadRecords(long version, int maxCount)
         {
-            if (offset < 0)
-                throw new ArgumentOutOfRangeException("Offset can't be negative.", "offset");
-
-            if (maxCount <= 0)
-                throw new ArgumentOutOfRangeException("Count must be greater than zero.", "maxCount");
-
-            // index + maxCount - 1 > long.MaxValue, but transformed to avoid overflow
-            if (offset > long.MaxValue - maxCount)
-                throw new ArgumentOutOfRangeException("maxCount", "Record index will exceed long.MaxValue.");
+            TapeStreamUtil.CheckArgsForReadRecords(version, maxCount);
 
             var dataBlob = _container.GetPageBlobReference(_dataBlobName);
             var indexBlob = _container.GetPageBlobReference(_indexBlobName);
@@ -52,7 +44,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             {
                 var dataReader = readers.DataReader;
 
-                var range = GetReadRange(readers, offset, maxCount);
+                var range = GetReadRange(readers, version - 1, maxCount);
                 var dataOffset = range.Item1;
                 var dataSize = range.Item2;
                 var recordCount = range.Item3;
@@ -62,7 +54,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
                 using (var br = new BinaryReader(new MemoryStream(recordsBuffer)))
                 {
-                    var recordIndex = offset;
+                    var recordIndex = version;
                     var counter = 0;
 
                     var records = new List<TapeRecord>();
@@ -107,9 +99,35 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             }
         }
 
-        
+        public bool TryAppend(byte[] buffer, TapeAppendCondition condition)
+        {
+            TapeStreamUtil.CheckArgsForTryAppend(buffer);
 
-        static Tuple<long,int,int> GetReadRange(Readers readers, long firstIndex, int maxCount)
+            return Write(w => TryAppendInternal(w, buffer, condition));
+        }
+
+        public void AppendNonAtomic(IEnumerable<TapeRecord> records)
+        {
+            TapeStreamUtil.CheckArgsForAppentNonAtomic(records);
+
+            if (!records.Any())
+                return;
+
+            Write(w =>
+            {
+                foreach (var record in records)
+                {
+                    if (record.Data.Length == 0)
+                        throw new ArgumentException("Record must contain at least one byte.");
+
+                    TryAppendInternal(w, record.Data, TapeAppendCondition.None);
+                }
+
+                return true;
+            });
+        }
+
+        static Tuple<long, int, int> GetReadRange(Readers readers, long firstIndex, int maxCount)
         {
             const int indexRecordSize = sizeof(long);
 
@@ -193,55 +211,18 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             readers.IndexReader.Dispose(); // will dispose BaseStream too
         }
 
-        struct Readers
+        T Write<T>(Func<Writers, T> func)
         {
-            internal BinaryReader DataReader;
-            internal BinaryReader IndexReader;
-        }
-
-        public bool TryAppend(byte[] data, TapeAppendCondition condition)
-        {
-            if (data == null)
-                throw new ArgumentNullException("records");
-
-            if (data.Length == 0)
-                throw new ArgumentException("Record must contain at least one byte.");
-
-
             var writers = CreateWriters();
 
             try
             {
-                var dataWriter = writers.DataWriter;
-                var indexWriter = writers.IndexWriter;
-                var dataStream = dataWriter.BaseStream;
-                var indexStream = indexWriter.BaseStream;
+                var result = func(writers);
+                
+                writers.DataWriter.BaseStream.Flush();
+                writers.IndexWriter.BaseStream.Flush();
 
-                // Used only to enforce the rule that index must not be more than long.MaxValue
-                var index = indexStream.Position / sizeof(long);
-
-                if (!condition.Satisfy(index))
-                    return false;
-
-                if (index > long.MaxValue - 1)
-                    throw new IndexOutOfRangeException("Index is more than long.MaxValue.");
-
-                var buffer = new byte[sizeof(int) + data.Length];
-                using (var bw = new BinaryWriter(new MemoryStream(buffer)))
-                {
-                    bw.Write(data.Length);
-                    bw.Write(data);
-                }
-
-                var offset = dataStream.Position;
-
-                dataWriter.Write(buffer);
-
-                indexWriter.Write(offset);
-
-                dataStream.Flush();
-                indexStream.Flush();
-                return true;
+                return result;
             }
             finally
             {
@@ -249,9 +230,30 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             }
         }
 
-        public void AppendNonAtomic(IEnumerable<TapeRecord> records)
+        static bool TryAppendInternal(Writers writers, byte[] buffer, TapeAppendCondition condition)
         {
-            throw new NotImplementedException();
+            var version = writers.IndexWriter.BaseStream.Position / sizeof(long);
+
+            if (!condition.Satisfy(version))
+                return false;
+
+            if (version > long.MaxValue - 1)
+                throw new IndexOutOfRangeException("Version is more than long.MaxValue.");
+
+            var dataBuffer = new byte[sizeof(int) + buffer.Length];
+            using (var bw = new BinaryWriter(new MemoryStream(dataBuffer)))
+            {
+                bw.Write(buffer.Length);
+                bw.Write(buffer);
+            }
+
+            var offset = writers.DataWriter.BaseStream.Position;
+
+            writers.DataWriter.Write(dataBuffer);
+
+            writers.IndexWriter.Write(offset);
+
+            return true;
         }
 
         Writers CreateWriters()
@@ -265,7 +267,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             if ((dataExists || indexExists) && (!dataExists || !indexExists))
             {
                 if (!dataExists)
-                    throw new InvalidOperationException("Index blob found but no data blob.");
+                    throw new InvalidOperationException("Version blob found but no data blob.");
 
                 throw new InvalidOperationException("Data blob found but no index blob.");
             }
@@ -285,6 +287,12 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         {
             writers.DataWriter.Dispose(); // will dispose BaseStream too
             writers.IndexWriter.Dispose(); // will dispose BaseStream too
+        }
+
+        struct Readers
+        {
+            internal BinaryReader DataReader;
+            internal BinaryReader IndexReader;
         }
 
         struct Writers

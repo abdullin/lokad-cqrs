@@ -93,6 +93,7 @@
     <Compile Include="Feature.TapeStorage\ITapeStorageFactory.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryAccount.cs" />
     <Compile Include="Feature.MemoryPartition\MemoryQueueWriterFactory.cs" />
+    <Compile Include="Feature.TapeStorage\TapeStreamUtil.cs" />
     <Compile Include="FileStorage.cs" />
     <Compile Include="Feature.TapeStorage\MemoryTapeStream.cs" />
     <Compile Include="Feature.TapeStorage\MemoryTapeStorageFactory.cs" />
