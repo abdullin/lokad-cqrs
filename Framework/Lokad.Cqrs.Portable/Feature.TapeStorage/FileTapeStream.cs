@@ -51,7 +51,15 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                 throw new ArgumentOutOfRangeException("maxCount", "Record index will exceed long.MaxValue.");
 
             if (!_data.Exists)
-                yield break;
+            {
+                // file could've been created since the last check
+                _data.Refresh();
+                if (_data.Exists)
+                {
+                    yield break;
+                }
+            }
+
 
             using (var file = OpenForRead())
             {
@@ -150,8 +158,9 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             if (records == null)
                 throw new ArgumentNullException("records");
 
-            if (!records.Any())
-                return;
+            // if enumeration is lazy, then this would cause another enum
+            //if (!records.Any())
+            //    return;
 
             using (var file = OpenForWrite())
             {
@@ -173,12 +182,15 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
         FileStream OpenForWrite()
         {
-            return _data.Open(FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+            // we allow concurrent reading
+            // no more writers are alowed
+            return _data.Open(FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
         }
 
         FileStream OpenForRead()
         {
-            return _data.Open(FileMode.Open, FileAccess.Read, FileShare.Read);
+            // we allow concurrent writing or reading
+            return _data.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
         }
 
         void WriteBlockInner(BinaryWriter writer, byte[] data, long versionToWrite)
