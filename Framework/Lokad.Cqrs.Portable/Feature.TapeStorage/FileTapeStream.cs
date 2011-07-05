@@ -48,7 +48,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             if (!_data.Exists)
                 yield break;
 
-            using (var file = _data.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (var file = OpenForRead())
             {
                 for (int i = 0; i < offset; i++)
                 {
@@ -99,7 +99,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         {
             try
             {
-                using (var s = _data.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
+                using (var s = OpenForRead())
                 {
                     // seek end
                     s.Seek(0, SeekOrigin.End);
@@ -123,7 +123,8 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
             if (data.Length == 0)
                 throw new ArgumentException("Record must contain at least one byte.");
-            using (var file = _data.Open(FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read))
+
+            using (var file = OpenForWrite())
             {
                 file.Seek(0, SeekOrigin.End);
                 // we need to know version first.
@@ -141,6 +142,36 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             }
         }
 
+        public void AppendNonAtomic(IEnumerable<TapeRecord> records)
+        {
+            if (records == null)
+                throw new ArgumentNullException("records");
+
+            using (var file = OpenForWrite())
+            {
+                file.Seek(0, SeekOrigin.End);
+                
+                using (var writer = new BinaryWriter(file))
+                {
+                    foreach (var record in records)
+                    {
+                        var versionToWrite = record.Index+1;
+                        WriteBlockInner(writer, record.Data, versionToWrite);
+                    }
+                }
+            }
+        }
+
+        FileStream OpenForWrite()
+        {
+            return _data.Open(FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
+        }
+
+        FileStream OpenForRead()
+        {
+            return _data.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+        }
+
         void WriteBlockInner(BinaryWriter writer, byte[] data, long versionToWrite)
         {
             var file = writer.BaseStream;
@@ -154,26 +185,6 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             WriteReadableInt64(file, versionToWrite);
             WriteReadableHash(file, _managed.ComputeHash(data));
             writer.Write(ReadableFooterEnd);
-        }
-
-        public void AppendNonAtomic(IEnumerable<TapeRecord> records)
-        {
-            if (records == null)
-                throw new ArgumentNullException("records");
-
-            using (var file = _data.Open(FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read))
-            {
-                file.Seek(0, SeekOrigin.End);
-                
-                using (var writer = new BinaryWriter(file))
-                {
-                    foreach (var record in records)
-                    {
-                        var versionToWrite = record.Index+1;
-                        WriteBlockInner(writer, record.Data, versionToWrite);
-                    }
-                }
-            }
         }
 
         static long ReadVersionFromTheEnd(Stream file)
