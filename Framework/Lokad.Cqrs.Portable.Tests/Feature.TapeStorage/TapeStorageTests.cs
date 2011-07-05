@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NUnit.Framework;
 
 namespace Lokad.Cqrs.Feature.TapeStorage
@@ -218,6 +219,18 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
             var currentVersion = _stream.GetCurrentVersion();
             Assert.AreNotEqual(before, currentVersion, "Version should change");
+        }
+
+        [Test, ExpectedException(typeof(ArgumentNullException))]
+        public void Trying_to_append_null_buffer_causes_ANE()
+        {
+            _stream.TryAppend(null);
+        }
+
+        [Test, ExpectedException(typeof(ArgumentException))]
+        public void Trying_to_append_empty_buffer_causes_AE()
+        {
+            _stream.TryAppend(new byte[0]);
         }
     }
 }
