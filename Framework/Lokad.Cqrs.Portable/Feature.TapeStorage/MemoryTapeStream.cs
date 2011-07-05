@@ -62,6 +62,11 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             }
         }
 
+        public void AppendNonAtomic(IEnumerable<TapeRecord> records)
+        {
+            throw new NotImplementedException();
+        }
+
         public IEnumerable<TapeRecord> ReadRecords(long offset, int maxCount)
         {
             List<byte[]> list;

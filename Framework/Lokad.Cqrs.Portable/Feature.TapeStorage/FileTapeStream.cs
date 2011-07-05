@@ -149,6 +149,11 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             }
         }
 
+        public void AppendNonAtomic(IEnumerable<TapeRecord> records)
+        {
+            throw new NotImplementedException();
+        }
+
         static long ReadVersionFromTheEnd(Stream file)
         {
             long version;

@@ -29,5 +29,13 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         /// <param name="appendCondition">The append condition.</param>
         /// <returns>whether the data was appended</returns>
         bool TryAppend(byte[] buffer, TapeAppendCondition appendCondition = default(TapeAppendCondition));
+
+        /// <summary>
+        /// Appends block in non-transactional manner (used for high throughput copying).
+        /// It is the duty of the writer to verify that there are no concurrent changes
+        /// and that IO failures are handled. 
+        /// </summary>
+        /// <param name="records">The records to copy.</param>
+        void AppendNonAtomic(IEnumerable<TapeRecord> records);
     }
 }

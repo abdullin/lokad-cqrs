@@ -249,6 +249,11 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             }
         }
 
+        public void AppendNonAtomic(IEnumerable<TapeRecord> records)
+        {
+            throw new NotImplementedException();
+        }
+
         Writers CreateWriters()
         {
             var dataBlob = _container.GetPageBlobReference(_dataBlobName);
