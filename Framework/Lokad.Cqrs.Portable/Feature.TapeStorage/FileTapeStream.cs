@@ -167,12 +167,12 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
         FileStream OpenForWrite()
         {
-            return _data.Open(FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
+            return _data.Open(FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
         }
 
         FileStream OpenForRead()
         {
-            return _data.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            return _data.Open(FileMode.Open, FileAccess.Read, FileShare.Read);
         }
 
         void WriteBlockInner(BinaryWriter writer, byte[] data, long versionToWrite)
