@@ -118,22 +118,14 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             return Write(w => TryAppendInternal(w, buffer, condition));
         }
 
-        public void AppendNonAtomic(IEnumerable<TapeRecord> records)
+        public void AppendNonAtomic(IEnumerable<byte[]> records)
         {
             if (records == null)
                 throw new ArgumentNullException("records");
 
-            if (!records.Any())
-                return;
-
-            var recordsArray = records.Select(r => r.Data).ToArray();
-
             Write(w =>
             {
-                var version = w.IndexWriter.BaseStream.Position / sizeof(long);
-
-                if (version > long.MaxValue - recordsArray.Length)
-                    throw new IndexOutOfRangeException("Version is more than long.MaxValue.");
+                var recordsArray = records.ToArray();
 
                 Append(w, recordsArray);
 
