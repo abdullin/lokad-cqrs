@@ -61,6 +61,7 @@
     <Compile Include="ExtendCqrsClientBuilder.cs" />
     <Compile Include="AzureStorage.cs" />
     <Compile Include="Feature.AtomicStorage\AtomicStorageSerializerWithProtoBuf.cs" />
+    <Compile Include="Feature.TapeStorage\BlobRecordUtil.cs" />
     <Compile Include="Feature.TapeStorage\PageBlobReadStream.cs" />
     <Compile Include="Feature.TapeStorage\BlobExtensions.cs" />
     <Compile Include="Feature.TapeStorage\BlobTapeStorageFactory.cs" />

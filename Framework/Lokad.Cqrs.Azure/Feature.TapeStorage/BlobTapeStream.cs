@@ -62,20 +62,17 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
                 using (var br = new BinaryReader(new MemoryStream(recordsBuffer)))
                 {
-                    var recordIndex = version;
                     var counter = 0;
 
                     var records = new List<TapeRecord>();
 
                     while (counter < recordCount)
                     {
-                        var recordSize = br.ReadInt32();
-                        var data = br.ReadBytes(recordSize);
+                        var record = br.ReadRecord();
 
-                        records.Add(new TapeRecord(recordIndex, data));
+                        records.Add(record);
 
                         counter++;
-                        recordIndex++;
                     }
 
                     return records;
@@ -125,9 +122,11 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
             Write(w =>
             {
+                var version = w.IndexWriter.BaseStream.Position / sizeof(long);
+
                 var recordsArray = records.ToArray();
 
-                Append(w, recordsArray);
+                Append(w, recordsArray, version + 1);
 
                 return true;
             });
@@ -189,9 +188,9 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             }
 
             readers.DataReader.BaseStream.Seek(lastOffset, SeekOrigin.Begin);
-            var recordSize = readers.DataReader.ReadInt16();
+            var recordSize = readers.DataReader.ReadRecordSize();
 
-            count = lastOffset + sizeof(int) + recordSize - firstOffset;
+            count = lastOffset + recordSize - firstOffset;
             if (count > int.MaxValue)
                 throw new NotSupportedException("Can not read more than int.MaxValue bytes of data.");
 
@@ -246,39 +245,41 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             if (version > long.MaxValue - 1)
                 throw new IndexOutOfRangeException("Version is more than long.MaxValue.");
 
-            Append(writers, new[] {buffer});
+            Append(writers, new[] { buffer }, version + 1);
 
             return true;
         }
 
-        static void Append(Writers writers, ICollection<byte[]> buffers)
+        static void Append(Writers writers, ICollection<byte[]> buffers, long versionToStartFrom)
         {
             if (buffers.Any(buffer => buffer.Length == 0))
                 throw new ArgumentException("Record must contain at least one byte.");
 
-            var dataBuffer = new byte[sizeof(int) * buffers.Count + buffers.Sum(b => b.Length)];
-            var indexBuffer = new byte[sizeof(long) * buffers.Count];
+            if (versionToStartFrom > long.MaxValue - buffers.Count)
+                throw new IndexOutOfRangeException("Version will be more than long.MaxValue.");
 
             var offset = writers.DataWriter.BaseStream.Position;
-            using (var dbw = new BinaryWriter(new MemoryStream(dataBuffer)))
-            using (var ibw = new BinaryWriter(new MemoryStream(indexBuffer)))
+            using (var dbw = new BinaryWriter(new MemoryStream()))
+            using (var ibw = new BinaryWriter(new MemoryStream()))
             {
+                var versionToWrite = versionToStartFrom;
+
                 foreach (var buffer in buffers)
                 {
                     var start = dbw.BaseStream.Position;
 
-                    dbw.Write(buffer.Length);
-                    dbw.Write(buffer);
+                    dbw.WriteRecord(buffer, versionToWrite);
 
                     var size = dbw.BaseStream.Position - start;
 
                     ibw.Write(offset);
                     offset += size;
+                    versionToWrite++;
                 }
-            }
 
-            writers.DataWriter.Write(dataBuffer);
-            writers.IndexWriter.Write(indexBuffer);
+                writers.DataWriter.Write(((MemoryStream)dbw.BaseStream).ToArray());
+                writers.IndexWriter.Write(((MemoryStream)ibw.BaseStream).ToArray());
+            }
         }
 
         Writers CreateWriters()
