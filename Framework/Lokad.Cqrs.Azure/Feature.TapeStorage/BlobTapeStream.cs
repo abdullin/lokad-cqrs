@@ -265,11 +265,15 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             {
                 foreach (var buffer in buffers)
                 {
+                    var start = dbw.BaseStream.Position;
+
                     dbw.Write(buffer.Length);
                     dbw.Write(buffer);
 
+                    var size = dbw.BaseStream.Position - start;
+
                     ibw.Write(offset);
-                    offset += sizeof(int) + buffer.Length;
+                    offset += size;
                 }
             }
 
