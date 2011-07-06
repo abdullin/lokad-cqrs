@@ -81,22 +81,19 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                         yield break;
 
                     ReadAndVerifySignature(file, ReadableHeaderStart, "Start");
-                    
                     var dataLength = ReadReadableInt64(file);
-
                     ReadAndVerifySignature(file, ReadableHeaderEnd, "Header-End");
+
                     var data = new byte[dataLength];
                     file.Read(data, 0, (int)dataLength);
-                    ReadAndVerifySignature(file, ReadableFooterStart, "Footer-Start");
 
+                    ReadAndVerifySignature(file, ReadableFooterStart, "Footer-Start");
                     ReadReadableInt64(file);//length verified
                     var recVersion = ReadReadableInt64(file);//version
-
                     var hash = ReadReadableHash(file);
                     var computed = _managed.ComputeHash(data);
                     if (!computed.SequenceEqual(hash))
                         throw new InvalidOperationException("Hash corrupted");
-
                     ReadAndVerifySignature(file, ReadableFooterEnd, "End");
 
                     yield return new TapeRecord(recVersion, data);
@@ -226,7 +223,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         
         static void WriteReadableInt64(Stream stream, long value)
         {
-            // long is 8 bytes ==> 16 bytes or readable unicode.
+            // long is 8 bytes ==> 16 bytes of readable unicode.
             var buffer = Encoding.UTF8.GetBytes(value.ToString("x16"));
             stream.Write(buffer, 0, 16);
         }
