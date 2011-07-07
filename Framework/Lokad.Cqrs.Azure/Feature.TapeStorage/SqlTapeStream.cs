@@ -93,9 +93,6 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             if (records == null)
                 throw new ArgumentNullException("records");
 
-            if (!records.Any())
-                return;
-
             using (var connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
