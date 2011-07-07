@@ -115,21 +115,27 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             return Write(w => TryAppendInternal(w, buffer, condition));
         }
 
-        public void AppendNonAtomic(IEnumerable<byte[]> records)
+        public bool AppendNonAtomic(IEnumerable<byte[]> records, TapeAppendCondition condition = default(TapeAppendCondition))
         {
             if (records == null)
                 throw new ArgumentNullException("records");
 
-            Write(w =>
-            {
-                var version = w.IndexWriter.BaseStream.Position / sizeof(long);
+            return Write(w =>
+                {
+                    var version = w.IndexWriter.BaseStream.Position / sizeof(long);
 
-                var recordsArray = records.ToArray();
+                    if (!condition.Satisfy(version))
+                        return false;
 
-                Append(w, recordsArray, version + 1);
+                    var recordsArray = records.ToArray();
 
-                return true;
-            });
+                    if (version > long.MaxValue - 1)
+                        throw new IndexOutOfRangeException("Version is more than long.MaxValue.");
+
+                    Append(w, recordsArray, version + 1);
+
+                    return true;
+                });
         }
 
         static Tuple<long, int, int> GetReadRange(Readers readers, long firstIndex, int maxCount)
