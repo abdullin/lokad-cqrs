@@ -15,7 +15,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                     new byte[] {1, 2, 3, 4, 5},
                     new byte[] {255, 254, 253, 252, 251},
                     new byte[] {10, 20, 30, 40, 50},
-                    new byte[] {15, 25, 35, 45, 55},
+                    new byte[] {15, 25, 35, 45, 55}
                 };
 
         [SetUp]
@@ -40,26 +40,35 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         [Test]
         public void Can_read_imediately_after_write()
         {
-            foreach (var item in _batch.Select((r, i) => new { Version = i + 1, Data = r}))
-            {
-                _stream.TryAppend(item.Data);
+            var version = _stream.GetCurrentVersion();
 
-                var reading = _stream.ReadRecords(item.Version, 1).ToArray();
+            foreach (var item in _batch)
+            {
+                _stream.TryAppend(item);
+
+                var reading = _stream.ReadRecords(version, 1).ToArray();
 
                 Assert.AreEqual(1, reading.Length, "Number of records mismatch");
-                Assert.AreEqual(item.Version, reading[0].Version, "Version mismatch");
-                CollectionAssert.AreEqual(item.Data, reading[0].Data, "Data mismatch");
+                Assert.Greater(reading[0].Version, version, "Version mismatch");
+                CollectionAssert.AreEqual(item, reading[0].Data, "Data mismatch");
+
+                version = reading[0].Version;
             }
         }
 
         [Test]
         public void Returns_correct_version()
         {
-            Assert.AreEqual(0, _stream.GetCurrentVersion());
+            var version = _stream.GetCurrentVersion();
+            Assert.AreEqual(0, version);
+
             foreach (var item in _batch.Select((r, i) => new { Version = i + 1, Data = r }))
             {
                 _stream.TryAppend(item.Data);
-                Assert.AreEqual(item.Version, _stream.GetCurrentVersion());
+                var currentVersion = _stream.GetCurrentVersion();
+                Assert.Greater(currentVersion, version, "Version mismatch");
+
+                version = currentVersion;
             }
         }
 
@@ -67,47 +76,56 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         public void Reading_empty_storage_returns_none()
         {
             TearDownEnvironment();
-            CollectionAssert.IsEmpty(_stream.ReadRecords(1, 10));
+            CollectionAssert.IsEmpty(_stream.ReadRecords(0, 10));
             Assert.AreEqual(0, _stream.GetCurrentVersion());
         }
 
         [Test]
         public void Reading_batch_by_one()
         {
+            var version = _stream.GetCurrentVersion();
+
             foreach (var b in _batch)
             {
                 _stream.TryAppend(b);
             }
 
-            var readings = Enumerable
-                .Range(1, _batch.Length)
-                .Select(v => new { Version = v, Records = _stream.ReadRecords(v, 1).ToArray()});
+            foreach (var data in _batch) {
+                var reading = _stream.ReadRecords(version, 1).ToArray();
+                var currentVersion = reading[0].Version;
 
-            foreach (var reading in readings)
-            {
-                Assert.AreEqual(1, reading.Records.Length, "Number of records mismatch");
-                Assert.AreEqual(reading.Version, reading.Records[0].Version, "Version mismatch");
-                CollectionAssert.AreEqual(_batch[reading.Version - 1], reading.Records[0].Data, "Data mismatch");
+                Assert.AreEqual(1, reading.Length, "Number of records mismatch");
+                Assert.Greater(currentVersion, version, "Version mismatch");
+                CollectionAssert.AreEqual(data, reading[0].Data, "Data mismatch");
+
+                version = currentVersion;
             }
         }
 
         [Test]
         public void Reading_batch_at_once()
         {
+            var version = _stream.GetCurrentVersion();
+
             foreach (var b in _batch)
             {
                 _stream.TryAppend(b);
             }
 
-            var readings = _stream.ReadRecords(1, _batch.Length).ToArray();
+            var readings = _stream.ReadRecords(version, _batch.Length).ToArray();
 
             Assert.AreEqual(_batch.Length, readings.Length, "Number of records mismatch");
 
-            var version = 1;
+            var i = 0;
             foreach (var reading in readings)
             {
-                Assert.AreEqual(version++, reading.Version, "Version mismatch");
-                CollectionAssert.AreEqual(_batch[reading.Version - 1], reading.Data, "Data mismatch");
+                var currentVersion = reading.Version;
+
+                Assert.Greater(currentVersion, version, "Version mismatch");
+                CollectionAssert.AreEqual(_batch[i], reading.Data, "Data mismatch");
+
+                version = currentVersion;
+                i++;
             }
         }
 
@@ -119,20 +137,20 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                 _stream.TryAppend(b);
             }
 
+            var version = _stream.GetCurrentVersion();
+
             _stream = null;
             FreeResources();
 
             _stream = InitializeAndGetTapeStorage();
 
-            var version = _batch.Length + 1;
             _stream.TryAppend(_batch[0]);
 
             var readings = _stream.ReadRecords(version, 1).ToArray();
 
             Assert.AreEqual(1, readings.Length, "Number of records mismatch");
-            var reading = readings[0];
-            Assert.AreEqual(version, reading.Version, "Version mismatch");
-            CollectionAssert.AreEqual(_batch[0], reading.Data, "Data mismatch");
+            Assert.Greater(readings[0].Version, version, "Version mismatch");
+            CollectionAssert.AreEqual(_batch[0], readings[0].Data, "Data mismatch");
         }
 
         [Test]
@@ -143,7 +161,8 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                 _stream.TryAppend(b);
             }
 
-            var version = _batch.Length + 1;
+            var version = _stream.GetCurrentVersion();
+
             var readings = _stream.ReadRecords(version, 1).ToArray();
 
             Assert.AreEqual(0, readings.Length, "Number of records mismatch");
@@ -152,20 +171,31 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         [Test]
         public void Reading_ahead_returns_only_written()
         {
+            long twoVersionsBack = 0;
+            long oneVersonBack = 0;
+
             foreach (var b in _batch)
             {
+                twoVersionsBack = oneVersonBack;
+                oneVersonBack = _stream.GetCurrentVersion();
+
                 _stream.TryAppend(b);
             }
 
-            var version = _batch.Length - 1;
-            var readings = _stream.ReadRecords(version, _batch.Length).ToArray();
+            var readings = _stream.ReadRecords(twoVersionsBack, _batch.Length).ToArray();
 
             Assert.AreEqual(2, readings.Length, "Number of records mismatch");
 
+            var version = twoVersionsBack;
+            var i = _batch.Length - 2;
             foreach (var reading in readings)
             {
-                Assert.AreEqual(version++, reading.Version, "Version mismatch");
-                CollectionAssert.AreEqual(_batch[reading.Version - 1], reading.Data, "Data mismatch");
+                var currentVersion = reading.Version;
+                Assert.Greater(currentVersion, version, "Version mismatch");
+                CollectionAssert.AreEqual(_batch[i], reading.Data, "Data mismatch");
+
+                version = currentVersion;
+                i++;
             }
         }
 
@@ -185,15 +215,17 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         [Test]
         public void Specified_condition_is_verified_for_non_empty_storage()
         {
-            _stream.TryAppend(_batch[0]);
             var previousVersion = _stream.GetCurrentVersion();
-            Assert.AreEqual(1, previousVersion, "Version should be equal to one");
+            _stream.TryAppend(_batch[0]);
+            
+            var currentVersion1 = _stream.GetCurrentVersion();
+            Assert.Greater(currentVersion1, previousVersion, "Version should be equal to one");
 
-            var result = _stream.TryAppend(_batch[1], TapeAppendCondition.VersionIs(0));
+            var result = _stream.TryAppend(_batch[1], TapeAppendCondition.VersionIs(previousVersion));
             Assert.IsFalse(result, "Appending records should fail");
 
-            var currentVersion = _stream.GetCurrentVersion();
-            Assert.AreEqual(previousVersion, currentVersion, "Version should not change");
+            var currentVersion2 = _stream.GetCurrentVersion();
+            Assert.AreEqual(currentVersion1, currentVersion2, "Version should not change");
         }
 
         [Test]
@@ -205,7 +237,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             Assert.IsTrue(success, "Appending records should succeed");
 
             var currentVersion = _stream.GetCurrentVersion();
-            Assert.AreNotEqual(version, currentVersion, "Version should change");
+            Assert.Greater(currentVersion, version, "Version should change");
         }
 
         [Test]
@@ -218,7 +250,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             Assert.IsTrue(success, "Appending records should succeed");
 
             var currentVersion = _stream.GetCurrentVersion();
-            Assert.AreNotEqual(before, currentVersion, "Version should change");
+            Assert.Greater(currentVersion, before, "Version should change");
         }
 
         [Test, ExpectedException(typeof(ArgumentNullException))]
@@ -238,6 +270,21 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         {
             var tapeRecords = _stream.ReadRecords(0, 1).ToArray();
             CollectionAssert.IsEmpty(tapeRecords);
+        }
+
+        [Test]
+        public void Reading_non_empty_storage_from_the_beginning_works()
+        {
+            foreach (var b in _batch)
+            {
+                _stream.TryAppend(b);
+            }
+
+            var reading = _stream.ReadRecords(0, 1).ToArray();
+
+            Assert.AreEqual(1, reading.Length, "Number of records mismatch");
+            Assert.Greater(reading[0].Version, 0, "Version mismatch");
+            CollectionAssert.AreEqual(_batch[0], reading[0].Data, "Data mismatch");
         }
 
         [Test, ExpectedException(typeof(ArgumentOutOfRangeException))]

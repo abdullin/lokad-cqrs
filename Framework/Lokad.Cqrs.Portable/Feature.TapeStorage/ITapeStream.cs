@@ -8,12 +8,12 @@ namespace Lokad.Cqrs.Feature.TapeStorage
     public interface ITapeStream
     {
         /// <summary>
-        /// Reads up to <see cref="maxCount"/> records with <see cref="version"/>.
+        /// Reads up to <see cref="maxCount"/> records starting with version next to <see cref="afterVersion"/>.
         /// </summary>
-        /// <param name="version">The number of version to start from.</param>
+        /// <param name="afterVersion">Number of version to start after.</param>
         /// <param name="maxCount">The max number of records to load.</param>
         /// <returns>collection of blocks</returns>
-        IEnumerable<TapeRecord> ReadRecords(long version, int maxCount);
+        IEnumerable<TapeRecord> ReadRecords(long afterVersion, int maxCount);
 
         /// <summary>
         /// Returns current storage version

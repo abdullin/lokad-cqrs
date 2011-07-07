@@ -38,17 +38,17 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             _data = new FileInfo(name);
         }
 
-        public IEnumerable<TapeRecord> ReadRecords(long version, int maxCount)
+        public IEnumerable<TapeRecord> ReadRecords(long afterVersion, int maxCount)
         {
-            if (version < 0)
-                throw new ArgumentOutOfRangeException("version", "Must be zero or greater.");
+            if (afterVersion < 0)
+                throw new ArgumentOutOfRangeException("afterVersion", "Must be zero or greater.");
 
             if (maxCount <= 0)
                 throw new ArgumentOutOfRangeException("maxCount", "Must be more than zero.");
 
-            // version + maxCount > long.MaxValue, but transformed to avoid overflow
-            if (version > long.MaxValue - maxCount)
-                throw new ArgumentOutOfRangeException("maxCount", "Record index will exceed long.MaxValue.");
+            // afterVersion + maxCount > long.MaxValue, but transformed to avoid overflow
+            if (afterVersion > long.MaxValue - maxCount)
+                throw new ArgumentOutOfRangeException("maxCount", "Version will exceed long.MaxValue.");
 
             if (!_data.Exists)
             {
@@ -60,11 +60,10 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                 }
             }
 
-
             using (var file = OpenForRead())
             {
                 // seek to requested version
-                for (int i = 1; i < version; i++)
+                for (var i = 0; i < afterVersion; i++)
                 {
                     if (file.Position == file.Length)
                         yield break;
@@ -75,7 +74,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
                     file.Seek(skip, SeekOrigin.Current);
                 }
 
-                for (int i = 0; i < maxCount; i++)
+                for (var i = 0; i < maxCount; i++)
                 {
                     if (file.Position == file.Length)
                         yield break;
@@ -180,7 +179,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
         FileStream OpenForWrite()
         {
             // we allow concurrent reading
-            // no more writers are alowed
+            // no more writers are allowed
             return _data.Open(FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
         }
 
@@ -243,7 +242,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             stream.Write(buffer,0,28);
         }
         
-        static byte[] ReadReadableHash(Stream stream)
+        static IEnumerable<byte> ReadReadableHash(Stream stream)
         {
             var buffer = new byte[28];
             stream.Read(buffer, 0, buffer.Length);
@@ -253,7 +252,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
 
         static void ReadAndVerifySignature(Stream source, byte[] target, string name)
         {
-            for (int i = 0; i < target.Length; i++)
+            for (var i = 0; i < target.Length; i++)
             {
                 var readByte = source.ReadByte();
                 if (readByte == -1)

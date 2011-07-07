@@ -18,19 +18,19 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             _name = name;
         }
 
-        public IEnumerable<TapeRecord> ReadRecords(long version, int maxCount)
+        public IEnumerable<TapeRecord> ReadRecords(long afterVersion, int maxCount)
         {
-            if (version < 0)
-                throw new ArgumentOutOfRangeException("version", "Must be zero or greater.");
+            if (afterVersion < 0)
+                throw new ArgumentOutOfRangeException("afterVersion", "Must be zero or greater.");
 
             if (maxCount <= 0)
                 throw new ArgumentOutOfRangeException("maxCount", "Must be more than zero.");
 
-            // version + maxCount > long.MaxValue, but transformed to avoid overflow
-            if (version > long.MaxValue - maxCount)
-                throw new ArgumentOutOfRangeException("maxCount", "Record index will exceed long.MaxValue.");
+            // afterVersion + maxCount > long.MaxValue, but transformed to avoid overflow
+            if (afterVersion > long.MaxValue - maxCount)
+                throw new ArgumentOutOfRangeException("maxCount", "Version will exceed long.MaxValue.");
 
-            return Execute(c => ReadRecords(c, version, maxCount), Enumerable.Empty<TapeRecord>());
+            return Execute(c => ReadRecords(c, afterVersion, maxCount), Enumerable.Empty<TapeRecord>());
         }
 
         public long GetCurrentVersion()
@@ -110,7 +110,7 @@ namespace Lokad.Cqrs.Feature.TapeStorage
             }
         }
 
-        void Append(SqlConnection connection, long index, byte[] record)
+        void Append(SqlConnection connection, long version, byte[] record)
         {
             const string text = @"
 INSERT INTO [{0}].[{1}] ([Stream], [Version], [Data])
@@ -119,7 +119,7 @@ VALUES (@Stream, @Version, @Data)";
             using (var command = new SqlCommand(string.Format(text, SqlTapeStorageFactory.TableSchema, _tableName), connection))
             {
                 command.Parameters.AddWithValue("@Stream", _name);
-                command.Parameters.AddWithValue("@Version", index);
+                command.Parameters.AddWithValue("@Version", version);
                 command.Parameters.AddWithValue("@Data", record);
 
                 command.ExecuteNonQuery();
@@ -139,19 +139,19 @@ VALUES (@Stream, @Version, @Data)";
             }
         }
 
-        IEnumerable<TapeRecord> ReadRecords(SqlConnection connection, long offset, int count)
+        IEnumerable<TapeRecord> ReadRecords(SqlConnection connection, long aboveVersion, int count)
         {
             const string text = @"
 SELECT TOP(@count) [Version], [Data]
 FROM [{0}].[{1}]
-WHERE [Stream] = @Stream AND [Version] >= (@version)
+WHERE [Stream] = @Stream AND [Version] > (@afterVersion)
 ORDER BY [Version]";
 
             using (var command = new SqlCommand(string.Format(text, SqlTapeStorageFactory.TableSchema, _tableName), connection))
             {
                 command.Parameters.AddWithValue("@Stream", _name);
                 command.Parameters.AddWithValue("@count", count);
-                command.Parameters.AddWithValue("@version", offset);
+                command.Parameters.AddWithValue("@afterVersion", aboveVersion);
 
                 var reader = command.ExecuteReader();
 
