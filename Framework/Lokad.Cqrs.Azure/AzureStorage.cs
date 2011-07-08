@@ -2,6 +2,7 @@
 using Lokad.Cqrs.Build;
 using Lokad.Cqrs.Feature.AtomicStorage;
 using Lokad.Cqrs.Feature.StreamingStorage;
+using Lokad.Cqrs.Feature.TapeStorage;
 using Microsoft.WindowsAzure;
 // ReSharper disable UnusedMember.Global
 // ReSharper disable MemberCanBePrivate.Global
@@ -137,6 +138,36 @@ namespace Lokad.Cqrs
         {
             var account = new AzureStorageConfigurationBuilder(config);
             return CreateStreaming(account.Build());
+        }
+
+        /// <summary>
+        /// Creates the tape storage factory for windows Azure storage.
+        /// </summary>
+        /// <param name="config">Azure storage configuration to create tape storage with.</param>
+        /// <param name="containerName">Name of the container.</param>
+        /// <param name="initializeForWriting">if set to <c>true</c>, then storage is initialized for writing as needed.</param>
+        /// <returns></returns>
+        public static BlobTapeStorageFactory CreateTape(IAzureStorageConfig config, string containerName, bool initializeForWriting = true)
+        {
+            var factory = new BlobTapeStorageFactory(config, containerName);
+            if (initializeForWriting)
+            {
+                factory.InitializeForWriting();
+            }
+            return factory;
+        }
+
+        /// <summary>
+        /// Creates the tape storage factory for windows Azure storage.
+        /// </summary>
+        /// <param name="account">Azure account to create tape storage from.</param>
+        /// <param name="containerName">Name of the container.</param>
+        /// <param name="initializeForWriting">if set to <c>true</c>, then storage is initialized for writing as needed.</param>
+        /// <returns></returns>
+        public static BlobTapeStorageFactory CreateTape(CloudStorageAccount account, string containerName, bool initializeForWriting)
+        {
+            var builder = new AzureStorageConfigurationBuilder(account);
+            return CreateTape(builder.Build(), containerName, initializeForWriting);
         }
     }
 }

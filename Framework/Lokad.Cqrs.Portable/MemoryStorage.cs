@@ -7,8 +7,11 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using Lokad.Cqrs.Feature.AtomicStorage;
-
+using Lokad.Cqrs.Feature.TapeStorage;
+// ReSharper disable UnusedMember.Global
+// ReSharper disable MemberCanBePrivate.Global
 namespace Lokad.Cqrs
 {
     using MemStore = ConcurrentDictionary<string, byte[]>;
@@ -67,6 +70,29 @@ namespace Lokad.Cqrs
             var factory = new MemoryAtomicStorageFactory(dictionary, strategy);
             factory.Initialize();
             return new NuclearStorage(factory);
+        }
+
+        /// <summary>
+        /// Creates memory-based tape storage factory.
+        /// </summary>
+        /// <returns></returns>
+        public static MemoryTapeStorageFactory CreateTape()
+        {
+            var dictionary = new ConcurrentDictionary<string, List<byte[]>>();
+
+            return CreateTape(dictionary);
+        }
+
+        /// <summary>
+        /// Creates memory-based tape storage factory, using the provided concurrent dictionary.
+        /// </summary>
+        /// <param name="dictionary">The dictionary.</param>
+        /// <returns></returns>
+        public static MemoryTapeStorageFactory CreateTape(ConcurrentDictionary<string, List<byte[]>> dictionary)
+        {
+            var factory = new MemoryTapeStorageFactory(dictionary);
+            factory.InitializeForWriting();
+            return factory;
         }
     }
 }
