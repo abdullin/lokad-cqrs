@@ -2,6 +2,7 @@
 using System.IO;
 using Lokad.Cqrs.Feature.AtomicStorage;
 using Lokad.Cqrs.Feature.StreamingStorage;
+using Lokad.Cqrs.Feature.TapeStorage;
 
 namespace Lokad.Cqrs
 {
@@ -52,6 +53,18 @@ namespace Lokad.Cqrs
             var container = new FileStreamingContainer(storageFolder);
             container.Create();
             return container;
+        }
+
+        /// <summary>
+        /// Creates and initializes the tape storage in the provided folder.
+        /// </summary>
+        /// <param name="folderPath">The folder path.</param>
+        /// <returns></returns>
+        public static ITapeStorageFactory CreateTape(string folderPath)
+        {
+            var factory = new FileTapeStorageFactory(folderPath);
+            factory.InitializeForWriting();
+            return factory;
         }
 
         
