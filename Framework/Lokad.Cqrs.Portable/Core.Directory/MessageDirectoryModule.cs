@@ -74,10 +74,9 @@ namespace Lokad.Cqrs.Core.Directory
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns>same module instance for chaining fluent configurations</returns>
-        public MessageDirectoryModule InAssemblyOf<T>()
+        public void InAssemblyOf<T>()
         {
             _scanner.WithAssemblyOf<T>();
-            return this;
         }
 
 

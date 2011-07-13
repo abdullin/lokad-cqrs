@@ -19,28 +19,24 @@ namespace Lokad.Cqrs.Core.Directory
         readonly HashSet<Predicate<Type>> _handlerSelector = new HashSet<Predicate<Type>>();
         readonly HashSet<Predicate<Type>> _serializableSelector = new HashSet<Predicate<Type>>();
 
-        public DomainAssemblyScanner WithAssemblyOf<T>()
+        public void WithAssemblyOf<T>()
         {
             _assemblies.Add(typeof (T).Assembly);
-            return this;
         }
 
-        public DomainAssemblyScanner WithAssembly(Assembly assembly)
+        public void WithAssembly(Assembly assembly)
         {
             _assemblies.Add(assembly);
-            return this;
         }
 
-        public DomainAssemblyScanner WhereMessages(Predicate<Type> filter)
+        public void WhereMessages(Predicate<Type> filter)
         {
             _serializableSelector.Add(filter);
-            return this;
         }
 
-        public DomainAssemblyScanner WhereConsumers(Predicate<Type> filter)
+        public void WhereConsumers(Predicate<Type> filter)
         {
             _handlerSelector.Add(filter);
-            return this;
         }
 
 
@@ -52,7 +48,7 @@ namespace Lokad.Cqrs.Core.Directory
         }
 
 
-        public IEnumerable<MessageMapping> Build(Type consumerInterfaceDefinition)
+        public ICollection<MessageMapping> Build(Type consumerInterfaceDefinition)
         {
             if (!_assemblies.Any())
             {

@@ -33,10 +33,8 @@ namespace Lokad.Cqrs.Core.Directory
             var scanner = new DomainAssemblyScanner();
 
             scanner.Constrain(hint);
-
-            Mappings = scanner
-                .WithAssemblyOf<When_activation_map_constrained_to_catch_all_consumer>()
-                .Build(hint.ConsumerTypeDefinition).ToArray();
+            scanner.WithAssemblyOf<When_activation_map_constrained_to_catch_all_consumer>();
+            Mappings = scanner.Build(hint.ConsumerTypeDefinition).ToArray();
 
 
             Builder = new MessageDirectoryBuilder(Mappings);
