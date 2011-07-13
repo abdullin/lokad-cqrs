@@ -104,7 +104,7 @@ namespace Lokad.Cqrs.Feature.FilePartition
 
         public void DispatchToRoute(Func<ImmutableEnvelope, string> route)
         {
-            ResolveLegacyDispatcher((ctx, map, strategy) => new DispatchMessagesToRoute(ctx.Resolve<QueueWriterRegistry>(), route));
+            DispatcherIs(ctx => new DispatchMessagesToRoute(ctx.Resolve<QueueWriterRegistry>(), route));
         }
 
         IEngineProcess BuildConsumingProcess(IComponentContext context)

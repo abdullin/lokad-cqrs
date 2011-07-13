@@ -28,7 +28,6 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
         {
             _memoryQueues = memoryQueues;
 
-
             DispatchAsEvents();
 
             Quarantine(c => new MemoryQuarantine());
@@ -38,7 +37,6 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
         {
             _dispatcher = factory;
         }
-
         
         void ResolveLegacyDispatcher(LegacyDispatchFactory factory, Action<MessageDirectoryFilter> optionalFilter = null)
         {
@@ -73,7 +71,7 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
         }
         public void DispatchToRoute(Func<ImmutableEnvelope, string> route)
         {
-            ResolveLegacyDispatcher((ctx, map, strategy) => new DispatchMessagesToRoute(ctx.Resolve<QueueWriterRegistry>(), route));
+            DispatcherIs(ctx => new DispatchMessagesToRoute(ctx.Resolve<QueueWriterRegistry>(), route));
         }
 
         IEngineProcess BuildConsumingProcess(IComponentContext context)

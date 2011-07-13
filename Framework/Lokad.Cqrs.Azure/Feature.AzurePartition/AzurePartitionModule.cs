@@ -22,6 +22,8 @@ using Lokad.Cqrs.Core;
 
 namespace Lokad.Cqrs.Feature.AzurePartition
 {
+    using LegacyDispatcherFactory = Func<IComponentContext, MessageActivationInfo[], IMessageDispatchStrategy, ISingleThreadMessageDispatcher>;
+
     public sealed class AzurePartitionModule : HideObjectMembersFromIntelliSense
     {
         readonly HashSet<string> _queueNames = new HashSet<string>();
@@ -32,7 +34,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 
         readonly IAzureStorageConfig _config;
 
-        Func<IComponentContext, MessageActivationInfo[], IMessageDispatchStrategy, ISingleThreadMessageDispatcher> _dispatcher;
+        Func<IComponentContext, ISingleThreadMessageDispatcher> _dispatcher;
 
 
         public AzurePartitionModule(IAzureStorageConfig config, string[] queueNames)
@@ -52,7 +54,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 
 
 
-        public void DispatcherIs(Func<IComponentContext, MessageActivationInfo[], IMessageDispatchStrategy, ISingleThreadMessageDispatcher> factory)
+        public void DispatcherIs(Func<IComponentContext, ISingleThreadMessageDispatcher> factory)
         {
             _dispatcher = factory;
         }
@@ -86,15 +88,32 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             _decayPolicy = decayPolicy;
         }
 
+        void ResolveLegacyDispatcher(LegacyDispatcherFactory factory, Action<MessageDirectoryFilter> optionalFilter = null)
+        {
+            _dispatcher = ctx =>
+            {
+                var builder = ctx.Resolve<MessageDirectoryBuilder>();
+                var filter = new MessageDirectoryFilter();
+                if (null != optionalFilter)
+                {
+                    optionalFilter(filter);
+                }
+                var map = builder.BuildActivationMap(filter.DoesPassFilter);
+
+                var strategy = ctx.Resolve<IMessageDispatchStrategy>();
+                return factory(ctx, map, strategy);
+            };
+        }
+
 
         /// <summary>
         /// <para>Wires <see cref="DispatchOneEvent"/> implementation of <see cref="ISingleThreadMessageDispatcher"/> 
         /// into this partition. It allows dispatching a single event to zero or more consumers.</para>
         /// <para> Additional information is available in project docs.</para>
         /// </summary>
-        public void DispatchAsEvents()
+        public void DispatchAsEvents(Action<MessageDirectoryFilter> optionalFilter = null)
         {
-            DispatcherIs((ctx, map, strategy) => new DispatchOneEvent(map, ctx.Resolve<ISystemObserver>(), strategy));
+            ResolveLegacyDispatcher((ctx, map, strategy) => new DispatchOneEvent(map, ctx.Resolve<ISystemObserver>(), strategy), optionalFilter);
         }
 
         /// <summary>
@@ -102,32 +121,19 @@ namespace Lokad.Cqrs.Feature.AzurePartition
         /// into this partition. It allows dispatching multiple commands (in a single envelope) to one consumer each.</para>
         /// <para> Additional information is available in project docs.</para>
         /// </summary>
-        public void DispatchAsCommandBatch()
+        public void DispatchAsCommandBatch(Action<MessageDirectoryFilter> optionalFilter = null)
         {
-            DispatcherIs((ctx, map, strategy) => new DispatchCommandBatch(map, strategy));
+            ResolveLegacyDispatcher((ctx, map, strategy) => new DispatchCommandBatch(map, strategy), optionalFilter);
         }
         public void DispatchToRoute(Func<ImmutableEnvelope,string> route)
         {
-            DispatcherIs((ctx, map, strategy) => new DispatchMessagesToRoute(ctx.Resolve<QueueWriterRegistry>(), route));
-        }
-
-        readonly MessageDirectoryFilter _filter = new MessageDirectoryFilter();
-
-        public void DirectoryFilter(Action<MessageDirectoryFilter> filter)
-        {
-            filter(_filter);
-            
+            DispatcherIs((ctx) => new DispatchMessagesToRoute(ctx.Resolve<QueueWriterRegistry>(), route));
         }
 
         IEngineProcess BuildConsumingProcess(IComponentContext context)
         {
             var log = context.Resolve<ISystemObserver>();
-            var builder = context.Resolve<MessageDirectoryBuilder>();
-
-            var map = builder.BuildActivationMap(_filter.DoesPassFilter);
-
-            var strategy = context.Resolve<IMessageDispatchStrategy>();
-            var dispatcher = _dispatcher(context, map, strategy);
+            var dispatcher = _dispatcher(context);
             dispatcher.Init();
 
             var streamer = context.Resolve<IEnvelopeStreamer>();
