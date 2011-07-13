@@ -37,10 +37,11 @@ namespace Lokad.Cqrs.Core.Directory
             if (arguments.Length != 1)
                 throw new InvalidOperationException("Expected one generic argument");
 
-            if (!arguments[0].IsInterface)
-                throw new InvalidOperationException("Expected interface message base");
+            // not required
+            //if (!arguments[0].IsInterface)
+            //    throw new InvalidOperationException("Expected interface message base");
 
-            var messageInterface = arguments[0];
+            var messageBase = arguments[0];
 
 
             var interfaceTypedMethod = ((MethodCallExpression) expression.Body).Method;
@@ -83,7 +84,7 @@ namespace Lokad.Cqrs.Core.Directory
                 };
 
 
-            return new MethodInvokerHint(declaringGenericInterface, messageInterface, lookup);
+            return new MethodInvokerHint(declaringGenericInterface, messageBase, lookup);
         }
     }
 }

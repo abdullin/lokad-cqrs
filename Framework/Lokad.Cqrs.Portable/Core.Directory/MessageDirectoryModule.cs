@@ -79,6 +79,16 @@ namespace Lokad.Cqrs.Core.Directory
             _scanner.WithAssemblyOf<T>();
         }
 
+        public void InAssemblyOf(object instance)
+        {
+            _scanner.WithAssembly(instance.GetType().Assembly);
+        }
+
+        public void WhereMessages(Predicate<Type> constraint)
+        {
+            _scanner.WhereMessages(constraint);
+        }
+
 
         public void Configure(IComponentRegistry container, SerializationContractRegistry types)
         {
