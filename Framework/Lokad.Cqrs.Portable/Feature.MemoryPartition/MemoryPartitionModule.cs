@@ -6,8 +6,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Transactions;
 using Autofac;
 using Autofac.Core;
 using Lokad.Cqrs.Core.Directory;
@@ -17,67 +15,69 @@ using Lokad.Cqrs.Core;
 
 namespace Lokad.Cqrs.Feature.MemoryPartition
 {
+    using LegacyDispatchFactory = Func<IComponentContext, MessageActivationInfo[], IMessageDispatchStrategy, ISingleThreadMessageDispatcher>;
+
     public sealed class MemoryPartitionModule : HideObjectMembersFromIntelliSense
     {
         readonly string[] _memoryQueues;
 
-        
-        readonly MessageDirectoryFilter _filter = new MessageDirectoryFilter();
-
-        Func<IComponentContext, MessageActivationInfo[], IMessageDispatchStrategy, ISingleThreadMessageDispatcher> _dispatcher;
+        Func<IComponentContext, ISingleThreadMessageDispatcher> _dispatcher;
         Func<IComponentContext, IEnvelopeQuarantine> _quarantineFactory;
-
-        public MemoryPartitionModule WhereFilter(Action<MessageDirectoryFilter> filter)
-        {
-            filter(_filter);
-            return this;
-        }
 
         public MemoryPartitionModule(string[] memoryQueues)
         {
             _memoryQueues = memoryQueues;
-
 
             DispatchAsEvents();
 
             Quarantine(c => new MemoryQuarantine());
         }
 
-        public void DispatcherIs(Func<IComponentContext, MessageActivationInfo[], IMessageDispatchStrategy, ISingleThreadMessageDispatcher> factory)
+        public void DispatcherIs(Func<IComponentContext, ISingleThreadMessageDispatcher> factory)
         {
             _dispatcher = factory;
         }
+        
+        void ResolveLegacyDispatcher(LegacyDispatchFactory factory, Action<MessageDirectoryFilter> optionalFilter = null)
+        {
+            _dispatcher = ctx =>
+                {
+                    var builder = ctx.Resolve<MessageDirectoryBuilder>();
+                    var filter = new MessageDirectoryFilter();
+                    if (null != optionalFilter)
+                    {
+                        optionalFilter(filter);
+                    }
+                    var map = builder.BuildActivationMap(filter.DoesPassFilter);
 
+                    var strategy = ctx.Resolve<IMessageDispatchStrategy>();
+                    return factory(ctx, map, strategy);
+                };
+        }
 
         public void Quarantine(Func<IComponentContext, IEnvelopeQuarantine> factory)
         {
             _quarantineFactory = factory;
         }
 
-        public void DispatchAsEvents()
+        public void DispatchAsEvents(Action<MessageDirectoryFilter> optionalFilter = null)
         {
-            DispatcherIs((ctx, map, strategy) => new DispatchOneEvent(map, ctx.Resolve<ISystemObserver>(), strategy));
+            ResolveLegacyDispatcher((ctx, map, strategy) => new DispatchOneEvent(map, ctx.Resolve<ISystemObserver>(), strategy), optionalFilter);
         }
 
-        public void DispatchAsCommandBatch()
+        public void DispatchAsCommandBatch(Action<MessageDirectoryFilter> optionalFilter = null)
         {
-            DispatcherIs((ctx, map, strategy) => new DispatchCommandBatch(map, strategy));
+            ResolveLegacyDispatcher((ctx, map, strategy) => new DispatchCommandBatch(map, strategy), optionalFilter);
         }
         public void DispatchToRoute(Func<ImmutableEnvelope, string> route)
         {
-            DispatcherIs((ctx, map, strategy) => new DispatchMessagesToRoute(ctx.Resolve<QueueWriterRegistry>(), route));
+            DispatcherIs(ctx => new DispatchMessagesToRoute(ctx.Resolve<QueueWriterRegistry>(), route));
         }
 
         IEngineProcess BuildConsumingProcess(IComponentContext context)
         {
             var log = context.Resolve<ISystemObserver>();
-
-
-            var builder = context.Resolve<MessageDirectoryBuilder>();
-
-            var map = builder.BuildActivationMap(_filter.DoesPassFilter);
-            var strategy = context.Resolve<IMessageDispatchStrategy>();
-            var dispatcher = _dispatcher(context, map, strategy);
+            var dispatcher = _dispatcher(context);
             dispatcher.Init();
 
             var account = context.Resolve<MemoryAccount>();
@@ -87,7 +87,6 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
             var quarantine = _quarantineFactory(context);
             var manager = context.Resolve<MessageDuplicationManager>();
             var transport = new DispatcherProcess(log, dispatcher, notifier, quarantine, manager);
-
            
             return transport;
         }
