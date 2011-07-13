@@ -19,25 +19,18 @@ using Lokad.Cqrs.Evil;
 
 namespace Lokad.Cqrs.Feature.FilePartition
 {
+    using LegacyDispatcherFactory = Func<IComponentContext, MessageActivationInfo[], IMessageDispatchStrategy, ISingleThreadMessageDispatcher>;
+
     public sealed class FilePartitionModule : HideObjectMembersFromIntelliSense
     {
         readonly FileStorageConfig _fullPath;
         readonly string[] _fileQueues;
         Func<uint, TimeSpan> _decayPolicy;
+        
 
-
-        readonly MessageDirectoryFilter _filter = new MessageDirectoryFilter();
-
-        Func<IComponentContext, MessageActivationInfo[], IMessageDispatchStrategy, ISingleThreadMessageDispatcher>
-            _dispatcher;
+        Func<IComponentContext, ISingleThreadMessageDispatcher> _dispatcher;
 
         Func<IComponentContext, IEnvelopeQuarantine> _quarantineFactory;
-
-        public FilePartitionModule WhereFilter(Action<MessageDirectoryFilter> filter)
-        {
-            filter(_filter);
-            return this;
-        }
 
         /// <summary>
         /// Sets the custom decay policy used to throttle File checks, when there are no messages for some time.
@@ -71,9 +64,24 @@ namespace Lokad.Cqrs.Feature.FilePartition
             DecayPolicy(TimeSpan.FromMilliseconds(100));
         }
 
-        public void DispatcherIs(
-            Func<IComponentContext, MessageActivationInfo[], IMessageDispatchStrategy, ISingleThreadMessageDispatcher>
-                factory)
+        void ResolveLegacyDispatcher(LegacyDispatcherFactory factory, Action<MessageDirectoryFilter> optionalFilter = null)
+        {
+            _dispatcher = ctx =>
+            {
+                var builder = ctx.Resolve<MessageDirectoryBuilder>();
+                var filter = new MessageDirectoryFilter();
+                if (null != optionalFilter)
+                {
+                    optionalFilter(filter);
+                }
+                var map = builder.BuildActivationMap(filter.DoesPassFilter);
+
+                var strategy = ctx.Resolve<IMessageDispatchStrategy>();
+                return factory(ctx, map, strategy);
+            };
+        }
+
+        public void DispatcherIs(Func<IComponentContext, ISingleThreadMessageDispatcher> factory)
         {
             _dispatcher = factory;
         }
@@ -84,31 +92,27 @@ namespace Lokad.Cqrs.Feature.FilePartition
             _quarantineFactory = factory;
         }
 
-        public void DispatchAsEvents()
+        public void DispatchAsEvents(Action<MessageDirectoryFilter> optionalFilter = null)
         {
-            DispatcherIs((ctx, map, strategy) => new DispatchOneEvent(map, ctx.Resolve<ISystemObserver>(), strategy));
+            ResolveLegacyDispatcher((ctx, map, strategy) => new DispatchOneEvent(map, ctx.Resolve<ISystemObserver>(), strategy), optionalFilter);
         }
 
-        public void DispatchAsCommandBatch()
+        public void DispatchAsCommandBatch(Action<MessageDirectoryFilter> optionalFilter = null)
         {
-            DispatcherIs((ctx, map, strategy) => new DispatchCommandBatch(map, strategy));
+            ResolveLegacyDispatcher((ctx, map, strategy) => new DispatchCommandBatch(map, strategy), optionalFilter);
         }
 
         public void DispatchToRoute(Func<ImmutableEnvelope, string> route)
         {
-            DispatcherIs((ctx, map, strategy) => new DispatchMessagesToRoute(ctx.Resolve<QueueWriterRegistry>(), route));
+            ResolveLegacyDispatcher((ctx, map, strategy) => new DispatchMessagesToRoute(ctx.Resolve<QueueWriterRegistry>(), route));
         }
 
         IEngineProcess BuildConsumingProcess(IComponentContext context)
         {
             var log = context.Resolve<ISystemObserver>();
             var streamer = context.Resolve<IEnvelopeStreamer>();
-
-            var builder = context.Resolve<MessageDirectoryBuilder>();
-
-            var map = builder.BuildActivationMap(_filter.DoesPassFilter);
-            var strategy = context.Resolve<IMessageDispatchStrategy>();
-            var dispatcher = _dispatcher(context, map, strategy);
+            
+            var dispatcher = _dispatcher(context);
             dispatcher.Init();
 
 
