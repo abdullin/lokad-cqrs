@@ -31,9 +31,25 @@ namespace Lokad.Cqrs.Core.Serialization
                 var reference = ProtoBufUtil.GetContractReference(type);
                 var formatter = RuntimeTypeModel.Default.CreateFormatter(type);
 
-                _contract2Type.Add(reference, type);
-                _type2Contract.Add(type, reference);
-                _type2Formatter.Add(type, formatter);
+                try
+                {
+                    _contract2Type.Add(reference, type);
+                }
+                catch(ArgumentException e)
+                {
+                    var msg = string.Format("Duplicate contract '{0}' being added to ProtoBuf dictionary", reference);
+                    throw new InvalidOperationException(msg, e);
+                }
+                try
+                {
+                    _type2Contract.Add(type, reference);
+                    _type2Formatter.Add(type, formatter);
+                }
+                catch (ArgumentException e)
+                {
+                    var msg = string.Format("Duplicate type '{0}' being added to ProtoBuf dictionary", type);
+                    throw new InvalidOperationException(msg, e);
+                }
             }
         }
 
