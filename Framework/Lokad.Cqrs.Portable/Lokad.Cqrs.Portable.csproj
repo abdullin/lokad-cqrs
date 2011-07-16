@@ -70,8 +70,6 @@
     <Compile Include="Core.Serialization\SerializationContractRegistry.cs" />
     <Compile Include="Core\FunqContainer.cs" />
     <Compile Include="Evil\DecayEvil.cs" />
-    <Compile Include="Evil\ThreadAffinity.cs" />
-    <Compile Include="Evil\TransactionEvil.cs" />
     <Compile Include="Feature.AtomicStorage\AddOrUpdateHint.cs" />
     <Compile Include="Feature.AtomicStorage\AtomicStorageInitialized.cs" />
     <Compile Include="Feature.AtomicStorage\AtomicStorageSerializerWithDataContracts.cs" />

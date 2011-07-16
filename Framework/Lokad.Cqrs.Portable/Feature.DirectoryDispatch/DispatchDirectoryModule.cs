@@ -6,6 +6,7 @@
 #endregion
 
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Transactions;
@@ -122,11 +123,24 @@ namespace Lokad.Cqrs.Feature.DirectoryDispatch
             container.Register<IMessageDispatchStrategy>(c =>
                 {
                     var scope = c.Resolve<ILifetimeScope>();
-                    var tx = TransactionEvil.Factory(TransactionScopeOption.RequiresNew);
+                    var tx = Factory(TransactionScopeOption.RequiresNew);
                     return new AutofacDispatchStrategy(scope, tx, _hint.Lookup, _contextManager);
                 });
 
             container.Register(builder);
+        }
+
+        static Func<TransactionScope> Factory(TransactionScopeOption option, IsolationLevel level = IsolationLevel.Serializable, TimeSpan timeout = default(TimeSpan))
+        {
+            if (timeout == (default(TimeSpan)))
+            {
+                timeout = TimeSpan.FromMinutes(10);
+            }
+            return () => new TransactionScope(option, new TransactionOptions
+                {
+                    IsolationLevel = level,
+                    Timeout = Debugger.IsAttached ? TimeSpan.MaxValue : timeout
+                });
         }
     }
 }
