@@ -14,23 +14,11 @@ namespace Lokad.Cqrs
 {
     public static class ExtendSerializationModule
     {
-        public static void AutoDetectSerializer(this CqrsClientBuilder self)
-        {
-            self.Advanced.DataSerializer(t => new DataSerializerWithAutoDetection(t));
-            self.Advanced.EnvelopeSerializer(new EnvelopeSerializerWithProtoBuf());
-        }
-
         public static void UseProtoBufSerialization(this CqrsClientBuilder self)
         {
             self.Advanced.DataSerializer(t => new DataSerializerWithProtoBuf(t));
             self.Advanced.EnvelopeSerializer(new EnvelopeSerializerWithProtoBuf());
         }
-        public static void AutoDetectSerializer(this CqrsEngineBuilder self)
-        {
-            self.Advanced.CustomDataSerializer(t => new DataSerializerWithAutoDetection(t));
-            self.Advanced.CustomEnvelopeSerializer(new EnvelopeSerializerWithProtoBuf());
-        }
-
         public static void UseProtoBufSerialization(this CqrsEngineBuilder self)
         {
             self.Advanced.CustomDataSerializer(t => new DataSerializerWithProtoBuf(t));
