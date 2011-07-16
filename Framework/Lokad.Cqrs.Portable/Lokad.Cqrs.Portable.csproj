@@ -141,7 +141,6 @@
     <Compile Include="Feature.DirectoryDispatch\MessageMapping.cs" />
     <Compile Include="Feature.DirectoryDispatch\DispatchCommandBatch.cs" />
     <Compile Include="Core.Dispatch\DispatcherProcess.cs" />
-    <Compile Include="Feature.DirectoryDispatch\DispatcherUtil.cs" />
     <Compile Include="Feature.DirectoryDispatch\DispatchOneEvent.cs" />
     <Compile Include="Core.Dispatch\DispatchMessagesToRoute.cs" />
     <Compile Include="Core.Dispatch\Events\EnvelopeAckFailed.cs" />

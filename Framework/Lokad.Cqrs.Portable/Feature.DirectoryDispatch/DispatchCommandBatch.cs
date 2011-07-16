@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Lokad.Cqrs.Core.Dispatch;
 
 namespace Lokad.Cqrs.Feature.DirectoryDispatch
@@ -56,7 +57,7 @@ namespace Lokad.Cqrs.Feature.DirectoryDispatch
 
         public void Init()
         {
-            DispatcherUtil.ThrowIfCommandHasMultipleConsumers(_messageDirectory);
+            ThrowIfCommandHasMultipleConsumers(_messageDirectory);
             foreach (var messageInfo in _messageDirectory)
             {
                 if (messageInfo.AllConsumers.Length > 0)
@@ -65,5 +66,22 @@ namespace Lokad.Cqrs.Feature.DirectoryDispatch
                 }
             }
         }
+
+        static void ThrowIfCommandHasMultipleConsumers(IEnumerable<MessageActivationInfo> commands)
+        {
+            var multipleConsumers = commands
+                .Where(c => c.AllConsumers.Length > 1)
+                .Select(c => c.MessageType.FullName)
+                .ToArray();
+
+            if (!multipleConsumers.Any())
+                return;
+
+            var joined = string.Join("; ", multipleConsumers);
+
+            throw new InvalidOperationException(
+                "These messages have multiple consumers. Did you intend to declare them as events? " + joined);
+        }
+
     }
 }
