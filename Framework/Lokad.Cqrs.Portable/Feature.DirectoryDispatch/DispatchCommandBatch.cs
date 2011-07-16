@@ -18,7 +18,6 @@ namespace Lokad.Cqrs.Feature.DirectoryDispatch
     /// </summary>
     public class DispatchCommandBatch : ISingleThreadMessageDispatcher
     {
-        
         readonly IDictionary<Type, Type> _messageConsumers = new Dictionary<Type, Type>();
         readonly MessageActivationInfo[] _messageDirectory;
         readonly IMessageDispatchStrategy _strategy;
@@ -82,6 +81,5 @@ namespace Lokad.Cqrs.Feature.DirectoryDispatch
             throw new InvalidOperationException(
                 "These messages have multiple consumers. Did you intend to declare them as events? " + joined);
         }
-
     }
 }

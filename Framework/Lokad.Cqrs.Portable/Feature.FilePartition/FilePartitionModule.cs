@@ -19,8 +19,6 @@ using Lokad.Cqrs.Feature.DirectoryDispatch;
 
 namespace Lokad.Cqrs.Feature.FilePartition
 {
-    using LegacyDispatcherFactory = Func<IComponentContext, MessageActivationInfo[], IMessageDispatchStrategy, ISingleThreadMessageDispatcher>;
-
     public sealed class FilePartitionModule : HideObjectMembersFromIntelliSense
     {
         readonly FileStorageConfig _fullPath;
@@ -75,23 +73,7 @@ namespace Lokad.Cqrs.Feature.FilePartition
                 return new ActionDispatcher(lambda);
             };
         }
-
-        void ResolveLegacyDispatcher(LegacyDispatcherFactory factory, Action<MessageDirectoryFilter> optionalFilter = null)
-        {
-            _dispatcher = ctx =>
-            {
-                var builder = ctx.Resolve<MessageDirectoryBuilder>();
-                var filter = new MessageDirectoryFilter();
-                if (null != optionalFilter)
-                {
-                    optionalFilter(filter);
-                }
-                var map = builder.BuildActivationMap(filter.DoesPassFilter);
-
-                var strategy = ctx.Resolve<IMessageDispatchStrategy>();
-                return factory(ctx, map, strategy);
-            };
-        }
+        
 
         public void DispatcherIs(Func<IComponentContext, ISingleThreadMessageDispatcher> factory)
         {
@@ -104,14 +86,26 @@ namespace Lokad.Cqrs.Feature.FilePartition
             _quarantineFactory = factory;
         }
 
+        /// <summary>
+        /// <para>Wires <see cref="DispatchOneEvent"/> implementation of <see cref="ISingleThreadMessageDispatcher"/> 
+        /// into this partition. It allows dispatching a single event to zero or more consumers.</para>
+        /// <para> Additional information is available in project docs.</para>
+        /// </summary>
         public void DispatchAsEvents(Action<MessageDirectoryFilter> optionalFilter = null)
         {
-            ResolveLegacyDispatcher((ctx, map, strategy) => new DispatchOneEvent(map, ctx.Resolve<ISystemObserver>(), strategy), optionalFilter);
+            var action = optionalFilter ?? (x => { });
+            _dispatcher = ctx => DirectoryDispatchFactory.OneEvent(ctx, action);
         }
 
+        /// <summary>
+        /// <para>Wires <see cref="DispatchCommandBatch"/> implementation of <see cref="ISingleThreadMessageDispatcher"/> 
+        /// into this partition. It allows dispatching multiple commands (in a single envelope) to one consumer each.</para>
+        /// <para> Additional information is available in project docs.</para>
+        /// </summary>
         public void DispatchAsCommandBatch(Action<MessageDirectoryFilter> optionalFilter = null)
         {
-            ResolveLegacyDispatcher((ctx, map, strategy) => new DispatchCommandBatch(map, strategy), optionalFilter);
+            var action = optionalFilter ?? (x => { });
+            _dispatcher = ctx => DirectoryDispatchFactory.CommandBatch(ctx, action);
         }
 
         public void DispatchToRoute(Func<ImmutableEnvelope, string> route)

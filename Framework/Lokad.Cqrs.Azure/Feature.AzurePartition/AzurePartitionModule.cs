@@ -22,8 +22,6 @@ using Lokad.Cqrs.Feature.DirectoryDispatch;
 
 namespace Lokad.Cqrs.Feature.AzurePartition
 {
-    using LegacyDispatcherFactory = Func<IComponentContext, MessageActivationInfo[], IMessageDispatchStrategy, ISingleThreadMessageDispatcher>;
-
     public sealed class AzurePartitionModule : HideObjectMembersFromIntelliSense
     {
         readonly HashSet<string> _queueNames = new HashSet<string>();
@@ -99,23 +97,6 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             };
         }
 
-        void ResolveLegacyDispatcher(LegacyDispatcherFactory factory, Action<MessageDirectoryFilter> optionalFilter = null)
-        {
-            _dispatcher = ctx =>
-            {
-                var builder = ctx.Resolve<MessageDirectoryBuilder>();
-                var filter = new MessageDirectoryFilter();
-                if (null != optionalFilter)
-                {
-                    optionalFilter(filter);
-                }
-                var map = builder.BuildActivationMap(filter.DoesPassFilter);
-
-                var strategy = ctx.Resolve<IMessageDispatchStrategy>();
-                return factory(ctx, map, strategy);
-            };
-        }
-
 
         /// <summary>
         /// <para>Wires <see cref="DispatchOneEvent"/> implementation of <see cref="ISingleThreadMessageDispatcher"/> 
@@ -124,7 +105,8 @@ namespace Lokad.Cqrs.Feature.AzurePartition
         /// </summary>
         public void DispatchAsEvents(Action<MessageDirectoryFilter> optionalFilter = null)
         {
-            ResolveLegacyDispatcher((ctx, map, strategy) => new DispatchOneEvent(map, ctx.Resolve<ISystemObserver>(), strategy), optionalFilter);
+            var action = optionalFilter ?? (x => { });
+            _dispatcher = ctx => DirectoryDispatchFactory.OneEvent(ctx, action);
         }
 
         /// <summary>
@@ -134,8 +116,10 @@ namespace Lokad.Cqrs.Feature.AzurePartition
         /// </summary>
         public void DispatchAsCommandBatch(Action<MessageDirectoryFilter> optionalFilter = null)
         {
-            ResolveLegacyDispatcher((ctx, map, strategy) => new DispatchCommandBatch(map, strategy), optionalFilter);
+            var action = optionalFilter ?? (x => { });
+            _dispatcher = ctx => DirectoryDispatchFactory.CommandBatch(ctx, action);
         }
+        
         public void DispatchToRoute(Func<ImmutableEnvelope,string> route)
         {
             DispatcherIs((ctx) => new DispatchMessagesToRoute(ctx.Resolve<QueueWriterRegistry>(), route));

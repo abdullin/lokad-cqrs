@@ -47,6 +47,7 @@
     <Compile Include="Build\Client\FileClientModule.cs" />
     <Compile Include="Build\Engine\FileModule.cs" />
     <Compile Include="Build\Engine\IAdvancedEngineBuilder.cs" />
+    <Compile Include="Feature.DirectoryDispatch\DirectoryDispatchFactory.cs" />
     <Compile Include="Feature.DirectoryDispatch\IMethodContextManager.cs" />
     <Compile Include="Feature.DirectoryDispatch\MethodContextManager.cs" />
     <Compile Include="Core.Dispatch\ActionDispatcher.cs" />
