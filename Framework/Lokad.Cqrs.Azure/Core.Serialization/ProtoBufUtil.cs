@@ -17,6 +17,31 @@ namespace Lokad.Cqrs.Core.Serialization
 {
     public static class ProtoBufUtil
     {
+        sealed class AttributeHelper
+        {
+            readonly object[] _attributes;
+
+            public AttributeHelper(object[] attributes)
+            {
+                _attributes = attributes;
+            }
+
+            public Optional<string> GetString<TAttribute>(Func<TAttribute, string> retriever)
+                where TAttribute : Attribute
+            {
+                var result = "";
+                foreach (var attribute in _attributes.OfType<TAttribute>())
+                {
+                    result = retriever(attribute);
+                }
+
+                if (String.IsNullOrEmpty(result))
+                    return Optional<string>.Empty;
+
+                return result;
+            }
+        }
+
         public static string GetContractReference(Type type)
         {
             var attribs = type.GetCustomAttributes(false);
