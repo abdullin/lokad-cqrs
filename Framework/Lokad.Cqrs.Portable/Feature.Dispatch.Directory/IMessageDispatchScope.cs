@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Lokad.Cqrs.Core.Dispatch
+namespace Lokad.Cqrs.Feature.Dispatch.Directory
 {
     /// <summary>
     /// Logical transaction and resolution hierarchy for dispatching this specific message.

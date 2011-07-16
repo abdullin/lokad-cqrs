@@ -7,9 +7,9 @@
 
 using System;
 using System.Collections.Generic;
-using Lokad.Cqrs.Core.Directory;
+using Lokad.Cqrs.Core.Dispatch;
 
-namespace Lokad.Cqrs.Core.Dispatch
+namespace Lokad.Cqrs.Feature.Dispatch.Directory
 {
     /// <summary>
     /// Dispatch command batches to a single consumer. Uses sliding cache to 

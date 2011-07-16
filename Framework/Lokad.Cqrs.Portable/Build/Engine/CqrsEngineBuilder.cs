@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Autofac;
 using Autofac.Core;
-using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Core.Envelope;
 using Lokad.Cqrs.Core.Outbox;
@@ -19,6 +18,7 @@ using Lokad.Cqrs.Core.Serialization;
 using Lokad.Cqrs.Core;
 using System.Linq;
 using Lokad.Cqrs.Evil;
+using Lokad.Cqrs.Feature.Dispatch.Directory;
 
 // ReSharper disable UnusedMethodReturnValue.Global
 

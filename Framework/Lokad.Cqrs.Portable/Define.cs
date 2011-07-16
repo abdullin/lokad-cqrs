@@ -1,6 +1,6 @@
 ﻿using Lokad.Cqrs.Build.Client;
 using Lokad.Cqrs.Build.Engine;
-using Lokad.Cqrs.Core.Directory.Default;
+using Lokad.Cqrs.Feature.Dispatch.Directory.Default;
 
 namespace Lokad.Cqrs
 {

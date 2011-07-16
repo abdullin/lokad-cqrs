@@ -11,14 +11,13 @@ using System.Linq.Expressions;
 using System.Transactions;
 using Autofac;
 using Autofac.Core;
-using Lokad.Cqrs.Core.Directory.Default;
-using Lokad.Cqrs.Core.Dispatch;
-using Lokad.Cqrs.Core.Serialization;
+using Lokad.Cqrs.Core;
 using Lokad.Cqrs.Evil;
+using Lokad.Cqrs.Feature.Dispatch.Directory.Default;
 
 // ReSharper disable UnusedMember.Global
 
-namespace Lokad.Cqrs.Core.Directory
+namespace Lokad.Cqrs.Feature.Dispatch.Directory
 {
     /// <summary>
     /// Module for building CQRS domains.
@@ -94,15 +93,6 @@ namespace Lokad.Cqrs.Core.Directory
         {
             _scanner.Constrain(_hint);
             var mappings = _scanner.Build(_hint.ConsumerTypeDefinition);
-
-
-            var messageTypes = mappings
-                .Select(m => m.Message)
-                .Where(m => !m.IsAbstract)
-                .Distinct();
-
-            //types.AddRange(messageTypes);
-
             var builder = new MessageDirectoryBuilder(mappings);
 
             var provider = _contextManager.GetContextProvider();

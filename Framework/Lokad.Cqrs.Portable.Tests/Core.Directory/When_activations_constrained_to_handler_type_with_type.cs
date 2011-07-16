@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using Lokad.Cqrs.Feature.Dispatch.Directory;
+using NUnit.Framework;
 
 namespace Lokad.Cqrs.Core.Directory
 {

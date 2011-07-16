@@ -11,7 +11,7 @@ using System.Linq;
 using System.Reflection;
 using Lokad.Cqrs.Evil;
 
-namespace Lokad.Cqrs.Core.Directory
+namespace Lokad.Cqrs.Feature.Dispatch.Directory
 {
     public sealed class DomainAssemblyScanner
     {

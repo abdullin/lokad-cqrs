@@ -9,10 +9,9 @@ using System;
 using System.Reflection;
 using System.Transactions;
 using Autofac;
-using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Evil;
 
-namespace Lokad.Cqrs.Core.Dispatch
+namespace Lokad.Cqrs.Feature.Dispatch.Directory
 {
     public sealed class AutofacDispatchStrategy : IMessageDispatchStrategy
     {

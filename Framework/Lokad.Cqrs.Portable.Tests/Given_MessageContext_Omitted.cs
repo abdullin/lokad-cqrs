@@ -7,7 +7,6 @@
 
 using System.Runtime.Serialization;
 using Lokad.Cqrs.Build.Engine;
-using Lokad.Cqrs.Core.Directory.Default;
 using NUnit.Framework;
 
 // ReSharper disable InconsistentNaming

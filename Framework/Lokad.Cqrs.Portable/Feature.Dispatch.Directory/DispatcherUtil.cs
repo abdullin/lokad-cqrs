@@ -8,9 +8,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Lokad.Cqrs.Core.Directory;
 
-namespace Lokad.Cqrs.Core.Dispatch
+namespace Lokad.Cqrs.Feature.Dispatch.Directory
 {
     public static class DispatcherUtil
     {
@@ -18,7 +17,8 @@ namespace Lokad.Cqrs.Core.Dispatch
         {
             var multipleConsumers = commands
                 .Where(c => c.AllConsumers.Length > 1)
-                .Select(c => c.MessageType.FullName);
+                .Select(c => c.MessageType.FullName)
+                .ToList();
 
             if (!multipleConsumers.Any())
                 return;

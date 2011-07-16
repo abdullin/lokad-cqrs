@@ -8,10 +8,10 @@
 using System;
 using Autofac;
 using Autofac.Core;
-using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Core.Outbox;
 using Lokad.Cqrs.Core;
+using Lokad.Cqrs.Feature.Dispatch.Directory;
 
 namespace Lokad.Cqrs.Feature.MemoryPartition
 {
