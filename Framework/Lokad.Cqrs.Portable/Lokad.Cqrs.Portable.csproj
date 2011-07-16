@@ -136,7 +136,7 @@
     <Compile Include="Build\Engine\Events\EngineStarted.cs" />
     <Compile Include="Build\Engine\Events\EngineStopped.cs" />
     <Compile Include="Feature.DirectoryDispatch\DomainAssemblyScanner.cs" />
-    <Compile Include="Feature.DirectoryDispatch\MessageDirectoryModule.cs" />
+    <Compile Include="Feature.DirectoryDispatch\DispatchDirectoryModule.cs" />
     <Compile Include="Feature.DirectoryDispatch\MessageDirectoryBuilder.cs" />
     <Compile Include="Feature.DirectoryDispatch\MessageActivationInfo.cs" />
     <Compile Include="Feature.DirectoryDispatch\MessageMapping.cs" />

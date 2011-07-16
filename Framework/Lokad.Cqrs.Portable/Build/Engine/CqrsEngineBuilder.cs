@@ -29,9 +29,16 @@ namespace Lokad.Cqrs.Build.Engine
         readonly SerializationContractRegistry _dataSerialization = new SerializationContractRegistry();
         IEnvelopeSerializer _envelopeSerializer = new EnvelopeSerializerWithDataContracts();
         Func<Type[], IDataSerializer> _dataSerializer = types => new DataSerializerWithDataContracts(types);
-        readonly MessageDirectoryModule _domain = new MessageDirectoryModule();
         readonly StorageModule _storage = new StorageModule();
 
+        Action<IComponentRegistry, SerializationContractRegistry> _directory;
+
+        public CqrsEngineBuilder()
+        {
+            // default
+            _directory =
+                (registry, contractRegistry) => new DispatchDirectoryModule().Configure(registry, contractRegistry);
+        }
 
         readonly IList<Func<IComponentContext, IQueueWriterFactory>> _activators = new List<Func<IComponentContext, IQueueWriterFactory>>();
 
@@ -70,9 +77,15 @@ namespace Lokad.Cqrs.Build.Engine
         /// </summary>
         /// <param name="config">configuration syntax.</param>
         /// <returns>same builder for inline multiple configuration statements</returns>
-        public void Domain(Action<MessageDirectoryModule> config)
+        public void Domain(Action<DispatchDirectoryModule> config)
         {
-            config(_domain);
+            _directory = (registry, contractRegistry) =>
+                {
+                    var m = new DispatchDirectoryModule();
+                    config(m);
+                    m.Configure(registry, contractRegistry);
+                };
+
         }
 
         readonly ContainerBuilder _builder = new ContainerBuilder();
@@ -107,6 +120,10 @@ namespace Lokad.Cqrs.Build.Engine
             Advanced.RegisterModule(m);
         }
 
+        /// <summary>
+        /// Adds configuration to the storage module.
+        /// </summary>
+        /// <param name="configure">The configure.</param>
         public void Storage(Action<StorageModule> configure)
         {
             configure(_storage);
@@ -146,13 +163,12 @@ namespace Lokad.Cqrs.Build.Engine
             reg.Register(system);
             
             // domain should go before serialization
-            _domain.Configure(reg, _dataSerialization);
+            _directory(reg, _dataSerialization);
             _storage.Configure(reg);
 
             var types = _dataSerialization.GetAndMakeReadOnly();
             var dataSerializer = _dataSerializer(types);
             var streamer = new EnvelopeStreamer(_envelopeSerializer, dataSerializer);
-
             
             reg.Register(BuildRegistry);
             reg.Register(dataSerializer);

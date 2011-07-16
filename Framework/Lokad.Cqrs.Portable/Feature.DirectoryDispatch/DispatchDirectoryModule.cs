@@ -23,16 +23,16 @@ namespace Lokad.Cqrs.Feature.DirectoryDispatch
     /// <summary>
     /// Module for building CQRS domains.
     /// </summary>
-    public class MessageDirectoryModule : HideObjectMembersFromIntelliSense
+    public class DispatchDirectoryModule : HideObjectMembersFromIntelliSense
     {
         readonly DomainAssemblyScanner _scanner = new DomainAssemblyScanner();
         IMethodContextManager _contextManager;
         MethodInvokerHint _hint;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MessageDirectoryModule"/> class.
+        /// Initializes a new instance of the <see cref="DispatchDirectoryModule"/> class.
         /// </summary>
-        public MessageDirectoryModule()
+        public DispatchDirectoryModule()
         {
             HandlerSample<IConsume<IMessage>>(a => a.Consume(null));
             ContextFactory(
@@ -121,7 +121,7 @@ namespace Lokad.Cqrs.Feature.DirectoryDispatch
             cb.Update(container);
             container.Register<IMessageDispatchStrategy>(c =>
                 {
-                    var scope = ResolutionExtensions.Resolve<ILifetimeScope>(c);
+                    var scope = c.Resolve<ILifetimeScope>();
                     var tx = TransactionEvil.Factory(TransactionScopeOption.RequiresNew);
                     return new AutofacDispatchStrategy(scope, tx, _hint.Lookup, _contextManager);
                 });
