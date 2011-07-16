@@ -49,6 +49,7 @@
     <Compile Include="Build\Engine\IAdvancedEngineBuilder.cs" />
     <Compile Include="Core.Directory\IMethodContextManager.cs" />
     <Compile Include="Core.Directory\MethodContextManager.cs" />
+    <Compile Include="Core.Dispatch\ActionDispatcher.cs" />
     <Compile Include="Core.Dispatch\AutofacDispatchStrategy.cs" />
     <Compile Include="Core.Dispatch\Events\DispatchRecoveryFailed.cs" />
     <Compile Include="Core.Dispatch\Events\EnvelopeDuplicateDiscarded.cs" />
