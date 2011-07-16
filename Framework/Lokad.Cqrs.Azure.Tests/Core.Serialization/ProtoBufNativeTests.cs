@@ -34,14 +34,14 @@ namespace Lokad.Cqrs.Core.Serialization
         [Test]
         public void Default_reference_is_type_name()
         {
-            var contractReference = ProtoBufUtil.GetContractReference(typeof (SimpleProtoClass));
+            var contractReference = ContractEvil.GetContractReference(typeof (SimpleProtoClass));
             Assert.AreEqual("ProtoBufNativeTests/SimpleProtoClass", contractReference);
         }
 
         [Test]
         public void Class_can_override()
         {
-            var contractReference = ProtoBufUtil.GetContractReference(typeof (CustomProtoClass));
+            var contractReference = ContractEvil.GetContractReference(typeof (CustomProtoClass));
             Assert.AreEqual("ProtoBufNativeTests/Custom", contractReference);
         }
 

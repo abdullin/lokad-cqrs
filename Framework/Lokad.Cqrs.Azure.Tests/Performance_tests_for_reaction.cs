@@ -1,14 +1,20 @@
-﻿using System;
+﻿#region (c) 2010-2011 Lokad - CQRS for Windows Azure - New BSD License 
+
+// Copyright (c) Lokad 2010-2011, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading;
 using Autofac;
 using Lokad.Cqrs.Build.Engine;
 using Lokad.Cqrs.Core.Dispatch.Events;
 using NUnit.Framework;
-using System.Linq;
 
 namespace Lokad.Cqrs
 {
@@ -28,12 +34,12 @@ namespace Lokad.Cqrs
         [Test]
         public void Memory_partition_with_lambda()
         {
-            TestConfiguration(c => 
+            TestConfiguration(c =>
                 c.Memory(m =>
-                {
-                    m.AddMemorySender("test-accelerated");
-                    m.AddMemoryProcess("test-accelerated", x => x.DispatcherIsLambda(Factory));
-                }));
+                    {
+                        m.AddMemorySender("test-accelerated");
+                        m.AddMemoryProcess("test-accelerated", x => x.DispatcherIsLambda(Factory));
+                    }));
         }
 
         [Test]
@@ -44,7 +50,7 @@ namespace Lokad.Cqrs
             TestConfiguration(c => c.Azure(m =>
                 {
                     m.AddAzureSender(config, "performance");
-                    m.AddAzureProcess(config,"performance", x => x.DispatcherIsLambda(Factory));
+                    m.AddAzureProcess(config, "performance", x => x.DispatcherIsLambda(Factory));
                 }));
         }
 
@@ -54,10 +60,10 @@ namespace Lokad.Cqrs
             var config = AzureStorage.CreateConfigurationForDev();
             WipeAzureAccount.Fast(s => s.StartsWith("performance"), config);
             TestConfiguration(c => c.Azure(m =>
-            {
-                m.AddAzureSender(config, "performance");
-                m.AddAzureProcess(config, "performance");
-            }));
+                {
+                    m.AddAzureSender(config, "performance");
+                    m.AddAzureProcess(config, "performance");
+                }));
         }
 
 
@@ -67,10 +73,10 @@ namespace Lokad.Cqrs
             var config = FileStorage.CreateConfig("throughput-tests");
             config.Wipe();
             TestConfiguration(c => c.File(m =>
-            {
-                m.AddFileSender(config, "test-accelerated");
-                m.AddFileProcess(config, "test-accelerated", x => x.DispatcherIsLambda(Factory));
-            }));
+                {
+                    m.AddFileSender(config, "test-accelerated");
+                    m.AddFileProcess(config, "test-accelerated", x => x.DispatcherIsLambda(Factory));
+                }));
         }
 
         [Test]
@@ -79,13 +85,12 @@ namespace Lokad.Cqrs
             var config = FileStorage.CreateConfig("throughput-tests");
             config.Wipe();
             TestConfiguration(c => c.File(m =>
-            {
-                m.AddFileSender(config, "test-accelerated");
-                m.AddFileProcess(config, "test-accelerated");
-            }));
+                {
+                    m.AddFileSender(config, "test-accelerated");
+                    m.AddFileProcess(config, "test-accelerated");
+                }));
         }
 
-        
 
         static Action<ImmutableEnvelope> Factory(IComponentContext componentContext)
         {
@@ -125,7 +130,7 @@ namespace Lokad.Cqrs
 
 
             var subj = new Subject<ISystemEvent>();
-            
+
             builder.Advanced.Observers.Clear();
             builder.Advanced.RegisterObserver(subj);
             int count = 0;
@@ -152,7 +157,7 @@ namespace Lokad.Cqrs
             var messagesPerSecond = count / watch.Elapsed.TotalSeconds;
             var round = Math.Round(messagesPerSecond, 1);
 
-            Console.WriteLine("{0} messages per second",round);
+            Console.WriteLine("{0} messages per second", round);
         }
     }
 }

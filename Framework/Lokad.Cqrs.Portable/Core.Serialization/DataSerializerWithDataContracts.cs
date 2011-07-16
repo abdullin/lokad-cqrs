@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Xml;
 
@@ -35,22 +36,37 @@ namespace Lokad.Cqrs.Core.Serialization
 
             _knownTypes = knownTypes;
 
-            DataContractUtil.ThrowOnMessagesWithoutDataContracts(_knownTypes);
+            ThrowOnMessagesWithoutDataContracts(_knownTypes);
 
             foreach (var type in _knownTypes)
             {
-                var reference = DataContractUtil.GetContractReference(type);
+                var reference = ContractEvil.GetContractReference(type);
                 try
                 {
                     _contract2Type.Add(reference, type);
                 }
                 catch(ArgumentException ex)
                 {
-                    var format = string.Format("Failed to add contract reference '{0}'", reference);
+                    var format = String.Format("Failed to add contract reference '{0}'", reference);
                     throw new InvalidOperationException(format, ex);
                 }
                 
                 _type2Contract.Add(type, reference);
+            }
+        }
+
+        static void ThrowOnMessagesWithoutDataContracts(IEnumerable<Type> knownTypes)
+        {
+            var failures = knownTypes
+                .Where(m => false == m.IsDefined(typeof(DataContractAttribute), false))
+                .ToList();
+
+            if (failures.Any())
+            {
+                var list = String.Join(Environment.NewLine, failures.Select(f => f.FullName).ToArray());
+
+                throw new InvalidOperationException(
+                    "All messages must be marked with the DataContract attribute in order to be used with DCS: " + list);
             }
         }
 

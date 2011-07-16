@@ -28,7 +28,7 @@ namespace Lokad.Cqrs.Core.Serialization
                     "ProtoBuf requires some known types to serialize. Have you forgot to supply them?");
             foreach (var type in knownTypes)
             {
-                var reference = ProtoBufUtil.GetContractReference(type);
+                var reference = ContractEvil.GetContractReference(type);
                 var formatter = RuntimeTypeModel.Default.CreateFormatter(type);
 
                 try

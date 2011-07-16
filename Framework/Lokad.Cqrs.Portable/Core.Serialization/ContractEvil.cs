@@ -7,34 +7,35 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Runtime.Serialization;
-using System.Xml.Serialization;
-using ProtoBuf;
 using System.Linq;
 
 namespace Lokad.Cqrs.Core.Serialization
 {
-    public static class ProtoBufUtil
+    public static class ContractEvil
     {
         sealed class AttributeHelper
         {
-            readonly object[] _attributes;
+            readonly Tuple<string,object>[] _attributes;
 
-            public AttributeHelper(object[] attributes)
+            public AttributeHelper(IEnumerable<object> attributes)
             {
-                _attributes = attributes;
+                _attributes = attributes.Select(a => Tuple.Create(a.GetType().Name,a)).ToArray();
             }
 
-            public Optional<string> GetString<TAttribute>(Func<TAttribute, string> retriever)
-                where TAttribute : Attribute
+            public Optional<string> GetString(string name, string property)
             {
-                var result = "";
-                foreach (var attribute in _attributes.OfType<TAttribute>())
-                {
-                    result = retriever(attribute);
-                }
+                if (_attributes.Length == 0)
+                    return Optional<string>.Empty;
 
+                var match = _attributes.FirstOrDefault(t => t.Item1 == name);
+                if (null == match)
+                    return Optional<string>.Empty;
+
+                var type = match.Item2.GetType();
+                var propertyInfo = type.GetProperty(property);
+                if (null == propertyInfo)
+                    throw new InvalidOperationException(string.Format("{0}.{1} not found", name, property));
+                var result = propertyInfo.GetValue(match.Item2, null) as string;
                 if (String.IsNullOrEmpty(result))
                     return Optional<string>.Empty;
 
@@ -50,14 +51,14 @@ namespace Lokad.Cqrs.Core.Serialization
 
             var s1 = Optional<string>.Empty;
             var name = s1
-                .Combine(() => helper.GetString<ProtoContractAttribute>(p => p.Name))
-                .Combine(() => helper.GetString<DataContractAttribute>(p => p.Name))
-                .Combine(() => helper.GetString<XmlTypeAttribute>(p => p.TypeName))
+                .Combine(() => helper.GetString("ProtoContractAttribute","Name"))
+                .Combine(() => helper.GetString("DataContractAttribute", "Name"))
+                .Combine(() => helper.GetString("XmlTypeAttribute", "TypeName"))
                 .GetValue(type.Name);
 
             var ns = s1
-                .Combine(() => helper.GetString<DataContractAttribute>(p => p.Namespace))
-                .Combine(() => helper.GetString<XmlTypeAttribute>(p => p.Namespace))
+                .Combine(() => helper.GetString("DataContractAttribute", "Namespace"))
+                .Combine(() => helper.GetString("XmlTypeAttribute", "Namespace"))
                 .Convert(s => s.Trim() + "/", "");
 
             ns = AppendNesting(ns, type);

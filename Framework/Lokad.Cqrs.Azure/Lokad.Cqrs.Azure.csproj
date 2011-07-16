@@ -96,7 +96,6 @@
     <Compile Include="Feature.AzurePartition\StatelessAzureQueueWriter.cs" />
     <Compile Include="Feature.AzurePartition\Sender\AzureQueueWriterFactory.cs" />
     <Compile Include="Core.Serialization\DataSerializerWithProtoBuf.cs" />
-    <Compile Include="Core.Serialization\ProtoBufUtil.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Feature.AzurePartition\Events\" />
