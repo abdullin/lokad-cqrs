@@ -88,6 +88,19 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             _decayPolicy = decayPolicy;
         }
 
+        /// <summary>
+        /// Defines dispatcher as lambda method that is resolved against the container
+        /// </summary>
+        /// <param name="factory">The factory.</param>
+        public void DispatcherIsLambda(Func<IComponentContext, Action<ImmutableEnvelope>> factory)
+        {
+            _dispatcher = context =>
+            {
+                var lambda = factory(context);
+                return new ActionDispatcher(lambda);
+            };
+        }
+
         void ResolveLegacyDispatcher(LegacyDispatcherFactory factory, Action<MessageDirectoryFilter> optionalFilter = null)
         {
             _dispatcher = ctx =>

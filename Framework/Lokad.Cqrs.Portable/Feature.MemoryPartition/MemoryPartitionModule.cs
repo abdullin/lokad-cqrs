@@ -37,6 +37,19 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
         {
             _dispatcher = factory;
         }
+
+        /// <summary>
+        /// Defines dispatcher as lambda method that is resolved against the container
+        /// </summary>
+        /// <param name="factory">The factory.</param>
+        public void DispatcherIsLambda(Func<IComponentContext, Action<ImmutableEnvelope>> factory)
+        {
+            _dispatcher = context =>
+                {
+                    var lambda = factory(context);
+                    return new ActionDispatcher(lambda);
+                };
+        }
         
         void ResolveLegacyDispatcher(LegacyDispatchFactory factory, Action<MessageDirectoryFilter> optionalFilter = null)
         {

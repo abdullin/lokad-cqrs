@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Threading;
+using Autofac;
 using Lokad.Cqrs.Build.Engine;
 using Lokad.Cqrs.Core.Dispatch.Events;
 using NUnit.Framework;
@@ -16,12 +17,31 @@ namespace Lokad.Cqrs
         [Test]
         public void Test_memory_partition()
         {
-
             TestConfiguration(c => c.Memory(m =>
                 {
                     m.AddMemorySender("test-accelerated");
                     m.AddMemoryProcess("test-accelerated");
                 }));
+        }
+
+        [Test]
+        public void Test_memory_partition_optimized()
+        {
+            TestConfiguration(c =>
+                {
+                    c.UseProtoBufSerialization();
+                    c.Memory(m =>
+                        {
+                            m.AddMemorySender("test-accelerated");
+                            m.AddMemoryProcess("test-accelerated", x => x.DispatcherIsLambda(Factory));
+                        });
+                });
+        }
+
+        static Action<ImmutableEnvelope> Factory(IComponentContext componentContext)
+        {
+            var sender = componentContext.Resolve<IMessageSender>();
+            return envelope => sender.SendOne(envelope.Items[0].Content);
         }
 
         [Test]
