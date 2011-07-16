@@ -173,7 +173,7 @@ namespace Lokad.Cqrs.Feature.AtomicStorage
         {
             var types = AppDomain.CurrentDomain
                 .GetAssemblies()
-                .Where(AssemblyScanEvil.IsUserAssembly)
+                .Where(AssemblyScanEvil.IsProbablyUserAssembly)
                 .Concat(_extraAssemblies)
                 .Distinct()
                 .SelectMany(t => t.GetExportedTypes())

@@ -52,7 +52,7 @@ namespace Lokad.Cqrs.Feature.DirectoryDispatch
         {
             if (!_assemblies.Any())
             {
-                var userAssemblies = AppDomain.CurrentDomain.GetAssemblies().Where(AssemblyScanEvil.IsUserAssembly);
+                var userAssemblies = AppDomain.CurrentDomain.GetAssemblies().Where(AssemblyScanEvil.IsProbablyUserAssembly);
                 foreach (var userAssembly in userAssemblies)
                 {
                     _assemblies.Add(userAssembly);

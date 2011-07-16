@@ -15,7 +15,7 @@ using System.Xml;
 namespace Lokad.Cqrs.Core.Serialization
 {
     /// <summary>
-    /// Message serializer for the <see cref="DataContractSerializer"/>
+    /// Message serializer for the <see cref="DataContractSerializer"/>. It is the default serializer in Lokad.CQRS.
     /// </summary>
     public class DataSerializerWithDataContracts : IDataSerializer
     {
