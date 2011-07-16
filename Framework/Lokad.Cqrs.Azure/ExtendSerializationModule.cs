@@ -5,6 +5,8 @@
 
 #endregion
 
+using System;
+using System.Collections.Generic;
 using Lokad.Cqrs.Build.Client;
 using Lokad.Cqrs.Build.Engine;
 using Lokad.Cqrs.Core.Envelope;
@@ -14,26 +16,15 @@ namespace Lokad.Cqrs
 {
     public static class ExtendSerializationModule
     {
-        public static void AutoDetectSerializer(this CqrsClientBuilder self)
+        public static void UseProtoBufSerialization(this CqrsClientBuilder self, ICollection<Type> knownTypes)
         {
-            self.Advanced.DataSerializer(t => new DataSerializerWithAutoDetection(t));
+            self.Advanced.DataSerializer(new DataSerializerWithProtoBuf(knownTypes));
             self.Advanced.EnvelopeSerializer(new EnvelopeSerializerWithProtoBuf());
         }
 
-        public static void UseProtoBufSerialization(this CqrsClientBuilder self)
+        public static void UseProtoBufSerialization(this CqrsEngineBuilder self, ICollection<Type> knownTypes)
         {
-            self.Advanced.DataSerializer(t => new DataSerializerWithProtoBuf(t));
-            self.Advanced.EnvelopeSerializer(new EnvelopeSerializerWithProtoBuf());
-        }
-        public static void AutoDetectSerializer(this CqrsEngineBuilder self)
-        {
-            self.Advanced.CustomDataSerializer(t => new DataSerializerWithAutoDetection(t));
-            self.Advanced.CustomEnvelopeSerializer(new EnvelopeSerializerWithProtoBuf());
-        }
-
-        public static void UseProtoBufSerialization(this CqrsEngineBuilder self)
-        {
-            self.Advanced.CustomDataSerializer(t => new DataSerializerWithProtoBuf(t));
+            self.Advanced.CustomDataSerializer(new DataSerializerWithProtoBuf(knownTypes));
             self.Advanced.CustomEnvelopeSerializer(new EnvelopeSerializerWithProtoBuf());
         }
     }

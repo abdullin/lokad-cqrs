@@ -9,6 +9,7 @@ using System;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Runtime.Serialization;
+using ProtoBuf.Meta;
 
 // ReSharper disable InconsistentNaming
 
@@ -20,7 +21,7 @@ namespace Lokad.Cqrs.Core.Serialization
 
         static IFormatter GetFormatter(Type type)
         {
-            return Dict.GetOrAdd(type, ProtoBufUtil.CreateFormatter);
+            return Dict.GetOrAdd(type, RuntimeTypeModel.Default.CreateFormatter);
         }
 
         protected T RoundTrip<T>(T item)

@@ -35,35 +35,5 @@ namespace Lokad.Cqrs.Core.Serialization
 
             return ns + name;
         }
-
-
-        public static IFormatter CreateFormatter(Type type)
-        {
-            try
-            {
-                typeof (Serializer)
-                    .GetMethod("PrepareSerializer")
-                    .MakeGenericMethod(type)
-                    .Invoke(null, null);
-            }
-            catch (TargetInvocationException tie)
-            {
-                var message = string.Format("Failed to prepare ProtoBuf serializer for '{0}'.", type);
-                throw new InvalidOperationException(message, tie.InnerException);
-            }
-
-            try
-            {
-                return (IFormatter) typeof (Serializer)
-                    .GetMethod("CreateFormatter")
-                    .MakeGenericMethod(type)
-                    .Invoke(null, null);
-            }
-            catch (TargetInvocationException tie)
-            {
-                var message = string.Format("Failed to create ProtoBuf formatter for '{0}'.", type);
-                throw new InvalidOperationException(message, tie.InnerException);
-            }
-        }
     }
 }

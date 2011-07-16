@@ -21,6 +21,6 @@ namespace Lokad.Cqrs.Build.Engine
         void RegisterObserver(IObserver<ISystemEvent> observer);
         IList<IObserver<ISystemEvent>> Observers { get; }
         void CustomEnvelopeSerializer(IEnvelopeSerializer serializer);
-        void CustomDataSerializer(Func<Type[], IDataSerializer> serializer);
+        void CustomDataSerializer(IDataSerializer serializer);
     }
 }

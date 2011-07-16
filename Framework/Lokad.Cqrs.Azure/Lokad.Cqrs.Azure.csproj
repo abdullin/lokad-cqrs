@@ -74,7 +74,6 @@
     <Compile Include="ExtendSerializationModule.cs" />
     <Compile Include="AzureSettingsProvider.cs" />
     <Compile Include="Build\Engine\CqrsEngineRole.cs" />
-    <Compile Include="Core.Serialization\DataSerializerWithAutoDetection.cs" />
     <Compile Include="Core.Envelope\EnvelopeSerializerWithProtoBuf.cs" />
     <Compile Include="Feature.AtomicStorage\AzureAtomicEntityWriter.cs" />
     <Compile Include="Feature.AtomicStorage\AzureAtomicSingletonReader.cs" />

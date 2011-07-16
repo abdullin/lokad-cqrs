@@ -90,7 +90,7 @@ namespace Lokad.Cqrs.Core.Directory
         }
 
 
-        public void Configure(IComponentRegistry container, SerializationContractRegistry types)
+        public void Configure(IComponentRegistry container)
         {
             _scanner.Constrain(_hint);
             var mappings = _scanner.Build(_hint.ConsumerTypeDefinition);
@@ -101,7 +101,7 @@ namespace Lokad.Cqrs.Core.Directory
                 .Where(m => !m.IsAbstract)
                 .Distinct();
 
-            types.AddRange(messageTypes);
+            //types.AddRange(messageTypes);
 
             var builder = new MessageDirectoryBuilder(mappings);
 

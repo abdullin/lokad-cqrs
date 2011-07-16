@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using Autofac;
 using Autofac.Core;
 using Lokad.Cqrs.Core.Directory;
@@ -16,6 +17,8 @@ using Lokad.Cqrs.Core.Outbox;
 using Lokad.Cqrs.Core.Reactive;
 using Lokad.Cqrs.Core.Serialization;
 using Lokad.Cqrs.Core;
+using System.Linq;
+using Lokad.Cqrs.Evil;
 
 // ReSharper disable UnusedMethodReturnValue.Global
 
@@ -26,9 +29,8 @@ namespace Lokad.Cqrs.Build.Engine
     /// </summary>
     public class CqrsEngineBuilder : HideObjectMembersFromIntelliSense, IAdvancedEngineBuilder
     {
-        readonly SerializationContractRegistry _dataSerialization = new SerializationContractRegistry();
         IEnvelopeSerializer _envelopeSerializer = new EnvelopeSerializerWithDataContracts();
-        Func<Type[], IDataSerializer> _dataSerializer = types => new DataSerializerWithDataContracts(types);
+        Func<IDataSerializer> _dataSerializer = DefaultContractsSerializer;
         readonly MessageDirectoryModule _domain = new MessageDirectoryModule();
         readonly StorageModule _storage = new StorageModule();
 
@@ -41,9 +43,19 @@ namespace Lokad.Cqrs.Build.Engine
             };
 
 
-        void IAdvancedEngineBuilder.CustomDataSerializer(Func<Type[], IDataSerializer> serializer)
+        static IDataSerializer DefaultContractsSerializer()
         {
-            _dataSerializer = serializer;
+            var types = AppDomain.CurrentDomain.GetAssemblies()
+                .Where(AssemblyScanEvil.IsUserAssembly)
+                .SelectMany(a => a.GetExportedTypes())
+                .Where(t => !t.IsAbstract)
+                .Where(t => t.IsDefined(typeof(DataContractAttribute), false));
+            return new DataSerializerWithDataContracts(types.ToArray());
+        }
+
+        void IAdvancedEngineBuilder.CustomDataSerializer(IDataSerializer serializer)
+        {
+            _dataSerializer = () => serializer;
         }
 
         void IAdvancedEngineBuilder.CustomEnvelopeSerializer(IEnvelopeSerializer serializer)
@@ -146,11 +158,10 @@ namespace Lokad.Cqrs.Build.Engine
             reg.Register(system);
             
             // domain should go before serialization
-            _domain.Configure(reg, _dataSerialization);
+            _domain.Configure(reg);
             _storage.Configure(reg);
 
-            var types = _dataSerialization.GetAndMakeReadOnly();
-            var dataSerializer = _dataSerializer(types);
+            var dataSerializer = _dataSerializer();
             var streamer = new EnvelopeStreamer(_envelopeSerializer, dataSerializer);
 
             

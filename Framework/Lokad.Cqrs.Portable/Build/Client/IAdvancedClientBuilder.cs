@@ -28,8 +28,8 @@ namespace Lokad.Cqrs.Build.Client
         /// <summary>
         /// Overrides custom data serializer with a provided factory
         /// </summary>
-        /// <param name="serializer">The serializer factory (taking collection of message types as inputs).</param>
-        void DataSerializer(Func<Type[], IDataSerializer> serializer);
+        /// <param name="serializer">The serializer factory.</param>
+        void DataSerializer(IDataSerializer serializer);
         /// <summary>
         /// Overrides custom envelope serializer with a provided factory
         /// </summary>
