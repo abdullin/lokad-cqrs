@@ -11,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using Lokad.Cqrs.Evil;
+using ProtoBuf.Meta;
 
 namespace Lokad.Cqrs.Core.Serialization
 {
@@ -28,17 +29,12 @@ namespace Lokad.Cqrs.Core.Serialization
             foreach (var type in knownTypes)
             {
                 var reference = ProtoBufUtil.GetContractReference(type);
-                var formatter = ProtoBufUtil.CreateFormatter(type);
+                var formatter = RuntimeTypeModel.Default.CreateFormatter(type);
 
                 _contract2Type.Add(reference, type);
                 _type2Contract.Add(type, reference);
                 _type2Formatter.Add(type, formatter);
             }
-        }
-
-        public static DataSerializerWithProtoBuf For<T>()
-        {
-            return new DataSerializerWithProtoBuf(new[] {typeof (T)});
         }
 
         public void Serialize(object instance, Stream destination)
