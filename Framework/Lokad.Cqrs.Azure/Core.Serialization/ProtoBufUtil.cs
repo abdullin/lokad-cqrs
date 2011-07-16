@@ -6,10 +6,12 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using ProtoBuf;
+using System.Linq;
 
 namespace Lokad.Cqrs.Core.Serialization
 {
@@ -33,7 +35,25 @@ namespace Lokad.Cqrs.Core.Serialization
                 .Combine(() => helper.GetString<XmlTypeAttribute>(p => p.Namespace))
                 .Convert(s => s.Trim() + "/", "");
 
+            ns = AppendNesting(ns, type);
+
             return ns + name;
+        }
+
+        static string AppendNesting(string ns, Type type)
+        {
+            var list = new List<string>();
+            while (type.IsNested)
+            {
+                list.Insert(0, type.DeclaringType.Name);
+                type = type.DeclaringType;
+            }
+            if (list.Count == 0)
+            {
+                return ns;
+            }
+            var suffix = string.Join("/", Enumerable.ToArray(list)) + "/";
+            return ns + suffix;
         }
     }
 }
