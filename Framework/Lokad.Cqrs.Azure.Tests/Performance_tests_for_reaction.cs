@@ -13,10 +13,10 @@ using System.Linq;
 namespace Lokad.Cqrs
 {
     [TestFixture, Explicit]
-    public sealed class Performance_tests_with_one_thread
+    public sealed class Performance_tests_for_reaction
     {
         [Test]
-        public void Test_memory_partition()
+        public void Memory_partition_with_polymorphic()
         {
             TestConfiguration(c => c.Memory(m =>
                 {
@@ -26,9 +26,10 @@ namespace Lokad.Cqrs
         }
 
         [Test]
-        public void Test_memory_partition_optimized()
+        public void Memory_partition_with_lambda()
         {
-            TestConfiguration(c => c.Memory(m =>
+            TestConfiguration(c => 
+                c.Memory(m =>
                 {
                     m.AddMemorySender("test-accelerated");
                     m.AddMemoryProcess("test-accelerated", x => x.DispatcherIsLambda(Factory));
@@ -36,19 +37,32 @@ namespace Lokad.Cqrs
         }
 
         [Test]
-        public void Test_azure_partition()
+        public void Azure_partition_with_lambda()
         {
             var config = AzureStorage.CreateConfigurationForDev();
-            WipeAzureAccount.Fast(s => s.StartsWith("test-accelerated"), config);
+            WipeAzureAccount.Fast(s => s.StartsWith("performance"), config);
             TestConfiguration(c => c.Azure(m =>
                 {
-                    m.AddAzureSender(config,"test-accelerated");
-                    m.AddAzureProcess(config,"test-accelerated");
+                    m.AddAzureSender(config, "performance");
+                    m.AddAzureProcess(config,"performance", x => x.DispatcherIsLambda(Factory));
                 }));
         }
 
         [Test]
-        public void Test_File_partition_lambdas()
+        public void Azure_partition_with_polymorphic()
+        {
+            var config = AzureStorage.CreateConfigurationForDev();
+            WipeAzureAccount.Fast(s => s.StartsWith("performance"), config);
+            TestConfiguration(c => c.Azure(m =>
+            {
+                m.AddAzureSender(config, "performance");
+                m.AddAzureProcess(config, "performance");
+            }));
+        }
+
+
+        [Test]
+        public void File_partition_with_lambda()
         {
             var config = FileStorage.CreateConfig("throughput-tests");
             config.Wipe();
@@ -59,6 +73,17 @@ namespace Lokad.Cqrs
             }));
         }
 
+        [Test]
+        public void File_partition_with_polymorphic()
+        {
+            var config = FileStorage.CreateConfig("throughput-tests");
+            config.Wipe();
+            TestConfiguration(c => c.File(m =>
+            {
+                m.AddFileSender(config, "test-accelerated");
+                m.AddFileProcess(config, "test-accelerated");
+            }));
+        }
 
         
 

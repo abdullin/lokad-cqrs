@@ -67,7 +67,7 @@
     <Compile Include="Feature.TapeStorage\DatabaseHelper.cs" />
     <Compile Include="Feature.TapeStorage\SqlTapeStorageTests.cs" />
     <Compile Include="Performance_tests_for_throughput.cs" />
-    <Compile Include="Performance_tests_with_one_thread.cs" />
+    <Compile Include="Performance_tests_for_reaction.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>

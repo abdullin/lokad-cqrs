@@ -23,48 +23,85 @@ using NUnit.Framework;
 namespace Lokad.Cqrs
 {
     [TestFixture, Explicit]
-    public sealed class Performance_tests_for_throughput
+    public sealed class Performance_throughput_tests
     {
         [Test]
-        public void Test_memory_partition()
+        public void Memory_lambda()
         {
             TestConfiguration(c => c.Memory(m =>
                 {
-                    m.AddMemorySender("test-accelerated");
-                    m.AddMemoryProcess("test-accelerated", x => x.DispatcherIsLambda(Factory));
-                }), 50000);
+                    m.AddMemorySender("test");
+                    m.AddMemoryProcess("test", x => x.DispatcherIsLambda(Factory));
+                }), 1000000);
         }
 
         [Test]
-        public void Test_File_partition()
+        public void Memory_polymorphic()
+        {
+            TestConfiguration(c => c.Memory(m =>
+            {
+                m.AddMemorySender("test");
+                m.AddMemoryProcess("test");
+            }), 100000);
+        }
+
+        [Test]
+        public void Throughput_Azure_polymorphic()
+        {
+            var config = AzureStorage.CreateConfigurationForDev();
+            WipeAzureAccount.Fast(s => s.StartsWith("throughput"), config);
+            TestConfiguration(c => c.Azure(m =>
+            {
+                m.AddAzureSender(config, "throughput");
+                m.AddAzureProcess(config, "throughput");
+            }), 100);
+        }
+
+        [Test]
+        public void Throughput_Azure_lambda()
+        {
+            var config = AzureStorage.CreateConfigurationForDev();
+            WipeAzureAccount.Fast(s => s.StartsWith("throughput"), config);
+            TestConfiguration(c => c.Azure(m =>
+            {
+                m.AddAzureSender(config, "throughput");
+                m.AddAzureProcess(config, "throughput", x => x.DispatcherIsLambda(Factory));
+            }), 100);
+        }
+
+        [Test]
+        public void File_lambda()
         {
             var config = FileStorage.CreateConfig("throughput-tests");
             config.Wipe();
             TestConfiguration(c => c.File(m =>
                 {
-                    m.AddFileSender(config, "test-accelerated");
-                    m.AddFileProcess(config, "test-accelerated", x => x.DispatcherIsLambda(Factory));
-                }), 5000);
+                    m.AddFileSender(config, "test");
+                    m.AddFileProcess(config, "test", x => x.DispatcherIsLambda(Factory));
+                }), 10000);
         }
+
+        [Test]
+        public void File_polymorphic()
+        {
+            var config = FileStorage.CreateConfig("throughput-tests");
+            config.Wipe();
+            TestConfiguration(c => c.File(m =>
+            {
+                m.AddFileSender(config, "test");
+                m.AddFileProcess(config, "test");
+            }), 10000);
+        }
+
 
         static Action<ImmutableEnvelope> Factory(IComponentContext ctx)
         {
-            IQueueWriterFactory factory;
-            var registry = ctx.Resolve<QueueWriterRegistry>();
-            registry.TryGet("memory", out factory);
-            var outQueue = factory.GetWriteQueue("out");
-            var finishQueue = factory.GetWriteQueue("finish");
             // pass through the envelope
             return envelope =>
                 {
-                    if (((UsualMessage) envelope.Items[0].Content).IsLast)
-                    {
-                        finishQueue.PutMessage(envelope);
-                    }
-                    else
-                    {
-                        outQueue.PutMessage(envelope);
-                    }
+                    var msg = ((UsualMessage) (envelope.Items[0].Content));
+                    if (!msg.HasData)
+                        throw new InvalidOperationException("Data should be present to check for deserialization");
                 };
         }
 
@@ -73,7 +110,7 @@ namespace Lokad.Cqrs
         public sealed class UsualMessage : Define.Command
         {
             [DataMember(Order = 1)]
-            public bool IsLast { get; set; }
+            public bool HasData { get; set; }
         }
 
         static void TestConfiguration(Action<CqrsEngineBuilder> build, int useMessages)
@@ -87,6 +124,7 @@ namespace Lokad.Cqrs
             builder.Advanced.Observers.Clear();
             builder.Advanced.RegisterObserver(subj);
 
+            var step = (useMessages / 5);
             int count = 0;
             var watch = new Stopwatch();
             using (var token = new CancellationTokenSource())
@@ -96,11 +134,16 @@ namespace Lokad.Cqrs
                     .Subscribe(ea =>
                         {
                             count += 1;
+
+                            if ((count % step) == 0)
+                            {
+                                var messagesPerSecond = count / watch.Elapsed.TotalSeconds;
+                                Console.WriteLine("{0} - {1}", count, Math.Round(messagesPerSecond, 1));
+                            }
+
+
                             if (ea.Attributes.Any(ia => ia.Key == "last"))
                             {
-                                watch.Stop();
-                                var messagesPerSecond = count / watch.Elapsed.TotalSeconds;
-                                Console.WriteLine(Math.Round(messagesPerSecond, 1));
                                 token.Cancel();
                             }
                         });
@@ -112,9 +155,9 @@ namespace Lokad.Cqrs
 
                     for (int i = 0; i < useMessages; i++)
                     {
-                        sender.SendOne(new UsualMessage());
+                        sender.SendOne(new UsualMessage { HasData = true });
                     }
-                    sender.SendOne(new UsualMessage(), b => b.AddString("last"));
+                    sender.SendOne(new UsualMessage { HasData = true}, b => b.AddString("last"));
 
 
                     watch.Start();
