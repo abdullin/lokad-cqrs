@@ -11,6 +11,5 @@ namespace Lokad.Cqrs.Core.Outbox
     {
         string Name { get; }
         void PutMessage(ImmutableEnvelope envelope);
-        void Init();
     }
 }

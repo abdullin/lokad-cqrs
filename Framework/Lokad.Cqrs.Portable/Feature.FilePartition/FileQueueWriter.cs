@@ -7,8 +7,6 @@
 
 using System;
 using System.IO;
-using System.Security.Cryptography;
-using System.Threading;
 using Lokad.Cqrs.Core.Outbox;
 
 namespace Lokad.Cqrs.Feature.FilePartition
@@ -19,8 +17,6 @@ namespace Lokad.Cqrs.Feature.FilePartition
         readonly IEnvelopeStreamer _streamer;
 
         public string Name { get; private set; }
-
- 
 
         public FileQueueWriter(DirectoryInfo folder, string name, IEnvelopeStreamer streamer)
         {
@@ -35,14 +31,6 @@ namespace Lokad.Cqrs.Feature.FilePartition
             var full = Path.Combine(_folder.FullName, fileName);
             var data = _streamer.SaveEnvelopeData(envelope);
             File.WriteAllBytes(full, data);
-        }
-
-        public void Init()
-        {
-            if (!_folder.Exists)
-            {
-                _folder.Create();
-            }
         }
     }
 }
