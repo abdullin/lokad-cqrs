@@ -29,7 +29,6 @@ namespace Lokad.Cqrs.Feature.DirectoryDispatch
         IMethodContextManager _contextManager;
         MethodInvokerHint _hint;
 
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageDirectoryModule"/> class.
         /// </summary>

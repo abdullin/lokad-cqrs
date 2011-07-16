@@ -43,8 +43,6 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             
             QueueVisibility(30000);
 
-
-
             _config = config;
             _queueNames = new HashSet<string>(queueNames);
 
