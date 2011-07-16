@@ -100,11 +100,6 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
 
         public void Configure(IComponentRegistry container)
         {
-            if (!container.IsRegistered(new TypedService(typeof(MemoryAccount))))
-            {
-                var account = new MemoryAccount();
-                container.Register(account);
-            }
             container.Register(BuildConsumingProcess);
         }
     }

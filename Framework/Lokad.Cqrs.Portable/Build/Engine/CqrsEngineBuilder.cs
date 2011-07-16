@@ -16,6 +16,7 @@ using Lokad.Cqrs.Core.Reactive;
 using Lokad.Cqrs.Core.Serialization;
 using Lokad.Cqrs.Core;
 using Lokad.Cqrs.Feature.DirectoryDispatch;
+using Lokad.Cqrs.Feature.MemoryPartition;
 
 // ReSharper disable UnusedMethodReturnValue.Global
 
@@ -38,6 +39,9 @@ namespace Lokad.Cqrs.Build.Engine
             // default
             _directory =
                 (registry, contractRegistry) => new DispatchDirectoryModule().Configure(registry, contractRegistry);
+
+            _activators.Add(context => new MemoryQueueWriterFactory(context.Resolve<MemoryAccount>()));
+            
         }
 
         readonly IList<Func<IComponentContext, IQueueWriterFactory>> _activators = new List<Func<IComponentContext, IQueueWriterFactory>>();
@@ -139,6 +143,7 @@ namespace Lokad.Cqrs.Build.Engine
             // nonconditional registrations
             // System presets
             _builder.RegisterType<DispatcherProcess>();
+            _builder.RegisterInstance(new MemoryAccount());
             
             foreach (var module in _moduleEnlistments)
             {

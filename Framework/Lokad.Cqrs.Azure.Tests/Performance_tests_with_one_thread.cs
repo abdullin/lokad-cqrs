@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace Lokad.Cqrs
 {
-    [TestFixture]
+    [TestFixture, Explicit]
     public sealed class Performance_tests_with_one_thread
     {
         [Test]

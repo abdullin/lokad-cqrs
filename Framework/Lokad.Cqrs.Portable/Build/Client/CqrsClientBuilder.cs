@@ -16,6 +16,7 @@ using Lokad.Cqrs.Core.Outbox;
 using Lokad.Cqrs.Core.Reactive;
 using Lokad.Cqrs.Core.Serialization;
 using Lokad.Cqrs.Feature.DirectoryDispatch;
+using Lokad.Cqrs.Feature.MemoryPartition;
 
 namespace Lokad.Cqrs.Build.Client
 {
@@ -124,7 +125,7 @@ namespace Lokad.Cqrs.Build.Client
             var serializer = _dataSerializer(_serializationList.GetAndMakeReadOnly());
             var streamer = new EnvelopeStreamer(_envelopeSerializer, serializer);
 
-
+            reg.Register(new MemoryAccount());
             reg.Register(serializer);
             reg.Register<IEnvelopeStreamer>(c => streamer);
             reg.Register(_registry);

@@ -41,13 +41,7 @@ namespace Lokad.Cqrs.Build.Engine
 
         public void Configure(IComponentRegistry componentRegistry)
         {
-            if (!componentRegistry.IsRegistered(new TypedService(typeof(MemoryAccount))))
-            {
-                var account = new MemoryAccount();
-                componentRegistry.Register(account);
-            }
             _funqlets(componentRegistry);
-
         }
 
 
