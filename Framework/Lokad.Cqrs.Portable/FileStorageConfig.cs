@@ -19,5 +19,11 @@ namespace Lokad.Cqrs
             Folder = folder;
             AccountName = accountName;
         }
+
+        public void Wipe()
+        {
+            if (Folder.Exists)
+                Folder.Delete(true);
+        }
     }
 }

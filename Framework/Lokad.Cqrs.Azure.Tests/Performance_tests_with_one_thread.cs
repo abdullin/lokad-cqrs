@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.Serialization;
 using System.Threading;
 using Autofac;
@@ -27,21 +28,11 @@ namespace Lokad.Cqrs
         [Test]
         public void Test_memory_partition_optimized()
         {
-            TestConfiguration(c =>
+            TestConfiguration(c => c.Memory(m =>
                 {
-                    c.UseProtoBufSerialization();
-                    c.Memory(m =>
-                        {
-                            m.AddMemorySender("test-accelerated");
-                            m.AddMemoryProcess("test-accelerated", x => x.DispatcherIsLambda(Factory));
-                        });
-                });
-        }
-
-        static Action<ImmutableEnvelope> Factory(IComponentContext componentContext)
-        {
-            var sender = componentContext.Resolve<IMessageSender>();
-            return envelope => sender.SendOne(envelope.Items[0].Content);
+                    m.AddMemorySender("test-accelerated");
+                    m.AddMemoryProcess("test-accelerated", x => x.DispatcherIsLambda(Factory));
+                }));
         }
 
         [Test]
@@ -54,6 +45,27 @@ namespace Lokad.Cqrs
                     m.AddAzureSender(config,"test-accelerated");
                     m.AddAzureProcess(config,"test-accelerated");
                 }));
+        }
+
+        [Test]
+        public void Test_File_partition_lambdas()
+        {
+            var config = FileStorage.CreateConfig("throughput-tests");
+            config.Wipe();
+            TestConfiguration(c => c.File(m =>
+            {
+                m.AddFileSender(config, "test-accelerated");
+                m.AddFileProcess(config, "test-accelerated", x => x.DispatcherIsLambda(Factory));
+            }));
+        }
+
+
+        
+
+        static Action<ImmutableEnvelope> Factory(IComponentContext componentContext)
+        {
+            var sender = componentContext.Resolve<IMessageSender>();
+            return envelope => sender.SendOne(envelope.Items[0].Content);
         }
 
 
@@ -83,6 +95,7 @@ namespace Lokad.Cqrs
         static void TestConfiguration(Action<CqrsEngineBuilder> build)
         {
             var builder = new CqrsEngineBuilder();
+            builder.UseProtoBufSerialization();
             build(builder);
 
 
@@ -107,12 +120,14 @@ namespace Lokad.Cqrs
                     .SendOne(new UsualMessage());
 
                 watch.Start();
-                token.Token.WaitHandle.WaitOne(10000);
+                token.Token.WaitHandle.WaitOne(5000);
             }
 
             watch.Stop();
             var messagesPerSecond = count / watch.Elapsed.TotalSeconds;
-            Console.WriteLine(Math.Round(messagesPerSecond, 1));
+            var round = Math.Round(messagesPerSecond, 1);
+
+            Console.WriteLine("{0} messages per second",round);
         }
     }
 }

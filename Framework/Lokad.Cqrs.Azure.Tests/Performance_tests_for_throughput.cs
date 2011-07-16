@@ -38,11 +38,8 @@ namespace Lokad.Cqrs
         [Test]
         public void Test_File_partition()
         {
-            var dir = new DirectoryInfo("throughput-tests");
-            if (dir.Exists)
-                dir.Delete(true);
-
-            var config = FileStorage.CreateConfig(dir);
+            var config = FileStorage.CreateConfig("throughput-tests");
+            config.Wipe();
             TestConfiguration(c => c.File(m =>
                 {
                     m.AddFileSender(config, "test-accelerated");
