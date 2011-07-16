@@ -31,7 +31,7 @@ namespace Lokad.Cqrs.Build.Engine
     {
         IEnvelopeSerializer _envelopeSerializer = new EnvelopeSerializerWithDataContracts();
         Func<IDataSerializer> _dataSerializer = DefaultContractsSerializer;
-        readonly MessageDirectoryModule _domain = new MessageDirectoryModule();
+        readonly DispatchDirectoryModule _domain = new DispatchDirectoryModule();
         readonly StorageModule _storage = new StorageModule();
 
 
@@ -82,7 +82,7 @@ namespace Lokad.Cqrs.Build.Engine
         /// </summary>
         /// <param name="config">configuration syntax.</param>
         /// <returns>same builder for inline multiple configuration statements</returns>
-        public void Domain(Action<MessageDirectoryModule> config)
+        public void Domain(Action<DispatchDirectoryModule> config)
         {
             config(_domain);
         }

@@ -22,7 +22,7 @@ using Lokad.Cqrs.Feature.Dispatch.Directory;
 
 namespace Lokad.Cqrs.Feature.AzurePartition
 {
-    using LegacyDispatcherFactory = Func<IComponentContext, MessageActivationInfo[], IMessageDispatchStrategy, ISingleThreadMessageDispatcher>;
+    using DirectoryDispatcherFactory = Func<IComponentContext, MessageActivationInfo[], IMessageDispatchStrategy, ISingleThreadMessageDispatcher>;
 
     public sealed class AzurePartitionModule : HideObjectMembersFromIntelliSense
     {
@@ -36,14 +36,10 @@ namespace Lokad.Cqrs.Feature.AzurePartition
 
         Func<IComponentContext, ISingleThreadMessageDispatcher> _dispatcher;
 
-
         public AzurePartitionModule(IAzureStorageConfig config, string[] queueNames)
         {
             DispatchAsEvents();
-            
             QueueVisibility(30000);
-
-
 
             _config = config;
             _queueNames = new HashSet<string>(queueNames);
@@ -51,8 +47,6 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             Quarantine(c => new MemoryQuarantine());
             DecayPolicy(TimeSpan.FromSeconds(2));
         }
-
-
 
         public void DispatcherIs(Func<IComponentContext, ISingleThreadMessageDispatcher> factory)
         {
@@ -88,7 +82,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
             _decayPolicy = decayPolicy;
         }
 
-        void ResolveLegacyDispatcher(LegacyDispatcherFactory factory, Action<MessageDirectoryFilter> optionalFilter = null)
+        void ResolveDirectoryDispatcher(DirectoryDispatcherFactory factory, Action<MessageDirectoryFilter> optionalFilter = null)
         {
             _dispatcher = ctx =>
             {
@@ -113,7 +107,7 @@ namespace Lokad.Cqrs.Feature.AzurePartition
         /// </summary>
         public void DispatchAsEvents(Action<MessageDirectoryFilter> optionalFilter = null)
         {
-            ResolveLegacyDispatcher((ctx, map, strategy) => new DispatchOneEvent(map, ctx.Resolve<ISystemObserver>(), strategy), optionalFilter);
+            ResolveDirectoryDispatcher((ctx, map, strategy) => new DispatchOneEvent(map, ctx.Resolve<ISystemObserver>(), strategy), optionalFilter);
         }
 
         /// <summary>
@@ -123,11 +117,11 @@ namespace Lokad.Cqrs.Feature.AzurePartition
         /// </summary>
         public void DispatchAsCommandBatch(Action<MessageDirectoryFilter> optionalFilter = null)
         {
-            ResolveLegacyDispatcher((ctx, map, strategy) => new DispatchCommandBatch(map, strategy), optionalFilter);
+            ResolveDirectoryDispatcher((ctx, map, strategy) => new DispatchCommandBatch(map, strategy), optionalFilter);
         }
         public void DispatchToRoute(Func<ImmutableEnvelope,string> route)
         {
-            DispatcherIs((ctx) => new DispatchMessagesToRoute(ctx.Resolve<QueueWriterRegistry>(), route));
+            DispatcherIs(ctx => new DispatchMessagesToRoute(ctx.Resolve<QueueWriterRegistry>(), route));
         }
 
         IEngineProcess BuildConsumingProcess(IComponentContext context)

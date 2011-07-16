@@ -22,7 +22,7 @@ namespace Lokad.Cqrs.Feature.Dispatch.Directory
     /// <summary>
     /// Module for building CQRS domains.
     /// </summary>
-    public class MessageDirectoryModule : HideObjectMembersFromIntelliSense
+    public class DispatchDirectoryModule : HideObjectMembersFromIntelliSense
     {
         readonly DomainAssemblyScanner _scanner = new DomainAssemblyScanner();
         IMethodContextManager _contextManager;
@@ -30,9 +30,9 @@ namespace Lokad.Cqrs.Feature.Dispatch.Directory
 
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MessageDirectoryModule"/> class.
+        /// Initializes a new instance of the <see cref="DispatchDirectoryModule"/> class.
         /// </summary>
-        public MessageDirectoryModule()
+        public DispatchDirectoryModule()
         {
             HandlerSample<IConsume<IMessage>>(a => a.Consume(null));
             ContextFactory(
@@ -95,7 +95,7 @@ namespace Lokad.Cqrs.Feature.Dispatch.Directory
             var mappings = _scanner.Build(_hint.ConsumerTypeDefinition);
             var builder = new MessageDirectoryBuilder(mappings);
 
-            var provider = _contextManager.GetContextProvider();
+            var contextProvider = _contextManager.GetContextProvider();
 
             var consumers = mappings
                 .Select(x => x.Consumer)
@@ -108,7 +108,7 @@ namespace Lokad.Cqrs.Feature.Dispatch.Directory
             {
                 cb.RegisterType(consumer);
             }
-            cb.RegisterInstance(provider).AsSelf();
+            cb.RegisterInstance(contextProvider).AsSelf();
             cb.Update(container);
             container.Register<IMessageDispatchStrategy>(c =>
                 {

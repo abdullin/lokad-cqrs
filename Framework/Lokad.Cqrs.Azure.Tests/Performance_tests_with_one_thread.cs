@@ -7,6 +7,7 @@ using Lokad.Cqrs.Build.Engine;
 using Lokad.Cqrs.Core.Dispatch.Events;
 using NUnit.Framework;
 using System.Linq;
+using Autofac;
 
 namespace Lokad.Cqrs
 {
@@ -16,8 +17,7 @@ namespace Lokad.Cqrs
         [Test]
         public void Test_memory_partition()
         {
-
-            TestConfiguration(c => c.Memory(m =>
+            TestDirectoryConfiguration(c => c.Memory(m =>
                 {
                     m.AddMemorySender("test-accelerated");
                     m.AddMemoryProcess("test-accelerated");
@@ -25,11 +25,31 @@ namespace Lokad.Cqrs
         }
 
         [Test]
+        public void Test_memory_partition_fast()
+        {
+            TestDirectoryConfiguration(c =>
+                {
+                    c.UseProtoBufSerialization(new[] { typeof(UsualMessage)});
+                    c.Memory(m =>
+                        {
+                            m.AddMemorySender("test-accelerated");
+                            m.AddMemoryProcess("test-accelerated", p => p.DispatcherIsLambda(BuildConsumer));
+                        });
+                });
+        }
+
+        static Action<ImmutableEnvelope> BuildConsumer(IComponentContext context)
+        {
+            var sender = context.Resolve<IMessageSender>();
+            return (envelope => sender.SendOne(envelope.Items[0].Content));
+        }
+
+        [Test]
         public void Test_azure_partition()
         {
             var config = AzureStorage.CreateConfigurationForDev();
             WipeAzureAccount.Fast(s => s.StartsWith("test-accelerated"), config);
-            TestConfiguration(c => c.Azure(m =>
+            TestDirectoryConfiguration(c => c.Azure(m =>
                 {
                     m.AddAzureSender(config,"test-accelerated");
                     m.AddAzureProcess(config,"test-accelerated");
@@ -60,7 +80,8 @@ namespace Lokad.Cqrs
             }
         }
 
-        static void TestConfiguration(Action<CqrsEngineBuilder> build)
+
+        static void TestDirectoryConfiguration(Action<CqrsEngineBuilder> build)
         {
             var builder = new CqrsEngineBuilder();
             build(builder);

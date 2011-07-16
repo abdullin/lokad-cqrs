@@ -15,7 +15,7 @@ using Lokad.Cqrs.Feature.Dispatch.Directory;
 
 namespace Lokad.Cqrs.Feature.MemoryPartition
 {
-    using LegacyDispatchFactory = Func<IComponentContext, MessageActivationInfo[], IMessageDispatchStrategy, ISingleThreadMessageDispatcher>;
+    using DirectoryDispatcherFactory = Func<IComponentContext, MessageActivationInfo[], IMessageDispatchStrategy, ISingleThreadMessageDispatcher>;
 
     public sealed class MemoryPartitionModule : HideObjectMembersFromIntelliSense
     {
@@ -37,8 +37,17 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
         {
             _dispatcher = factory;
         }
+
+        public void DispatcherIsLambda(Func<IComponentContext,Action<ImmutableEnvelope>> dispatcher)
+        {
+            _dispatcher = context =>
+                {
+                    var action = dispatcher(context);
+                    return new ActionDispatcher(action);
+                };
+        }
         
-        void ResolveLegacyDispatcher(LegacyDispatchFactory factory, Action<MessageDirectoryFilter> optionalFilter = null)
+        void ResolveDirectoryDispatcher(DirectoryDispatcherFactory factory, Action<MessageDirectoryFilter> optionalFilter = null)
         {
             _dispatcher = ctx =>
                 {
@@ -62,12 +71,12 @@ namespace Lokad.Cqrs.Feature.MemoryPartition
 
         public void DispatchAsEvents(Action<MessageDirectoryFilter> optionalFilter = null)
         {
-            ResolveLegacyDispatcher((ctx, map, strategy) => new DispatchOneEvent(map, ctx.Resolve<ISystemObserver>(), strategy), optionalFilter);
+            ResolveDirectoryDispatcher((ctx, map, strategy) => new DispatchOneEvent(map, ctx.Resolve<ISystemObserver>(), strategy), optionalFilter);
         }
 
         public void DispatchAsCommandBatch(Action<MessageDirectoryFilter> optionalFilter = null)
         {
-            ResolveLegacyDispatcher((ctx, map, strategy) => new DispatchCommandBatch(map, strategy), optionalFilter);
+            ResolveDirectoryDispatcher((ctx, map, strategy) => new DispatchCommandBatch(map, strategy), optionalFilter);
         }
         public void DispatchToRoute(Func<ImmutableEnvelope, string> route)
         {
