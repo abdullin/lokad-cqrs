@@ -5,7 +5,7 @@
 
 #endregion
 
-namespace Lokad.Cqrs.Core.Directory
+namespace Lokad.Cqrs.Feature.DirectoryDispatch
 {
     public interface IMethodContextManager
     {

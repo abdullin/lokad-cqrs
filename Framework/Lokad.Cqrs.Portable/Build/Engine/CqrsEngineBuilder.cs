@@ -9,13 +9,13 @@ using System;
 using System.Collections.Generic;
 using Autofac;
 using Autofac.Core;
-using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Core.Envelope;
 using Lokad.Cqrs.Core.Outbox;
 using Lokad.Cqrs.Core.Reactive;
 using Lokad.Cqrs.Core.Serialization;
 using Lokad.Cqrs.Core;
+using Lokad.Cqrs.Feature.DirectoryDispatch;
 
 // ReSharper disable UnusedMethodReturnValue.Global
 

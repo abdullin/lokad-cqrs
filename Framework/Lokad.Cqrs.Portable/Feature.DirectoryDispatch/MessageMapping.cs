@@ -7,7 +7,7 @@
 
 using System;
 
-namespace Lokad.Cqrs.Core.Directory
+namespace Lokad.Cqrs.Feature.DirectoryDispatch
 {
     public sealed class MessageMapping
     {

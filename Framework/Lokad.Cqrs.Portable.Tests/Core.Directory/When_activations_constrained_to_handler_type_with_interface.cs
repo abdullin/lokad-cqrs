@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using Lokad.Cqrs.Feature.DirectoryDispatch;
+using NUnit.Framework;
 using System.Linq;
 
 // ReSharper disable InconsistentNaming

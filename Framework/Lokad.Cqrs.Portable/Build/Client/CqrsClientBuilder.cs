@@ -11,11 +11,11 @@ using Autofac;
 using Autofac.Core;
 using Lokad.Cqrs.Build.Engine;
 using Lokad.Cqrs.Core;
-using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Envelope;
 using Lokad.Cqrs.Core.Outbox;
 using Lokad.Cqrs.Core.Reactive;
 using Lokad.Cqrs.Core.Serialization;
+using Lokad.Cqrs.Feature.DirectoryDispatch;
 
 namespace Lokad.Cqrs.Build.Client
 {

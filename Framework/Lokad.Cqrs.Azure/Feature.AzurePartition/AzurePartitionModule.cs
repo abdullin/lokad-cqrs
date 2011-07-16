@@ -10,12 +10,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Autofac;
 using Autofac.Core;
-using Lokad.Cqrs.Core.Directory;
 using Lokad.Cqrs.Core.Dispatch;
 using Lokad.Cqrs.Core.Outbox;
 using Lokad.Cqrs.Evil;
 using Lokad.Cqrs.Feature.AzurePartition.Inbox;
 using Lokad.Cqrs.Core;
+using Lokad.Cqrs.Feature.DirectoryDispatch;
 
 // ReSharper disable UnusedMember.Global
 // ReSharper disable MemberCanBePrivate.Global

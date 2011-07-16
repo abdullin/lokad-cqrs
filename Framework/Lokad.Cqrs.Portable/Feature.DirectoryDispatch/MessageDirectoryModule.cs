@@ -11,14 +11,14 @@ using System.Linq.Expressions;
 using System.Transactions;
 using Autofac;
 using Autofac.Core;
-using Lokad.Cqrs.Core.Directory.Default;
-using Lokad.Cqrs.Core.Dispatch;
+using Lokad.Cqrs.Core;
 using Lokad.Cqrs.Core.Serialization;
 using Lokad.Cqrs.Evil;
+using Lokad.Cqrs.Feature.DirectoryDispatch.Default;
 
 // ReSharper disable UnusedMember.Global
 
-namespace Lokad.Cqrs.Core.Directory
+namespace Lokad.Cqrs.Feature.DirectoryDispatch
 {
     /// <summary>
     /// Module for building CQRS domains.
@@ -122,7 +122,7 @@ namespace Lokad.Cqrs.Core.Directory
             cb.Update(container);
             container.Register<IMessageDispatchStrategy>(c =>
                 {
-                    var scope = c.Resolve<ILifetimeScope>();
+                    var scope = ResolutionExtensions.Resolve<ILifetimeScope>(c);
                     var tx = TransactionEvil.Factory(TransactionScopeOption.RequiresNew);
                     return new AutofacDispatchStrategy(scope, tx, _hint.Lookup, _contextManager);
                 });

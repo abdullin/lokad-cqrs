@@ -5,7 +5,7 @@
 
 #endregion
 
-namespace Lokad.Cqrs.Core.Dispatch
+namespace Lokad.Cqrs.Feature.DirectoryDispatch
 {
     public interface IMessageDispatchStrategy
     {

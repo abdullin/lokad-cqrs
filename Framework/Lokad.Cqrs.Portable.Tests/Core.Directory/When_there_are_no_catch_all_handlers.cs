@@ -5,6 +5,7 @@
 
 #endregion
 
+using Lokad.Cqrs.Feature.DirectoryDispatch;
 using NUnit.Framework;
 
 namespace Lokad.Cqrs.Core.Directory

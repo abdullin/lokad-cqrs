@@ -7,6 +7,7 @@
 
 using System;
 using System.Linq;
+using Lokad.Cqrs.Feature.DirectoryDispatch;
 
 namespace Lokad.Cqrs.Core.Directory
 {

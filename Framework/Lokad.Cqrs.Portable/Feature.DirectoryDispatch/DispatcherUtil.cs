@@ -8,9 +8,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Lokad.Cqrs.Core.Directory;
 
-namespace Lokad.Cqrs.Core.Dispatch
+namespace Lokad.Cqrs.Feature.DirectoryDispatch
 {
     public static class DispatcherUtil
     {
@@ -18,12 +17,13 @@ namespace Lokad.Cqrs.Core.Dispatch
         {
             var multipleConsumers = commands
                 .Where(c => c.AllConsumers.Length > 1)
-                .Select(c => c.MessageType.FullName);
+                .Select(c => c.MessageType.FullName)
+                .ToArray();
 
             if (!multipleConsumers.Any())
                 return;
 
-            var joined = string.Join("; ", multipleConsumers.ToArray());
+            var joined = string.Join("; ", multipleConsumers);
 
             throw new InvalidOperationException(
                 "These messages have multiple consumers. Did you intend to declare them as events? " + joined);

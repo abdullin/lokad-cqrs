@@ -10,7 +10,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Lokad.Cqrs.Core.Dispatch.Events;
 using Lokad.Cqrs.Core.Inbox;
-using System.Linq;
 
 namespace Lokad.Cqrs.Core.Dispatch
 {
