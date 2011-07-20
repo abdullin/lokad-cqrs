@@ -14,5 +14,10 @@ namespace Lokad.Cqrs.Core.Dispatch.Events
             Envelope = envelope;
             QueueName = queueName;
         }
+
+        public override string ToString()
+        {
+            return string.Format("Quarantined '{0}' of '{1}'", Envelope.EnvelopeId, QueueName);
+        }
     }
 }

@@ -9,6 +9,9 @@ using System;
 
 namespace Lokad.Cqrs.Core.Inbox.Events
 {
+    /// <summary>
+    /// Raised when something goes wrong with the envelope deserialization (i.e.: unknown format or contract)
+    /// </summary>
     public sealed class EnvelopeDeserializationFailed : ISystemEvent
     {
         public Exception Exception { get; private set; }
@@ -20,6 +23,11 @@ namespace Lokad.Cqrs.Core.Inbox.Events
             Exception = exception;
             QueueName = queueName;
             MessageId = messageId;
+        }
+
+        public override string ToString()
+        {
+            return string.Format("Failed to deserialize '{0}' from '{1}': {2}", MessageId, QueueName, Exception.Message);
         }
     }
 }
