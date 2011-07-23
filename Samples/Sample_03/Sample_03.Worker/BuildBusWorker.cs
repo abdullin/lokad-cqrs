@@ -24,7 +24,7 @@ namespace Sample_03.Worker
 
             builder.Domain(d => d.HandlerSample<IConsume<IMessage>>(m => m.Consume(null)));
 
-            var connection = AzureSettingsProvider.GetStringOrThrow("DiagnosticsConnectionString");
+            var connection = AzureSettingsProvider.GetString("DiagnosticsConnectionString");
 
             var storageConfig = AzureStorage.CreateConfig(CloudStorageAccount.Parse(connection), c =>
             {

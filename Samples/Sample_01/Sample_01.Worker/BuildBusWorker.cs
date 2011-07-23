@@ -24,7 +24,7 @@ namespace Sample_01.Worker
             builder.UseProtoBufSerialization();
             builder.Domain(d => d.HandlerSample<IConsume<IMessage>>(m => m.Consume(null)));
 
-            var connection = AzureSettingsProvider.GetStringOrThrow("StorageConnectionString");
+            var connection = AzureSettingsProvider.GetString("StorageConnectionString");
             var storageConfig = AzureStorage.CreateConfig(CloudStorageAccount.Parse(connection), c =>
             {
                 c.ConfigureBlobClient(x => x.ReadAheadInBytes = 0x200000L);
