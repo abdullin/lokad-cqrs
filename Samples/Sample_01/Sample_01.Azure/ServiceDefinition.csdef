@@ -1,8 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<ServiceDefinition name="Sample_01.Azure" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition">
-  <WorkerRole name="Sample_01.Worker" vmsize="ExtraSmall">
-    <ConfigurationSettings>
-      <Setting name="StorageConnectionString" />
-    </ConfigurationSettings>
-  </WorkerRole>
-</ServiceDefinition>

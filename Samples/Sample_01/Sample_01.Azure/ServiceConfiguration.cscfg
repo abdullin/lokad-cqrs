@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<ServiceConfiguration serviceName="Sample_01.Azure" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceConfiguration">
-  <Role name="Sample_01.Worker">
-    <Instances count="1" />
-    <ConfigurationSettings>
-      <Setting name="StorageConnectionString" value="UseDevelopmentStorage=true" />
-    </ConfigurationSettings>
-  </Role>
-</ServiceConfiguration>
