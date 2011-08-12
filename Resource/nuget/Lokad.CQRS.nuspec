@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Lokad.CQRS</id>
+    <version>2.0.0.0</version>
+    <authors>Lokad.com</authors>
+    <owners>Lokad.com</owners>
+    <licenseUrl>http://www.opensource.org/licenses/bsd-license.php</licenseUrl>
+    <projectUrl>http://lokad.github.com/lokad-cqrs/</projectUrl>
+    <iconUrl>http://lokad.github.com/images/logo_32x32.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Lokad.CQRS is a .NET framework and a set of guidance materials for building distributed and scalable applications to be run on-premises or in the cloud. This project helps to design and develop decoupled systems locally and bring them to the distributed environments later.</description>
+    <tags>CQRS</tags>
+    <dependencies>
+      <dependency id="Autofac" version="2.4.5.724" />      
+    </dependencies>
+    <frameworkAssemblies>
+        <frameworkAssembly assemblyName="Microsoft.WindowsAzure.StorageClient" targetFramework="net40" />
+    </frameworkAssemblies>
+  </metadata>
+</package>
