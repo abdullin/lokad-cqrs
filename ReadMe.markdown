@@ -1,7 +1,9 @@
-# Visit [Lokad.CQRS Homepage](https://web.archive.org/web/20170517230612/http://lokad.github.io:80/lokad-cqrs/)
+# About
 
 **Lokad.CQRS** is a **.NET framework and a set of guidance materials** for _building distributed and scalable applications_ to be **run on-premises or in the cloud**. This project helps to design and develop decoupled systems locally and bring them to the distributed environments later.
 
+
+Check out the [introductory homepage](https://web.archive.org/web/20170517230612/http://lokad.github.io:80/lokad-cqrs/) (preserved by the web archive).
 
 # Case studies
 
