@@ -16,7 +16,8 @@ Check out the [introductory homepage](https://web.archive.org/web/20170517230612
 * [Lokad CallCalc](http://cqrs.wikidot.com/case:lokad-callcalc)
 
 
-It was also used at SkuVault as a platform for the business. However, there it was eventually replaced with a [different design](https://abdullin.com/sku-vault/2017-07-15-high-availability-and-performance/) capable of scaling above 1B events and TBs of data.
+It was also used at SkuVault as a platform for the business. However, there it was eventually replaced with a [different design](https://abdullin.com/sku-vault/2017-07-15-high-availability-and-performance/) capable of scaling above 1B events and TBs of data. [MessageVault](https://github.com/abdullin/messageVault) is currently the heart of this new approach.
+
 
 * CQRS Community around the world
 
